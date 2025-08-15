@@ -9,12 +9,14 @@ export interface TokenPayload {
 }
 
 export const generateAccessToken = (payload: TokenPayload): string => {
+  //@ts-ignore
   return jwt.sign(payload, config.JWT_SECRET, {
     expiresIn: config.JWT_EXPIRES_IN, // accepts number or string
   });
 };
 
 export const generateRefreshToken = (payload: TokenPayload): string => {
+  //@ts-ignore
   return jwt.sign(payload, config.JWT_REFRESH_SECRET, {
     expiresIn: config.JWT_REFRESH_EXPIRES_IN,
   });

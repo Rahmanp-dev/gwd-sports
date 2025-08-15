@@ -1,2 +1,4 @@
 - [x] Implement user APIs
 - [x] Implement admin APIs
+- [ ] What ESLINT does
+- [ ] What prettier does

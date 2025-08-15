@@ -6,8 +6,11 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon --exec tsx src/server.ts",
-    "build": "tsup src --format esm --out-dir dist --clean",
-    "start": "node dist/server.js"
+    "build": "tsup src --format esm --out-dir dist --clean --no-watch",
+    "build:watch": "tsup src --format esm --out-dir dist --clean --watch",
+    "start": "node dist/server.js",
+    "lint": "eslint . --ext .ts",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
