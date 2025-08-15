@@ -1,18 +1,27 @@
 import { Router } from 'express';
-import * as userController from '../../controllers/user';
-import { validateRequest } from '../../middleware/validateRequest';
+import { UserController } from '../../controllers/user';
 import { authMiddleware } from '../../middleware/auth';
+import { 
+  validateRegister, 
+  validateLogin, 
+  validateUpdateProfile, 
+  validateChangePassword 
+} from '../../middleware/validation';
 
 const router = Router();
 
 // Public routes
-router.post('/login', userController.login);
-router.post('/register', userController.register);
+router.post('/register', validateRegister, UserController.register);
+router.post('/login', validateLogin, UserController.login);
+router.post('/refresh-token', UserController.refreshToken);
 
-// Protected routes - require authentication
+// Protected routes
 router.use(authMiddleware);
-router.get('/profile', userController.getProfile);
-router.put('/profile', userController.updateProfile);
-router.post('/logout', userController.logout);
+
+router.get('/profile', UserController.getProfile);
+router.put('/profile', validateUpdateProfile, UserController.updateProfile);
+router.put('/change-password', validateChangePassword, UserController.changePassword);
+router.post('/logout', UserController.logout);
+router.put('/deactivate', UserController.deactivateAccount);
 
 export default router;

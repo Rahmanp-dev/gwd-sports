@@ -1,30 +1,31 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
+import { z } from "zod";
 
 dotenv.config();
 
-// Validate required environment variables
-if (!process.env.DB_URI) {
-  throw new Error('DB_URI must be defined in environment variables');
-}
-if (!process.env.DB_NAME) {
-  throw new Error('DB_NAME must be defined in environment variables');
-}
-if (!process.env.PORT) {
-  throw new Error('PORT must be defined in environment variables');
-}
-if (!process.env.NODE_ENV) {
-  throw new Error('NODE_ENV must be defined in environment variables');
-}
-if (!process.env.JWT_SECRET) {
-  throw new Error('JWT_SECRET must be defined in environment variables');
-}
+const envSchema = z.object({
+  NODE_ENV: z.string().default("development"),
 
-const env = {
-    PORT: process.env.PORT,
-    DB_NAME: process.env.DB_NAME,
-    DB_URI: process.env.DB_URI,
-    NODE_ENV: process.env.NODE_ENV,
-    JWT_SECRET: process.env.JWT_SECRET,
-};
+  PORT: z.coerce.number().default(3000),
+
+  DB_URI: z.string(),
+  DB_NAME: z.string().default("sports"),
+
+  JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),
+  JWT_REFRESH_SECRET: z
+    .string()
+    .min(32, "JWT_REFRESH_SECRET must be at least 32 characters"),
+
+  // Allow both numbers and strings for expiresIn
+  JWT_EXPIRES_IN: z.union([z.string(), z.coerce.number()]).default("15m"),
+  JWT_REFRESH_EXPIRES_IN: z.union([z.string(), z.coerce.number()]).default("7d"),
+
+  BCRYPT_ROUNDS: z.coerce.number().default(12),
+
+  RATE_LIMIT_WINDOW_MS: z.coerce.number().default(900000), // 15 minutes
+  RATE_LIMIT_MAX_REQUESTS: z.coerce.number().default(100),
+});
+
+const env = envSchema.parse(process.env);
 
 export default env;
