@@ -1,6 +1,7 @@
 import { Router, Express } from 'express';
 import userRoutes from './user/api';
 import adminRoutes from './admin/api';
+import eventRoutes from './event/api';
 import { generalLimiter, authLimiter, adminLimiter } from '../middleware/rateLimiter';
 
 export const setupRoutes = (app: Express) => {
@@ -13,6 +14,7 @@ export const setupRoutes = (app: Express) => {
   // Apply specific rate limiters
   apiRouter.use('/user', authLimiter, userRoutes);
   apiRouter.use('/admin', adminLimiter, adminRoutes);
+  apiRouter.use('/events', eventRoutes);
   
   // Mount the API router
   app.use('/api', apiRouter);
