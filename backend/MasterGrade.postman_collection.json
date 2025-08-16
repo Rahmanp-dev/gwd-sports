@@ -313,6 +313,592 @@
 			"name": "Admin",
 			"item": [
 				{
+					"name": "User Ops",
+					"item": [
+						{
+							"name": "Get All Users - Pagination + Filter",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/admin/users?page=1&limit=10&role=user&isActive=true&search=john",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"users"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "role",
+											"value": "user"
+										},
+										{
+											"key": "isActive",
+											"value": "true"
+										},
+										{
+											"key": "search",
+											"value": "john"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User By ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwNzM0LCJleHAiOjE3NTUyNzE2MzR9.nvppGnJ5HGOGN_m-Iq37W8RL9NvKuByw6W-6mLWgsdA"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/admin/users/689f44a25100ff88c407b095",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"users",
+										"689f44a25100ff88c407b095"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create User By Admin",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Jane Doe\",\n    \"email\": \"jane@example.com\",\n    \"password\": \"Password123!\",\n    \"phone\": \"+1234567892\",\n    \"role\": \"trainer\",\n    \"sports\": [\"swimming\"]\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/admin/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete User By Admin",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/admin/users/689f4f0ed92f8c5fc2cff547",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"users",
+										"689f4f0ed92f8c5fc2cff547"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Toggle User Status",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/admin/users/689f44a25100ff88c407b095/toggle-status",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"users",
+										"689f44a25100ff88c407b095",
+										"toggle-status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User Statistics",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/admin/users/stats",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"users",
+										"stats"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update User By Admin",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Jane Smith\",\n    \"role\": \"student\",\n    \"isActive\": true\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/admin/users/689f4f0ed92f8c5fc2cff547",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"users",
+										"689f4f0ed92f8c5fc2cff547"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Event Ops",
+					"item": [
+						{
+							"name": "Create Event",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MzQ1MDk4LCJleHAiOjE3NTU5NDk4OTh9.HbdiUhY_r9VFUiFTA7CQAsbECcIWUXTg_dzMQtPadeQ"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Annual Football Championship\",\n    \"description\": \"A competitive football tournament for all skill levels\",\n    \"sport\": \"football\",\n    \"startDate\": \"2025-12-01T10:00:00Z\",\n    \"endDate\": \"2025-12-01T18:00:00Z\",\n    \"location\": \"New York\",\n    \"venue\": \"Central Stadium\",\n    \"maxParticipants\": 50,\n    \"registrationDeadline\": \"2025-12-01T10:00:00Z\",\n    \"entryFee\": 25.00,\n    \"contactInfo\": {\n      \"name\": \"John Organizer\",\n      \"phone\": \"+1234567890\",\n      \"email\": \"organizer@example.com\"\n    },\n    \"status\": \"published\",\n    \"isPublic\": true,\n    \"registrationOpen\": true,\n    \"tags\": [\"football\", \"championship\", \"competitive\"],\n    \"requirements\": \"Must bring own equipment\",\n    \"prizes\": [\"1st Place: $500\", \"2nd Place: $300\", \"3rd Place: $200\"]\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/events",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"events"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Events",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/events?page=1&limit=10&sport=football&status=published",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"events"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "sport",
+											"value": "football"
+										},
+										{
+											"key": "status",
+											"value": "published"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Event By ID ⭕",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/events/68a0714ae2e7cc5e98169b57",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"events",
+										"68a0714ae2e7cc5e98169b57"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Event",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MzQ1MDk4LCJleHAiOjE3NTU5NDk4OTh9.HbdiUhY_r9VFUiFTA7CQAsbECcIWUXTg_dzMQtPadeQ"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Updated Football Championship\",\n    \"maxParticipants\": 60,\n    \"entryFee\": 30.00,\n    \"description\": \"Updated description with new rules\"\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/events/68a0714ae2e7cc5e98169b57",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"events",
+										"68a0714ae2e7cc5e98169b57"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Event",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MzQ1MDk4LCJleHAiOjE3NTU5NDk4OTh9.HbdiUhY_r9VFUiFTA7CQAsbECcIWUXTg_dzMQtPadeQ"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/events/68a06f01c00fb66e5b2defa0",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"events",
+										"68a06f01c00fb66e5b2defa0"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Join Event",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MzQ1MDk4LCJleHAiOjE3NTU5NDk4OTh9.HbdiUhY_r9VFUiFTA7CQAsbECcIWUXTg_dzMQtPadeQ"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/events/68a0714ae2e7cc5e98169b57/join",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"events",
+										"68a0714ae2e7cc5e98169b57",
+										"join"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Leave Event",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MzQ1MDk4LCJleHAiOjE3NTU5NDk4OTh9.HbdiUhY_r9VFUiFTA7CQAsbECcIWUXTg_dzMQtPadeQ"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/events/68a0714ae2e7cc5e98169b57/leave",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"events",
+										"68a0714ae2e7cc5e98169b57",
+										"leave"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User's Events",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MzQ1MDk4LCJleHAiOjE3NTU5NDk4OTh9.HbdiUhY_r9VFUiFTA7CQAsbECcIWUXTg_dzMQtPadeQ"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/events/user/my-events?page=1&limit=10&upcoming=true",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"events",
+										"user",
+										"my-events"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "upcoming",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Event Statistics",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MzQ1MDk4LCJleHAiOjE3NTU5NDk4OTh9.HbdiUhY_r9VFUiFTA7CQAsbECcIWUXTg_dzMQtPadeQ"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/events/admin/stats",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"events",
+										"admin",
+										"stats"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Events - By Admin",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MzQ1MDk4LCJleHAiOjE3NTU5NDk4OTh9.HbdiUhY_r9VFUiFTA7CQAsbECcIWUXTg_dzMQtPadeQ"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/admin/events?page=1&limit=10",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"events"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Student Ops",
+					"item": []
+				},
+				{
+					"name": "Trainer Ops",
+					"item": []
+				},
+				{
 					"name": "Admin Register",
 					"request": {
 						"method": "POST",
@@ -408,253 +994,16 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "Get All Users - Pagination + Filter",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/admin/users?page=1&limit=10&role=user&isActive=true&search=john",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"admin",
-								"users"
-							],
-							"query": [
-								{
-									"key": "page",
-									"value": "1"
-								},
-								{
-									"key": "limit",
-									"value": "10"
-								},
-								{
-									"key": "role",
-									"value": "user"
-								},
-								{
-									"key": "isActive",
-									"value": "true"
-								},
-								{
-									"key": "search",
-									"value": "john"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get User By ID",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwNzM0LCJleHAiOjE3NTUyNzE2MzR9.nvppGnJ5HGOGN_m-Iq37W8RL9NvKuByw6W-6mLWgsdA"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/admin/users/689f44a25100ff88c407b095",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"admin",
-								"users",
-								"689f44a25100ff88c407b095"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create User By Admin",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Jane Doe\",\n    \"email\": \"jane@example.com\",\n    \"password\": \"Password123!\",\n    \"phone\": \"+1234567892\",\n    \"role\": \"trainer\",\n    \"sports\": [\"swimming\"]\n  }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/admin/users",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"admin",
-								"users"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update User By Admin",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Jane Smith\",\n    \"role\": \"student\",\n    \"isActive\": true\n  }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/admin/users/689f4f0ed92f8c5fc2cff547",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"admin",
-								"users",
-								"689f4f0ed92f8c5fc2cff547"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete User By Admin",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/admin/users/689f4f0ed92f8c5fc2cff547",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"admin",
-								"users",
-								"689f4f0ed92f8c5fc2cff547"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Toggle User Status",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/admin/users/689f44a25100ff88c407b095/toggle-status",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"admin",
-								"users",
-								"689f44a25100ff88c407b095",
-								"toggle-status"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "User Statistics",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/admin/users/stats",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"admin",
-								"users",
-								"stats"
-							]
-						}
-					},
-					"response": []
 				}
 			]
+		},
+		{
+			"name": "Trainer",
+			"item": []
+		},
+		{
+			"name": "Student",
+			"item": []
 		},
 		{
 			"name": "Health Check",

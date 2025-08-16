@@ -70,6 +70,8 @@ curl -X GET http://localhost:3000/api/events/admin/stats \
 curl -X GET "http://localhost:3000/api/admin/events?page=1&limit=10" \
   -H "Authorization: Bearer ADMIN_TOKEN"
 
+--- used till here --- Will use the below if needed 
+
 # 12. CREATE BASKETBALL EVENT
 curl -X POST http://localhost:3000/api/events \
   -H "Authorization: Bearer ADMIN_TOKEN" \

@@ -17,7 +17,7 @@ const envSchema = z.object({
     .min(32, "JWT_REFRESH_SECRET must be at least 32 characters"),
 
   // Allow both numbers and strings for expiresIn
-  JWT_EXPIRES_IN: z.union([z.string(), z.coerce.number()]).default("15m"),
+  JWT_EXPIRES_IN: z.union([z.string(), z.coerce.number()]).default("7d"),
   JWT_REFRESH_EXPIRES_IN: z.union([z.string(), z.coerce.number()]).default("7d"),
 
   BCRYPT_ROUNDS: z.coerce.number().default(12),

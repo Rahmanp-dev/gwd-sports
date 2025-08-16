@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { AuthRequest } from '../../middleware/auth';
 import Event, { IEvent } from '../../schemas/eventSchema';
 import User from '../../schemas/userSchema';
+import Academy from '../../schemas/academySchema';
 import { logger } from '../../utils/logger';
 import { validationResult } from 'express-validator';
 import mongoose, { Types } from 'mongoose';
@@ -147,9 +148,8 @@ export class EventController {
 
       const event = await Event.findById(id)
         .populate('createdBy', 'name email phone')
-        .populate('participants', 'name email phone role')
-        .populate('academyId', 'name');
-
+        .populate('participants', 'name email phone role');
+        
       if (!event || !event.isActive) {
         return res.status(404).json({
           success: false,
