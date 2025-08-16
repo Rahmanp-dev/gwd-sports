@@ -1,7 +1,9 @@
+import mongoose from 'mongoose';
 import { Response } from 'express';
 import { AuthRequest } from '../../middleware/auth';
 import User from '../../schemas/userSchema';
 import { logger } from '../../utils/logger';
+import StudentProfile from '../../schemas/studentSchema';
 import { validationResult } from 'express-validator';
 
 export class AdminUserController {
@@ -312,6 +314,298 @@ export class AdminUserController {
       });
     } catch (error) {
       logger.error('Get user stats error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+}
+
+export class AdminStudentController {
+  // Get all students
+  static async getAllStudents(req: AuthRequest, res: Response) {
+    try {
+      const {
+        page = 1,
+        limit = 10,
+        academyId,
+        trainerId,
+        level,
+        search,
+        sortBy = 'enrollmentDate',
+        sortOrder = 'desc'
+      } = req.query;
+
+      const pageNum = parseInt(page as string);
+      const limitNum = parseInt(limit as string);
+      const skip = (pageNum - 1) * limitNum;
+
+      const filter: any = { isActive: true };
+      
+      if (academyId) filter.academyId = academyId;
+      if (trainerId) filter.trainerId = trainerId;
+      if (level) filter.level = level;
+
+      const sort: any = {};
+      sort[sortBy as string] = sortOrder === 'desc' ? -1 : 1;
+
+      let aggregatePipeline: any[] = [
+        { $match: filter },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        { $unwind: '$user' },
+        {
+          $lookup: {
+            from: 'academies',
+            localField: 'academyId',
+            foreignField: '_id',
+            as: 'academy'
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'trainerId',
+            foreignField: '_id',
+            as: 'trainer'
+          }
+        }
+      ];
+
+      // Add search filter if provided
+      if (search) {
+        aggregatePipeline.push({
+          $match: {
+            $or: [
+              { 'user.name': { $regex: search, $options: 'i' } },
+              { 'user.email': { $regex: search, $options: 'i' } },
+              { 'user.phone': { $regex: search, $options: 'i' } }
+            ]
+          }
+        });
+      }
+
+      // Add sorting and pagination
+      aggregatePipeline.push(
+        { $sort: sort },
+        { $skip: skip },
+        { $limit: limitNum }
+      );
+
+      const [students, total] = await Promise.all([
+        StudentProfile.aggregate(aggregatePipeline),
+        StudentProfile.countDocuments(filter)
+      ]);
+
+      const totalPages = Math.ceil(total / limitNum);
+
+      res.json({
+        success: true,
+        data: {
+          students,
+          pagination: {
+            currentPage: pageNum,
+            totalPages,
+            totalStudents: total,
+            hasNextPage: pageNum < totalPages,
+            hasPrevPage: pageNum > 1
+          }
+        }
+      });
+    } catch (error) {
+      logger.error('Get all students error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
+  // Get student by ID
+  static async getStudentById(req: AuthRequest, res: Response) {
+    try {
+      const { id } = req.params;
+
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid student ID'
+        });
+      }
+
+      const student = await StudentProfile.findById(id)
+        .populate('userId', 'name email phone')
+        .populate('academyId', 'name location')
+        .populate('trainerId', 'name email')
+        .populate('attendance.markedBy', 'name')
+        .populate('performance.evaluatedBy', 'name');
+
+      if (!student || !student.isActive) {
+        return res.status(404).json({
+          success: false,
+          message: 'Student not found'
+        });
+      }
+
+      res.json({
+        success: true,
+        data: { student }
+      });
+    } catch (error) {
+      logger.error('Get student by ID error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
+  // Update student profile
+  static async updateStudent(req: AuthRequest, res: Response) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: errors.array()
+        });
+      }
+
+      const { id } = req.params;
+      const updates = req.body;
+
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid student ID'
+        });
+      }
+
+      // Remove protected fields
+      delete updates.userId;
+      delete updates.feePayments;
+      delete updates.attendance;
+      delete updates.performance;
+
+      const student = await StudentProfile.findByIdAndUpdate(
+        id,
+        updates,
+        { new: true, runValidators: true }
+      ).populate('userId', 'name email');
+
+      if (!student || !student.isActive) {
+        return res.status(404).json({
+          success: false,
+          message: 'Student not found'
+        });
+      }
+
+      logger.info(`Student updated by admin ${req.user!.email}`);
+
+      res.json({
+        success: true,
+        message: 'Student updated successfully',
+        data: { student }
+      });
+    } catch (error) {
+      logger.error('Update student error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
+  // Update kit status
+  static async updateKitStatus(req: AuthRequest, res: Response) {
+    try {
+      const { studentId, kitId } = req.params;
+      const { status, cost } = req.body;
+
+      if (!mongoose.Types.ObjectId.isValid(studentId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid student ID'
+        });
+      }
+
+      const student = await StudentProfile.findById(studentId);
+      if (!student || !student.isActive) {
+        return res.status(404).json({
+          success: false,
+          message: 'Student not found'
+        });
+      }
+
+      const kit = student.kits.id(kitId);
+      if (!kit) {
+        return res.status(404).json({
+          success: false,
+          message: 'Kit not found'
+        });
+      }
+
+      kit.status = status;
+      if (cost !== undefined) kit.cost = cost;
+      if (status === 'delivered') kit.deliveredAt = new Date();
+
+      await student.save();
+
+      logger.info(`Kit status updated by admin ${req.user!.email}`);
+
+      res.json({
+        success: true,
+        message: 'Kit status updated successfully',
+        data: { kit }
+      });
+    } catch (error) {
+      logger.error('Update kit status error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
+  // Get student statistics
+  static async getStudentStats(req: AuthRequest, res: Response) {
+    try {
+      const stats = await StudentProfile.aggregate([
+        { $match: { isActive: true } },
+        {
+          $group: {
+            _id: '$level',
+            count: { $sum: 1 },
+            averageFeesPaid: { $avg: '$totalFeesPaid' }
+          }
+        }
+      ]);
+
+      const totalStudents = await StudentProfile.countDocuments({ isActive: true });
+      const enrolledStudents = await StudentProfile.countDocuments({ 
+        isActive: true, 
+        academyId: { $ne: null } 
+      });
+
+      res.json({
+        success: true,
+        data: {
+          totalStudents,
+          enrolledStudents,
+          unenrolledStudents: totalStudents - enrolledStudents,
+          studentsByLevel: stats
+        }
+      });
+    } catch (error) {
+      logger.error('Get student stats error:', error);
       res.status(500).json({
         success: false,
         message: 'Internal server error'
