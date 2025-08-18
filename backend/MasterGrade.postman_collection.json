@@ -1283,6 +1283,303 @@
 			]
 		},
 		{
+			"name": "Student",
+			"item": [
+				{
+					"name": "Create Stud Prof",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sports\": [\"football\", \"basketball\"],\n    \"level\": \"beginner\",\n    \"medicalInfo\": {\n      \"allergies\": [\"peanuts\"],\n      \"medications\": [\"inhaler\"],\n      \"emergencyContact\": {\n        \"name\": \"Jane Doe\",\n        \"phone\": \"+1987654321\",\n        \"relation\": \"mother\"\n      }\n    }\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/student/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"student",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Stud Prof",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/student/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"student",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Join Acad",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"academyId\": \"68a337d874f386a3a7ea1273\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/student/join-academy",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"student",
+								"join-academy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Stud Attendance",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/student/attendance?page=1&limit=10&fromDate=2024-01-01&toDate=2024-12-31",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"student",
+								"attendance"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "fromDate",
+									"value": "2024-01-01"
+								},
+								{
+									"key": "toDate",
+									"value": "2024-12-31"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Stud Performance",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/student/performance?sport=football&category=fitness",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"student",
+								"performance"
+							],
+							"query": [
+								{
+									"key": "sport",
+									"value": "football"
+								},
+								{
+									"key": "category",
+									"value": "fitness"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request Kits",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"kitName\": \"Football Training Kit\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/student/request-kit",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"student",
+								"request-kit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Stud Kit Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/student/kits",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"student",
+								"kits"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pay Fees",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 150.00,\n    \"period\": \"monthly\",\n    \"transactionId\": \"TXN123456789\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/student/pay-fees",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"student",
+								"pay-fees"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Trainer",
+			"item": []
+		},
+		{
 			"name": "Health Check",
 			"request": {
 				"method": "GET",
