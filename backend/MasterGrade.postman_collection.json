@@ -642,6 +642,60 @@
 							"response": []
 						},
 						{
+							"name": "Get All Events With Filters",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/events?page=1&limit=5&sport=football&isPublic=true&registrationOpen=true&search=championship&sortBy=startDate&sortOrder=asc",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"events"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "5"
+										},
+										{
+											"key": "sport",
+											"value": "football"
+										},
+										{
+											"key": "isPublic",
+											"value": "true"
+										},
+										{
+											"key": "registrationOpen",
+											"value": "true"
+										},
+										{
+											"key": "search",
+											"value": "championship"
+										},
+										{
+											"key": "sortBy",
+											"value": "startDate"
+										},
+										{
+											"key": "sortOrder",
+											"value": "asc"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Get Event By ID ⭕",
 							"request": {
 								"method": "GET",
@@ -1004,6 +1058,229 @@
 		{
 			"name": "Student",
 			"item": []
+		},
+		{
+			"name": "Academy",
+			"item": [
+				{
+					"name": "Create Academy",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1NTI1NzEzLCJleHAiOjE3NTYxMzA1MTN9.ppr10ZihEXTK7k1_ZuEsT3djHYBmyy26AuTM8aDker0"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Elite Sports Academy\",\n    \"description\": \"Premier sports training facility offering world-class coaching\",\n    \"location\": \"Los Angeles\",\n    \"address\": \"123 Sports Street, LA, CA 90210\",\n    \"sports\": [\"football\", \"basketball\", \"tennis\"],\n    \"fees\": {\n      \"monthly\": 150.00,\n      \"quarterly\": 400.00,\n      \"yearly\": 1500.00\n    },\n    \"contactInfo\": {\n      \"name\": \"John Smith\",\n      \"phone\": \"+1234567890\",\n      \"email\": \"contact@elitesports.com\"\n    },\n    \"facilities\": [\"Swimming Pool\", \"Gym\", \"Basketball Court\", \"Tennis Courts\"],\n    \"timings\": {\n      \"opening\": \"06:00\",\n      \"closing\": \"22:00\",\n      \"workingDays\": [\"monday\", \"tuesday\", \"wednesday\", \"thursday\", \"friday\", \"saturday\"]\n    },\n    \"capacity\": 200,\n    \"images\": [\"https://example.com/academy1.jpg\", \"https://example.com/academy2.jpg\"]\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/academy",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"academy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All acads",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/academy?page=1&limit=10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"academy"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get acad By Location",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/academy?location=Los Angeles&sport=football",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"academy"
+							],
+							"query": [
+								{
+									"key": "location",
+									"value": "Los Angeles"
+								},
+								{
+									"key": "sport",
+									"value": "football"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Academy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/academy?search=elite&page=1&limit=5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"academy"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "elite"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Acad by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/academy/68a3326b4b6a4d8bffaf2e53",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"academy",
+								"68a3326b4b6a4d8bffaf2e53"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Acad",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1NTI1NzEzLCJleHAiOjE3NTYxMzA1MTN9.ppr10ZihEXTK7k1_ZuEsT3djHYBmyy26AuTM8aDker0"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Elite Sports Academy Updated\",\n    \"capacity\": 250,\n    \"fees\": {\n      \"monthly\": 160.00,\n      \"quarterly\": 450.00,\n      \"yearly\": 1600.00\n    }\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/academy/68a3326b4b6a4d8bffaf2e53",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"academy",
+								"68a3326b4b6a4d8bffaf2e53"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Del Acad",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1NTI1NzEzLCJleHAiOjE3NTYxMzA1MTN9.ppr10ZihEXTK7k1_ZuEsT3djHYBmyy26AuTM8aDker0"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/academy/68a3326b4b6a4d8bffaf2e53",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"academy",
+								"68a3326b4b6a4d8bffaf2e53"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "Health Check",
