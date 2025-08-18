@@ -4,6 +4,8 @@ import { AuthRequest } from '../../middleware/auth';
 import User from '../../schemas/userSchema';
 import { logger } from '../../utils/logger';
 import StudentProfile from '../../schemas/studentSchema';
+import TrainerProfile from '../../schemas/trainerSchema';
+import Academy from '../../schemas/academySchema';
 import { validationResult } from 'express-validator';
 
 export class AdminUserController {
@@ -606,6 +608,332 @@ export class AdminStudentController {
       });
     } catch (error) {
       logger.error('Get student stats error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+}
+
+
+export class AdminTrainerController {
+  // Get all trainers
+  static async getAllTrainers(req: AuthRequest, res: Response) {
+    try {
+      const {
+        page = 1,
+        limit = 10,
+        academyId,
+        sport,
+        search,
+        sortBy = 'joinedDate',
+        sortOrder = 'desc'
+      } = req.query;
+
+      const pageNum = parseInt(page as string);
+      const limitNum = parseInt(limit as string);
+      const skip = (pageNum - 1) * limitNum;
+
+      const filter: any = { isActive: true };
+      
+      if (academyId) filter.academyId = academyId;
+      if (sport) filter.sports = { $in: [sport] };
+
+      const sort: any = {};
+      sort[sortBy as string] = sortOrder === 'desc' ? -1 : 1;
+
+      let aggregatePipeline: any[] = [
+        { $match: filter },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        { $unwind: '$user' },
+        {
+          $lookup: {
+            from: 'academies',
+            localField: 'academyId',
+            foreignField: '_id',
+            as: 'academy'
+          }
+        },
+        {
+          $addFields: {
+            studentCount: { $size: '$students' }
+          }
+        }
+      ];
+
+      // Add search filter if provided
+      if (search) {
+        aggregatePipeline.push({
+          $match: {
+            $or: [
+              { 'user.name': { $regex: search, $options: 'i' } },
+              { 'user.email': { $regex: search, $options: 'i' } },
+              { sports: { $regex: search, $options: 'i' } },
+              { specializations: { $regex: search, $options: 'i' } }
+            ]
+          }
+        });
+      }
+
+      // Add sorting and pagination
+      aggregatePipeline.push(
+        { $sort: sort },
+        { $skip: skip },
+        { $limit: limitNum }
+      );
+
+      const [trainers, total] = await Promise.all([
+        TrainerProfile.aggregate(aggregatePipeline),
+        TrainerProfile.countDocuments(filter)
+      ]);
+
+      const totalPages = Math.ceil(total / limitNum);
+
+      res.json({
+        success: true,
+        data: {
+          trainers,
+          pagination: {
+            currentPage: pageNum,
+            totalPages,
+            totalTrainers: total,
+            hasNextPage: pageNum < totalPages,
+            hasPrevPage: pageNum > 1
+          }
+        }
+      });
+    } catch (error) {
+      logger.error('Get all trainers error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
+  // Get trainer by ID
+  static async getTrainerById(req: AuthRequest, res: Response) {
+    try {
+      const { id } = req.params;
+
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid trainer ID'
+        });
+      }
+
+      const trainer = await TrainerProfile.findById(id)
+        .populate('userId', 'name email phone')
+        .populate('academyId', 'name location')
+        .populate('students', 'name email phone');
+
+      if (!trainer || !trainer.isActive) {
+        return res.status(404).json({
+          success: false,
+          message: 'Trainer not found'
+        });
+      }
+
+      res.json({
+        success: true,
+        data: { trainer }
+      });
+    } catch (error) {
+      logger.error('Get trainer by ID error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
+  // Update trainer
+  static async updateTrainer(req: AuthRequest, res: Response) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: errors.array()
+        });
+      }
+
+      const { id } = req.params;
+      const updates = req.body;
+
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid trainer ID'
+        });
+      }
+
+      // Remove protected fields
+      delete updates.userId;
+      delete updates.students;
+      delete updates.rating;
+
+      const trainer = await TrainerProfile.findByIdAndUpdate(
+        id,
+        updates,
+        { new: true, runValidators: true }
+      ).populate('userId', 'name email');
+
+      if (!trainer || !trainer.isActive) {
+        return res.status(404).json({
+          success: false,
+          message: 'Trainer not found'
+        });
+      }
+
+      logger.info(`Trainer updated by admin ${req.user!.email}`);
+
+      res.json({
+        success: true,
+        message: 'Trainer updated successfully',
+        data: { trainer }
+      });
+    } catch (error) {
+      logger.error('Update trainer error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
+  // Delete trainer (soft delete)
+  static async deleteTrainer(req: AuthRequest, res: Response) {
+    try {
+      const { id } = req.params;
+
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid trainer ID'
+        });
+      }
+
+      const trainer = await TrainerProfile.findById(id);
+      if (!trainer || !trainer.isActive) {
+        return res.status(404).json({
+          success: false,
+          message: 'Trainer not found'
+        });
+      }
+
+      // Soft delete
+      trainer.isActive = false;
+      await trainer.save();
+
+      // Remove trainer from students
+      await StudentProfile.updateMany(
+        { trainerId: trainer.userId },
+        { $unset: { trainerId: 1 } }
+      );
+
+      // Remove trainer from academy
+      if (trainer.academyId) {
+        await Academy.findByIdAndUpdate(
+          trainer.academyId,
+          { $pull: { trainers: trainer.userId } }
+        );
+      }
+
+      logger.info(`Trainer deleted by admin ${req.user!.email}`);
+
+      res.json({
+        success: true,
+        message: 'Trainer deleted successfully'
+      });
+    } catch (error) {
+      logger.error('Delete trainer error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
+  // Get trainer statistics
+  static async getTrainerStats(req: AuthRequest, res: Response) {
+    try {
+      const stats = await TrainerProfile.aggregate([
+        { $match: { isActive: true } },
+        {
+          $group: {
+            _id: null,
+            totalTrainers: { $sum: 1 },
+            averageRating: { $avg: '$rating.average' },
+            totalStudents: { $sum: { $size: '$students' } },
+            averageStudentsPerTrainer: { $avg: { $size: '$students' } }
+          }
+        }
+      ]);
+
+      const sportStats = await TrainerProfile.aggregate([
+        { $match: { isActive: true } },
+        { $unwind: '$sports' },
+        {
+          $group: {
+            _id: '$sports',
+            count: { $sum: 1 }
+          }
+        },
+        { $sort: { count: -1 } }
+      ]);
+
+      const academyStats = await TrainerProfile.aggregate([
+        { $match: { isActive: true, academyId: { $ne: null } } },
+        {
+          $group: {
+            _id: '$academyId',
+            trainerCount: { $sum: 1 }
+          }
+        },
+        {
+          $lookup: {
+            from: 'academies',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'academy'
+          }
+        },
+        { $unwind: '$academy' },
+        {
+          $project: {
+            academyName: '$academy.name',
+            trainerCount: 1
+          }
+        },
+        { $sort: { trainerCount: -1 } }
+      ]);
+
+      res.json({
+        success: true,
+        data: {
+          overview: stats[0] || {
+            totalTrainers: 0,
+            averageRating: 0,
+            totalStudents: 0,
+            averageStudentsPerTrainer: 0
+          },
+          sportDistribution: sportStats,
+          academyDistribution: academyStats
+        }
+      });
+    } catch (error) {
+      logger.error('Get trainer stats error:', error);
       res.status(500).json({
         success: false,
         message: 'Internal server error'

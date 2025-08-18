@@ -241,6 +241,101 @@ curl -X GET http://localhost:3000/api/admin/students/stats \
   -H "Authorization: Bearer ADMIN_TOKEN"
 
 # ========================
+# ADMIN ACADEMY MANAGEMENT
+# ========================
+
+# 28. GET ALL ACADEMIES (Admin)
+curl -X GET "http://localhost:3000/api/admin/academies?page=1&limit=10&location=Los Angeles" \
+  -H "Authorization: Bearer ADMIN_TOKEN"
+
+# 29. GET ACADEMY BY ID (Admin)
+curl -X GET http://localhost:3000/api/admin/academies/ACADEMY_ID_HERE \
+  -H "Authorization: Bearer ADMIN_TOKEN"
+
+# 30. CREATE ACADEMY (Admin)
+curl -X POST http://localhost:3000/api/admin/academies \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Elite Sports Academy",
+    "description": "Premier sports training facility",
+    "location": "Los Angeles",
+    "address": "123 Sports Street, LA, CA 90210",
+    "sports": ["football", "basketball"],
+    "fees": {
+      "monthly": 150.00,
+      "quarterly": 400.00,
+      "yearly": 1500.00
+    },
+    "contactInfo": {
+      "name": "John Smith",
+      "phone": "+1234567890",
+      "email": "contact@elitesports.com"
+    },
+    "timings": {
+      "opening": "06:00",
+      "closing": "22:00",
+      "workingDays": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    "capacity": 200
+  }'
+
+# 31. UPDATE ACADEMY (Admin)
+curl -X PUT http://localhost:3000/api/admin/academies/ACADEMY_ID_HERE \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "capacity": 250,
+    "fees": {
+      "monthly": 160.00
+    }
+  }'
+
+# 32. DELETE ACADEMY (Admin)
+curl -X DELETE http://localhost:3000/api/admin/academies/ACADEMY_ID_HERE \
+  -H "Authorization: Bearer ADMIN_TOKEN"
+
+# ========================
+# ADMIN TRAINER MANAGEMENT
+# ========================
+
+# 33. CREATE TRAINER PROFILE (Admin)
+curl -X POST http://localhost:3000/api/admin/trainers \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": "USER_ID_HERE",
+    "sports": ["football", "fitness"],
+    "specializations": ["Youth Training"]
+  }'
+
+# 34. GET ALL TRAINERS (Admin)
+curl -X GET "http://localhost:3000/api/admin/trainers?page=1&limit=10&sport=football" \
+  -H "Authorization: Bearer ADMIN_TOKEN"
+
+# 35. GET TRAINER STATISTICS (Admin)
+curl -X GET http://localhost:3000/api/admin/trainers/stats \
+  -H "Authorization: Bearer ADMIN_TOKEN"
+
+# 36. GET TRAINER BY ID (Admin)
+curl -X GET http://localhost:3000/api/admin/trainers/TRAINER_ID_HERE \
+  -H "Authorization: Bearer ADMIN_TOKEN"
+
+# 37. UPDATE TRAINER (Admin)
+curl -X PUT http://localhost:3000/api/admin/trainers/TRAINER_ID_HERE \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "sports": ["football", "basketball", "fitness"],
+    "hourlyRate": 60.00,
+    "specializations": ["Youth Training", "Advanced Techniques"]
+  }'
+
+# 38. DELETE TRAINER (Admin)
+curl -X DELETE http://localhost:3000/api/admin/trainers/TRAINER_ID_HERE \
+  -H "Authorization: Bearer ADMIN_TOKEN"
+
+# ========================
 # INTEGRATION TESTING
 # ========================
 
