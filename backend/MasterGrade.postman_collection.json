@@ -1577,7 +1577,272 @@
 		},
 		{
 			"name": "Trainer",
-			"item": []
+			"item": [
+				{
+					"name": "Create Trainer Profile",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1NTI4MjY4LCJleHAiOjE3NTYxMzMwNjh9.2jE5kYpFi3zE_V7r1xmJxfSLaIUxMD051euPRqhDh6o"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"68a33c1171f5b7e03e9e70be\",\n    \"sports\": [\"football\", \"fitness\"],\n    \"specializations\": [\"Youth Training\", \"Fitness Coaching\"],\n    \"qualifications\": [{\n      \"certification\": \"FIFA Level 1 Coaching\",\n      \"issuedBy\": \"FIFA\",\n      \"issuedDate\": \"2023-01-15T00:00:00Z\",\n      \"expiryDate\": \"2026-01-15T00:00:00Z\"\n    }],\n    \"experience\": [{\n      \"organization\": \"Local Sports Club\",\n      \"position\": \"Youth Coach\",\n      \"startDate\": \"2022-01-01T00:00:00Z\",\n      \"endDate\": \"2023-12-31T00:00:00Z\",\n      \"description\": \"Coached youth football teams aged 12-16\"\n    }],\n    \"hourlyRate\": 50.00,\n    \"availability\": {\n      \"days\": [\"monday\", \"tuesday\", \"wednesday\", \"thursday\", \"friday\"],\n      \"timeSlots\": [{\n        \"start\": \"09:00\",\n        \"end\": \"17:00\"\n      }]\n    }\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/trainer/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"trainer",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Trainer Prof",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzM2MxMTcxZjViN2UwM2U5ZTcwYmUiLCJlbWFpbCI6InRyYWluZXJAbWcuY29tIiwicm9sZSI6InRyYWluZXIiLCJpYXQiOjE3NTU1Mjg1ODYsImV4cCI6MTc1NjEzMzM4Nn0.kb-pB0m3r8qpXV4UQcIi_xosQIxZREKhNLWrNKf-ob8"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/trainer/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"trainer",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Trainer With Filters",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzM2MxMTcxZjViN2UwM2U5ZTcwYmUiLCJlbWFpbCI6InRyYWluZXJAbWcuY29tIiwicm9sZSI6InRyYWluZXIiLCJpYXQiOjE3NTU1Mjg1ODYsImV4cCI6MTc1NjEzMzM4Nn0.kb-pB0m3r8qpXV4UQcIi_xosQIxZREKhNLWrNKf-ob8"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/trainer/students?page=1&limit=10&level=beginner&search=john",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"trainer",
+								"students"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "level",
+									"value": "beginner"
+								},
+								{
+									"key": "search",
+									"value": "john"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add stud to trai",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzM2MxMTcxZjViN2UwM2U5ZTcwYmUiLCJlbWFpbCI6InRyYWluZXJAbWcuY29tIiwicm9sZSI6InRyYWluZXIiLCJpYXQiOjE3NTU1Mjg1ODYsImV4cCI6MTc1NjEzMzM4Nn0.kb-pB0m3r8qpXV4UQcIi_xosQIxZREKhNLWrNKf-ob8"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"studentId\": \"68a3375174f386a3a7ea1265\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/trainer/add-student",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"trainer",
+								"add-student"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mark stud attendance ⭕🚩",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer TRAINER_TOKEN"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"studentId\": \"\",\n    \"date\": \"2024-11-20T00:00:00Z\",\n    \"present\": true,\n    \"remarks\": \"Excellent participation in training\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/trainer/mark-attendance",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"trainer",
+								"mark-attendance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Stud Attendance ⭕🚩",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer TRAINER_TOKEN"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/trainer/student/STUDENT_USER_ID_HERE/attendance?fromDate=2024-11-01&toDate=2024-11-30",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"trainer",
+								"student",
+								"STUDENT_USER_ID_HERE",
+								"attendance"
+							],
+							"query": [
+								{
+									"key": "fromDate",
+									"value": "2024-11-01"
+								},
+								{
+									"key": "toDate",
+									"value": "2024-11-30"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add performance ⭕🚩",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer TRAINER_TOKEN"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"studentId\": \"STUDENT_USER_ID_HERE\",\n    \"sport\": \"football\",\n    \"score\": 85,\n    \"maxScore\": 100,\n    \"remarks\": \"Great improvement in ball control and passing accuracy\",\n    \"category\": \"technique\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/trainer/add-performance",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"trainer",
+								"add-performance"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "Health Check",
