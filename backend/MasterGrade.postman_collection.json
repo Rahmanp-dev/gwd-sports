@@ -945,12 +945,572 @@
 					]
 				},
 				{
-					"name": "Student Ops",
-					"item": []
+					"name": "Student Ops ⭕🚩",
+					"item": [
+						{
+							"name": "Get All Studs",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1NTMyNjg0LCJleHAiOjE3NTYxMzc0ODR9.cotVwCRcK3-tju9SRfCXowOUx5DZFVOAVTu7LVYxyXg"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/admin/students?page=1&limit=10&level=beginner&academyId=ACADEMY_ID",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"students"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "level",
+											"value": "beginner"
+										},
+										{
+											"key": "academyId",
+											"value": "ACADEMY_ID"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Stud By ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer ADMIN_TOKEN"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/admin/students/STUDENT_ID_HERE",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"students",
+										"STUDENT_ID_HERE"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Stud",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer ADMIN_TOKEN"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"level\": \"intermediate\",\n    \"sports\": [\"football\", \"basketball\", \"tennis\"],\n    \"trainerId\": \"TRAINER_USER_ID_HERE\"\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/admin/students/STUDENT_ID_HERE",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"students",
+										"STUDENT_ID_HERE"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Kit Status",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer ADMIN_TOKEN"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"status\": \"delivered\",\n    \"cost\": 75.00\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/admin/students/STUDENT_ID_HERE/kits/KIT_ID_HERE",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"students",
+										"STUDENT_ID_HERE",
+										"kits",
+										"KIT_ID_HERE"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Stud Stats",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer ADMIN_TOKEN"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/admin/students/stats",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"students",
+										"stats"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				},
 				{
-					"name": "Trainer Ops",
-					"item": []
+					"name": "Trainer Ops ⭕🚩",
+					"item": [
+						{
+							"name": "Create Trainer",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer ADMIN_TOKEN"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"userId\": \"USER_ID_HERE\",\n    \"sports\": [\"football\", \"fitness\"],\n    \"specializations\": [\"Youth Training\"]\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/admin/trainers",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"trainers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Trainers",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer ADMIN_TOKEN"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/admin/trainers?page=1&limit=10&sport=football",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"trainers"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "sport",
+											"value": "football"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Trainer Stat",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer ADMIN_TOKEN"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/admin/trainers/stats",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"trainers",
+										"stats"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Trainer by ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer ADMIN_TOKEN"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/admin/trainers/TRAINER_ID_HERE",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"trainers",
+										"TRAINER_ID_HERE"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Trainer",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer ADMIN_TOKEN"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"sports\": [\"football\", \"basketball\", \"fitness\"],\n    \"hourlyRate\": 60.00,\n    \"specializations\": [\"Youth Training\", \"Advanced Techniques\"]\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/admin/trainers/TRAINER_ID_HERE",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"trainers",
+										"TRAINER_ID_HERE"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Del Trainer",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer ADMIN_TOKEN"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/admin/trainers/TRAINER_ID_HERE",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"trainers",
+										"TRAINER_ID_HERE"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Academy Ops ⭕🚩",
+					"item": [
+						{
+							"name": "Get All Academies",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer ADMIN_TOKEN"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/admin/academies?page=1&limit=10&location=Los Angeles",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"academies"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "location",
+											"value": "Los Angeles"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Acad by Id",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer ADMIN_TOKEN"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/admin/academies/ACADEMY_ID_HERE",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"academies",
+										"ACADEMY_ID_HERE"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Acad",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer ADMIN_TOKEN"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Elite Sports Academy\",\n    \"description\": \"Premier sports training facility\",\n    \"location\": \"Los Angeles\",\n    \"address\": \"123 Sports Street, LA, CA 90210\",\n    \"sports\": [\"football\", \"basketball\"],\n    \"fees\": {\n      \"monthly\": 150.00,\n      \"quarterly\": 400.00,\n      \"yearly\": 1500.00\n    },\n    \"contactInfo\": {\n      \"name\": \"John Smith\",\n      \"phone\": \"+1234567890\",\n      \"email\": \"contact@elitesports.com\"\n    },\n    \"timings\": {\n      \"opening\": \"06:00\",\n      \"closing\": \"22:00\",\n      \"workingDays\": [\"monday\", \"tuesday\", \"wednesday\", \"thursday\", \"friday\"]\n    },\n    \"capacity\": 200\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/admin/academies",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"academies"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Acad",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer ADMIN_TOKEN"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"capacity\": 250,\n    \"fees\": {\n      \"monthly\": 160.00\n    }\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/admin/academies/ACADEMY_ID_HERE",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"academies",
+										"ACADEMY_ID_HERE"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Del Acad",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer ADMIN_TOKEN"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/admin/academies/ACADEMY_ID_HERE",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"academies",
+										"ACADEMY_ID_HERE"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				},
 				{
 					"name": "Admin Register",
@@ -1050,14 +1610,6 @@
 					"response": []
 				}
 			]
-		},
-		{
-			"name": "Trainer",
-			"item": []
-		},
-		{
-			"name": "Student",
-			"item": []
 		},
 		{
 			"name": "Academy",
