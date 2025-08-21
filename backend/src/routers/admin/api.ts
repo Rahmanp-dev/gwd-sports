@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { AdminUserController, AdminStudentController, AdminTrainerController } from '../../controllers/admin';
 import { EventController } from '../../controllers/event';
-import { AcademyController } from '../../controllers/academy';
 import { TrainerController } from '../../controllers/trainer';
 import { authMiddleware, adminMiddleware } from '../../middleware/auth';
 import { 
@@ -26,12 +25,6 @@ import {
   validateTrainerQuery,
   validateTrainerId
 } from '../../middleware/validations/studentvalidation';
-// academy middlewares
-import {
-  validateCreateAcademy,
-  validateUpdateAcademy,
-  validateAcademyId
-} from '../../middleware/validations/academyValidation';
 // trainer middlewares
 import {
   validateCreateTrainerProfile
@@ -41,6 +34,16 @@ const router = Router();
 
 // All admin routes require authentication and admin role
 router.use(authMiddleware, adminMiddleware);
+
+// ========================
+// EVENT MANAGEMENT ROUTES
+// ========================
+router.get('/events', validateEventPagination, EventController.getAllEvents);
+router.get('/events/:id', validateEventId, EventController.getEventById);
+router.post('/events', validateCreateEvent, EventController.createEvent);
+router.put('/events/:id', validateUpdateEvent, EventController.updateEvent);
+router.delete('/events/:id', validateEventId, EventController.deleteEvent);
+router.get('/events/stats', EventController.getEventStats);
 
 // ========================
 // USER MANAGEMENT ROUTES
@@ -54,16 +57,6 @@ router.delete('/users/:id', validateUserId, AdminUserController.deleteUser);
 router.patch('/users/:id/toggle-status', validateUserId, AdminUserController.toggleUserStatus);
 
 // ========================
-// EVENT MANAGEMENT ROUTES
-// ========================
-router.get('/events', validateEventPagination, EventController.getAllEvents);
-router.get('/events/:id', validateEventId, EventController.getEventById);
-router.post('/events', validateCreateEvent, EventController.createEvent);
-router.put('/events/:id', validateUpdateEvent, EventController.updateEvent);
-router.delete('/events/:id', validateEventId, EventController.deleteEvent);
-router.get('/events/stats', EventController.getEventStats);
-
-// ========================
 // STUDENT MANAGEMENT ROUTES
 // ========================
 router.get('/students', validateStudentQuery, AdminStudentController.getAllStudents);
@@ -73,20 +66,12 @@ router.put('/students/:id', validateUpdateStudent, AdminStudentController.update
 router.put('/students/:studentId/kits/:kitId', validateUpdateKitStatus, AdminStudentController.updateKitStatus);
 
 // ========================
-// ACADEMY MANAGEMENT ROUTES
-// ========================
-router.get('/academies', validateAcademyQuery, AcademyController.getAllAcademies);
-router.get('/academies/:id', validateAcademyId, AcademyController.getAcademyById);
-router.post('/academies', validateCreateAcademy, AcademyController.createAcademy);
-router.put('/academies/:id', validateUpdateAcademy, AcademyController.updateAcademy);
-router.delete('/academies/:id', validateAcademyId, AcademyController.deleteAcademy);
-
-// ========================
 // TRAINER MANAGEMENT ROUTES
 // ========================
 router.post('/trainers', validateCreateTrainerProfile, TrainerController.createTrainerProfile);
 router.get('/trainers', validateTrainerQuery, AdminTrainerController.getAllTrainers);
 router.get('/trainers/:id', validateTrainerId, AdminTrainerController.getTrainerById);
+router.get('/trainers/stats', AdminTrainerController.getTrainerStats);
 router.put('/trainers/:id', validateTrainerId, AdminTrainerController.updateTrainer);
 router.delete('/trainers/:id', validateTrainerId, AdminTrainerController.deleteTrainer);
 

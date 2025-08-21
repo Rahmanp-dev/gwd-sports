@@ -15,9 +15,6 @@ const router = Router();
 // All trainer routes require authentication
 router.use(authMiddleware);
 
-// Admin only - create trainer profile
-router.post('/profile', adminMiddleware, validateCreateTrainerProfile, TrainerController.createTrainerProfile);
-
 // Trainer profile management
 router.get('/profile', roleMiddleware(['trainer', 'admin']), TrainerController.getTrainerProfile);
 
