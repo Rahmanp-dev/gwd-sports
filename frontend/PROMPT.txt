@@ -18,3 +18,120 @@ rules:-
 4. proper authentication, protected pages and RBAC to be implemented based on how backend is implemented 
 5. any other best and modern practices can be used to implement if I forgot anything in this 
 6. properly look into the existing backend and forntend code and then give me the perfect code to be implemented 
+7. for every file code you give make sure you give the filename and their destination - basically their relative file path 
+
+/src/
+├── types/
+│   └── index.ts                        # 🆕 All TypeScript interfaces & types
+│
+├── store/
+│   ├── index.ts                        # 🆕 Redux store configuration
+│   └── slices/
+│       ├── authSlice.ts                # 🆕 Authentication state management
+│       └── uiSlice.ts                  # 🆕 UI state management
+│
+├── services/
+│   ├── apiService.ts                   # 🆕 Base API service with interceptors
+│   └── authService.ts                  # 🆕 Authentication API calls
+│
+├── hooks/                              # 🆕 Custom React hooks (future use)
+│   ├── useAuth.ts                      # 🆕 Authentication hook
+│   └── useApi.ts                       # 🆕 API calling hook
+│
+├── utils/
+│   ├── constants.ts                    # 🆕 App constants
+│   ├── helpers.ts                      # 🆕 Utility functions
+│   └── validations.ts                  # 🆕 Form validation schemas
+│
+├── components/
+│   ├── ui/                             # ✅ Existing ShadCN components
+│   │   ├── button.tsx                  # ✅ Already exists
+│   │   ├── input.tsx                   # 🆕 Form input component
+│   │   ├── label.tsx                   # 🆕 Form label component
+│   │   ├── card.tsx                    # 🆕 Card component
+│   │   ├── table.tsx                   # 🆕 Table component
+│   │   ├── tabs.tsx                    # 🆕 Tabs component
+│   │   ├── dialog.tsx                  # 🆕 Modal dialog component
+│   │   ├── dropdown-menu.tsx           # 🆕 Dropdown menu component
+│   │   ├── select.tsx                  # 🆕 Select dropdown component
+│   │   ├── checkbox.tsx                # 🆕 Checkbox component
+│   │   ├── switch.tsx                  # 🆕 Switch toggle component
+│   │   ├── avatar.tsx                  # 🆕 Avatar component
+│   │   ├── badge.tsx                   # 🆕 Badge component
+│   │   ├── toast.tsx                   # 🆕 Toast notification component
+│   │   └── separator.tsx               # 🆕 Separator component
+│   │
+│   ├── layout/
+│   │   ├── AdminLayout.tsx             # 🆕 Main admin layout wrapper
+│   │   ├── Sidebar.tsx                 # 🆕 Admin sidebar navigation
+│   │   ├── Header.tsx                  # 🆕 Admin header with user menu
+│   │   └── PageHeader.tsx              # 🆕 Page title and breadcrumb
+│   │
+│   ├── auth/
+│   │   ├── LoginForm.tsx               # 🆕 Admin login form
+│   │   ├── ProtectedRoute.tsx          # 🆕 Route protection component
+│   │   └── RoleGuard.tsx               # 🆕 Role-based access component
+│   │
+│   ├── admin/
+│   │   ├── students/
+│   │   │   ├── StudentsTab.tsx         # 🆕 Students management tab
+│   │   │   ├── StudentsTable.tsx       # 🆕 Students data table
+│   │   │   ├── StudentModal.tsx        # 🆕 Student create/edit modal
+│   │   │   └── StudentFilters.tsx      # 🆕 Students filter component
+│   │   │
+│   │   ├── trainers/
+│   │   │   ├── TrainersTab.tsx         # 🆕 Trainers management tab
+│   │   │   ├── TrainersTable.tsx       # 🆕 Trainers data table
+│   │   │   ├── TrainerModal.tsx        # 🆕 Trainer create/edit modal
+│   │   │   └── TrainerFilters.tsx      # 🆕 Trainers filter component
+│   │   │
+│   │   ├── academies/
+│   │   │   ├── AcademiesTab.tsx        # 🆕 Academies management tab
+│   │   │   ├── AcademiesTable.tsx      # 🆕 Academies data table
+│   │   │   ├── AcademyModal.tsx        # 🆕 Academy create/edit modal
+│   │   │   └── AcademyFilters.tsx      # 🆕 Academies filter component
+│   │   │
+│   │   ├── users/
+│   │   │   ├── UsersTab.tsx            # 🆕 Users management tab
+│   │   │   ├── UsersTable.tsx          # 🆕 Users data table
+│   │   │   ├── UserModal.tsx           # 🆕 User create/edit modal
+│   │   │   └── UserFilters.tsx         # 🆕 Users filter component
+│   │   │
+│   │   └── dashboard/
+│   │       ├── AdminDashboard.tsx      # 🆕 Main admin dashboard
+│   │       ├── StatsCards.tsx          # 🆕 Dashboard statistics cards
+│   │       └── RecentActivity.tsx      # 🆕 Recent activity component
+│   │
+│   └── common/
+│       ├── DataTable.tsx               # 🆕 Reusable data table component
+│       ├── SearchInput.tsx             # 🆕 Search input component
+│       ├── Pagination.tsx              # 🆕 Pagination component
+│       ├── LoadingSpinner.tsx          # 🆕 Loading spinner component
+│       ├── ErrorBoundary.tsx           # 🆕 Error boundary component
+│       └── NotificationToast.tsx       # 🆕 Toast notification component
+│
+├── pages/
+│   ├── admin/
+│   │   ├── AdminLogin.tsx              # 🆕 Admin login page
+│   │   ├── AdminDashboard.tsx          # 🆕 Admin dashboard page
+│   │   └── AdminPanel.tsx              # 🆕 Main admin panel with tabs
+│   │
+│   ├── public/
+│   │   ├── Home.tsx                    # 🆕 Public home page
+│   │   └── NotFound.tsx                # 🆕 404 error page
+│   │
+│   └── errors/
+│       ├── Unauthorized.tsx            # 🆕 401 error page
+│       └── ServerError.tsx             # 🆕 500 error page
+│
+├── router/
+│   ├── AppRouter.tsx                   # 🆕 Main application router
+│   ├── adminRoutes.tsx                 # 🆕 Admin routes configuration
+│   └── publicRoutes.tsx                # 🆕 Public routes configuration
+│
+├── styles/
+│   ├── globals.css                     # 🆕 Global CSS with CSS variables
+│   └── components.css                  # 🆕 Component-specific styles
+│
+├── App.tsx                             # ✅ Main App component (update needed)
+└── main.tsx                            # ✅ App entry point (update needed)

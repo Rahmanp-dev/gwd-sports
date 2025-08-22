@@ -1,4 +1,3 @@
-// Types for the application
 export interface User {
   _id: string;
   name: string;
@@ -175,7 +174,6 @@ export interface PaginatedResponse<T> extends ApiResponse<{
   pagination: PaginationInfo;
 }> {}
 
-// Auth types
 export interface LoginCredentials {
   email: string;
   password: string;
@@ -189,7 +187,6 @@ export interface AuthState {
   error: string | null;
 }
 
-// Filter types
 export interface UserFilters {
   page?: number;
   limit?: number;
@@ -229,4 +226,37 @@ export interface AcademyFilters {
   search?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+}
+
+export interface UIState {
+  sidebarCollapsed: boolean;
+  activeTab: string;
+  theme: 'light' | 'dark';
+  notifications: Notification[];
+}
+
+export interface Notification {
+  id: string;
+  type: 'success' | 'error' | 'warning' | 'info';
+  title: string;
+  message: string;
+  duration?: number;
+}
+
+export interface TableColumn<T> {
+  key: keyof T | string;
+  title: string;
+  render?: (value: any, record: T) => React.ReactNode;
+  sortable?: boolean;
+  className?: string;
+}
+
+export interface FormField {
+  name: string;
+  label: string;
+  type: 'text' | 'email' | 'password' | 'select' | 'textarea' | 'checkbox' | 'date';
+  required?: boolean;
+  options?: { value: string; label: string }[];
+  placeholder?: string;
+  validation?: any;
 }
