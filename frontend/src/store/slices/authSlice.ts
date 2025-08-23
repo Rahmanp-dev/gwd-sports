@@ -1,40 +1,62 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { User, LoginCredentials, AuthState } from '@/types';
-import authService from '@/services/authService';
-import Cookies from 'js-cookie';
+import { authService } from '@/services/authService';
 
-const initialState: AuthState = {
-  user: null,
-  token: null,
-  isAuthenticated: false,
-  isLoading: false,
-  error: null,
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
+interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
+}
+
+// Helper function to load state from localStorage
+const loadAuthFromStorage = () => {
+  try {
+    const token = authService.getToken();
+    const user = authService.getUser();
+    
+    return {
+      user,
+      isAuthenticated: !!(token && user),
+      isLoading: false,
+      error: null,
+    };
+  } catch {
+    return {
+      user: null,
+      isAuthenticated: false,
+      isLoading: false,
+      error: null,
+    };
+  }
 };
 
+const initialState: AuthState = loadAuthFromStorage();
+
 // Async thunks
-export const loginUser = createAsyncThunk(
+export const login = createAsyncThunk(
   'auth/login',
-  async (credentials: LoginCredentials, { rejectWithValue }) => {
+  async (credentials: { email: string; password: string }, { rejectWithValue }) => {
     try {
       const response = await authService.login(credentials);
-      
-      if (response.success && response.data) {
-        // Store token in secure cookie
-        Cookies.set(import.meta.env.VITE_JWT_COOKIE_NAME, response.data.token, {
-          expires: 7, // 7 days
-          secure: import.meta.env.PROD,
-          sameSite: 'strict',
-          path: '/'
-        });
-        
-        return response.data;
-      }
-      
-      return rejectWithValue(response.message || 'Login failed');
+      return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Network error');
+      return rejectWithValue(error.message);
     }
+  }
+);
+
+export const logout = createAsyncThunk(
+  'auth/logout',
+  async () => {
+    await authService.logout();
   }
 );
 
@@ -42,35 +64,10 @@ export const checkAuth = createAsyncThunk(
   'auth/checkAuth',
   async (_, { rejectWithValue }) => {
     try {
-      const token = Cookies.get(import.meta.env.VITE_JWT_COOKIE_NAME);
-      
-      if (!token) {
-        return rejectWithValue('No token found');
-      }
-      
-      const response = await authService.getProfile();
-      
-      if (response.success && response.data) {
-        return { user: response.data.user, token };
-      }
-      
-      return rejectWithValue('Invalid token');
+      const response = await authService.checkAuth();
+      return response.data;
     } catch (error: any) {
-      // Clear invalid token
-      Cookies.remove(import.meta.env.VITE_JWT_COOKIE_NAME);
-      return rejectWithValue(error.response?.data?.message || 'Auth check failed');
-    }
-  }
-);
-
-export const logoutUser = createAsyncThunk(
-  'auth/logout',
-  async () => {
-    try {
-      await authService.logout();
-    } finally {
-      // Always clear the cookie
-      Cookies.remove(import.meta.env.VITE_JWT_COOKIE_NAME);
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -82,30 +79,55 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    setUser: (state, action: PayloadAction<User>) => {
-      state.user = action.payload;
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
+    },
+    // Action to restore auth state from localStorage
+    restoreAuth: (state) => {
+      const authData = loadAuthFromStorage();
+      state.user = authData.user;
+      state.isAuthenticated = authData.isAuthenticated;
+      state.isLoading = false;
+      state.error = null;
+    },
+    // Action to clear auth state
+    clearAuth: (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
+      state.isLoading = false;
+      state.error = null;
+      authService.clearAuth();
     },
   },
   extraReducers: (builder) => {
     builder
       // Login
-      .addCase(loginUser.pending, (state) => {
+      .addCase(login.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
+      .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = true;
         state.user = action.payload.user;
-        state.token = action.payload.token;
         state.error = null;
       })
-      .addCase(loginUser.rejected, (state, action) => {
+      .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = false;
         state.user = null;
-        state.token = null;
-        state.error = action.payload as string;
+        state.error = action.payload as string || 'Login failed';
+      })
+      
+      // Logout
+      .addCase(logout.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isAuthenticated = false;
+        state.user = null;
+        state.error = null;
       })
       
       // Check Auth
@@ -115,28 +137,17 @@ const authSlice = createSlice({
       .addCase(checkAuth.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = true;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.user = action.payload.user || action.payload;
         state.error = null;
       })
       .addCase(checkAuth.rejected, (state) => {
         state.isLoading = false;
         state.isAuthenticated = false;
         state.user = null;
-        state.token = null;
-        state.error = null; // Don't show error for auth check failure
-      })
-      
-      // Logout
-      .addCase(logoutUser.fulfilled, (state) => {
-        state.isAuthenticated = false;
-        state.user = null;
-        state.token = null;
         state.error = null;
-        state.isLoading = false;
       });
   },
 });
 
-export const { clearError, setUser } = authSlice.actions;
+export const { clearError, setLoading, restoreAuth, clearAuth } = authSlice.actions;
 export default authSlice.reducer;

@@ -6,7 +6,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { store } from './store'
 import AppRouter from './router/AppRouter'
 import { Toaster } from './components/ui/sonner'
-import './index.css'
+import './App.css'
 
 // Create a client
 const queryClient = new QueryClient({
@@ -24,7 +24,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <AppRouter />
-        <Toaster />
+        <Toaster position="top-right" />
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </Provider>

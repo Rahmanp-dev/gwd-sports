@@ -12,11 +12,11 @@ class StudentsService {
     return apiService.get(`/admin/students/${id}`);
   }
 
-  async create(data: Partial<Student>): Promise<ApiResponse<{ student: Student }>> {
+  async create(data: any): Promise<ApiResponse<{ student: Student }>> {
     return apiService.post('/admin/students', data);
   }
 
-  async update(id: string, data: Partial<Student>): Promise<ApiResponse<{ student: Student }>> {
+  async update(id: string, data: any): Promise<ApiResponse<{ student: Student }>> {
     return apiService.put(`/admin/students/${id}`, data);
   }
 

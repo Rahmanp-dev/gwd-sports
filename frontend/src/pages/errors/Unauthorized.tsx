@@ -3,14 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { useAppDispatch } from '@/store';
-import { logoutUser } from '@/store/slices/authSlice';
+import { logout } from '@/store/slices/authSlice';
 
 const Unauthorized: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
-    dispatch(logoutUser());
+    dispatch(logout());
     navigate('/admin/login');
   };
 

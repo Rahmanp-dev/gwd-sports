@@ -1,25 +1,32 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { checkAuth } from '@/store/slices/authSlice';
+import { checkAuth, restoreAuth } from '@/store/slices/authSlice';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { RoleGuard } from '@/components/auth/RoleGuard';
+import { AdminLayout } from '@/components/layout/AdminLayout';
 
 // Pages
-import AdminLogin from '@/pages/admin/AdminLogin';
-import AdminPanel from '@/pages/admin/AdminPanel';
 import Home from '@/pages/public/Home';
+import AdminLogin from '@/pages/admin/AdminLogin';
+import AdminDashboard from '@/pages/admin/AdminDashboard';
 import NotFound from '@/pages/public/NotFound';
 import Unauthorized from '@/pages/errors/Unauthorized';
+import AdminPanel from '@/pages/admin/AdminPanel';
 
 const AppRouter: React.FC = () => {
   const dispatch = useAppDispatch();
   const { isLoading, isAuthenticated } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    // Check authentication status on app load
-    dispatch(checkAuth());
+    // First restore auth state from localStorage
+    dispatch(restoreAuth());
+    
+    // Then check with server if we have a token
+    const token = localStorage.getItem('mg_auth_token');
+    if (token) {
+      dispatch(checkAuth());
+    }
   }, [dispatch]);
 
   if (isLoading) {
@@ -47,9 +54,17 @@ const AppRouter: React.FC = () => {
         {/* Protected Admin Routes */}
         <Route path="/admin/*" element={
           <ProtectedRoute>
-            <RoleGuard allowedRoles={['admin']}>
-              <AdminPanel />
-            </RoleGuard>
+            <AdminLayout>
+              <Routes>
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="students" element={<AdminPanel />} />
+                <Route path="trainers" element={<AdminPanel />} />
+                <Route path="academies" element={<AdminPanel />} />
+                <Route path="users" element={<AdminPanel />} />
+                <Route path="events" element={<AdminPanel />} />
+                <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+              </Routes>
+            </AdminLayout>
           </ProtectedRoute>
         } />
 

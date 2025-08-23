@@ -15,7 +15,7 @@ export const RoleGuard: React.FC<RoleGuardProps> = ({ children, allowedRoles }) 
     return <Navigate to="/admin/login" replace />;
   }
 
-  if (!allowedRoles.includes(user.role)) {
+  if (!allowedRoles.includes(user.role as User['role'])) {
     return <Navigate to="/unauthorized" replace />;
   }
 

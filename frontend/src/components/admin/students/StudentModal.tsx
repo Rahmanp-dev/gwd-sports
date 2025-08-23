@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import type { Student, Academy, User } from '@/types';
+import type { Student, Academy } from '@/types';
 import {
   Dialog,
   DialogContent,

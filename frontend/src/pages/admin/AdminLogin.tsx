@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { loginUser, clearError } from '@/store/slices/authSlice';
+import { login, clearError } from '@/store/slices/authSlice';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -65,9 +65,9 @@ const AdminLogin: React.FC = () => {
     if (!validateForm()) return;
 
     try {
-      const result = await dispatch(loginUser(formData));
+      const result = await dispatch(login(formData));
       
-      if (loginUser.fulfilled.match(result)) {
+      if (login.fulfilled.match(result)) {
         // Check if user is admin
         if (result.payload.user.role === 'admin') {
           navigate(from, { replace: true });

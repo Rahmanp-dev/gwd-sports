@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store';
-import { logoutUser } from '@/store/slices/authSlice';
+import { logout } from '@/store/slices/authSlice';
 import { toggleSidebar } from '@/store/slices/uiSlice';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -19,10 +19,10 @@ export const Header: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
-  const { sidebarCollapsed } = useAppSelector((state) => state.ui);
+  // const { sidebarCollapsed } = useAppSelector((state) => state.ui);
 
   const handleLogout = async () => {
-    await dispatch(logoutUser());
+    await dispatch(logout());
     navigate('/admin/login');
   };
 

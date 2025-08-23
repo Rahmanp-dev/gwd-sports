@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import config from './config/env';
 import { setupRoutes } from './routers/index';
 import errorHandler from './middleware/errorHandler';
@@ -9,8 +10,25 @@ import { logger } from './utils/logger';
 const app = express();
 const PORT = config.PORT || 3000;
 
+// CORS Configuration
+const corsOptions = {
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Allow both localhost and 127.0.0.1
+  credentials: true, // Allow credentials (cookies, authorization headers)
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Set-Cookie'],
+  optionsSuccessStatus: 200
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
+// // Handle preflight requests
+app.options('*', cors(corsOptions));
+// Security middleware
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
