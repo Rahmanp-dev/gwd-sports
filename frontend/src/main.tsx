@@ -12,7 +12,19 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <Provider store={store}>
       <Router>
         <App />
-        <Toaster position="top-right" />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              fontSize: '14px',
+              fontWeight: '500',
+            },
+            className: 'toast-custom',
+          }}
+          theme="light"
+          richColors
+        />
       </Router>
     </Provider>
   </React.StrictMode>,

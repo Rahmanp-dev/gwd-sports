@@ -118,3 +118,114 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+/* Custom Toast Styles */
+.toast-custom {
+  border-radius: 8px !important;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+  border: 1px solid !important;
+  font-family: inherit !important;
+}
+
+/* Error Toast Styles */
+.toast-custom[data-type="error"] {
+  background: #fef2f2 !important;
+  border-color: #fecaca !important;
+  color: #991b1b !important;
+  border-left: 4px solid #ef4444 !important;
+}
+
+.toast-custom[data-type="error"] [data-title] {
+  color: #991b1b !important;
+  font-weight: 600 !important;
+}
+
+.toast-custom[data-type="error"] [data-description] {
+  color: #b91c1c !important;
+}
+
+/* Success Toast Styles */
+.toast-custom[data-type="success"] {
+  background: #f0fdf4 !important;
+  border-color: #bbf7d0 !important;
+  color: #166534 !important;
+  border-left: 4px solid #22c55e !important;
+}
+
+.toast-custom[data-type="success"] [data-title] {
+  color: #166534 !important;
+  font-weight: 600 !important;
+}
+
+.toast-custom[data-type="success"] [data-description] {
+  color: #15803d !important;
+}
+
+/* Warning Toast Styles */
+.toast-custom[data-type="warning"] {
+  background: #fffbeb !important;
+  border-color: #fed7aa !important;
+  color: #92400e !important;
+  border-left: 4px solid #f59e0b !important;
+}
+
+.toast-custom[data-type="warning"] [data-title] {
+  color: #92400e !important;
+  font-weight: 600 !important;
+}
+
+.toast-custom[data-type="warning"] [data-description] {
+  color: #b45309 !important;
+}
+
+/* Info Toast Styles */
+.toast-custom[data-type="info"] {
+  background: #eff6ff !important;
+  border-color: #bfdbfe !important;
+  color: #1e40af !important;
+  border-left: 4px solid #3b82f6 !important;
+}
+
+.toast-custom[data-type="info"] [data-title] {
+  color: #1e40af !important;
+  font-weight: 600 !important;
+}
+
+.toast-custom[data-type="info"] [data-description] {
+  color: #1d4ed8 !important;
+}
+
+/* Toast close button */
+.toast-custom [data-close-button] {
+  color: inherit !important;
+  opacity: 0.7 !important;
+}
+
+.toast-custom [data-close-button]:hover {
+  opacity: 1 !important;
+}
+
+/* Animation improvements */
+.toast-custom {
+  animation: slideInFromRight 0.3s ease-out !important;
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+  .toast-custom {
+    margin: 0 16px !important;
+    width: calc(100% - 32px) !important;
+  }
+}

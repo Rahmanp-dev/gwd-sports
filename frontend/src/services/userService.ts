@@ -1,6 +1,5 @@
 import apiService from './apiService';
 import type { 
-  User, 
   UserFormData, 
   UserUpdateData, 
   UserListResponse, 

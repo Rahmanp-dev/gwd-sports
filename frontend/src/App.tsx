@@ -2,11 +2,11 @@ import React, { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAppDispatch } from "@/store";
 import { clearError } from "@/store/slices/authSlice";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 // Pages
 import AdminLogin from "@/pages/admin/AdminLogin";
 import AdminPage from "@/pages/admin/AdminPage";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 const AppRouter: React.FC = () => {
   const dispatch = useAppDispatch();

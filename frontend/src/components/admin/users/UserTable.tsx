@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Table, 
   TableBody, 
@@ -21,7 +21,18 @@ import {
 } from '@/components/ui/dropdown-menu';
 import type { User, UserFilters } from '@/types';
 import { formatDate } from '@/utils/helpers';
-import { Edit, MoreHorizontal, Search, Trash2, UserCheck, UserX, Eye } from 'lucide-react';
+import { 
+  Edit, 
+  MoreHorizontal, 
+  Search, 
+  Trash2, 
+  UserCheck, 
+  UserX, 
+  Eye,
+  ChevronUp,
+  ChevronDown,
+  ChevronsUpDown
+} from 'lucide-react';
 
 interface UserTableProps {
   users: User[];
@@ -55,10 +66,14 @@ export const UserTable: React.FC<UserTableProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState(currentFilters.search || '');
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    onFilterChange({ ...currentFilters, search: searchTerm, page: 1 });
-  };
+  // Debounced search effect - real-time search with 300ms delay
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      onFilterChange({ ...currentFilters, search: searchTerm || undefined, page: 1 });
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm]);
 
   const handleRoleFilter = (role: string | null) => {
     onFilterChange({ 
@@ -89,6 +104,16 @@ export const UserTable: React.FC<UserTableProps> = ({
     });
   };
 
+  const getSortIcon = (field: string) => {
+    if (currentFilters.sortBy !== field) {
+      return <ChevronsUpDown className="h-4 w-4 text-gray-400" />;
+    }
+    
+    return currentFilters.sortOrder === 'asc' 
+      ? <ChevronUp className="h-4 w-4 text-blue-600" />
+      : <ChevronDown className="h-4 w-4 text-blue-600" />;
+  };
+
   const getRoleBadgeColor = (role: string) => {
     switch(role) {
       case 'admin': return 'bg-red-500 hover:bg-red-600';
@@ -101,19 +126,19 @@ export const UserTable: React.FC<UserTableProps> = ({
   return (
     <div className="space-y-4">
       <div className="flex flex-col md:flex-row justify-between gap-4">
-        {/* Search Bar */}
-        <form onSubmit={handleSearch} className="flex w-full md:w-1/2">
-          <Input
-            type="text"
-            placeholder="Search by name, email, or phone..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="rounded-r-none"
-          />
-          <Button type="submit" className="rounded-l-none" variant="secondary">
-            <Search className="h-4 w-4" />
-          </Button>
-        </form>
+        {/* Search Bar - Real-time search */}
+        <div className="flex w-full md:w-1/2">
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search by name, email, or phone..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </div>
 
         {/* Filter Dropdowns */}
         <div className="flex gap-2">
@@ -173,17 +198,35 @@ export const UserTable: React.FC<UserTableProps> = ({
           </TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[180px] cursor-pointer" onClick={() => handleSort('name')}>
-                Name {currentFilters.sortBy === 'name' && (currentFilters.sortOrder === 'asc' ? '↑' : '↓')}
+              <TableHead 
+                className="w-[180px] cursor-pointer hover:bg-gray-50 select-none" 
+                onClick={() => handleSort('name')}
+              >
+                <div className="flex items-center gap-2">
+                  Name
+                  {getSortIcon('name')}
+                </div>
               </TableHead>
-              <TableHead className="cursor-pointer" onClick={() => handleSort('email')}>
-                Email {currentFilters.sortBy === 'email' && (currentFilters.sortOrder === 'asc' ? '↑' : '↓')}
+              <TableHead 
+                className="cursor-pointer hover:bg-gray-50 select-none" 
+                onClick={() => handleSort('email')}
+              >
+                <div className="flex items-center gap-2">
+                  Email
+                  {getSortIcon('email')}
+                </div>
               </TableHead>
               <TableHead className="hidden md:table-cell">Phone</TableHead>
               <TableHead>Role</TableHead>
               <TableHead className="hidden md:table-cell">Status</TableHead>
-              <TableHead className="hidden md:table-cell cursor-pointer" onClick={() => handleSort('createdAt')}>
-                Created {currentFilters.sortBy === 'createdAt' && (currentFilters.sortOrder === 'asc' ? '↑' : '↓')}
+              <TableHead 
+                className="hidden md:table-cell cursor-pointer hover:bg-gray-50 select-none" 
+                onClick={() => handleSort('createdAt')}
+              >
+                <div className="flex items-center gap-2">
+                  Created
+                  {getSortIcon('createdAt')}
+                </div>
               </TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -201,12 +244,14 @@ export const UserTable: React.FC<UserTableProps> = ({
             ) : users.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center h-24">
-                  No users found. Try adjusting your filters.
+                  {searchTerm || currentFilters.role || currentFilters.isActive !== undefined 
+                    ? 'No users found matching your search criteria.' 
+                    : 'No users found.'}
                 </TableCell>
               </TableRow>
             ) : (
               users.map((user) => (
-                <TableRow key={user._id}>
+                <TableRow key={user._id} className="hover:bg-gray-50">
                   <TableCell className="font-medium">{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell className="hidden md:table-cell">{user.phone || '-'}</TableCell>

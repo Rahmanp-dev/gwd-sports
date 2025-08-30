@@ -77,6 +77,14 @@ export const UserForm: React.FC<UserFormProps> = ({
     user?.sports || []
   );
 
+  // Phone number input handler - only allow numbers, +, spaces, and hyphens
+  const handlePhoneInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Remove any characters that are not digits, +, spaces, or hyphens
+    const sanitizedValue = value.replace(/[^0-9+\s-]/g, '');
+    form.setValue('phone', sanitizedValue);
+  };
+
   const handleSportToggle = (sport: string) => {
     setSelectedSports(prev => {
       const isSelected = prev.includes(sport);
@@ -170,7 +178,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                 )}
               />
 
-              {/* Phone Field */}
+              {/* Phone Field - Enhanced with input validation */}
               <FormField
                 control={form.control}
                 name="phone"
@@ -178,7 +186,13 @@ export const UserForm: React.FC<UserFormProps> = ({
                   <FormItem>
                     <FormLabel>Phone (optional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="+1234567890" {...field} disabled={isLoading} />
+                      <Input 
+                        placeholder="+1 234 567 8900" 
+                        {...field}
+                        onChange={handlePhoneInput}
+                        disabled={isLoading}
+                        title="Only numbers, +, spaces and hyphens are allowed"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
