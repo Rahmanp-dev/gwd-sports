@@ -13,6 +13,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/store";
 import { logout } from "@/store/slices/authSlice";
 import { UserManagement } from "@/components/admin/users/UserManagement";
+import { StudentManagement } from "@/components/admin/students/StudentManagement";
 import { SPORTS_LIST } from "@/utils/constants";
 
 export default function AdminPage() {
@@ -47,10 +48,6 @@ export default function AdminPage() {
         <Tabs defaultValue="users" className="space-y-6">
           <div className="bg-white p-2 rounded-lg shadow-sm overflow-x-auto">
             <TabsList className="h-auto justify-start gap-2">
-              <TabsTrigger value="dashboard" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <LayoutDashboard className="h-4 w-4 mr-2" />
-                Dashboard
-              </TabsTrigger>
               <TabsTrigger value="users" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <Users className="h-4 w-4 mr-2" />
                 Users
@@ -172,13 +169,7 @@ export default function AdminPage() {
           <TabsContent value="students">
             <Card>
               <CardContent className="p-6">
-                <div className="text-center p-8">
-                  <h3 className="text-xl font-semibold mb-2">Students Management</h3>
-                  <p className="text-muted-foreground mb-4">
-                    This section will be implemented in the next iteration.
-                  </p>
-                  <Button variant="outline">Coming Soon</Button>
-                </div>
+                <StudentManagement />
               </CardContent>
             </Card>
           </TabsContent>

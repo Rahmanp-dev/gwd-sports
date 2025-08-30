@@ -12,7 +12,6 @@ export interface User {
   lastLogin?: string;
 }
 
-
 export interface UserFormData {
   name: string;
   email: string;
@@ -82,29 +81,41 @@ export interface UserStatsResponse {
   }
 }
 
+
 export interface Student {
   _id: string;
-  userId: User;
-  sports: string[];
-  level: "beginner" | "intermediate" | "advanced";
-  academyId?: Academy;
-  trainerId?: User;
-  enrollmentDate: string;
-  medicalInfo: {
-    allergies: string[];
-    medications: string[];
-    emergencyContact: {
-      name: string;
-      phone: string;
-      relation: string;
-    };
+  userId: string;
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+    phone?: string;
+    isActive: boolean;
   };
+  academyId: string;
+  academy: {
+    _id: string;
+    name: string;
+    location: string;
+  };
+  trainerId?: string;
+  trainer?: {
+    _id: string;
+    name: string;
+    sports: string[];
+  };
+  sport: string;
+  level: 'beginner' | 'intermediate' | 'advanced';
+  enrollmentDate: string;
+  fees: {
+    amount: number;
+    period: 'monthly' | 'quarterly' | 'yearly';
+    dueDate: string;
+    status: 'paid' | 'pending' | 'overdue';
+  };
+  kits: Kit[];
   attendance: Attendance[];
   performance: Performance[];
-  kits: Kit[];
-  feePayments: FeePayment[];
-  totalFeesPaid: number;
-  isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -170,30 +181,26 @@ export interface Attendance {
   _id: string;
   date: string;
   present: boolean;
-  remarks?: string;
-  markedBy: User;
-  markedAt: string;
+  notes?: string;
 }
 
 export interface Performance {
   _id: string;
-  sport: string;
-  score: number;
-  maxScore: number;
-  percentage: number;
-  remarks: string;
-  category: string;
-  recordedBy: User;
-  recordedAt: string;
+  date: string;
+  metric: string;
+  value: number;
+  unit: string;
+  notes?: string;
 }
 
 export interface Kit {
   _id: string;
-  kitName: string;
-  status: "requested" | "processing" | "delivered";
-  requestedAt: string;
-  deliveredAt?: string;
-  cost?: number;
+  itemName: string;
+  size: string;
+  requestedDate: string;
+  status: 'requested' | 'processing' | 'delivered';
+  deliveredDate?: string;
+  notes?: string;
 }
 
 export interface FeePayment {
@@ -261,15 +268,86 @@ export interface AuthState {
   error: string | null;
 }
 
+
+// API response interfaces
+export interface StudentResponse extends ApiResponse<{ student: Student }> {}
+
+export interface StudentListResponse extends ApiResponse<{
+  students: Student[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalStudents: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}> {}
+
+export interface StudentStatsResponse extends ApiResponse<{
+  totalStudents: number;
+  activeStudents: number;
+  inactiveStudents: number;
+  newStudentsThisMonth: number;
+  studentsByLevel: Array<{
+    _id: string;
+    count: number;
+  }>;
+  studentsBySport: Array<{
+    _id: string;
+    count: number;
+  }>;
+  feeStatus: {
+    paid: number;
+    pending: number;
+    overdue: number;
+  };
+}> {}
+
+// Filter interfaces
 export interface StudentFilters {
   page?: number;
   limit?: number;
   academyId?: string;
   trainerId?: string;
-  level?: string;
+  sport?: string;
+  level?: 'beginner' | 'intermediate' | 'advanced';
+  isActive?: boolean;
   search?: string;
   sortBy?: string;
-  sortOrder?: "asc" | "desc";
+  sortOrder?: 'asc' | 'desc';
+}
+
+// Form data interfaces
+export interface StudentFormData {
+  userId: string;
+  academyId: string;
+  trainerId?: string;
+  sport: string;
+  level: 'beginner' | 'intermediate' | 'advanced';
+  fees: {
+    amount: number;
+    period: 'monthly' | 'quarterly' | 'yearly';
+    dueDate: string;
+  };
+}
+
+export interface StudentUpdateData {
+  academyId?: string;
+  trainerId?: string | undefined;
+  sport?: string;
+  level?: 'beginner' | 'intermediate' | 'advanced';
+  fees?: {
+    amount: number;
+    period: 'monthly' | 'quarterly' | 'yearly';
+    dueDate: string;
+    status: 'paid' | 'pending' | 'overdue';
+  };
+}
+
+export interface KitUpdateData {
+  status: 'requested' | 'processing' | 'delivered';
+  deliveredDate?: string;
+  notes?: string;
 }
 
 export interface TrainerFilters {
