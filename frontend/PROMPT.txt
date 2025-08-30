@@ -8,7 +8,7 @@ great, now backend is completed, lets now start with frontend from admin side,
 7. next tab for academies 
 8. next tab for all the users - the ones who are not studemnts and traiinerrs just users 
 9. we will take care of event managemenet later, not in this iteration 
-10. use cookies - not localstorage 
+10. use localstorage - not cookies
 
 rules:- 
 0. for each file you are giving - old / new - for every file you give, make sure you give the directory destination of the file - like for example: src/types/index.ts and the followed by code - like this you need to give for each and every file  

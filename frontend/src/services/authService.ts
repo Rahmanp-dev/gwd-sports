@@ -1,4 +1,4 @@
-import apiService from './apiService';
+import apiService from "./apiService";
 
 interface LoginCredentials {
   email: string;
@@ -8,83 +8,83 @@ interface LoginCredentials {
 interface LoginResponse {
   success: boolean;
   data: {
-    token: string;
+    accessToken: string;
+    refreshToken: string;
     user: {
-      id: string;
+      _id: string;
       name: string;
       email: string;
       role: string;
+      [key: string]: any;
     };
   };
   message: string;
 }
 
 class AuthService {
-  private readonly TOKEN_KEY = 'mg_auth_token';
-  private readonly USER_KEY = 'mg_user';
+  private readonly ACCESS_TOKEN_KEY = "mg_auth_token";
+  private readonly REFRESH_TOKEN_KEY = "mg_refresh_token";
+  private readonly USER_KEY = "mg_user";
 
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    const response = await apiService.post<LoginResponse>('/user/login', credentials);
-    
-    if (response.success && response.data.token) {
-      // Store token and user in localStorage
-      localStorage.setItem(this.TOKEN_KEY, response.data.token);
-      localStorage.setItem(this.USER_KEY, JSON.stringify(response.data.user));
-    }
-    
-    return response;
+    console.log("AuthService: Sending login request with:", credentials.email);
+    return apiService.post<LoginResponse>("/user/login", credentials);
   }
 
-  async logout(): Promise<void> {
-    // Clear localStorage
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
-    
-    // Call logout endpoint if needed
+  async refreshAccessToken(): Promise<string | null> {
     try {
-      await apiService.post('/user/logout');
-    } catch (error) {
-      // Ignore logout endpoint errors
-      console.log('Logout endpoint error (non-critical):', error);
-    }
-  }
+      const refreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY);
 
-  async checkAuth() {
-    try {
-      const token = this.getToken();
-      if (!token) {
-        throw new Error('No token found');
+      if (!refreshToken) {
+        throw new Error("No refresh token available");
       }
 
-      const response = await apiService.get('/admin/profile');
-      return response;
+      // TODO: check this
+      const response = await apiService.post<LoginResponse>(
+        "/user/refresh-token",
+        { refreshToken },
+      );
+      if (response.success && response.data.accessToken) {
+        localStorage.setItem(this.ACCESS_TOKEN_KEY, response.data.accessToken);
+        return response.data.accessToken;
+      }
+
+      return null;
     } catch (error) {
-      // Clear invalid tokens
-      this.logout();
-      throw error;
-    }
-  }
-
-  getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
-  }
-
-  getUser(): any | null {
-    const userStr = localStorage.getItem(this.USER_KEY);
-    try {
-      return userStr ? JSON.parse(userStr) : null;
-    } catch {
+      console.error("Failed to refresh access token:", error);
       return null;
     }
   }
 
-  isAuthenticated(): boolean {
-    return !!this.getToken();
+  async logout(): Promise<void> {
+    try {
+      const refreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY);
+      if (refreshToken) {
+        await apiService.post("/user/logout", { refreshToken });
+      }
+    } catch (error) {
+      console.error("Logout API call failed (non-critical):", error);
+    } finally {
+      // Clear localStorage regardless of API response
+      localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+      localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+      localStorage.removeItem(this.USER_KEY);
+      console.log("AuthService: Cleared auth data from localStorage");
+    }
   }
 
-  clearAuth(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
+  getAccessToken(): string | null {
+    return localStorage.getItem(this.ACCESS_TOKEN_KEY);
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem(this.REFRESH_TOKEN_KEY);
+  }
+
+  isAuthenticated(): boolean {
+    const token = this.getAccessToken();
+    console.log("AuthService: Checking authentication:", !!token);
+    return !!token;
   }
 }
 

@@ -3,7 +3,7 @@ export interface User {
   name: string;
   email: string;
   phone: string;
-  role: 'admin' | 'student' | 'trainer' | 'user';
+  role: "admin" | "student" | "trainer" | "user";
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -13,7 +13,7 @@ export interface Student {
   _id: string;
   userId: User;
   sports: string[];
-  level: 'beginner' | 'intermediate' | 'advanced';
+  level: "beginner" | "intermediate" | "advanced";
   academyId?: Academy;
   trainerId?: User;
   enrollmentDate: string;
@@ -117,7 +117,7 @@ export interface Performance {
 export interface Kit {
   _id: string;
   kitName: string;
-  status: 'requested' | 'processing' | 'delivered';
+  status: "requested" | "processing" | "delivered";
   requestedAt: string;
   deliveredAt?: string;
   cost?: number;
@@ -126,11 +126,11 @@ export interface Kit {
 export interface FeePayment {
   _id: string;
   amount: number;
-  period: 'monthly' | 'quarterly' | 'yearly';
+  period: "monthly" | "quarterly" | "yearly";
   transactionId?: string;
   paymentDate: string;
   dueDate: string;
-  status: 'paid' | 'pending' | 'overdue';
+  status: "paid" | "pending" | "overdue";
 }
 
 export interface Qualification {
@@ -169,10 +169,11 @@ export interface PaginationInfo {
   hasPrevPage: boolean;
 }
 
-export interface PaginatedResponse<T> extends ApiResponse<{
-  items: T[];
-  pagination: PaginationInfo;
-}> {}
+export interface PaginatedResponse<T>
+  extends ApiResponse<{
+    items: T[];
+    pagination: PaginationInfo;
+  }> {}
 
 export interface LoginCredentials {
   email: string;
@@ -194,7 +195,7 @@ export interface UserFilters {
   search?: string;
   isActive?: boolean;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 export interface StudentFilters {
@@ -205,7 +206,7 @@ export interface StudentFilters {
   level?: string;
   search?: string;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 export interface TrainerFilters {
@@ -215,7 +216,7 @@ export interface TrainerFilters {
   sport?: string;
   search?: string;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 export interface AcademyFilters {
@@ -225,19 +226,19 @@ export interface AcademyFilters {
   sport?: string;
   search?: string;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 export interface UIState {
   sidebarCollapsed: boolean;
   activeTab: string;
-  theme: 'light' | 'dark';
+  theme: "light" | "dark";
   notifications: Notification[];
 }
 
 export interface Notification {
   id: string;
-  type: 'success' | 'error' | 'warning' | 'info';
+  type: "success" | "error" | "warning" | "info";
   title: string;
   message: string;
   duration?: number;
@@ -254,7 +255,14 @@ export interface TableColumn<T> {
 export interface FormField {
   name: string;
   label: string;
-  type: 'text' | 'email' | 'password' | 'select' | 'textarea' | 'checkbox' | 'date';
+  type:
+    | "text"
+    | "email"
+    | "password"
+    | "select"
+    | "textarea"
+    | "checkbox"
+    | "date";
   required?: boolean;
   options?: { value: string; label: string }[];
   placeholder?: string;

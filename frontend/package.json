@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 5173",
-    "build": "tsc -b && vite build",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
     "lint": "eslint .",
+    "prebuild": "npm run format && npm run lint",
+    "build": "tsc -b && vite build",
     "preview": "vite preview --port 5173"
   },
   "dependencies": {
@@ -56,6 +59,8 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14",
     "tw-animate-css": "^1.3.7",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",

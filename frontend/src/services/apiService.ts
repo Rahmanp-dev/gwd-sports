@@ -1,81 +1,112 @@
-import axios from 'axios';
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { API_BASE_URL } from '@/utils/constants';
+import axios from "axios";
+import type { AxiosInstance, AxiosRequestConfig } from "axios";
+import { authService } from "./authService";
 
 class ApiService {
   private api: AxiosInstance;
-  private readonly TOKEN_KEY = 'mg_auth_token';
+  private tokenKey = "mg_auth_token";
 
   constructor() {
+    // Create axios instance
     this.api = axios.create({
-      baseURL: API_BASE_URL,
-      timeout: 10000,
+      baseURL: "http://localhost:3000/api",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
+      withCredentials: false,
     });
 
+    // Set up interceptors
     this.setupInterceptors();
   }
 
   private setupInterceptors() {
-    // Request interceptor to add auth token
+    // Add token to requests
     this.api.interceptors.request.use(
       (config) => {
-        const token = localStorage.getItem(this.TOKEN_KEY);
-        
+        const token = localStorage.getItem(this.tokenKey);
         if (token) {
+          console.log(
+            "Adding token to request:",
+            token.substring(0, 15) + "...",
+          );
           config.headers.Authorization = `Bearer ${token}`;
         }
-
         return config;
       },
       (error) => {
         return Promise.reject(error);
-      }
+      },
     );
 
-    // Response interceptor to handle auth errors
+    // Handle response
     this.api.interceptors.response.use(
-      (response: AxiosResponse) => {
+      (response) => {
         return response.data;
       },
-      (error) => {
-        if (error.response?.status === 401) {
-          // Clear invalid token and redirect to login
-          localStorage.removeItem(this.TOKEN_KEY);
-          localStorage.removeItem('mg_user');
-          
+      async (error) => {
+        const originalRequest = error.config;
+
+        // If 401 error and not already retrying
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          originalRequest._retry = true;
+
+          try {
+            // Try to refresh the token
+            const newToken = await authService.refreshAccessToken();
+
+            if (newToken) {
+              // Retry with new token
+              originalRequest.headers.Authorization = `Bearer ${newToken}`;
+              return this.api(originalRequest);
+            }
+          } catch (refreshError) {
+            console.error("Token refresh failed:", refreshError);
+          }
+
+          // If refresh failed or no token, redirect to login
+          localStorage.removeItem(this.tokenKey);
+          localStorage.removeItem("mg_refresh_token");
+          localStorage.removeItem("mg_user");
+
           // Only redirect if not already on login page
-          if (!window.location.pathname.includes('/admin/login')) {
-            window.location.href = '/admin/login';
+          if (!window.location.pathname.includes("/login")) {
+            window.location.href = "/admin/login";
           }
         }
 
-        const errorMessage = error.response?.data?.message || error.message || 'An error occurred';
+        // Extract error message
+        const errorMessage =
+          error.response?.data?.message || error.message || "An error occurred";
+
         return Promise.reject(new Error(errorMessage));
-      }
+      },
     );
   }
 
-  async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
+  // API methods
+  async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     return this.api.get(url, config);
   }
 
-  async post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+  async post<T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<T> {
     return this.api.post(url, data, config);
   }
 
-  async put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+  async put<T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<T> {
     return this.api.put(url, data, config);
   }
 
-  async delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
+  async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     return this.api.delete(url, config);
-  }
-
-  async patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    return this.api.patch(url, data, config);
   }
 }
 

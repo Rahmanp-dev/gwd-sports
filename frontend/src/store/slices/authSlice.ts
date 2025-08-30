@@ -1,8 +1,9 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
-import { authService } from '@/services/authService';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { authService } from "@/services/authService";
 
-interface User {
+// TODO; import this from outside not here
+export interface User {
   id: string;
   name: string;
   email: string;
@@ -10,144 +11,123 @@ interface User {
 }
 
 interface AuthState {
+  token: string | null;
+  refreshToken: string | null;
   user: User | null;
-  isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  isAuthenticated: boolean;
 }
 
-// Helper function to load state from localStorage
-const loadAuthFromStorage = () => {
-  try {
-    const token = authService.getToken();
-    const user = authService.getUser();
-    
-    return {
-      user,
-      isAuthenticated: !!(token && user),
-      isLoading: false,
-      error: null,
-    };
-  } catch {
-    return {
-      user: null,
-      isAuthenticated: false,
-      isLoading: false,
-      error: null,
-    };
-  }
+// Initialize with values from localStorage if available
+const initialState: AuthState = {
+  token: localStorage.getItem("mg_auth_token"),
+  refreshToken: localStorage.getItem("mg_refresh_token"),
+  user: JSON.parse(localStorage.getItem("mg_user") || "null"),
+  isLoading: false,
+  error: null,
+  isAuthenticated: !!localStorage.getItem("mg_auth_token"),
 };
 
-const initialState: AuthState = loadAuthFromStorage();
-
-// Async thunks
-export const login = createAsyncThunk(
-  'auth/login',
-  async (credentials: { email: string; password: string }, { rejectWithValue }) => {
+// Async thunk for login
+export const loginUser = createAsyncThunk(
+  "auth/login",
+  async (
+    credentials: { email: string; password: string },
+    { rejectWithValue },
+  ) => {
     try {
+      console.log("Attempting login with:", credentials.email);
       const response = await authService.login(credentials);
+      console.log("Login response:", response);
       return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.message);
+      console.error("Login error:", error);
+      return rejectWithValue(error.message || "Login failed");
     }
-  }
-);
-
-export const logout = createAsyncThunk(
-  'auth/logout',
-  async () => {
-    await authService.logout();
-  }
-);
-
-export const checkAuth = createAsyncThunk(
-  'auth/checkAuth',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await authService.checkAuth();
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
-    }
-  }
+  },
 );
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
-    clearError: (state) => {
-      state.error = null;
-    },
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
-    },
-    // Action to restore auth state from localStorage
-    restoreAuth: (state) => {
-      const authData = loadAuthFromStorage();
-      state.user = authData.user;
-      state.isAuthenticated = authData.isAuthenticated;
-      state.isLoading = false;
-      state.error = null;
-    },
-    // Action to clear auth state
-    clearAuth: (state) => {
+    logout: (state) => {
+      // Clear state
+      state.token = null;
+      state.refreshToken = null;
       state.user = null;
       state.isAuthenticated = false;
-      state.isLoading = false;
+
+      // Clear localStorage
+      localStorage.removeItem("mg_auth_token");
+      localStorage.removeItem("mg_refresh_token");
+      localStorage.removeItem("mg_user");
+
+      console.log("User logged out, tokens removed");
+    },
+    clearError: (state) => {
       state.error = null;
-      authService.clearAuth();
     },
   },
   extraReducers: (builder) => {
     builder
-      // Login
-      .addCase(login.pending, (state) => {
+      .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(login.fulfilled, (state, action) => {
+      .addCase(loginUser.fulfilled, (state, action) => {
+        const { accessToken, refreshToken, user } = action.payload;
+
+        // Update state
         state.isLoading = false;
         state.isAuthenticated = true;
-        state.user = action.payload.user;
-        state.error = null;
+        state.token = accessToken;
+        state.refreshToken = refreshToken;
+        state.user = {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        };
+
+        // Store in localStorage with console logs for debugging
+        if (accessToken) {
+          console.log(
+            "Storing access token in localStorage:",
+            accessToken.substring(0, 15) + "...",
+          );
+          localStorage.setItem("mg_auth_token", accessToken);
+        }
+
+        if (refreshToken) {
+          console.log(
+            "Storing refresh token in localStorage:",
+            refreshToken.substring(0, 15) + "...",
+          );
+          localStorage.setItem("mg_refresh_token", refreshToken);
+        }
+
+        localStorage.setItem(
+          "mg_user",
+          JSON.stringify({
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+          }),
+        );
+
+        console.log("Authentication successful:", { user });
       })
-      .addCase(login.rejected, (state, action) => {
+      .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = false;
-        state.user = null;
-        state.error = action.payload as string || 'Login failed';
-      })
-      
-      // Logout
-      .addCase(logout.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(logout.fulfilled, (state) => {
-        state.isLoading = false;
-        state.isAuthenticated = false;
-        state.user = null;
-        state.error = null;
-      })
-      
-      // Check Auth
-      .addCase(checkAuth.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(checkAuth.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isAuthenticated = true;
-        state.user = action.payload.user || action.payload;
-        state.error = null;
-      })
-      .addCase(checkAuth.rejected, (state) => {
-        state.isLoading = false;
-        state.isAuthenticated = false;
-        state.user = null;
-        state.error = null;
+        state.error = action.payload as string;
+        console.error("Authentication failed:", action.payload);
       });
   },
 });
 
-export const { clearError, setLoading, restoreAuth, clearAuth } = authSlice.actions;
+export const { logout, clearError } = authSlice.actions;
 export default authSlice.reducer;

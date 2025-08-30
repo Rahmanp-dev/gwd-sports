@@ -1,0 +1,15 @@
+# Directories
+node_modules/
+dist/
+build/
+.git/
+.github/
+public/
+
+# Files
+*.log
+*.lock
+*.txt
+*.md
+package.json
+package-lock.json

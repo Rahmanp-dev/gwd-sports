@@ -3,6 +3,11 @@
 # Exit immediately if a command fails
 set -e
 
+# Format the code first
+# echo "🔄 Formatting code..."
+# cd frontend && npm run format && cd ..
+
+# Then build
 echo "🔨 Building project..."
 if npm run build; then
     echo "✅ Build succeeded. Committing and pushing..."

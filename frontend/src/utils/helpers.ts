@@ -1,34 +1,37 @@
-import { type ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const formatDate = (dateString: string, options?: Intl.DateTimeFormatOptions): string => {
+export const formatDate = (
+  dateString: string,
+  options?: Intl.DateTimeFormatOptions,
+): string => {
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
     ...options,
   });
 };
 
 export const formatDateTime = (dateString: string): string => {
   const date = new Date(dateString);
-  return date.toLocaleString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
+  return date.toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 };
 
-export const formatCurrency = (amount: number, currency = 'USD'): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
+export const formatCurrency = (amount: number, currency = "USD"): string => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
     currency,
   }).format(amount);
 };
@@ -47,25 +50,25 @@ export const capitalizeFirst = (str: string): string => {
 };
 
 export const formatPhoneNumber = (phone: string): string => {
-  const cleaned = phone.replace(/\D/g, '');
+  const cleaned = phone.replace(/\D/g, "");
   if (cleaned.length === 10) {
-    return cleaned.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+    return cleaned.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
   }
   return phone;
 };
 
 export const getInitials = (name: string): string => {
   return name
-    .split(' ')
+    .split(" ")
     .map((n) => n[0])
-    .join('')
+    .join("")
     .toUpperCase()
     .slice(0, 2);
 };
 
 export const debounce = <T extends (...args: any[]) => any>(
   func: T,
-  delay: number
+  delay: number,
 ): ((...args: Parameters<T>) => void) => {
   let timeoutId: NodeJS.Timeout;
   return (...args: Parameters<T>) => {
@@ -88,18 +91,20 @@ export const downloadCSV = (data: any[], filename: string): void => {
 
   const headers = Object.keys(data[0]);
   const csvContent = [
-    headers.join(','),
-    ...data.map(row => headers.map(header => `"${row[header] || ''}"`).join(','))
-  ].join('\n');
+    headers.join(","),
+    ...data.map((row) =>
+      headers.map((header) => `"${row[header] || ""}"`).join(","),
+    ),
+  ].join("\n");
 
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
   const url = URL.createObjectURL(blob);
-  
-  link.setAttribute('href', url);
-  link.setAttribute('download', `${filename}.csv`);
-  link.style.visibility = 'hidden';
-  
+
+  link.setAttribute("href", url);
+  link.setAttribute("download", `${filename}.csv`);
+  link.style.visibility = "hidden";
+
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -112,13 +117,18 @@ export const handleApiError = (error: any): string => {
   if (error.message) {
     return error.message;
   }
-  return 'An unexpected error occurred';
+  return "An unexpected error occurred";
 };
 
 export const buildQueryString = (params: Record<string, any>): string => {
   const filtered = Object.entries(params)
-    .filter(([_, value]) => value !== undefined && value !== null && value !== '')
-    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
-  
-  return filtered.length ? `?${filtered.join('&')}` : '';
+    .filter(
+      ([_, value]) => value !== undefined && value !== null && value !== "",
+    )
+    .map(
+      ([key, value]) =>
+        `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+    );
+
+  return filtered.length ? `?${filtered.join("&")}` : "";
 };
