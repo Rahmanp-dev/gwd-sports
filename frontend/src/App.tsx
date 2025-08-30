@@ -26,17 +26,15 @@ const AppRouter: React.FC = () => {
       <Route
         path="/admin/*"
         element={
-          // <ProtectedRoute>
-          <Routes>
-            <Route path="dashboard" element={<AdminPage />} />
-            <Route path="students" element={<AdminPage />} />
-            <Route path="trainers" element={<AdminPage />} />
-            <Route
-              path="*"
-              element={<Navigate to="/admin/dashboard" replace />}
-            />
-          </Routes>
-          // </ProtectedRoute>
+          <ProtectedRoute>
+            <Routes>
+              <Route path="dashboard" element={<AdminPage />} />
+              <Route
+                path="*"
+                element={<Navigate to="/admin/dashboard" replace />}
+              />
+            </Routes>
+          </ProtectedRoute>
         }
       />
 

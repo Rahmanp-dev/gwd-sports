@@ -1,14 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
 import { authService } from "@/services/authService";
-
-// TODO; import this from outside not here
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-}
+import type { User } from "@/types";
 
 interface AuthState {
   token: string | null;
@@ -85,10 +77,16 @@ const authSlice = createSlice({
         state.token = accessToken;
         state.refreshToken = refreshToken;
         state.user = {
-          id: user._id,
+          _id: user._id,
           name: user.name,
           email: user.email,
-          role: user.role,
+          phone: user.phone || '',
+          role: user.role as 'admin' | 'student' | 'trainer' | 'user',
+          sports: user.sports || [],
+          isActive: user.isActive,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+          lastLogin: user.lastLogin,
         };
 
         // Store in localStorage with console logs for debugging
@@ -111,10 +109,16 @@ const authSlice = createSlice({
         localStorage.setItem(
           "mg_user",
           JSON.stringify({
-            id: user._id,
+            _id: user._id,
             name: user.name,
             email: user.email,
-            role: user.role,
+            phone: user.phone || '',
+            role: user.role as 'admin' | 'student' | 'trainer' | 'user',
+            sports: user.sports || [],
+            isActive: user.isActive,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+            lastLogin: user.lastLogin,
           }),
         );
 

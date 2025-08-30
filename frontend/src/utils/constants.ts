@@ -1,7 +1,5 @@
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
-export const JWT_COOKIE_NAME =
-  import.meta.env.VITE_JWT_COOKIE_NAME || "mg_auth_token";
 export const APP_NAME = import.meta.env.VITE_APP_NAME || "MasterGrade Admin";
 
 export const ROUTES = {
@@ -84,4 +82,15 @@ export const NOTIFICATION_DURATION = {
   ERROR: 5000,
   WARNING: 4000,
   INFO: 3000,
+} as const;
+
+// Pagination constants
+export const DEFAULT_PAGE_SIZE = 10;
+export const PAGE_SIZE_OPTIONS = [5, 10, 20, 50, 100];
+
+// Local storage keys
+export const STORAGE_KEYS = {
+  TOKEN: 'mg_auth_token',
+  REFRESH_TOKEN: 'mg_refresh_token',
+  USER: 'mg_user',
 } as const;

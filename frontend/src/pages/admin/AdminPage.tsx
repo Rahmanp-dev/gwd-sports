@@ -1,19 +1,19 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-import React from "react";
+import { 
+  LayoutDashboard, 
+  Users, 
+  GraduationCap, 
+  BookOpen, 
+  Building, 
+  Calendar, 
+  LogOut
+} from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { logout } from "@/store/slices/authSlice";
+import { UserManagement } from "@/components/admin/users/UserManagement";
+import { SPORTS_LIST } from "@/utils/constants";
 
 export default function AdminPage() {
   const dispatch = useAppDispatch();
@@ -24,109 +24,218 @@ export default function AdminPage() {
   };
 
   return (
-    <div>
-      <h1>Admin Dashboard</h1>
-      {/* Admin-specific content goes here */}
-      <Tabs defaultValue="students">
-        <TabsList>
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="students">Students</TabsTrigger>
-          <TabsTrigger value="trainers">Trainers</TabsTrigger>
-          <TabsTrigger value="academies">Academies</TabsTrigger>
-          <TabsTrigger value="events">Events</TabsTrigger>
-        </TabsList>
-        <TabsContent value="account">
-          <Card>
-            <CardHeader>
-              <CardTitle>Account</CardTitle>
-              <CardDescription>
-                Make changes to your account here. Click save when you&apos;re
-                done.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="tabs-demo-name">Name</Label>
-                <Input id="tabs-demo-name" defaultValue="Pedro Duarte" />
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="tabs-demo-username">Username</Label>
-                <Input id="tabs-demo-username" defaultValue="@peduarte" />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button>Save changes</Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-        <TabsContent value="password">
-          <Card>
-            <CardHeader>
-              <CardTitle>Password</CardTitle>
-              <CardDescription>
-                Change your password here. After saving, you&apos;ll be logged
-                out.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="tabs-demo-current">Current password</Label>
-                <Input id="tabs-demo-current" type="password" />
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="tabs-demo-new">New password</Label>
-                <Input id="tabs-demo-new" type="password" />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button>Save password</Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-      </Tabs>
-
-      <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
-
-        <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-          <h2 className="text-lg font-semibold mb-4">
-            Welcome, {user?.name || "Admin"}
-          </h2>
-          <p className="text-gray-600 mb-4">
-            You are logged in as an {user?.role || "admin"} user.
-          </p>
-
-          <Button onClick={handleLogout} variant="outline">
-            Logout
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white shadow-md rounded-lg p-4">
-            <h3 className="font-medium mb-1">Total Students</h3>
-            <p className="text-2xl font-bold">120</p>
-          </div>
-          <div className="bg-white shadow-md rounded-lg p-4">
-            <h3 className="font-medium mb-1">Total Trainers</h3>
-            <p className="text-2xl font-bold">24</p>
-          </div>
-          <div className="bg-white shadow-md rounded-lg p-4">
-            <h3 className="font-medium mb-1">Academies</h3>
-            <p className="text-2xl font-bold">8</p>
-          </div>
-          <div className="bg-white shadow-md rounded-lg p-4">
-            <h3 className="font-medium mb-1">Active Users</h3>
-            <p className="text-2xl font-bold">156</p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header with user info and logout */}
+      <header className="bg-white shadow-sm">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-900">MasterGrade Admin</h1>
+          <div className="flex items-center gap-4">
+            <div className="hidden md:block text-right">
+              <p className="text-sm font-medium">{user?.name || "Admin"}</p>
+              <p className="text-xs text-gray-500">{user?.role || "admin"}</p>
+            </div>
+            <Button variant="outline" size="sm" onClick={handleLogout}>
+              <LogOut className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Logout</span>
+            </Button>
           </div>
         </div>
+      </header>
 
-        <div className="text-center mt-8">
-          <p className="text-gray-500">
-            This is a placeholder for the admin dashboard. Real functionality
-            will be implemented in the next steps.
-          </p>
+      {/* Main content */}
+      <main className="container mx-auto px-4 py-6">
+        <Tabs defaultValue="users" className="space-y-6">
+          <div className="bg-white p-2 rounded-lg shadow-sm overflow-x-auto">
+            <TabsList className="h-auto justify-start gap-2">
+              <TabsTrigger value="dashboard" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <LayoutDashboard className="h-4 w-4 mr-2" />
+                Dashboard
+              </TabsTrigger>
+              <TabsTrigger value="users" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Users className="h-4 w-4 mr-2" />
+                Users
+              </TabsTrigger>
+              <TabsTrigger value="students" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <GraduationCap className="h-4 w-4 mr-2" />
+                Students
+              </TabsTrigger>
+              <TabsTrigger value="trainers" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <BookOpen className="h-4 w-4 mr-2" />
+                Trainers
+              </TabsTrigger>
+              <TabsTrigger value="academies" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Building className="h-4 w-4 mr-2" />
+                Academies
+              </TabsTrigger>
+              <TabsTrigger value="events" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Calendar className="h-4 w-4 mr-2" />
+                Events
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          {/* Dashboard Tab */}
+          <TabsContent value="dashboard" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card>
+                <CardContent className="p-6 flex flex-col">
+                  <span className="text-muted-foreground text-sm mb-2">Total Students</span>
+                  <span className="text-3xl font-bold">120</span>
+                  <span className="text-green-600 text-sm mt-2">↑ 12% from last month</span>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6 flex flex-col">
+                  <span className="text-muted-foreground text-sm mb-2">Total Trainers</span>
+                  <span className="text-3xl font-bold">24</span>
+                  <span className="text-green-600 text-sm mt-2">↑ 5% from last month</span>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6 flex flex-col">
+                  <span className="text-muted-foreground text-sm mb-2">Academies</span>
+                  <span className="text-3xl font-bold">8</span>
+                  <span className="text-gray-500 text-sm mt-2">No change from last month</span>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6 flex flex-col">
+                  <span className="text-muted-foreground text-sm mb-2">Active Users</span>
+                  <span className="text-3xl font-bold">156</span>
+                  <span className="text-green-600 text-sm mt-2">↑ 8% from last month</span>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <Card className="col-span-2">
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-4">Recent Activities</h3>
+                  <div className="space-y-4">
+                    {/* Placeholder for recent activities */}
+                    <div className="flex justify-between py-2 border-b">
+                      <div>
+                        <p className="font-medium">New student registered</p>
+                        <p className="text-sm text-muted-foreground">John Smith joined as a student</p>
+                      </div>
+                      <p className="text-sm text-muted-foreground">2 hours ago</p>
+                    </div>
+                    <div className="flex justify-between py-2 border-b">
+                      <div>
+                        <p className="font-medium">Event created</p>
+                        <p className="text-sm text-muted-foreground">Summer training camp was created</p>
+                      </div>
+                      <p className="text-sm text-muted-foreground">Yesterday</p>
+                    </div>
+                    <div className="flex justify-between py-2 border-b">
+                      <div>
+                        <p className="font-medium">New trainer hired</p>
+                        <p className="text-sm text-muted-foreground">Michael Jordan joined as a trainer</p>
+                      </div>
+                      <p className="text-sm text-muted-foreground">2 days ago</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-4">Popular Sports</h3>
+                  <div className="space-y-3">
+                    {SPORTS_LIST.slice(0, 5).map((sport, index) => (
+                      <div key={sport} className="flex justify-between items-center">
+                        <span>{sport}</span>
+                        <div className="w-1/2 bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-primary h-2 rounded-full" 
+                            style={{ width: `${100 - (index * 15)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Users Tab */}
+          <TabsContent value="users">
+            <Card>
+              <CardContent className="pt-6">
+                <UserManagement />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Students Tab */}
+          <TabsContent value="students">
+            <Card>
+              <CardContent className="p-6">
+                <div className="text-center p-8">
+                  <h3 className="text-xl font-semibold mb-2">Students Management</h3>
+                  <p className="text-muted-foreground mb-4">
+                    This section will be implemented in the next iteration.
+                  </p>
+                  <Button variant="outline">Coming Soon</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Trainers Tab */}
+          <TabsContent value="trainers">
+            <Card>
+              <CardContent className="p-6">
+                <div className="text-center p-8">
+                  <h3 className="text-xl font-semibold mb-2">Trainers Management</h3>
+                  <p className="text-muted-foreground mb-4">
+                    This section will be implemented in the next iteration.
+                  </p>
+                  <Button variant="outline">Coming Soon</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Academies Tab */}
+          <TabsContent value="academies">
+            <Card>
+              <CardContent className="p-6">
+                <div className="text-center p-8">
+                  <h3 className="text-xl font-semibold mb-2">Academies Management</h3>
+                  <p className="text-muted-foreground mb-4">
+                    This section will be implemented in the next iteration.
+                  </p>
+                  <Button variant="outline">Coming Soon</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Events Tab */}
+          <TabsContent value="events">
+            <Card>
+              <CardContent className="p-6">
+                <div className="text-center p-8">
+                  <h3 className="text-xl font-semibold mb-2">Events Management</h3>
+                  <p className="text-muted-foreground mb-4">
+                    This section will be implemented in the next iteration.
+                  </p>
+                  <Button variant="outline">Coming Soon</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t mt-6 py-4">
+        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
+          © {new Date().getFullYear()} MasterGrade Admin. All rights reserved.
         </div>
-      </div>
+      </footer>
     </div>
   );
 }

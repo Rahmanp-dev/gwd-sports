@@ -1,12 +1,85 @@
+
 export interface User {
   _id: string;
   name: string;
   email: string;
   phone: string;
-  role: "admin" | "student" | "trainer" | "user";
+  role: 'admin' | 'student' | 'trainer' | 'user';
+  sports?: string[];
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  lastLogin?: string;
+}
+
+
+export interface UserFormData {
+  name: string;
+  email: string;
+  password?: string;
+  phone?: string;
+  role: 'admin' | 'student' | 'trainer' | 'user';
+  sports?: string[];
+  isActive?: boolean;
+}
+
+export interface UserUpdateData {
+  name?: string;
+  email?: string;
+  phone?: string;
+  role: 'admin' | 'student' | 'trainer' | 'user';
+  sports?: string[];
+  isActive?: boolean;
+}
+
+export interface UserFilters {
+  page?: number;
+  limit?: number;
+  role?: 'admin' | 'student' | 'trainer' | 'user';
+  isActive?: boolean;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+
+
+export interface PaginationMeta {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+export interface UserListResponse {
+  success: boolean;
+  data: {
+    users: User[];
+    pagination: PaginationMeta;
+  }
+}
+
+export interface UserResponse {
+  success: boolean;
+  data: {
+    user: User;
+  }
+}
+
+export interface UserStatsResponse {
+  success: boolean;
+  data: {
+    totalUsers: number;
+    activeUsers: number;
+    inactiveUsers: number;
+    newUsersThisMonth: number;
+    usersByRole: {
+      _id: string;
+      count: number;
+      active: number;
+      inactive: number;
+    }[];
+  }
 }
 
 export interface Student {
@@ -186,16 +259,6 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-}
-
-export interface UserFilters {
-  page?: number;
-  limit?: number;
-  role?: string;
-  search?: string;
-  isActive?: boolean;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
 }
 
 export interface StudentFilters {

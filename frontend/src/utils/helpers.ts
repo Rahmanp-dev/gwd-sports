@@ -40,6 +40,10 @@ export const formatPercentage = (value: number, decimals = 1): string => {
   return `${value.toFixed(decimals)}%`;
 };
 
+export const capitalize = (str: string): string => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 export const truncateText = (text: string, maxLength: number): string => {
   if (text.length <= maxLength) return text;
   return `${text.substring(0, maxLength)}...`;
