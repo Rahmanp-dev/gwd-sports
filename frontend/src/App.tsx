@@ -7,6 +7,7 @@ import { clearError } from "@/store/slices/authSlice";
 import AdminLogin from "@/pages/admin/AdminLogin";
 import AdminPage from "@/pages/admin/AdminPage";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { LandingPage } from "@/pages/LandingPage";
 
 const AppRouter: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -19,7 +20,7 @@ const AppRouter: React.FC = () => {
   return (
     <Routes>
       {/* Public routes */}
-      <Route path="/" element={<Navigate to="/admin/login" replace />} />
+      <Route path="/" element={<LandingPage />} />
       <Route path="/admin/login" element={<AdminLogin />} />
 
       {/* Protected admin routes */}

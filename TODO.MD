@@ -4,4 +4,5 @@
 - [ ] What ESLINT does
 - [ ] Frontend logging
 - [ ] Fix the build issue 
-- [ ] Check if the tsconfig change cause any issue after chagnging 
+- [ ] Check edit student - it is misbehavinfg  
+- [x] Check if the tsconfig cge cause any issue after changing 
