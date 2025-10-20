@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Table, 
-  TableBody, 
-  TableCaption, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import React, { useState, useEffect } from "react";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,21 +18,21 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import type { User, UserFilters } from '@/types';
-import { formatDate } from '@/utils/helpers';
-import { 
-  Edit, 
-  MoreHorizontal, 
-  Search, 
-  Trash2, 
-  UserCheck, 
-  UserX, 
+} from "@/components/ui/dropdown-menu";
+import type { User, UserFilters } from "@/types";
+import { formatDate } from "@/utils/helpers";
+import {
+  Edit,
+  MoreHorizontal,
+  Search,
+  Trash2,
+  UserCheck,
+  UserX,
   Eye,
   ChevronUp,
   ChevronDown,
-  ChevronsUpDown
-} from 'lucide-react';
+  ChevronsUpDown,
+} from "lucide-react";
 
 interface UserTableProps {
   users: User[];
@@ -62,45 +62,49 @@ export const UserTable: React.FC<UserTableProps> = ({
   onFilterChange,
   currentFilters,
   pagination,
-  onPageChange
+  onPageChange,
 }) => {
-  const [searchTerm, setSearchTerm] = useState(currentFilters.search || '');
+  const [searchTerm, setSearchTerm] = useState(currentFilters.search || "");
 
   // Debounced search effect - real-time search with 300ms delay
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      onFilterChange({ ...currentFilters, search: searchTerm || undefined, page: 1 });
+      onFilterChange({
+        ...currentFilters,
+        search: searchTerm || undefined,
+        page: 1,
+      });
     }, 300);
 
     return () => clearTimeout(debounceTimer);
   }, [searchTerm]);
 
   const handleRoleFilter = (role: string | null) => {
-    onFilterChange({ 
-      ...currentFilters, 
-      role: role as any || undefined, 
-      page: 1 
+    onFilterChange({
+      ...currentFilters,
+      role: (role as any) || undefined,
+      page: 1,
     });
   };
 
   const handleStatusFilter = (isActive: boolean | null) => {
-    onFilterChange({ 
-      ...currentFilters, 
-      isActive: isActive === null ? undefined : isActive, 
-      page: 1 
+    onFilterChange({
+      ...currentFilters,
+      isActive: isActive === null ? undefined : isActive,
+      page: 1,
     });
   };
 
   const handleSort = (field: string) => {
-    const sortOrder = 
-      currentFilters.sortBy === field && currentFilters.sortOrder === 'asc' 
-        ? 'desc' 
-        : 'asc';
-        
-    onFilterChange({ 
-      ...currentFilters, 
-      sortBy: field, 
-      sortOrder 
+    const sortOrder =
+      currentFilters.sortBy === field && currentFilters.sortOrder === "asc"
+        ? "desc"
+        : "asc";
+
+    onFilterChange({
+      ...currentFilters,
+      sortBy: field,
+      sortOrder,
     });
   };
 
@@ -108,18 +112,24 @@ export const UserTable: React.FC<UserTableProps> = ({
     if (currentFilters.sortBy !== field) {
       return <ChevronsUpDown className="h-4 w-4 text-gray-400" />;
     }
-    
-    return currentFilters.sortOrder === 'asc' 
-      ? <ChevronUp className="h-4 w-4 text-blue-600" />
-      : <ChevronDown className="h-4 w-4 text-blue-600" />;
+
+    return currentFilters.sortOrder === "asc" ? (
+      <ChevronUp className="h-4 w-4 text-blue-600" />
+    ) : (
+      <ChevronDown className="h-4 w-4 text-blue-600" />
+    );
   };
 
   const getRoleBadgeColor = (role: string) => {
-    switch(role) {
-      case 'admin': return 'bg-red-500 hover:bg-red-600';
-      case 'trainer': return 'bg-blue-500 hover:bg-blue-600';
-      case 'student': return 'bg-green-500 hover:bg-green-600';
-      default: return 'bg-gray-500 hover:bg-gray-600';
+    switch (role) {
+      case "admin":
+        return "bg-red-500 hover:bg-red-600";
+      case "trainer":
+        return "bg-blue-500 hover:bg-blue-600";
+      case "student":
+        return "bg-green-500 hover:bg-green-600";
+      default:
+        return "bg-gray-500 hover:bg-gray-600";
     }
   };
 
@@ -145,23 +155,23 @@ export const UserTable: React.FC<UserTableProps> = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
-                Role: {currentFilters.role || 'All'}
+                Role: {currentFilters.role || "All"}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem onClick={() => handleRoleFilter(null)}>
                 All Roles
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleRoleFilter('admin')}>
+              <DropdownMenuItem onClick={() => handleRoleFilter("admin")}>
                 Admin
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleRoleFilter('trainer')}>
+              <DropdownMenuItem onClick={() => handleRoleFilter("trainer")}>
                 Trainer
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleRoleFilter('student')}>
+              <DropdownMenuItem onClick={() => handleRoleFilter("student")}>
                 Student
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleRoleFilter('user')}>
+              <DropdownMenuItem onClick={() => handleRoleFilter("user")}>
                 User
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -170,10 +180,12 @@ export const UserTable: React.FC<UserTableProps> = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
-                Status: {
-                  currentFilters.isActive === undefined ? 'All' :
-                  currentFilters.isActive ? 'Active' : 'Inactive'
-                }
+                Status:{" "}
+                {currentFilters.isActive === undefined
+                  ? "All"
+                  : currentFilters.isActive
+                    ? "Active"
+                    : "Inactive"}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -194,38 +206,38 @@ export const UserTable: React.FC<UserTableProps> = ({
       <div className="rounded-md border">
         <Table>
           <TableCaption>
-            {isLoading ? 'Loading users...' : `Showing ${users.length} users`}
+            {isLoading ? "Loading users..." : `Showing ${users.length} users`}
           </TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead 
-                className="w-[180px] cursor-pointer hover:bg-gray-50 select-none" 
-                onClick={() => handleSort('name')}
+              <TableHead
+                className="w-[180px] cursor-pointer hover:bg-gray-50 select-none"
+                onClick={() => handleSort("name")}
               >
                 <div className="flex items-center gap-2">
                   Name
-                  {getSortIcon('name')}
+                  {getSortIcon("name")}
                 </div>
               </TableHead>
-              <TableHead 
-                className="cursor-pointer hover:bg-gray-50 select-none" 
-                onClick={() => handleSort('email')}
+              <TableHead
+                className="cursor-pointer hover:bg-gray-50 select-none"
+                onClick={() => handleSort("email")}
               >
                 <div className="flex items-center gap-2">
                   Email
-                  {getSortIcon('email')}
+                  {getSortIcon("email")}
                 </div>
               </TableHead>
               <TableHead className="hidden md:table-cell">Phone</TableHead>
               <TableHead>Role</TableHead>
               <TableHead className="hidden md:table-cell">Status</TableHead>
-              <TableHead 
-                className="hidden md:table-cell cursor-pointer hover:bg-gray-50 select-none" 
-                onClick={() => handleSort('createdAt')}
+              <TableHead
+                className="hidden md:table-cell cursor-pointer hover:bg-gray-50 select-none"
+                onClick={() => handleSort("createdAt")}
               >
                 <div className="flex items-center gap-2">
                   Created
-                  {getSortIcon('createdAt')}
+                  {getSortIcon("createdAt")}
                 </div>
               </TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -244,9 +256,11 @@ export const UserTable: React.FC<UserTableProps> = ({
             ) : users.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center h-24">
-                  {searchTerm || currentFilters.role || currentFilters.isActive !== undefined 
-                    ? 'No users found matching your search criteria.' 
-                    : 'No users found.'}
+                  {searchTerm ||
+                  currentFilters.role ||
+                  currentFilters.isActive !== undefined
+                    ? "No users found matching your search criteria."
+                    : "No users found."}
                 </TableCell>
               </TableRow>
             ) : (
@@ -254,7 +268,9 @@ export const UserTable: React.FC<UserTableProps> = ({
                 <TableRow key={user._id} className="hover:bg-gray-50">
                   <TableCell className="font-medium">{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell className="hidden md:table-cell">{user.phone || '-'}</TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {user.phone || "-"}
+                  </TableCell>
                   <TableCell>
                     <Badge className={getRoleBadgeColor(user.role)}>
                       {user.role}
@@ -262,7 +278,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
                     <Badge variant={user.isActive ? "default" : "outline"}>
-                      {user.isActive ? 'Active' : 'Inactive'}
+                      {user.isActive ? "Active" : "Inactive"}
                     </Badge>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
@@ -287,7 +303,9 @@ export const UserTable: React.FC<UserTableProps> = ({
                           Edit User
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => onToggleUserStatus(user._id)}>
+                        <DropdownMenuItem
+                          onClick={() => onToggleUserStatus(user._id)}
+                        >
                           {user.isActive ? (
                             <>
                               <UserX className="mr-2 h-4 w-4" />
@@ -300,7 +318,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                             </>
                           )}
                         </DropdownMenuItem>
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           onClick={() => onDeleteUser(user._id)}
                           className="text-red-600 focus:text-red-600"
                         >

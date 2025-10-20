@@ -1,28 +1,29 @@
-import apiService from './apiService';
-import type { 
-  UserFormData, 
-  UserUpdateData, 
-  UserListResponse, 
+import apiService from "./apiService";
+import type {
+  UserFormData,
+  UserUpdateData,
+  UserListResponse,
   UserResponse,
   UserStatsResponse,
-  UserFilters
-} from '@/types';
+  UserFilters,
+} from "@/types";
 
 class UserService {
-  private baseUrl = '/admin/users';
+  private baseUrl = "/admin/users";
 
   async getAllUsers(filters: UserFilters = {}): Promise<UserListResponse> {
     const queryParams = new URLSearchParams();
-    
+
     // Add each filter parameter to the query string if it exists
-    if (filters.page) queryParams.append('page', filters.page.toString());
-    if (filters.limit) queryParams.append('limit', filters.limit.toString());
-    if (filters.role) queryParams.append('role', filters.role);
-    if (filters.isActive !== undefined) queryParams.append('isActive', filters.isActive.toString());
-    if (filters.search) queryParams.append('search', filters.search);
-    if (filters.sortBy) queryParams.append('sortBy', filters.sortBy);
-    if (filters.sortOrder) queryParams.append('sortOrder', filters.sortOrder);
-    
+    if (filters.page) queryParams.append("page", filters.page.toString());
+    if (filters.limit) queryParams.append("limit", filters.limit.toString());
+    if (filters.role) queryParams.append("role", filters.role);
+    if (filters.isActive !== undefined)
+      queryParams.append("isActive", filters.isActive.toString());
+    if (filters.search) queryParams.append("search", filters.search);
+    if (filters.sortBy) queryParams.append("sortBy", filters.sortBy);
+    if (filters.sortOrder) queryParams.append("sortOrder", filters.sortOrder);
+
     const url = `${this.baseUrl}?${queryParams.toString()}`;
     return apiService.get<UserListResponse>(url);
   }
@@ -35,16 +36,24 @@ class UserService {
     return apiService.post<UserResponse>(this.baseUrl, userData);
   }
 
-  async updateUser(id: string, userData: UserUpdateData): Promise<UserResponse> {
+  async updateUser(
+    id: string,
+    userData: UserUpdateData,
+  ): Promise<UserResponse> {
     return apiService.put<UserResponse>(`${this.baseUrl}/${id}`, userData);
   }
 
   async deleteUser(id: string): Promise<{ success: boolean; message: string }> {
-    return apiService.delete<{ success: boolean; message: string }>(`${this.baseUrl}/${id}`);
+    return apiService.delete<{ success: boolean; message: string }>(
+      `${this.baseUrl}/${id}`,
+    );
   }
 
   async toggleUserStatus(id: string): Promise<UserResponse> {
-    return apiService.patch<UserResponse>(`${this.baseUrl}/${id}/toggle-status`, {});
+    return apiService.patch<UserResponse>(
+      `${this.baseUrl}/${id}/toggle-status`,
+      {},
+    );
   }
 
   async getUserStats(): Promise<UserStatsResponse> {

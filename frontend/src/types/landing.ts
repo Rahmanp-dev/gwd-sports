@@ -26,7 +26,7 @@ export interface Event {
   date: string;
   time: string;
   location: string;
-  category: 'tournament' | 'workshop' | 'training' | 'other';
+  category: "tournament" | "workshop" | "training" | "other";
   image: string;
   description: string;
   registrationUrl?: string;

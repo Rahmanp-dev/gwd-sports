@@ -1,52 +1,57 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import type { Kit, KitUpdateData } from '@/types';
-import { formatDate } from '@/utils/helpers';
-import { Package } from 'lucide-react';
+import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import type { Kit, KitUpdateData } from "@/types";
+import { formatDate } from "@/utils/helpers";
+import { Package } from "lucide-react";
 
 // Define form validation schema
-const kitStatusFormSchema = z.object({
-  status: z.enum(['requested', 'processing', 'delivered']),
-  deliveredDate: z.string().optional(),
-  notes: z.string().optional()
-}).refine((data) => {
-  if (data.status === 'delivered' && !data.deliveredDate) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Delivered date is required when status is 'delivered'",
-  path: ["deliveredDate"]
-});
+const kitStatusFormSchema = z
+  .object({
+    status: z.enum(["requested", "processing", "delivered"]),
+    deliveredDate: z.string().optional(),
+    notes: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.status === "delivered" && !data.deliveredDate) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Delivered date is required when status is 'delivered'",
+      path: ["deliveredDate"],
+    },
+  );
 
 interface KitStatusFormProps {
   kit: Kit;
@@ -55,41 +60,47 @@ interface KitStatusFormProps {
   onCancel: () => void;
 }
 
-export const KitStatusForm: React.FC<KitStatusFormProps> = ({ 
-  kit, 
-  onSubmit, 
-  isLoading, 
-  onCancel 
+export const KitStatusForm: React.FC<KitStatusFormProps> = ({
+  kit,
+  onSubmit,
+  isLoading,
+  onCancel,
 }) => {
   const form = useForm<KitUpdateData>({
     resolver: zodResolver(kitStatusFormSchema),
     defaultValues: {
       status: kit.status,
-      deliveredDate: kit.deliveredDate ? new Date(kit.deliveredDate).toISOString().split('T')[0] : '',
-      notes: kit.notes || ''
-    }
+      deliveredDate: kit.deliveredDate
+        ? new Date(kit.deliveredDate).toISOString().split("T")[0]
+        : "",
+      notes: kit.notes || "",
+    },
   });
 
-  const selectedStatus = form.watch('status');
+  const selectedStatus = form.watch("status");
 
   const handleSubmit = (data: KitUpdateData) => {
     // Convert date string to ISO string for API if provided
     if (data.deliveredDate) {
       data.deliveredDate = new Date(data.deliveredDate).toISOString();
-    } else if (data.status !== 'delivered') {
+    } else if (data.status !== "delivered") {
       // Remove deliveredDate if status is not delivered
       delete data.deliveredDate;
     }
-    
+
     onSubmit(data);
   };
 
   const getStatusBadgeColor = (status: string) => {
-    switch(status) {
-      case 'delivered': return 'bg-green-500 hover:bg-green-600';
-      case 'processing': return 'bg-blue-500 hover:bg-blue-600';
-      case 'requested': return 'bg-yellow-500 hover:bg-yellow-600';
-      default: return 'bg-gray-500 hover:bg-gray-600';
+    switch (status) {
+      case "delivered":
+        return "bg-green-500 hover:bg-green-600";
+      case "processing":
+        return "bg-blue-500 hover:bg-blue-600";
+      case "requested":
+        return "bg-yellow-500 hover:bg-yellow-600";
+      default:
+        return "bg-gray-500 hover:bg-gray-600";
     }
   };
 
@@ -104,7 +115,7 @@ export const KitStatusForm: React.FC<KitStatusFormProps> = ({
           Update the status and details for this kit request.
         </CardDescription>
       </CardHeader>
-      
+
       {/* Kit Information Display */}
       <CardContent className="space-y-4">
         <div className="bg-gray-50 p-4 rounded-lg space-y-2">
@@ -115,21 +126,33 @@ export const KitStatusForm: React.FC<KitStatusFormProps> = ({
             </Badge>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-            <div><span className="font-medium">Size:</span> {kit.size}</div>
-            <div><span className="font-medium">Requested:</span> {formatDate(kit.requestedDate)}</div>
+            <div>
+              <span className="font-medium">Size:</span> {kit.size}
+            </div>
+            <div>
+              <span className="font-medium">Requested:</span>{" "}
+              {formatDate(kit.requestedDate)}
+            </div>
             {kit.deliveredDate && (
-              <div><span className="font-medium">Delivered:</span> {formatDate(kit.deliveredDate)}</div>
+              <div>
+                <span className="font-medium">Delivered:</span>{" "}
+                {formatDate(kit.deliveredDate)}
+              </div>
             )}
           </div>
           {kit.notes && (
             <div className="text-sm">
-              <span className="font-medium text-gray-600">Current Notes:</span> {kit.notes}
+              <span className="font-medium text-gray-600">Current Notes:</span>{" "}
+              {kit.notes}
             </div>
           )}
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4"
+          >
             {/* Status Field */}
             <FormField
               control={form.control}
@@ -138,8 +161,8 @@ export const KitStatusForm: React.FC<KitStatusFormProps> = ({
                 <FormItem>
                   <FormLabel>Status</FormLabel>
                   <FormControl>
-                    <Select 
-                      value={field.value} 
+                    <Select
+                      value={field.value}
                       onValueChange={field.onChange}
                       disabled={isLoading}
                     >
@@ -174,7 +197,7 @@ export const KitStatusForm: React.FC<KitStatusFormProps> = ({
             />
 
             {/* Delivered Date Field - Only show when status is delivered */}
-            {selectedStatus === 'delivered' && (
+            {selectedStatus === "delivered" && (
               <FormField
                 control={form.control}
                 name="deliveredDate"
@@ -182,11 +205,11 @@ export const KitStatusForm: React.FC<KitStatusFormProps> = ({
                   <FormItem>
                     <FormLabel>Delivered Date</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="date" 
+                      <Input
+                        type="date"
                         {...field}
                         disabled={isLoading}
-                        max={new Date().toISOString().split('T')[0]} // Can't be future date
+                        max={new Date().toISOString().split("T")[0]} // Can't be future date
                       />
                     </FormControl>
                     <FormMessage />
@@ -203,7 +226,7 @@ export const KitStatusForm: React.FC<KitStatusFormProps> = ({
                 <FormItem>
                   <FormLabel>Notes (Optional)</FormLabel>
                   <FormControl>
-                    <Textarea 
+                    <Textarea
                       placeholder="Add any additional notes about this kit status update..."
                       {...field}
                       disabled={isLoading}
@@ -216,16 +239,16 @@ export const KitStatusForm: React.FC<KitStatusFormProps> = ({
             />
 
             <CardFooter className="flex justify-between px-0">
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={onCancel}
                 disabled={isLoading}
               >
                 Cancel
               </Button>
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? 'Updating...' : 'Update Kit Status'}
+                {isLoading ? "Updating..." : "Update Kit Status"}
               </Button>
             </CardFooter>
           </form>

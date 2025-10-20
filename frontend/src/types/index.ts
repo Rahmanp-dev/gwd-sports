@@ -1,10 +1,9 @@
-
 export interface User {
   _id: string;
   name: string;
   email: string;
   phone: string;
-  role: 'admin' | 'student' | 'trainer' | 'user';
+  role: "admin" | "student" | "trainer" | "user";
   sports?: string[];
   isActive: boolean;
   createdAt: string;
@@ -17,7 +16,7 @@ export interface UserFormData {
   email: string;
   password?: string;
   phone?: string;
-  role: 'admin' | 'student' | 'trainer' | 'user';
+  role: "admin" | "student" | "trainer" | "user";
   sports?: string[];
   isActive?: boolean;
 }
@@ -26,7 +25,7 @@ export interface UserUpdateData {
   name?: string;
   email?: string;
   phone?: string;
-  role: 'admin' | 'student' | 'trainer' | 'user';
+  role: "admin" | "student" | "trainer" | "user";
   sports?: string[];
   isActive?: boolean;
 }
@@ -34,13 +33,12 @@ export interface UserUpdateData {
 export interface UserFilters {
   page?: number;
   limit?: number;
-  role?: 'admin' | 'student' | 'trainer' | 'user';
+  role?: "admin" | "student" | "trainer" | "user";
   isActive?: boolean;
   search?: string;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
-
 
 export interface PaginationMeta {
   currentPage: number;
@@ -55,14 +53,14 @@ export interface UserListResponse {
   data: {
     users: User[];
     pagination: PaginationMeta;
-  }
+  };
 }
 
 export interface UserResponse {
   success: boolean;
   data: {
     user: User;
-  }
+  };
 }
 
 export interface UserStatsResponse {
@@ -78,9 +76,8 @@ export interface UserStatsResponse {
       active: number;
       inactive: number;
     }[];
-  }
+  };
 }
-
 
 export interface Student {
   _id: string;
@@ -105,13 +102,13 @@ export interface Student {
     sports: string[];
   };
   sport: string;
-  level: 'beginner' | 'intermediate' | 'advanced';
+  level: "beginner" | "intermediate" | "advanced";
   enrollmentDate: string;
   fees: {
     amount: number;
-    period: 'monthly' | 'quarterly' | 'yearly';
+    period: "monthly" | "quarterly" | "yearly";
     dueDate: string;
-    status: 'paid' | 'pending' | 'overdue';
+    status: "paid" | "pending" | "overdue";
   };
   kits: Kit[];
   attendance: Attendance[];
@@ -198,7 +195,7 @@ export interface Kit {
   itemName: string;
   size: string;
   requestedDate: string;
-  status: 'requested' | 'processing' | 'delivered';
+  status: "requested" | "processing" | "delivered";
   deliveredDate?: string;
   notes?: string;
 }
@@ -268,40 +265,41 @@ export interface AuthState {
   error: string | null;
 }
 
-
 // API response interfaces
 export interface StudentResponse extends ApiResponse<{ student: Student }> {}
 
-export interface StudentListResponse extends ApiResponse<{
-  students: Student[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalStudents: number;
-    hasNextPage: boolean;
-    hasPrevPage: boolean;
-  };
-}> {}
+export interface StudentListResponse
+  extends ApiResponse<{
+    students: Student[];
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      totalStudents: number;
+      hasNextPage: boolean;
+      hasPrevPage: boolean;
+    };
+  }> {}
 
-export interface StudentStatsResponse extends ApiResponse<{
-  totalStudents: number;
-  activeStudents: number;
-  inactiveStudents: number;
-  newStudentsThisMonth: number;
-  studentsByLevel: Array<{
-    _id: string;
-    count: number;
-  }>;
-  studentsBySport: Array<{
-    _id: string;
-    count: number;
-  }>;
-  feeStatus: {
-    paid: number;
-    pending: number;
-    overdue: number;
-  };
-}> {}
+export interface StudentStatsResponse
+  extends ApiResponse<{
+    totalStudents: number;
+    activeStudents: number;
+    inactiveStudents: number;
+    newStudentsThisMonth: number;
+    studentsByLevel: Array<{
+      _id: string;
+      count: number;
+    }>;
+    studentsBySport: Array<{
+      _id: string;
+      count: number;
+    }>;
+    feeStatus: {
+      paid: number;
+      pending: number;
+      overdue: number;
+    };
+  }> {}
 
 // Filter interfaces
 export interface StudentFilters {
@@ -310,11 +308,11 @@ export interface StudentFilters {
   academyId?: string;
   trainerId?: string;
   sport?: string;
-  level?: 'beginner' | 'intermediate' | 'advanced';
+  level?: "beginner" | "intermediate" | "advanced";
   isActive?: boolean;
   search?: string;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 // Form data interfaces
@@ -323,10 +321,10 @@ export interface StudentFormData {
   academyId: string;
   trainerId?: string;
   sport: string;
-  level: 'beginner' | 'intermediate' | 'advanced';
+  level: "beginner" | "intermediate" | "advanced";
   fees: {
     amount: number;
-    period: 'monthly' | 'quarterly' | 'yearly';
+    period: "monthly" | "quarterly" | "yearly";
     dueDate: string;
   };
 }
@@ -335,17 +333,17 @@ export interface StudentUpdateData {
   academyId?: string;
   trainerId?: string | undefined;
   sport?: string;
-  level?: 'beginner' | 'intermediate' | 'advanced';
+  level?: "beginner" | "intermediate" | "advanced";
   fees?: {
     amount: number;
-    period: 'monthly' | 'quarterly' | 'yearly';
+    period: "monthly" | "quarterly" | "yearly";
     dueDate: string;
-    status: 'paid' | 'pending' | 'overdue';
+    status: "paid" | "pending" | "overdue";
   };
 }
 
 export interface KitUpdateData {
-  status: 'requested' | 'processing' | 'delivered';
+  status: "requested" | "processing" | "delivered";
   deliveredDate?: string;
   notes?: string;
 }

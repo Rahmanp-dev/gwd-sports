@@ -1,47 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
-import type { Student, StudentUpdateData } from '@/types';
-import { SPORTS_LIST } from '@/utils/constants';
+import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import type { Student, StudentUpdateData } from "@/types";
+import { SPORTS_LIST } from "@/utils/constants";
 
 // Define form validation schema
 const studentFormSchema = z.object({
-  academyId: z.string().min(1, { message: 'Academy is required' }),
+  academyId: z.string().min(1, { message: "Academy is required" }),
   trainerId: z.string().optional(),
-  sport: z.string().min(1, { message: 'Sport is required' }),
-  level: z.enum(['beginner', 'intermediate', 'advanced']),
+  sport: z.string().min(1, { message: "Sport is required" }),
+  level: z.enum(["beginner", "intermediate", "advanced"]),
   fees: z.object({
-    amount: z.number().min(0, { message: 'Amount must be positive' }),
-    period: z.enum(['monthly', 'quarterly', 'yearly']),
-    dueDate: z.string().min(1, { message: 'Due date is required' }),
-    status: z.enum(['paid', 'pending', 'overdue']).optional()
-  })
+    amount: z.number().min(0, { message: "Amount must be positive" }),
+    period: z.enum(["monthly", "quarterly", "yearly"]),
+    dueDate: z.string().min(1, { message: "Due date is required" }),
+    status: z.enum(["paid", "pending", "overdue"]).optional(),
+  }),
 });
 
 type StudentFormData = z.infer<typeof studentFormSchema>;
@@ -55,20 +55,28 @@ interface StudentFormProps {
 
 // Mock data - replace with actual API calls
 const mockAcademies = [
-  { _id: '68a337d874f386a3a7ea1273', name: 'Elite Sports Academy', location: 'Los Angeles' },
-  { _id: '2', name: 'Champions Training Center', location: 'New York' },
+  {
+    _id: "68a337d874f386a3a7ea1273",
+    name: "Elite Sports Academy",
+    location: "Los Angeles",
+  },
+  { _id: "2", name: "Champions Training Center", location: "New York" },
 ];
 
 const mockTrainers = [
-  { _id: '68a33c1171f5b7e03e9e70be', name: 'Trainer Doe', sports: ['football', 'basketball'] },
-  { _id: '2', name: 'Sarah Johnson', sports: ['tennis', 'swimming'] },
+  {
+    _id: "68a33c1171f5b7e03e9e70be",
+    name: "Trainer Doe",
+    sports: ["football", "basketball"],
+  },
+  { _id: "2", name: "Sarah Johnson", sports: ["tennis", "swimming"] },
 ];
 
-export const StudentForm: React.FC<StudentFormProps> = ({ 
-  student, 
-  onSubmit, 
-  isLoading, 
-  onCancel 
+export const StudentForm: React.FC<StudentFormProps> = ({
+  student,
+  onSubmit,
+  isLoading,
+  onCancel,
 }) => {
   const isEditMode = !!student;
   const [academies, setAcademies] = useState(mockAcademies);
@@ -78,33 +86,37 @@ export const StudentForm: React.FC<StudentFormProps> = ({
   const form = useForm<StudentFormData>({
     resolver: zodResolver(studentFormSchema),
     defaultValues: {
-      academyId: student?.academyId || '',
+      academyId: student?.academyId || "",
       trainerId: student?.trainerId || undefined, // Changed from empty string to undefined
-      sport: student?.sport || '',
-      level: student?.level || 'beginner',
+      sport: student?.sport || "",
+      level: student?.level || "beginner",
       fees: {
         amount: student?.fees?.amount || 0,
-        period: student?.fees?.period || 'monthly',
-        dueDate: student?.fees?.dueDate ? new Date(student?.fees?.dueDate).toISOString().split('T')[0] : '',
-        status: student?.fees?.status || 'pending'
-      }
-    }
+        period: student?.fees?.period || "monthly",
+        dueDate: student?.fees?.dueDate
+          ? new Date(student?.fees?.dueDate).toISOString().split("T")[0]
+          : "",
+        status: student?.fees?.status || "pending",
+      },
+    },
   });
 
-  const selectedSport = form.watch('sport');
+  const selectedSport = form.watch("sport");
 
   // Filter trainers based on selected sport
   useEffect(() => {
     if (selectedSport) {
-      const filtered = trainers.filter(trainer => 
-        trainer.sports.some(sport => sport.toLowerCase() === selectedSport.toLowerCase())
+      const filtered = trainers.filter((trainer) =>
+        trainer.sports.some(
+          (sport) => sport.toLowerCase() === selectedSport.toLowerCase(),
+        ),
       );
       setFilteredTrainers(filtered);
-      
+
       // Reset trainer selection if current trainer doesn't support the sport
-      const currentTrainer = form.getValues('trainerId');
-      if (currentTrainer && !filtered.find(t => t._id === currentTrainer)) {
-        form.setValue('trainerId', undefined);
+      const currentTrainer = form.getValues("trainerId");
+      if (currentTrainer && !filtered.find((t) => t._id === currentTrainer)) {
+        form.setValue("trainerId", undefined);
       }
     } else {
       setFilteredTrainers(trainers);
@@ -116,19 +128,19 @@ export const StudentForm: React.FC<StudentFormProps> = ({
     if (data.fees?.dueDate) {
       data.fees.dueDate = new Date(data.fees.dueDate).toISOString();
     }
-    
+
     // Convert form data to StudentUpdateData format
     const submitData: StudentUpdateData = {
-        academyId: data.academyId,
-        trainerId: data.trainerId,
-        sport: data.sport,
-        level: data.level,
-        fees: {
+      academyId: data.academyId,
+      trainerId: data.trainerId,
+      sport: data.sport,
+      level: data.level,
+      fees: {
         ...data.fees,
-        status: data.fees.status || 'pending'
-      }
+        status: data.fees.status || "pending",
+      },
     };
-    
+
     onSubmit(submitData);
   };
 
@@ -145,7 +157,7 @@ export const StudentForm: React.FC<StudentFormProps> = ({
           Update student information and training details.
         </CardDescription>
       </CardHeader>
-      
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
           <CardContent className="space-y-4">
@@ -154,8 +166,14 @@ export const StudentForm: React.FC<StudentFormProps> = ({
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h3 className="font-medium mb-2">Student Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                  <div><span className="text-gray-600">Name:</span> {student.user?.name || 'Unknown'}</div>
-                  <div><span className="text-gray-600">Email:</span> {student.user?.email || 'No email'}</div>
+                  <div>
+                    <span className="text-gray-600">Name:</span>{" "}
+                    {student.user?.name || "Unknown"}
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Email:</span>{" "}
+                    {student.user?.email || "No email"}
+                  </div>
                 </div>
               </div>
             )}
@@ -169,8 +187,8 @@ export const StudentForm: React.FC<StudentFormProps> = ({
                   <FormItem>
                     <FormLabel>Academy</FormLabel>
                     <FormControl>
-                      <Select 
-                        value={field.value} 
+                      <Select
+                        value={field.value}
                         onValueChange={field.onChange}
                         disabled={isLoading}
                       >
@@ -178,7 +196,7 @@ export const StudentForm: React.FC<StudentFormProps> = ({
                           <SelectValue placeholder="Select an academy" />
                         </SelectTrigger>
                         <SelectContent>
-                          {academies.map(academy => (
+                          {academies.map((academy) => (
                             <SelectItem key={academy._id} value={academy._id}>
                               {academy.name} - {academy.location}
                             </SelectItem>
@@ -199,8 +217,8 @@ export const StudentForm: React.FC<StudentFormProps> = ({
                   <FormItem>
                     <FormLabel>Sport</FormLabel>
                     <FormControl>
-                      <Select 
-                        value={field.value} 
+                      <Select
+                        value={field.value}
                         onValueChange={field.onChange}
                         disabled={isLoading}
                       >
@@ -208,7 +226,7 @@ export const StudentForm: React.FC<StudentFormProps> = ({
                           <SelectValue placeholder="Select a sport" />
                         </SelectTrigger>
                         <SelectContent>
-                          {SPORTS_LIST.map(sport => (
+                          {SPORTS_LIST.map((sport) => (
                             <SelectItem key={sport} value={sport.toLowerCase()}>
                               {sport}
                             </SelectItem>
@@ -231,8 +249,8 @@ export const StudentForm: React.FC<StudentFormProps> = ({
                   <FormItem>
                     <FormLabel>Trainer (Optional)</FormLabel>
                     <FormControl>
-                      <Select 
-                        value={field.value || "none"} 
+                      <Select
+                        value={field.value || "none"}
                         onValueChange={(value) => {
                           field.onChange(value === "none" ? undefined : value);
                         }}
@@ -242,10 +260,12 @@ export const StudentForm: React.FC<StudentFormProps> = ({
                           <SelectValue placeholder="Select a trainer" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="none">No trainer assigned</SelectItem>
-                          {filteredTrainers.map(trainer => (
+                          <SelectItem value="none">
+                            No trainer assigned
+                          </SelectItem>
+                          {filteredTrainers.map((trainer) => (
                             <SelectItem key={trainer._id} value={trainer._id}>
-                              {trainer.name} ({trainer.sports.join(', ')})
+                              {trainer.name} ({trainer.sports.join(", ")})
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -264,8 +284,8 @@ export const StudentForm: React.FC<StudentFormProps> = ({
                   <FormItem>
                     <FormLabel>Level</FormLabel>
                     <FormControl>
-                      <Select 
-                        value={field.value} 
+                      <Select
+                        value={field.value}
                         onValueChange={field.onChange}
                         disabled={isLoading}
                       >
@@ -274,7 +294,9 @@ export const StudentForm: React.FC<StudentFormProps> = ({
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="beginner">Beginner</SelectItem>
-                          <SelectItem value="intermediate">Intermediate</SelectItem>
+                          <SelectItem value="intermediate">
+                            Intermediate
+                          </SelectItem>
                           <SelectItem value="advanced">Advanced</SelectItem>
                         </SelectContent>
                       </Select>
@@ -288,7 +310,7 @@ export const StudentForm: React.FC<StudentFormProps> = ({
             {/* Fee Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Fee Information</h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
@@ -297,13 +319,15 @@ export const StudentForm: React.FC<StudentFormProps> = ({
                     <FormItem>
                       <FormLabel>Amount ($)</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
+                        <Input
+                          type="number"
                           min="0"
                           step="0.01"
-                          placeholder="100.00" 
+                          placeholder="100.00"
                           {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          onChange={(e) =>
+                            field.onChange(parseFloat(e.target.value) || 0)
+                          }
                           disabled={isLoading}
                         />
                       </FormControl>
@@ -319,8 +343,8 @@ export const StudentForm: React.FC<StudentFormProps> = ({
                     <FormItem>
                       <FormLabel>Billing Period</FormLabel>
                       <FormControl>
-                        <Select 
-                          value={field.value} 
+                        <Select
+                          value={field.value}
                           onValueChange={field.onChange}
                           disabled={isLoading}
                         >
@@ -346,11 +370,7 @@ export const StudentForm: React.FC<StudentFormProps> = ({
                     <FormItem>
                       <FormLabel>Due Date</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="date" 
-                          {...field}
-                          disabled={isLoading}
-                        />
+                        <Input type="date" {...field} disabled={isLoading} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -366,8 +386,8 @@ export const StudentForm: React.FC<StudentFormProps> = ({
                     <FormItem>
                       <FormLabel>Fee Status</FormLabel>
                       <FormControl>
-                        <Select 
-                          value={field.value} 
+                        <Select
+                          value={field.value}
                           onValueChange={field.onChange}
                           disabled={isLoading}
                         >
@@ -388,18 +408,18 @@ export const StudentForm: React.FC<StudentFormProps> = ({
               )}
             </div>
           </CardContent>
-          
+
           <CardFooter className="flex justify-between">
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               onClick={onCancel}
               disabled={isLoading}
             >
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'Updating...' : 'Update Student'}
+              {isLoading ? "Updating..." : "Update Student"}
             </Button>
           </CardFooter>
         </form>

@@ -1,212 +1,170 @@
-import React from 'react';
-import { Facebook, Twitter, Instagram, Linkedin, Youtube, Mail, Phone, MapPin } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { motion } from "framer-motion";
+import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
-export const Footer: React.FC = () => {
-  const currentYear = new Date().getFullYear();
-
-  const footerLinks = {
-    company: [
-      { label: 'About Us', href: '/about' },
-      { label: 'Our Team', href: '/team' },
-      { label: 'Careers', href: '/careers' },
-      { label: 'Press', href: '/press' },
-    ],
-    programs: [
-      { label: 'Football', href: '/programs/football' },
-      { label: 'Basketball', href: '/programs/basketball' },
-      { label: 'Tennis', href: '/programs/tennis' },
-      { label: 'Swimming', href: '/programs/swimming' },
-    ],
-    resources: [
-      { label: 'Blog', href: '/blog' },
-      { label: 'Events', href: '#events' },
-      { label: 'FAQs', href: '/faqs' },
-      { label: 'Support', href: '/support' },
-    ],
-    legal: [
-      { label: 'Privacy Policy', href: '/privacy' },
-      { label: 'Terms of Service', href: '/terms' },
-      { label: 'Refund Policy', href: '/refund' },
-      { label: 'Cookie Policy', href: '/cookies' },
-    ],
-  };
-
-  const socialLinks = [
-    { icon: Facebook, href: 'https://facebook.com', label: 'Facebook' },
-    { icon: Twitter, href: 'https://twitter.com', label: 'Twitter' },
-    { icon: Instagram, href: 'https://instagram.com', label: 'Instagram' },
-    { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
-    { icon: Youtube, href: 'https://youtube.com', label: 'YouTube' },
-  ];
-
+export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300">
-      {/* Main Footer Content */}
-      <div className="container-custom px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-12">
-          {/* Brand Section */}
-          <div className="lg:col-span-2 space-y-6">
-            <div>
-              <h3 className="text-2xl font-bold text-white mb-2">Master Grade</h3>
-              <p className="text-gray-400 leading-relaxed">
-                India's premier sports academy dedicated to nurturing athletic excellence and
-                building champions of tomorrow.
-              </p>
-            </div>
+    <footer className="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white overflow-hidden">
+      {/* Animated Background */}
+      <motion.div
+        animate={{
+          scale: [1, 1.2, 1],
+          rotate: [0, 180, 360],
+        }}
+        transition={{
+          duration: 30,
+          repeat: Infinity,
+          ease: "linear",
+        }}
+        className="absolute top-0 right-0 w-[800px] h-[800px] bg-amber-500/10 rounded-full blur-3xl"
+      />
 
-            {/* Contact Info */}
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-primary-400 flex-shrink-0 mt-0.5" />
-                <span className="text-sm">
-                  123 Sports Avenue, Los Angeles,
-                  <br />
-                  CA 90012, United States
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Phone className="h-5 w-5 text-primary-400 flex-shrink-0" />
-                <a href="tel:+15551234567" className="text-sm hover:text-primary-400 transition-colors">
-                  +1 (555) 123-4567
-                </a>
-              </div>
-              <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-primary-400 flex-shrink-0" />
-                <a
-                  href="mailto:info@mastergrade.com"
-                  className="text-sm hover:text-primary-400 transition-colors"
-                >
-                  info@mastergrade.com
-                </a>
-              </div>
-            </div>
+      {/* Top Border */}
+      <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 shadow-lg shadow-amber-500/50" />
 
-            {/* Social Links */}
-            <div className="flex gap-3">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-600 transition-all hover:scale-110"
-                  aria-label={social.label}
-                >
-                  <social.icon className="h-5 w-5" />
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* Links Sections */}
-          <div>
-            <h4 className="text-white font-bold mb-4">Company</h4>
-            <ul className="space-y-3">
-              {footerLinks.company.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    to={link.href}
-                    className="text-sm hover:text-primary-400 transition-colors inline-block"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-white font-bold mb-4">Programs</h4>
-            <ul className="space-y-3">
-              {footerLinks.programs.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    to={link.href}
-                    className="text-sm hover:text-primary-400 transition-colors inline-block"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-white font-bold mb-4">Resources</h4>
-            <ul className="space-y-3">
-              {footerLinks.resources.map((link) => (
-                <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-sm hover:text-primary-400 transition-colors inline-block"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-white font-bold mb-4">Legal</h4>
-            <ul className="space-y-3">
-              {footerLinks.legal.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    to={link.href}
-                    className="text-sm hover:text-primary-400 transition-colors inline-block"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Newsletter Section */}
-        <div className="mt-12 pt-8 border-t border-gray-800">
-          <div className="max-w-md">
-            <h4 className="text-white font-bold mb-2">Subscribe to our Newsletter</h4>
-            <p className="text-sm text-gray-400 mb-4">
-              Get the latest updates on events, programs, and success stories.
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        {/* Main Footer Content */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+          {/* Brand */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h3 className="text-5xl font-black uppercase mb-4 tracking-tight" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+              Master <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-500">Grade</span>
+            </h3>
+            <div className="w-20 h-1 bg-gradient-to-r from-amber-500 to-yellow-500 mb-6 shadow-lg shadow-amber-500/50" />
+            <p className="text-gray-300 mb-8 leading-relaxed font-semibold text-lg">
+              Building legends since 2010. Where champions train.
             </p>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-primary-500 text-white placeholder-gray-500"
-              />
-              <button className="px-6 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition-colors whitespace-nowrap">
-                Subscribe
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-gray-800">
-        <div className="container-custom px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-gray-400 text-center md:text-left">
-              © {currentYear} Master Grade Sports Academy. All rights reserved.
-            </p>
-            <div className="flex items-center gap-6 text-sm">
-              <Link to="/privacy" className="text-gray-400 hover:text-primary-400 transition-colors">
-                Privacy
-              </Link>
-              <Link to="/terms" className="text-gray-400 hover:text-primary-400 transition-colors">
-                Terms
-              </Link>
-              <Link to="/cookies" className="text-gray-400 hover:text-primary-400 transition-colors">
-                Cookies
-              </Link>
+            {/* Social */}
+            <div className="flex gap-4">
+              {[Facebook, Instagram, Twitter, Youtube].map((Icon, index) => (
+                <motion.button
+                  key={index}
+                  whileHover={{ scale: 1.2, rotate: 360 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="w-14 h-14 bg-amber-500/20 hover:bg-gradient-to-br hover:from-amber-500 hover:to-yellow-500 backdrop-blur-md flex items-center justify-center rounded-xl transition-all duration-300 shadow-lg hover:shadow-amber-500/50"
+                >
+                  <Icon className="w-6 h-6" />
+                </motion.button>
+              ))}
             </div>
-          </div>
+          </motion.div>
+
+          {/* Quick Links */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+          >
+            <h4 className="text-2xl font-black uppercase mb-8 tracking-tight" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>Quick Links</h4>
+            <ul className="space-y-4">
+              {['About Us', 'Our Programs', 'Success Stories', 'Events', 'Blog'].map((item) => (
+                <li key={item}>
+                  <motion.a
+                    whileHover={{ x: 10 }}
+                    href="#"
+                    className="text-gray-400 hover:text-amber-500 transition-colors font-bold uppercase text-base tracking-wider flex items-center gap-2 group"
+                  >
+                    <Zap className="w-4 h-4 text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {item}
+                  </motion.a>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* Sports */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            <h4 className="text-2xl font-black uppercase mb-8 tracking-tight" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>Our Sports</h4>
+            <ul className="space-y-4">
+              {['Football', 'Basketball', 'Tennis', 'Swimming', 'Cricket'].map((sport) => (
+                <li key={sport}>
+                  <motion.a
+                    whileHover={{ x: 10 }}
+                    href="#"
+                    className="text-gray-400 hover:text-amber-500 transition-colors font-bold uppercase text-base tracking-wider flex items-center gap-2 group"
+                  >
+                    <Zap className="w-4 h-4 text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {sport}
+                  </motion.a>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* Contact & Newsletter */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+          >
+            <h4 className="text-2xl font-black uppercase mb-8 tracking-tight" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>Contact</h4>
+            <ul className="space-y-5 mb-8">
+              <motion.li whileHover={{ x: 5 }} className="flex items-start gap-4 text-gray-300">
+                <Phone className="w-6 h-6 mt-1 text-amber-500 flex-shrink-0" />
+                <span className="font-bold text-base">+1 (555) 123-4567</span>
+              </motion.li>
+              <motion.li whileHover={{ x: 5 }} className="flex items-start gap-4 text-gray-300">
+                <Mail className="w-6 h-6 mt-1 text-amber-500 flex-shrink-0" />
+                <span className="font-bold text-base">hello@mastergrade.com</span>
+              </motion.li>
+              <motion.li whileHover={{ x: 5 }} className="flex items-start gap-4 text-gray-300">
+                <MapPin className="w-6 h-6 mt-1 text-amber-500 flex-shrink-0" />
+                <span className="font-bold text-base">123 Champions Ave, Sports City</span>
+              </motion.li>
+            </ul>
+
+            {/* Newsletter */}
+            <div className="bg-amber-500/10 backdrop-blur-md rounded-2xl p-6 border border-amber-500/20">
+              <h5 className="text-xl font-black uppercase mb-4 tracking-wider" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>Newsletter</h5>
+              <div className="flex gap-2">
+                <Input
+                  type="email"
+                  placeholder="Your email"
+                  className="bg-black/50 border-amber-500/30 text-white placeholder:text-gray-500 focus:border-amber-500 rounded-xl font-semibold"
+                />
+                <Button className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-black font-black uppercase px-6 rounded-xl shadow-lg hover:shadow-amber-500/50">
+                  Join
+                </Button>
+              </div>
+            </div>
+          </motion.div>
         </div>
+
+        {/* Bottom Bar */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4 }}
+          className="pt-10 border-t border-amber-500/20 flex flex-col sm:flex-row justify-between items-center gap-6"
+        >
+          <p className="text-gray-400 font-bold uppercase tracking-widest text-sm">
+            © 2026 Master Grade. All Rights Reserved.
+          </p>
+          <div className="flex gap-8">
+            <a href="#" className="text-gray-400 hover:text-amber-500 transition-colors font-bold uppercase text-sm tracking-wider">
+              Privacy
+            </a>
+            <a href="#" className="text-gray-400 hover:text-amber-500 transition-colors font-bold uppercase text-sm tracking-wider">
+              Terms
+            </a>
+          </div>
+        </motion.div>
       </div>
     </footer>
   );
-};
+}

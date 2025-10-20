@@ -1,19 +1,26 @@
-import React from 'react';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import type { User } from '@/types';
-import { formatDate } from '@/utils/helpers';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { UserCog, Mail, Phone, Calendar, CheckCircle2, XCircle } from 'lucide-react';
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import type { User } from "@/types";
+import { formatDate } from "@/utils/helpers";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  UserCog,
+  Mail,
+  Phone,
+  Calendar,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 
 interface UserDetailsProps {
   user: User;
@@ -21,26 +28,30 @@ interface UserDetailsProps {
   onEdit: () => void;
 }
 
-export const UserDetails: React.FC<UserDetailsProps> = ({ 
-  user, 
-  onClose, 
-  onEdit 
+export const UserDetails: React.FC<UserDetailsProps> = ({
+  user,
+  onClose,
+  onEdit,
 }) => {
   const getInitials = (name: string) => {
     return name
-      .split(' ')
-      .map(part => part[0])
-      .join('')
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
       .toUpperCase()
       .substring(0, 2);
   };
 
   const getRoleBadgeColor = (role: string) => {
-    switch(role) {
-      case 'admin': return 'bg-red-500 hover:bg-red-600';
-      case 'trainer': return 'bg-blue-500 hover:bg-blue-600';
-      case 'student': return 'bg-green-500 hover:bg-green-600';
-      default: return 'bg-gray-500 hover:bg-gray-600';
+    switch (role) {
+      case "admin":
+        return "bg-red-500 hover:bg-red-600";
+      case "trainer":
+        return "bg-blue-500 hover:bg-blue-600";
+      case "student":
+        return "bg-green-500 hover:bg-green-600";
+      default:
+        return "bg-gray-500 hover:bg-gray-600";
     }
   };
 
@@ -93,7 +104,7 @@ export const UserDetails: React.FC<UserDetailsProps> = ({
             <span className="text-sm text-muted-foreground">Phone</span>
             <p className="flex items-center">
               <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
-              {user.phone || 'Not provided'}
+              {user.phone || "Not provided"}
             </p>
           </div>
         </div>
@@ -132,7 +143,7 @@ export const UserDetails: React.FC<UserDetailsProps> = ({
             <div className="space-y-2">
               <h3 className="text-lg font-medium">Sports</h3>
               <div className="flex flex-wrap gap-2">
-                {user.sports.map(sport => (
+                {user.sports.map((sport) => (
                   <Badge key={sport} variant="secondary">
                     {sport}
                   </Badge>
@@ -147,9 +158,7 @@ export const UserDetails: React.FC<UserDetailsProps> = ({
         <Button variant="outline" onClick={onClose}>
           Close
         </Button>
-        <Button onClick={onEdit}>
-          Edit User
-        </Button>
+        <Button onClick={onEdit}>Edit User</Button>
       </CardFooter>
     </Card>
   );

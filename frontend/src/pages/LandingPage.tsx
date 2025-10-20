@@ -1,29 +1,24 @@
-import React, { useEffect } from 'react';
-import { Navigation } from '@/components/landing/Navigation';
-import { HeroSection } from '@/components/landing/HeroSection';
-import { SportsSection } from '@/components/landing/SportsSection';
-import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
-import { EventsSection } from '@/components/landing/EventsSection';
-import { FeaturesSection } from '@/components/landing/FeaturesSection';
-import { Footer } from '@/components/landing/Footer';
+import React from "react";
+import { motion } from "framer-motion";
 
-export const LandingPage: React.FC = () => {
-  useEffect(() => {
-    // Scroll to top on component mount
-    window.scrollTo(0, 0);
-  }, []);
+import HeroSection from "@/components/landing/HeroSection";
+import SportsGrid from "@/components/landing/SportsGrid";
+import TestimonialsCarousel from "@/components/landing/TestimonialsCarousel";
+import EventsTimeline from "@/components/landing/EventsTimeline";
+import StatsSection from "@/components/landing/StatsSection";
+import WhyChooseUs from "@/components/landing/WhyChooseUs";
+import Footer from "@/components/landing/Footer";
 
+export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white">
-      <Navigation />
-      <main>
-        <HeroSection />
-        <SportsSection />
-        <TestimonialsSection />
-        <EventsSection />
-        <FeaturesSection />
-      </main>
+    <div className="relative bg-black overflow-hidden">
+      <HeroSection />
+      <SportsGrid />
+      <WhyChooseUs />
+      <StatsSection />
+      <TestimonialsCarousel />
+      <EventsTimeline />
       <Footer />
     </div>
   );
-};
+}

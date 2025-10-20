@@ -90,7 +90,7 @@ export const PAGE_SIZE_OPTIONS = [5, 10, 20, 50, 100];
 
 // Local storage keys
 export const STORAGE_KEYS = {
-  TOKEN: 'mg_auth_token',
-  REFRESH_TOKEN: 'mg_refresh_token',
-  USER: 'mg_user',
+  TOKEN: "mg_auth_token",
+  REFRESH_TOKEN: "mg_refresh_token",
+  USER: "mg_user",
 } as const;

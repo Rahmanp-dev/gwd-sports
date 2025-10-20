@@ -80,11 +80,11 @@ export const StudentManagement: React.FC = () => {
       if (response?.data) {
         setStudents(response.data.students || []);
         setPagination({
-            currentPage: response.data.pagination.currentPage,
-            totalPages: response.data.pagination.totalPages,
-            totalItems: response.data.pagination.totalStudents, // Map totalStudents to totalItems
-            hasNextPage: response.data.pagination.hasNextPage,
-            hasPrevPage: response.data.pagination.hasPrevPage,
+          currentPage: response.data.pagination.currentPage,
+          totalPages: response.data.pagination.totalPages,
+          totalItems: response.data.pagination.totalStudents, // Map totalStudents to totalItems
+          hasNextPage: response.data.pagination.hasNextPage,
+          hasPrevPage: response.data.pagination.hasPrevPage,
         });
       }
     } catch (error: any) {
@@ -132,7 +132,7 @@ export const StudentManagement: React.FC = () => {
       await studentService.updateStudent(selectedStudent._id, data);
       toastUtils.success(
         "Student updated successfully",
-        "The student information has been updated."
+        "The student information has been updated.",
       );
 
       setShowForm(false);
@@ -155,11 +155,11 @@ export const StudentManagement: React.FC = () => {
       await studentService.updateKitStatus(
         selectedStudent._id,
         selectedKit._id,
-        data
+        data,
       );
       toastUtils.success(
         "Kit status updated successfully",
-        "The kit status has been updated."
+        "The kit status has been updated.",
       );
 
       setShowKitForm(false);
@@ -247,32 +247,34 @@ export const StudentManagement: React.FC = () => {
       <Dialog
         open={showForm}
         onOpenChange={(open) => {
-            if (!open) setSelectedStudent(null);
-            setShowForm(open);
+          if (!open) setSelectedStudent(null);
+          setShowForm(open);
         }}
-        >
+      >
         <DialogContent className="sm:max-w-2xl">
-            <DialogHeader>
+          <DialogHeader>
             <DialogTitle>Edit Student</DialogTitle>
-            </DialogHeader>
-            {/* Only render StudentForm when we have a selected student */}
-            {selectedStudent ? (
+          </DialogHeader>
+          {/* Only render StudentForm when we have a selected student */}
+          {selectedStudent ? (
             <StudentForm
-                student={selectedStudent}
-                onSubmit={handleStudentSubmit}
-                isLoading={isLoading}
-                onCancel={() => {
+              student={selectedStudent}
+              onSubmit={handleStudentSubmit}
+              isLoading={isLoading}
+              onCancel={() => {
                 setShowForm(false);
                 setSelectedStudent(null);
-                }}
+              }}
             />
-            ) : (
+          ) : (
             <div className="p-4 text-center">
-                <p className="text-muted-foreground">Loading student information...</p>
+              <p className="text-muted-foreground">
+                Loading student information...
+              </p>
             </div>
-            )}
+          )}
         </DialogContent>
-        </Dialog>
+      </Dialog>
 
       {/* Student Details Dialog */}
       <Dialog

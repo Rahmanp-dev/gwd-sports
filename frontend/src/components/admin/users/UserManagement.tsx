@@ -1,23 +1,23 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { UserTable } from './UserTable';
-import { UserForm } from './UserForm';
-import { UserDetails } from './UserDetails';
-import { Button } from '@/components/ui/button';
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle
-} from '@/components/ui/alert-dialog';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import type { User, UserFilters, UserFormData, UserUpdateData } from '@/types';
-import { userService } from '@/services/userService';
-import { UserPlus } from 'lucide-react';
-import { toast } from 'sonner';
+import React, { useState, useEffect, useCallback } from "react";
+import { UserTable } from "./UserTable";
+import { UserForm } from "./UserForm";
+import { UserDetails } from "./UserDetails";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import type { User, UserFilters, UserFormData, UserUpdateData } from "@/types";
+import { userService } from "@/services/userService";
+import { UserPlus } from "lucide-react";
+import { toast } from "sonner";
 
 export const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -25,15 +25,15 @@ export const UserManagement: React.FC = () => {
   const [filters, setFilters] = useState<UserFilters>({
     page: 1,
     limit: 10,
-    sortBy: 'createdAt',
-    sortOrder: 'desc'
+    sortBy: "createdAt",
+    sortOrder: "desc",
   });
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
     hasNextPage: false,
-    hasPrevPage: false
+    hasPrevPage: false,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -42,42 +42,42 @@ export const UserManagement: React.FC = () => {
 
   // Enhanced error extraction function
   const extractErrorMessage = (error: any): string => {
-    console.log('Full error object:', error);
-    
+    console.log("Full error object:", error);
+
     // Try to get the actual error response
     const response = error?.response || error;
     const data = response?.data || response;
-    
+
     // Check if it's a validation error with specific field errors
     if (data?.errors && Array.isArray(data.errors) && data.errors.length > 0) {
       const firstError = data.errors[0];
-      
+
       // Return the specific validation message
       if (firstError?.message) {
         return firstError.message;
       }
-      
+
       // Fallback to constructing message from error details
       if (firstError?.path && firstError?.code) {
-        const fieldName = Array.isArray(firstError.path) 
-          ? firstError.path[firstError.path.length - 1] 
+        const fieldName = Array.isArray(firstError.path)
+          ? firstError.path[firstError.path.length - 1]
           : firstError.path;
         return `Invalid ${fieldName}: ${firstError.code}`;
       }
     }
-    
+
     // Check for general error message in various formats
-    if (data?.message && data.message !== 'Invalid request data') {
+    if (data?.message && data.message !== "Invalid request data") {
       return data.message;
     }
-    
+
     // Check error message in different locations
-    if (error?.message && error.message !== 'Invalid request data') {
+    if (error?.message && error.message !== "Invalid request data") {
       return error.message;
     }
-    
+
     // Last resort - return a generic message
-    return 'An unexpected error occurred. Please check your input and try again.';
+    return "An unexpected error occurred. Please check your input and try again.";
   };
 
   // Fetch users based on filters
@@ -89,14 +89,14 @@ export const UserManagement: React.FC = () => {
       setPagination(response.data.pagination);
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
-      toast.error('Failed to fetch users', {
+      toast.error("Failed to fetch users", {
         description: errorMessage,
         style: {
-          background: '#fef2f2',
-          borderColor: '#fecaca',
-          color: '#991b1b',
+          background: "#fef2f2",
+          borderColor: "#fecaca",
+          color: "#991b1b",
         },
-        className: 'border-l-4 border-l-red-500'
+        className: "border-l-4 border-l-red-500",
       });
     } finally {
       setIsLoading(false);
@@ -115,43 +115,46 @@ export const UserManagement: React.FC = () => {
       if (selectedUser) {
         // Update existing user
         await userService.updateUser(selectedUser._id, data as UserUpdateData);
-        toast.success('User updated successfully', {
-          description: 'The user information has been updated.',
+        toast.success("User updated successfully", {
+          description: "The user information has been updated.",
           style: {
-            background: '#f0fdf4',
-            borderColor: '#bbf7d0',
-            color: '#166534',
+            background: "#f0fdf4",
+            borderColor: "#bbf7d0",
+            color: "#166534",
           },
-          className: 'border-l-4 border-l-green-500'
+          className: "border-l-4 border-l-green-500",
         });
       } else {
         // Create new user
         await userService.createUser(data);
-        toast.success('User created successfully', {
-          description: 'The new user has been added to the system.',
+        toast.success("User created successfully", {
+          description: "The new user has been added to the system.",
           style: {
-            background: '#f0fdf4',
-            borderColor: '#bbf7d0',
-            color: '#166534',
+            background: "#f0fdf4",
+            borderColor: "#bbf7d0",
+            color: "#166534",
           },
-          className: 'border-l-4 border-l-green-500'
+          className: "border-l-4 border-l-green-500",
         });
       }
-      
+
       setShowForm(false);
       setSelectedUser(null);
       fetchUsers(); // Refresh user list
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
-      toast.error(selectedUser ? 'Failed to update user' : 'Failed to create user', {
-        description: errorMessage,
-        style: {
-          background: '#fef2f2',
-          borderColor: '#fecaca',
-          color: '#991b1b',
+      toast.error(
+        selectedUser ? "Failed to update user" : "Failed to create user",
+        {
+          description: errorMessage,
+          style: {
+            background: "#fef2f2",
+            borderColor: "#fecaca",
+            color: "#991b1b",
+          },
+          className: "border-l-4 border-l-red-500",
         },
-        className: 'border-l-4 border-l-red-500'
-      });
+      );
     } finally {
       setIsLoading(false);
     }
@@ -160,30 +163,30 @@ export const UserManagement: React.FC = () => {
   // Handle delete user
   const handleDeleteUser = async () => {
     if (!userToDelete) return;
-    
+
     setIsLoading(true);
     try {
       await userService.deleteUser(userToDelete);
-      toast.success('User deleted successfully', {
-        description: 'The user has been permanently removed from the system.',
+      toast.success("User deleted successfully", {
+        description: "The user has been permanently removed from the system.",
         style: {
-          background: '#f0fdf4',
-          borderColor: '#bbf7d0',
-          color: '#166534',
+          background: "#f0fdf4",
+          borderColor: "#bbf7d0",
+          color: "#166534",
         },
-        className: 'border-l-4 border-l-green-500'
+        className: "border-l-4 border-l-green-500",
       });
       fetchUsers(); // Refresh user list
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
-      toast.error('Failed to delete user', {
+      toast.error("Failed to delete user", {
         description: errorMessage,
         style: {
-          background: '#fef2f2',
-          borderColor: '#fecaca',
-          color: '#991b1b',
+          background: "#fef2f2",
+          borderColor: "#fecaca",
+          color: "#991b1b",
         },
-        className: 'border-l-4 border-l-red-500'
+        className: "border-l-4 border-l-red-500",
       });
     } finally {
       setUserToDelete(null);
@@ -195,26 +198,26 @@ export const UserManagement: React.FC = () => {
   const handleToggleUserStatus = async (userId: string) => {
     try {
       await userService.toggleUserStatus(userId);
-      toast.success('User status updated successfully', {
-        description: 'The user status has been changed.',
+      toast.success("User status updated successfully", {
+        description: "The user status has been changed.",
         style: {
-          background: '#f0fdf4',
-          borderColor: '#bbf7d0',
-          color: '#166534',
+          background: "#f0fdf4",
+          borderColor: "#bbf7d0",
+          color: "#166534",
         },
-        className: 'border-l-4 border-l-green-500'
+        className: "border-l-4 border-l-green-500",
       });
       fetchUsers(); // Refresh user list
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
-      toast.error('Failed to update user status', {
+      toast.error("Failed to update user status", {
         description: errorMessage,
         style: {
-          background: '#fef2f2',
-          borderColor: '#fecaca',
-          color: '#991b1b',
+          background: "#fef2f2",
+          borderColor: "#fecaca",
+          color: "#991b1b",
         },
-        className: 'border-l-4 border-l-red-500'
+        className: "border-l-4 border-l-red-500",
       });
     }
   };
@@ -227,14 +230,14 @@ export const UserManagement: React.FC = () => {
       setShowDetails(true);
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
-      toast.error('Failed to fetch user details', {
+      toast.error("Failed to fetch user details", {
         description: errorMessage,
         style: {
-          background: '#fef2f2',
-          borderColor: '#fecaca',
-          color: '#991b1b',
+          background: "#fef2f2",
+          borderColor: "#fecaca",
+          color: "#991b1b",
         },
-        className: 'border-l-4 border-l-red-500'
+        className: "border-l-4 border-l-red-500",
       });
     }
   };
@@ -248,14 +251,14 @@ export const UserManagement: React.FC = () => {
       setShowDetails(false);
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
-      toast.error('Failed to fetch user details', {
+      toast.error("Failed to fetch user details", {
         description: errorMessage,
         style: {
-          background: '#fef2f2',
-          borderColor: '#fecaca',
-          color: '#991b1b',
+          background: "#fef2f2",
+          borderColor: "#fecaca",
+          color: "#991b1b",
         },
-        className: 'border-l-4 border-l-red-500'
+        className: "border-l-4 border-l-red-500",
       });
     }
   };
@@ -265,12 +268,15 @@ export const UserManagement: React.FC = () => {
       {/* Header with actions */}
       <div className="flex flex-col sm:flex-row justify-between gap-3">
         <h2 className="text-2xl font-bold">User Management</h2>
-        
-        <div className="flex gap-2">          
-          <Button onClick={() => {
-            setSelectedUser(null);
-            setShowForm(true);
-          }} className="gap-1">
+
+        <div className="flex gap-2">
+          <Button
+            onClick={() => {
+              setSelectedUser(null);
+              setShowForm(true);
+            }}
+            className="gap-1"
+          >
             <UserPlus className="h-4 w-4" />
             Add User
           </Button>
@@ -278,7 +284,7 @@ export const UserManagement: React.FC = () => {
       </div>
 
       {/* User Table */}
-      <UserTable 
+      <UserTable
         users={users}
         isLoading={isLoading}
         onViewUser={handleViewUser}
@@ -288,16 +294,19 @@ export const UserManagement: React.FC = () => {
         onFilterChange={setFilters}
         currentFilters={filters}
         pagination={pagination}
-        onPageChange={(page) => setFilters({...filters, page})}
+        onPageChange={(page) => setFilters({ ...filters, page })}
       />
 
       {/* User Form Dialog */}
-      <Dialog open={showForm} onOpenChange={(open) => {
-        if (!open) setSelectedUser(null);
-        setShowForm(open);
-      }}>
+      <Dialog
+        open={showForm}
+        onOpenChange={(open) => {
+          if (!open) setSelectedUser(null);
+          setShowForm(open);
+        }}
+      >
         <DialogContent className="sm:max-w-2xl">
-          <UserForm 
+          <UserForm
             user={selectedUser || undefined}
             onSubmit={handleUserSubmit}
             isLoading={isLoading}
@@ -310,13 +319,16 @@ export const UserManagement: React.FC = () => {
       </Dialog>
 
       {/* User Details Dialog */}
-      <Dialog open={showDetails} onOpenChange={(open) => {
-        setShowDetails(open);
-        if (!open) setSelectedUser(null);
-      }}>
+      <Dialog
+        open={showDetails}
+        onOpenChange={(open) => {
+          setShowDetails(open);
+          if (!open) setSelectedUser(null);
+        }}
+      >
         <DialogContent className="sm:max-w-2xl">
           {selectedUser && (
-            <UserDetails 
+            <UserDetails
               user={selectedUser}
               onClose={() => setShowDetails(false)}
               onEdit={() => {
@@ -329,20 +341,23 @@ export const UserManagement: React.FC = () => {
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!userToDelete} onOpenChange={(open) => {
-        if (!open) setUserToDelete(null);
-      }}>
+      <AlertDialog
+        open={!!userToDelete}
+        onOpenChange={(open) => {
+          if (!open) setUserToDelete(null);
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the user
-              and remove their data from our servers.
+              This action cannot be undone. This will permanently delete the
+              user and remove their data from our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={handleDeleteUser}
               className="bg-red-600 hover:bg-red-700"
             >

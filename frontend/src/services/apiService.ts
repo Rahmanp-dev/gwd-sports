@@ -109,7 +109,11 @@ class ApiService {
     return this.api.delete(url, config);
   }
 
-  async patch<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+  async patch<T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<T> {
     return this.api.patch(url, data, config);
   }
 }

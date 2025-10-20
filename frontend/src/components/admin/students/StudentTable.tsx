@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Table, 
-  TableBody, 
-  TableCaption, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import React, { useState, useEffect } from "react";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,20 +18,20 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import type { Student, StudentFilters } from '@/types';
-import { formatDate } from '@/utils/helpers';
-import { 
-  Edit, 
-  MoreHorizontal, 
-  Search, 
+} from "@/components/ui/dropdown-menu";
+import type { Student, StudentFilters } from "@/types";
+import { formatDate } from "@/utils/helpers";
+import {
+  Edit,
+  MoreHorizontal,
+  Search,
   Eye,
   ChevronUp,
   ChevronDown,
   ChevronsUpDown,
-  Package
-} from 'lucide-react';
-import { SPORTS_LIST } from '@/utils/constants';
+  Package,
+} from "lucide-react";
+import { SPORTS_LIST } from "@/utils/constants";
 
 interface StudentTableProps {
   students: Student[];
@@ -59,53 +59,57 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   onFilterChange,
   currentFilters,
   pagination,
-  onPageChange
+  onPageChange,
 }) => {
-  const [searchTerm, setSearchTerm] = useState(currentFilters.search || '');
+  const [searchTerm, setSearchTerm] = useState(currentFilters.search || "");
 
   // Debounced search effect
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      onFilterChange({ ...currentFilters, search: searchTerm || undefined, page: 1 });
+      onFilterChange({
+        ...currentFilters,
+        search: searchTerm || undefined,
+        page: 1,
+      });
     }, 300);
 
     return () => clearTimeout(debounceTimer);
   }, [searchTerm]);
 
   const handleSportFilter = (sport: string | null) => {
-    onFilterChange({ 
-      ...currentFilters, 
-      sport: sport || undefined, 
-      page: 1 
+    onFilterChange({
+      ...currentFilters,
+      sport: sport || undefined,
+      page: 1,
     });
   };
 
   const handleLevelFilter = (level: string | null) => {
-    onFilterChange({ 
-      ...currentFilters, 
-      level: level as any || undefined, 
-      page: 1 
+    onFilterChange({
+      ...currentFilters,
+      level: (level as any) || undefined,
+      page: 1,
     });
   };
 
   const handleStatusFilter = (isActive: boolean | null) => {
-    onFilterChange({ 
-      ...currentFilters, 
-      isActive: isActive === null ? undefined : isActive, 
-      page: 1 
+    onFilterChange({
+      ...currentFilters,
+      isActive: isActive === null ? undefined : isActive,
+      page: 1,
     });
   };
 
   const handleSort = (field: string) => {
-    const sortOrder = 
-      currentFilters.sortBy === field && currentFilters.sortOrder === 'asc' 
-        ? 'desc' 
-        : 'asc';
-        
-    onFilterChange({ 
-      ...currentFilters, 
-      sortBy: field, 
-      sortOrder 
+    const sortOrder =
+      currentFilters.sortBy === field && currentFilters.sortOrder === "asc"
+        ? "desc"
+        : "asc";
+
+    onFilterChange({
+      ...currentFilters,
+      sortBy: field,
+      sortOrder,
     });
   };
 
@@ -113,27 +117,37 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     if (currentFilters.sortBy !== field) {
       return <ChevronsUpDown className="h-4 w-4 text-gray-400" />;
     }
-    
-    return currentFilters.sortOrder === 'asc' 
-      ? <ChevronUp className="h-4 w-4 text-blue-600" />
-      : <ChevronDown className="h-4 w-4 text-blue-600" />;
+
+    return currentFilters.sortOrder === "asc" ? (
+      <ChevronUp className="h-4 w-4 text-blue-600" />
+    ) : (
+      <ChevronDown className="h-4 w-4 text-blue-600" />
+    );
   };
 
   const getLevelBadgeColor = (level: string) => {
-    switch(level) {
-      case 'beginner': return 'bg-green-500 hover:bg-green-600';
-      case 'intermediate': return 'bg-yellow-500 hover:bg-yellow-600';
-      case 'advanced': return 'bg-red-500 hover:bg-red-600';
-      default: return 'bg-gray-500 hover:bg-gray-600';
+    switch (level) {
+      case "beginner":
+        return "bg-green-500 hover:bg-green-600";
+      case "intermediate":
+        return "bg-yellow-500 hover:bg-yellow-600";
+      case "advanced":
+        return "bg-red-500 hover:bg-red-600";
+      default:
+        return "bg-gray-500 hover:bg-gray-600";
     }
   };
 
   const getFeeStatusBadgeColor = (status: string) => {
-    switch(status) {
-      case 'paid': return 'bg-green-500 hover:bg-green-600';
-      case 'pending': return 'bg-yellow-500 hover:bg-yellow-600';
-      case 'overdue': return 'bg-red-500 hover:bg-red-600';
-      default: return 'bg-gray-500 hover:bg-gray-600';
+    switch (status) {
+      case "paid":
+        return "bg-green-500 hover:bg-green-600";
+      case "pending":
+        return "bg-yellow-500 hover:bg-yellow-600";
+      case "overdue":
+        return "bg-red-500 hover:bg-red-600";
+      default:
+        return "bg-gray-500 hover:bg-gray-600";
     }
   };
 
@@ -159,15 +173,18 @@ export const StudentTable: React.FC<StudentTableProps> = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
-                Sport: {currentFilters.sport || 'All'}
+                Sport: {currentFilters.sport || "All"}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem onClick={() => handleSportFilter(null)}>
                 All Sports
               </DropdownMenuItem>
-              {SPORTS_LIST.map(sport => (
-                <DropdownMenuItem key={sport} onClick={() => handleSportFilter(sport)}>
+              {SPORTS_LIST.map((sport) => (
+                <DropdownMenuItem
+                  key={sport}
+                  onClick={() => handleSportFilter(sport)}
+                >
                   {sport}
                 </DropdownMenuItem>
               ))}
@@ -177,20 +194,26 @@ export const StudentTable: React.FC<StudentTableProps> = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
-                Level: {currentFilters.level ? currentFilters.level.charAt(0).toUpperCase() + currentFilters.level.slice(1) : 'All'}
+                Level:{" "}
+                {currentFilters.level
+                  ? currentFilters.level.charAt(0).toUpperCase() +
+                    currentFilters.level.slice(1)
+                  : "All"}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem onClick={() => handleLevelFilter(null)}>
                 All Levels
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleLevelFilter('beginner')}>
+              <DropdownMenuItem onClick={() => handleLevelFilter("beginner")}>
                 Beginner
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleLevelFilter('intermediate')}>
+              <DropdownMenuItem
+                onClick={() => handleLevelFilter("intermediate")}
+              >
                 Intermediate
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleLevelFilter('advanced')}>
+              <DropdownMenuItem onClick={() => handleLevelFilter("advanced")}>
                 Advanced
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -199,10 +222,12 @@ export const StudentTable: React.FC<StudentTableProps> = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
-                Status: {
-                  currentFilters.isActive === undefined ? 'All' :
-                  currentFilters.isActive ? 'Active' : 'Inactive'
-                }
+                Status:{" "}
+                {currentFilters.isActive === undefined
+                  ? "All"
+                  : currentFilters.isActive
+                    ? "Active"
+                    : "Inactive"}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -223,17 +248,19 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       <div className="rounded-md border">
         <Table>
           <TableCaption>
-            {isLoading ? 'Loading students...' : `Showing ${students.length} students`}
+            {isLoading
+              ? "Loading students..."
+              : `Showing ${students.length} students`}
           </TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead 
-                className="w-[180px] cursor-pointer hover:bg-gray-50 select-none" 
-                onClick={() => handleSort('user.name')}
+              <TableHead
+                className="w-[180px] cursor-pointer hover:bg-gray-50 select-none"
+                onClick={() => handleSort("user.name")}
               >
                 <div className="flex items-center gap-2">
                   Student Name
-                  {getSortIcon('user.name')}
+                  {getSortIcon("user.name")}
                 </div>
               </TableHead>
               <TableHead className="hidden md:table-cell">Academy</TableHead>
@@ -242,13 +269,13 @@ export const StudentTable: React.FC<StudentTableProps> = ({
               <TableHead>Level</TableHead>
               <TableHead className="hidden lg:table-cell">Fee Status</TableHead>
               <TableHead className="hidden md:table-cell">Kits</TableHead>
-              <TableHead 
-                className="hidden md:table-cell cursor-pointer hover:bg-gray-50 select-none" 
-                onClick={() => handleSort('enrollmentDate')}
+              <TableHead
+                className="hidden md:table-cell cursor-pointer hover:bg-gray-50 select-none"
+                onClick={() => handleSort("enrollmentDate")}
               >
                 <div className="flex items-center gap-2">
                   Enrolled
-                  {getSortIcon('enrollmentDate')}
+                  {getSortIcon("enrollmentDate")}
                 </div>
               </TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -267,9 +294,12 @@ export const StudentTable: React.FC<StudentTableProps> = ({
             ) : students.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={9} className="text-center h-24">
-                  {searchTerm || currentFilters.sport || currentFilters.level || currentFilters.isActive !== undefined 
-                    ? 'No students found matching your search criteria.' 
-                    : 'No students found.'}
+                  {searchTerm ||
+                  currentFilters.sport ||
+                  currentFilters.level ||
+                  currentFilters.isActive !== undefined
+                    ? "No students found matching your search criteria."
+                    : "No students found."}
                 </TableCell>
               </TableRow>
             ) : (
@@ -277,21 +307,29 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                 <TableRow key={student._id} className="hover:bg-gray-50">
                   <TableCell className="font-medium">
                     <div>
-                      <div>{student.user?.name || 'Unknown Student'}</div>
-                      <div className="text-sm text-gray-500">{student.user?.email || 'No email'}</div>
+                      <div>{student.user?.name || "Unknown Student"}</div>
+                      <div className="text-sm text-gray-500">
+                        {student.user?.email || "No email"}
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
                     <div>
-                      <div className="font-medium">{student.academy?.name || 'No Academy'}</div>
-                      <div className="text-sm text-gray-500">{student.academy?.location || 'Unknown Location'}</div>
+                      <div className="font-medium">
+                        {student.academy?.name || "No Academy"}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {student.academy?.location || "Unknown Location"}
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    {student.trainer?.name || 'Not assigned'}
+                    {student.trainer?.name || "Not assigned"}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{student.sport || 'Unknown Sport'}</Badge>
+                    <Badge variant="outline">
+                      {student.sport || "Unknown Sport"}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <Badge className={getLevelBadgeColor(student.level)}>
@@ -299,8 +337,12 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                     </Badge>
                   </TableCell>
                   <TableCell className="hidden lg:table-cell">
-                    <Badge className={getFeeStatusBadgeColor(student.fees?.status || 'pending')}>
-                      {student.fees?.status || 'pending'}
+                    <Badge
+                      className={getFeeStatusBadgeColor(
+                        student.fees?.status || "pending",
+                      )}
+                    >
+                      {student.fees?.status || "pending"}
                     </Badge>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
@@ -322,20 +364,26 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => onViewStudent(student._id)}>
+                        <DropdownMenuItem
+                          onClick={() => onViewStudent(student._id)}
+                        >
                           <Eye className="mr-2 h-4 w-4" />
                           View Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onEditStudent(student._id)}>
+                        <DropdownMenuItem
+                          onClick={() => onEditStudent(student._id)}
+                        >
                           <Edit className="mr-2 h-4 w-4" />
                           Edit Student
                         </DropdownMenuItem>
                         {student.kits && student.kits.length > 0 && (
                           <>
                             <DropdownMenuSeparator />
-                            <DropdownMenuLabel>Kit Management</DropdownMenuLabel>
-                            {student.kits.map(kit => (
-                              <DropdownMenuItem 
+                            <DropdownMenuLabel>
+                              Kit Management
+                            </DropdownMenuLabel>
+                            {student.kits.map((kit) => (
+                              <DropdownMenuItem
                                 key={kit._id}
                                 onClick={() => onEditKitStatus(student, kit)}
                               >

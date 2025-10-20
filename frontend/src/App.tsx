@@ -7,7 +7,7 @@ import { clearError } from "@/store/slices/authSlice";
 import AdminLogin from "@/pages/admin/AdminLogin";
 import AdminPage from "@/pages/admin/AdminPage";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import { LandingPage } from "@/pages/LandingPage";
+import LandingPage from "@/pages/LandingPage";
 
 const AppRouter: React.FC = () => {
   const dispatch = useAppDispatch();
