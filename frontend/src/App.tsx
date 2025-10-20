@@ -31,7 +31,7 @@ const AppRouter: React.FC = () => {
 
       {/* Programs Section - Main endpoint with sub-pages */}
       <Route path="/programs">
-        <Route path="events" element={<GalaxyEventsPage />} />
+        <Route path="galaxy-events" element={<GalaxyEventsPage />} />
         <Route path="basketball" element={<MGBCPage />} />
         <Route path="football" element={<MGFCPage />} />
         <Route path="mun" element={<MgMunPage />} />

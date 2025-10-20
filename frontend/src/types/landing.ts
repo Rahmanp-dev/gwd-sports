@@ -33,6 +33,20 @@ export interface Event {
   isFeatured?: boolean;
 }
 
+export interface EventCategory {
+  title: string;
+  icon: string;
+  description: string;
+  gradient: string;
+}
+
+export interface Feature {
+  icon: any; // LucideIcon type
+  title: string;
+  description: string;
+  gradient: string;
+}
+
 export interface Stat {
   id: string;
   label: string;
@@ -44,5 +58,5 @@ export interface Feature {
   id: string;
   title: string;
   description: string;
-  icon: string;
+  icon: any; // LucideIcon type
 }

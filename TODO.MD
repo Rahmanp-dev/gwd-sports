@@ -6,8 +6,7 @@ TODO:
 - [ ] Check edit student - it is misbehaving
 - [ ] Fix the issue with backend build and frontend - new ts version
 - [ ] Update the landing page details
-- [ ] Update the landing page components and make them more modular
-- [ ] Add multiple pages 
+- [ ] MgMun page
 
 Done ✅
 
@@ -16,3 +15,5 @@ Done ✅
 - [x] What prettier does
 - [x] Check if the tsconfig cge cause any issue after changing 
 - [x] Add Landing page 
+- [x] Add multiple pages 
+- [x] Update the landing page components and make them more modular

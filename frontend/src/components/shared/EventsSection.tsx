@@ -3,36 +3,32 @@ import { motion } from "framer-motion";
 import { Calendar, MapPin, Users, ArrowRight, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const events = [
-  {
-    title: "Inter-Academy Football Championship",
-    date: "Feb 15-18, 2026",
-    location: "Master Grade Stadium",
-    participants: "200+ Athletes",
-    image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&h=800&fit=crop",
-    color: "from-green-600 to-emerald-500",
-  },
-  {
-    title: "National Basketball Tournament",
-    date: "Mar 5-10, 2026",
-    location: "Elite Sports Complex",
-    participants: "150+ Teams",
-    image: "https://images.unsplash.com/photo-1608245449230-4ac19066d2d0?w=1200&h=800&fit=crop",
-    color: "from-orange-600 to-red-500",
-  },
-  {
-    title: "Swimming Excellence Gala",
-    date: "Mar 22-24, 2026",
-    location: "Olympic Aquatic Center",
-    participants: "300+ Swimmers",
-    image: "https://images.unsplash.com/photo-1600965962102-9d260a71890d?w=1200&h=800&fit=crop",
-    color: "from-blue-600 to-cyan-500",
-  },
-];
+export interface Event {
+  title: string;
+  date: string;
+  location: string;
+  participants: string;
+  image: string;
+  color: string;
+}
 
-export default function EventsTimeline() {
+interface EventsSectionProps {
+  title: string;
+  subtitle: string;
+  events: Event[];
+  accentColor?: string;
+  bgGradient?: string;
+}
+
+export const EventsSection: React.FC<EventsSectionProps> = ({
+  title,
+  subtitle,
+  events,
+  accentColor = "from-amber-500 to-yellow-500",
+  bgGradient = "from-amber-500/10 to-yellow-500/10",
+}) => {
   return (
-    <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
+    <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-black overflow-hidden">
       {/* Animated Background */}
       <motion.div
         animate={{
@@ -44,7 +40,7 @@ export default function EventsTimeline() {
           repeat: Infinity,
           ease: "linear",
         }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-to-br from-purple-100 to-purple-50 rounded-full blur-3xl opacity-40"
+        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-to-br ${bgGradient} rounded-full blur-3xl opacity-40`}
       />
 
       <div className="relative max-w-7xl mx-auto">
@@ -60,18 +56,18 @@ export default function EventsTimeline() {
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-3 px-8 py-3 bg-purple-600 text-white rounded-full mb-8 shadow-lg shadow-purple-600/50"
+            className={`inline-flex items-center gap-3 px-8 py-3 bg-gradient-to-r ${accentColor} text-black rounded-full mb-8 shadow-lg shadow-green-500/50`}
           >
             <Zap className="w-5 h-5" />
             <span className="text-sm font-black uppercase tracking-[0.3em]" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
-              Upcoming Events
+              {subtitle}
             </span>
           </motion.div>
           
-          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black text-gray-900 mb-6 uppercase tracking-tighter leading-none" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
-            Compete &
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400">
-              Conquer
+          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+            {title.split('&')[0]}
+            <span className={`block text-transparent bg-clip-text bg-gradient-to-r ${accentColor}`}>
+              {title.split('&')[1]}
             </span>
           </h2>
           <motion.div
@@ -79,7 +75,7 @@ export default function EventsTimeline() {
             whileInView={{ scaleX: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1, delay: 0.3 }}
-            className="w-32 h-2 bg-gradient-to-r from-purple-600 to-purple-400 mx-auto shadow-lg shadow-purple-600/50"
+            className={`w-32 h-2 bg-gradient-to-r ${accentColor} mx-auto shadow-lg shadow-green-500/50`}
           />
         </motion.div>
 
@@ -95,7 +91,7 @@ export default function EventsTimeline() {
               whileHover={{ y: -10 }}
               className="group"
             >
-              <div className="relative bg-white rounded-3xl overflow-hidden shadow-2xl hover:shadow-[0_30px_80px_rgba(147,51,234,0.3)] transition-all duration-500 border-4 border-gray-100 hover:border-purple-300">
+              <div className="relative bg-gray-900 rounded-3xl overflow-hidden shadow-2xl hover:shadow-[0_30px_80px_rgba(34,197,94,0.3)] transition-all duration-500 border-4 border-green-500/20 hover:border-green-500/50">
                 <div className="grid lg:grid-cols-2 gap-0">
                   {/* Image */}
                   <div className="relative h-96 lg:h-auto overflow-hidden">
@@ -118,8 +114,8 @@ export default function EventsTimeline() {
                   </div>
 
                   {/* Content */}
-                  <div className="p-12 flex flex-col justify-center bg-gradient-to-br from-white to-purple-50">
-                    <h3 className="text-4xl sm:text-5xl font-black text-gray-900 uppercase mb-8 tracking-tight group-hover:text-purple-600 transition-colors" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+                  <div className="p-12 flex flex-col justify-center bg-gradient-to-br from-gray-900 to-black">
+                    <h3 className="text-4xl sm:text-5xl font-black text-white uppercase mb-8 tracking-tight group-hover:text-green-500 transition-colors" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
                       {event.title}
                     </h3>
 
@@ -131,7 +127,7 @@ export default function EventsTimeline() {
                         <div className={`w-14 h-14 bg-gradient-to-br ${event.color} rounded-xl flex items-center justify-center shadow-lg`}>
                           <Calendar className="w-7 h-7 text-white" />
                         </div>
-                        <span className="text-gray-900 font-black text-lg uppercase" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+                        <span className="text-white font-black text-lg uppercase" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
                           {event.date}
                         </span>
                       </motion.div>
@@ -143,7 +139,7 @@ export default function EventsTimeline() {
                         <div className={`w-14 h-14 bg-gradient-to-br ${event.color} rounded-xl flex items-center justify-center shadow-lg`}>
                           <MapPin className="w-7 h-7 text-white" />
                         </div>
-                        <span className="text-gray-900 font-black text-lg uppercase" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+                        <span className="text-white font-black text-lg uppercase" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
                           {event.location}
                         </span>
                       </motion.div>
@@ -155,14 +151,14 @@ export default function EventsTimeline() {
                         <div className={`w-14 h-14 bg-gradient-to-br ${event.color} rounded-xl flex items-center justify-center shadow-lg`}>
                           <Users className="w-7 h-7 text-white" />
                         </div>
-                        <span className="text-gray-900 font-black text-lg uppercase" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+                        <span className="text-white font-black text-lg uppercase" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
                           {event.participants}
                         </span>
                       </motion.div>
                     </div>
 
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button className={`bg-gradient-to-r ${event.color} hover:shadow-2xl hover:shadow-purple-600/50 text-white text-xl font-black uppercase px-10 py-7 rounded-xl w-full sm:w-auto group/btn`}>
+                      <Button className={`bg-gradient-to-r ${event.color} hover:shadow-2xl hover:shadow-green-500/50 text-white text-xl font-black uppercase px-10 py-7 rounded-xl w-full sm:w-auto group/btn`}>
                         Register Now
                         <ArrowRight className="ml-3 w-6 h-6 group-hover/btn:translate-x-2 transition-transform" />
                       </Button>
@@ -189,7 +185,7 @@ export default function EventsTimeline() {
             <Button
               size="lg"
               variant="outline"
-              className="border-4 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white text-xl font-black uppercase px-12 py-7 rounded-xl shadow-xl hover:shadow-2xl hover:shadow-purple-600/50 transition-all"
+              className={`border-4 border-green-500 text-green-500 hover:bg-green-500 hover:text-black text-xl font-black uppercase px-12 py-7 rounded-xl shadow-xl hover:shadow-2xl hover:shadow-green-500/50 transition-all`}
             >
               View All Events
               <ArrowRight className="ml-3 w-6 h-6" />
@@ -199,4 +195,4 @@ export default function EventsTimeline() {
       </div>
     </section>
   );
-}
+};
