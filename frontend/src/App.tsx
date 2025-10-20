@@ -9,6 +9,13 @@ import AdminPage from "@/pages/admin/AdminPage";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import LandingPage from "@/pages/LandingPage";
 
+// Section Pages
+import MGRLPage from "./pages/sections/MGRL/page";
+import GalaxyEventsPage from "./pages/sections/GalaxyEvents/page";
+import MGBCPage from "./pages/sections/MGBC/page";
+import MGFCPage from "./pages/sections/MGFC/page";
+import MgMunPage from "./pages/sections/MgMun/page";
+
 const AppRouter: React.FC = () => {
   const dispatch = useAppDispatch();
 
@@ -21,6 +28,17 @@ const AppRouter: React.FC = () => {
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<LandingPage />} />
+
+      {/* Programs Section - Main endpoint with sub-pages */}
+      <Route path="/programs">
+        <Route path="events" element={<GalaxyEventsPage />} />
+        <Route path="basketball" element={<MGBCPage />} />
+        <Route path="football" element={<MGFCPage />} />
+        <Route path="mun" element={<MgMunPage />} />
+        <Route path="racing-league" element={<MGRLPage />} />
+      </Route>
+
+      {/* Admin routes */}
       <Route path="/admin/login" element={<AdminLogin />} />
 
       {/* Protected admin routes */}
