@@ -7,6 +7,8 @@ TODO:
 - [ ] Fix the issue with backend build and frontend - new ts version
 - [ ] Update the landing page details
 - [ ] MgMun page
+- [ ] Migrate data folder to utils/constants
+- [ ] Can we use MCP or some auto prompt like thing to automate prompts? like prompt engineering but automated
 
 Done ✅
 

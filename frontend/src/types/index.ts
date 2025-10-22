@@ -1,3 +1,5 @@
+/** USER RELATED TYPE INTERFACES **/
+
 export interface User {
   _id: string;
   name: string;
@@ -79,6 +81,8 @@ export interface UserStatsResponse {
   };
 }
 
+/** STUDENT RELATED TYPE INTERFACE **/
+
 export interface Student {
   _id: string;
   userId: string;
@@ -117,6 +121,8 @@ export interface Student {
   updatedAt: string;
 }
 
+/** TRAINER RELATED TYPE INTERFACE **/
+
 export interface Trainer {
   _id: string;
   userId: User;
@@ -140,6 +146,8 @@ export interface Trainer {
   createdAt: string;
   updatedAt: string;
 }
+
+/** ACADEMY RELATED TYPE INTERFACE **/
 
 export interface Academy {
   _id: string;
@@ -406,4 +414,126 @@ export interface FormField {
   options?: { value: string; label: string }[];
   placeholder?: string;
   validation?: any;
+}
+
+/** EVENT RELATED TYPE INTERFACES **/
+
+export type EventStatus = 'draft' | 'published' | 'ongoing' | 'completed' | 'cancelled';
+
+export interface Event {
+  _id: string;
+  name: string;
+  description: string;
+  sport: string;
+  startDate: string;
+  endDate?: string;
+  location: string;
+  venue: string;
+  participants: string[];
+  maxParticipants?: number;
+  links: string[];
+  images: string[];
+  createdBy: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  academyId?: string;
+  status: EventStatus;
+  isPublic: boolean;
+  registrationOpen: boolean;
+  registrationDeadline?: string;
+  entryFee?: number;
+  contactInfo: {
+    name: string;
+    phone: string;
+    email: string;
+  };
+  tags: string[];
+  requirements?: string;
+  prizes?: string[];
+  isActive: boolean;
+  participantCount?: number;
+  canRegister?: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EventFormData {
+  name: string;
+  description: string;
+  sport: string;
+  startDate: string;
+  endDate?: string;
+  location: string;
+  venue: string;
+  maxParticipants?: number;
+  links?: string[];
+  images?: string[];
+  registrationDeadline?: string;
+  entryFee?: number;
+  contactInfo: {
+    name: string;
+    phone: string;
+    email: string;
+  };
+  status: EventStatus;
+  isPublic: boolean;
+  registrationOpen: boolean;
+  tags?: string[];
+  requirements?: string;
+  prizes?: string[];
+}
+
+export interface EventFilters {
+  page?: number;
+  limit?: number;
+  sport?: string;
+  status?: EventStatus;
+  isPublic?: boolean;
+  registrationOpen?: boolean;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+  location?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface EventStats {
+  totalEvents: number;
+  upcomingEvents: number;
+  ongoingEvents: number;
+  completedEvents: number;
+  cancelledEvents: number;
+  totalParticipants: number;
+  averageParticipants: number;
+  eventsByStatus: Array<{
+    _id: EventStatus;
+    count: number;
+    totalParticipants: number;
+  }>;
+  eventsBySport: Array<{
+    _id: string;
+    count: number;
+    totalParticipants: number;
+  }>;
+  upcomingEventsList: Array<{
+    _id: string;
+    name: string;
+    sport: string;
+    startDate: string;
+    participantCount: number;
+  }>;
+}
+
+export interface PaginatedEventsResponse {
+  events: Event[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalEvents: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
 }

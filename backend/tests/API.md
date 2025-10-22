@@ -15,7 +15,7 @@ POST   /api/events              - Create event
 PUT    /api/events/:id          - Update event
 DELETE /api/events/:id          - Delete event 
 GET    /api/events/admin/stats  - Get event statistics
-GET    /api/events/admin/all-events  - Get All events
+GET    /api/events/admin/all-events  - Get All Historic events
 
 **Admin Endpoints**
 

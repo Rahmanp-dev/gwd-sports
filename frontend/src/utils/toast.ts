@@ -62,3 +62,6 @@ export const toastUtils = {
     });
   },
 };
+
+// Export as showToast for backward compatibility
+export const showToast = toastUtils;
