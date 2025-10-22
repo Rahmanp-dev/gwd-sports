@@ -358,11 +358,25 @@ export const EventManagement: React.FC = () => {
 
           {/* Pagination */}
           {pagination && pagination.totalPages > 1 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-muted/50 rounded-lg">
               <div className="text-sm text-muted-foreground">
-                Showing {events.length} of {pagination.totalEvents} events
+                Showing {(pagination.currentPage - 1) * (filters.limit || 10) + 1} to{' '}
+                {Math.min(pagination.currentPage * (filters.limit || 10), pagination.totalEvents)} of{' '}
+                {pagination.totalEvents} events
               </div>
+              
               <div className="flex items-center gap-2">
+                {/* First Page */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(1)}
+                  disabled={!pagination.hasPrevPage}
+                >
+                  First
+                </Button>
+
+                {/* Previous Page */}
                 <Button
                   variant="outline"
                   size="sm"
@@ -371,9 +385,75 @@ export const EventManagement: React.FC = () => {
                 >
                   Previous
                 </Button>
-                <div className="text-sm">
-                  Page {pagination.currentPage} of {pagination.totalPages}
+
+                {/* Page Numbers */}
+                <div className="hidden sm:flex items-center gap-1">
+                  {/* Show first page */}
+                  {pagination.currentPage > 3 && (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(1)}
+                      >
+                        1
+                      </Button>
+                      {pagination.currentPage > 4 && (
+                        <span className="px-2">...</span>
+                      )}
+                    </>
+                  )}
+
+                  {/* Show pages around current page */}
+                  {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
+                    .filter(
+                      (page) =>
+                        page === pagination.currentPage ||
+                        page === pagination.currentPage - 1 ||
+                        page === pagination.currentPage + 1 ||
+                        page === pagination.currentPage - 2 ||
+                        page === pagination.currentPage + 2
+                    )
+                    .filter((page) => page > 0 && page <= pagination.totalPages)
+                    .map((page) => (
+                      <Button
+                        key={page}
+                        variant={page === pagination.currentPage ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handlePageChange(page)}
+                        className={
+                          page === pagination.currentPage
+                            ? "bg-primary text-primary-foreground"
+                            : ""
+                        }
+                      >
+                        {page}
+                      </Button>
+                    ))}
+
+                  {/* Show last page */}
+                  {pagination.currentPage < pagination.totalPages - 2 && (
+                    <>
+                      {pagination.currentPage < pagination.totalPages - 3 && (
+                        <span className="px-2">...</span>
+                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(pagination.totalPages)}
+                      >
+                        {pagination.totalPages}
+                      </Button>
+                    </>
+                  )}
                 </div>
+
+                {/* Mobile: Show current page info */}
+                <div className="sm:hidden text-sm font-medium px-3">
+                  {pagination.currentPage} / {pagination.totalPages}
+                </div>
+
+                {/* Next Page */}
                 <Button
                   variant="outline"
                   size="sm"
@@ -382,6 +462,38 @@ export const EventManagement: React.FC = () => {
                 >
                   Next
                 </Button>
+
+                {/* Last Page */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(pagination.totalPages)}
+                  disabled={!pagination.hasNextPage}
+                >
+                  Last
+                </Button>
+              </div>
+
+              {/* Items per page selector */}
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground whitespace-nowrap">
+                  Per page:
+                </span>
+                <Select
+                  value={String(filters.limit || 10)}
+                  onValueChange={(value) => handleFilterChange('limit', Number(value))}
+                >
+                  <SelectTrigger className="w-[70px] h-8">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5</SelectItem>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="100">100</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           )}
