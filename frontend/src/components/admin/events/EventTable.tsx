@@ -17,7 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MoreVertical, Edit, Trash2, Eye, BarChart3, Users } from 'lucide-react';
+import { MoreVertical, Edit, Trash2, Eye, Users } from 'lucide-react';
 import { EVENT_STATUS_COLORS } from '@/utils/constants';
 import type { Event } from '@/types';
 
@@ -34,15 +34,7 @@ export const EventTable: React.FC<EventTableProps> = ({
   onEdit,
   onDelete,
   onViewDetails,
-  onViewStats,
 }) => {
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
 
   const formatDateTime = (date: string) => {
     return new Date(date).toLocaleString('en-US', {
@@ -76,7 +68,8 @@ export const EventTable: React.FC<EventTableProps> = ({
               <TableHead className="min-w-[100px] text-center">
                 Participants
               </TableHead>
-              <TableHead className="min-w-[120px]">Registration</TableHead>
+              <TableHead className="min-w-[80px]">Registration</TableHead>
+              <TableHead className="min-w-[80px]">Active</TableHead>
               <TableHead className="text-right min-w-[80px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -124,7 +117,7 @@ export const EventTable: React.FC<EventTableProps> = ({
                 </TableCell>
                 <TableCell>
                   <Badge
-                    variant={event.registrationOpen ? 'default' : 'secondary'}
+                    className={event.registrationOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
                   >
                     {event.registrationOpen ? 'Open' : 'Closed'}
                   </Badge>
@@ -133,6 +126,14 @@ export const EventTable: React.FC<EventTableProps> = ({
                       Private
                     </Badge>
                   )}
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    variant={event.isActive ? 'default' : 'secondary'}
+                    className={event.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
+                  >
+                    {event.isActive ? 'Yes' : 'No'}
+                  </Badge>
                 </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
@@ -148,12 +149,6 @@ export const EventTable: React.FC<EventTableProps> = ({
                         <Eye className="mr-2 h-4 w-4" />
                         View Details
                       </DropdownMenuItem>
-                      {onViewStats && (
-                        <DropdownMenuItem onClick={() => onViewStats(event)}>
-                          <BarChart3 className="mr-2 h-4 w-4" />
-                          View Stats
-                        </DropdownMenuItem>
-                      )}
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => onEdit(event)}>
                         <Edit className="mr-2 h-4 w-4" />
@@ -163,8 +158,8 @@ export const EventTable: React.FC<EventTableProps> = ({
                         onClick={() => onDelete(event._id)}
                         className="text-red-600"
                       >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
+                        <Trash2 className="mr-2 h-4 w-4 text-red-600" />
+                        Make inactive
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

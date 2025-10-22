@@ -510,7 +510,7 @@ export const EventManagement: React.FC = () => {
           }
         }}
       >
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[90vw] lg:max-w-[75vw] max-h-[95vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {dialogMode === 'create' ? 'Create New Event' : 'Edit Event'}
@@ -534,7 +534,7 @@ export const EventManagement: React.FC = () => {
           }
         }}
       >
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[90vw] lg:max-w-[75vw] max-h-[95vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Event Details</DialogTitle>
           </DialogHeader>
@@ -552,7 +552,7 @@ export const EventManagement: React.FC = () => {
           }
         }}
       >
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[95vw] lg:max-w-[85vw] max-h-[95vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Event Statistics</DialogTitle>
           </DialogHeader>
@@ -570,7 +570,7 @@ export const EventManagement: React.FC = () => {
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This action will soft delete the event. The event will be marked as inactive
-              but can be restored if needed. All participant data will be preserved.
+              but can be restored if needed, and this event won't be visible to participants. All participant data will be preserved.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -582,7 +582,7 @@ export const EventManagement: React.FC = () => {
               disabled={deleteMutation.isPending}
               className="bg-red-600 hover:bg-red-700"
             >
-              {deleteMutation.isPending ? 'Deleting...' : 'Delete Event'}
+              {deleteMutation.isPending ? 'Deleting...' : 'Make Inactive'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -258,10 +258,16 @@ export const EventForm: React.FC<EventFormProps> = ({
             <Input
               id="maxParticipants"
               type="number"
+              min="1"
               {...register('maxParticipants', {
                 min: { value: 1, message: 'Minimum 1 participant' },
               })}
               placeholder="50"
+              onKeyDown={(e) => {
+                if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+                  e.preventDefault();
+                }
+              }}
             />
           </div>
 
@@ -270,11 +276,17 @@ export const EventForm: React.FC<EventFormProps> = ({
             <Input
               id="entryFee"
               type="number"
-              step="0.01"
+              min="0"
+              step="1.00"
               {...register('entryFee', {
                 min: { value: 0, message: 'Cannot be negative' },
               })}
-              placeholder="0.00"
+              placeholder="0"
+              onKeyDown={(e) => {
+                if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+                  e.preventDefault();
+                }
+              }}
             />
           </div>
 

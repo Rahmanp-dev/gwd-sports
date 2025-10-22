@@ -84,7 +84,7 @@ export const EventStats: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="w-full space-y-6">
       {/* Stat Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {statCards.map((stat, index) => {

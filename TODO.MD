@@ -9,6 +9,7 @@ TODO:
 - [ ] MgMun page
 - [ ] Migrate data folder to utils/constants
 - [ ] Can we use MCP or some auto prompt like thing to automate prompts? like prompt engineering but automated
+- [ ] improve isActive in events
 
 Done ✅
 
