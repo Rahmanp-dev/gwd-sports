@@ -57,21 +57,9 @@ const EventSchema = new Schema<IEvent>({
   startDate: { 
     type: Date, 
     required: [true, 'Start date is required'],
-    validate: {
-      validator: function(value: Date) {
-        return value > new Date();
-      },
-      message: 'Start date must be in the future'
-    }
   },
   endDate: { 
     type: Date,
-    validate: {
-      validator: function(this: IEvent, value: Date) {
-        return !value || value > this.startDate;
-      },
-      message: 'End date must be after start date'
-    }
   },
   location: { 
     type: String, 
@@ -138,12 +126,6 @@ const EventSchema = new Schema<IEvent>({
   },
   registrationDeadline: {
     type: Date,
-    validate: {
-      validator: function(this: IEvent, value: Date) {
-        return !value || value <= this.startDate;
-      },
-      message: 'Registration deadline must be before or on start date'
-    }
   },
   entryFee: {
     type: Number,

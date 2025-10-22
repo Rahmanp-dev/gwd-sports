@@ -279,29 +279,73 @@ export class EventController {
         });
       }
 
-      // Remove fields that shouldn't be updated directly
-      delete updates.createdBy;
-      delete updates.participants;
-
-      const event = await Event.findByIdAndUpdate(
-        id,
-        updates,
-        { new: true, runValidators: true }
-      ).populate('createdBy', 'name email');
-
-      if (!event || !event.isActive) {
+      // Validate event exists
+      const existingEvent = await Event.findById(id);
+      if (!existingEvent) {
         return res.status(404).json({
           success: false,
-          message: 'Event not found'
+          message: 'Event not found',
         });
       }
 
-      logger.info(`Event updated: ${event.name} by ${req.user!.email}`);
+      // Manual validation for date fields to avoid schema validator issues
+      const startDate = updates.startDate 
+        ? new Date(updates.startDate) 
+        : existingEvent.startDate;
+
+      // Validate endDate if provided
+      if (updates.endDate) {
+        const endDate = new Date(updates.endDate);
+        if (endDate <= startDate) {
+          return res.status(400).json({
+            success: false,
+            message: 'End date must be after start date',
+          });
+        }
+      }
+
+      // Validate registrationDeadline if provided
+      if (updates.registrationDeadline) {
+        const regDeadline = new Date(updates.registrationDeadline);
+        if (regDeadline > startDate) {
+          return res.status(400).json({
+            success: false,
+            message: 'Registration deadline must be before or on start date',
+          });
+        }
+      }
+
+      // Validate startDate if being updated
+      if (updates.startDate && new Date(updates.startDate) <= new Date()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Start date must be in the future',
+        });
+      }
+
+      // Remove fields that shouldn't be updated directly
+      delete updates.createdBy;
+      delete updates.createdAt;
+      delete updates.participants;
+
+      // Update the event with validation disabled (we've done manual validation)
+      const updatedEvent = await Event.findByIdAndUpdate(
+        id,
+        { $set: updates },
+        {
+          new: true,
+          runValidators: false, // Disable automatic validators to avoid context issues
+        }
+      )
+        .populate('createdBy', 'name email')
+        .populate('academyId', 'name location');
+
+      logger.info(`Event updated: ${updatedEvent?._id} by ${req.user!.email}`);
 
       res.json({
         success: true,
         message: 'Event updated successfully',
-        data: { event }
+        data: { event: updatedEvent }
       });
     } catch (error) {
       logger.error('Update event error:', error);
