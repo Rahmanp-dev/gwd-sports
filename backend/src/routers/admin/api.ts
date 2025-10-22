@@ -38,12 +38,7 @@ router.use(authMiddleware, adminMiddleware);
 // ========================
 // EVENT MANAGEMENT ROUTES
 // ========================
-router.get('/events', validateEventPagination, EventController.getAllEvents);
-router.get('/events/:id', validateEventId, EventController.getEventById);
-router.post('/events', validateCreateEvent, EventController.createEvent);
-router.put('/events/:id', validateUpdateEvent, EventController.updateEvent);
-router.delete('/events/:id', validateEventId, EventController.deleteEvent);
-router.get('/events/stats', EventController.getEventStats);
+// Handle all the event management in Events API via Admin Token not here in Admin APIs
 
 // ========================
 // USER MANAGEMENT ROUTES

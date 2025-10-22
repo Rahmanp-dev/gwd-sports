@@ -1,8 +1,6 @@
 import { Response } from 'express';
 import { AuthRequest } from '../../middleware/auth';
-import Event, { IEvent } from '../../schemas/eventSchema';
-import User from '../../schemas/userSchema';
-import Academy from '../../schemas/academySchema';
+import Event from '../../schemas/eventSchema';
 import { logger } from '../../utils/logger';
 import { validationResult } from 'express-validator';
 import mongoose, { Types } from 'mongoose';
@@ -69,8 +67,97 @@ export class EventController {
       const limitNum = parseInt(limit as string);
       const skip = (pageNum - 1) * limitNum;
 
-      // Build filter query
+      // Build filter query 
+      // IMP: isActive: true means it is being displayed
       const filter: any = { isActive: true };
+      
+      if (sport) filter.sport = sport;
+      if (status) filter.status = status;
+      if (isPublic !== undefined) filter.isPublic = isPublic === 'true';
+      if (registrationOpen !== undefined) filter.registrationOpen = registrationOpen === 'true';
+      if (location) filter.location = { $regex: location, $options: 'i' };
+      
+      if (search) {
+        filter.$or = [
+          { name: { $regex: search, $options: 'i' } },
+          { description: { $regex: search, $options: 'i' } },
+          { venue: { $regex: search, $options: 'i' } },
+          { tags: { $in: [new RegExp(search as string, 'i')] } }
+        ];
+      }
+
+      // Date filtering
+      if (startDate || endDate) {
+        filter.startDate = {};
+        if (startDate) filter.startDate.$gte = new Date(startDate as string);
+        if (endDate) filter.startDate.$lte = new Date(endDate as string);
+      }
+
+      // Build sort query
+      const sort: any = {};
+      sort[sortBy as string] = sortOrder === 'desc' ? -1 : 1;
+
+      // Execute query with pagination
+      const [events, total] = await Promise.all([
+        Event.find(filter)
+          .populate('createdBy', 'name email')
+          .populate('participants', 'name email')
+          .sort(sort)
+          .skip(skip)
+          .limit(limitNum)
+          .lean(),
+        Event.countDocuments(filter)
+      ]);
+
+      const totalPages = Math.ceil(total / limitNum);
+
+      res.json({
+        success: true,
+        data: {
+          events,
+          pagination: {
+            currentPage: pageNum,
+            totalPages,
+            totalEvents: total,
+            hasNextPage: pageNum < totalPages,
+            hasPrevPage: pageNum > 1
+          }
+        }
+      });
+    } catch (error) {
+      logger.error('Get all events error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
+  // Get all historic events (even soft deleted) with filtering and pagination
+  static async getAllHistoricEvents(req: AuthRequest, res: Response) {
+    try {
+      const {
+        page = 1,
+        limit = 10,
+        sport,
+        status,
+        isPublic,
+        registrationOpen,
+        search,
+        startDate,
+        endDate,
+        location,
+        sortBy = 'startDate',
+        sortOrder = 'asc'
+      } = req.query;
+
+      const pageNum = parseInt(page as string);
+      const limitNum = parseInt(limit as string);
+      const skip = (pageNum - 1) * limitNum;
+
+      // Build filter query 
+      // IMP: no isActive: true means it includes historic (soft deleted) events
+      const filter: any = { };
       
       if (sport) filter.sport = sport;
       if (status) filter.status = status;

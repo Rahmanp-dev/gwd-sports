@@ -27,7 +27,9 @@ curl -X POST http://localhost:3000/api/events \
   }'
 
 # 2. GET ALL EVENTS (Public - no auth required)
-curl -X GET "http://localhost:3000/api/events?page=1&limit=10&sport=football&status=published"
+curl -X GET "http://localhost:3000/api/events?page=1&limit=10&sport=football&status=published" 
+or
+curl -X GET "http://localhost:3000/api/events" 
 
 # 3. GET ALL EVENTS WITH FILTERS
 curl -X GET "http://localhost:3000/api/events?page=1&limit=5&sport=football&isPublic=true&registrationOpen=true&search=championship&sortBy=startDate&sortOrder=asc"
@@ -66,9 +68,12 @@ curl -X GET "http://localhost:3000/api/events/user/my-events?page=1&limit=10&upc
 curl -X GET http://localhost:3000/api/events/admin/stats \
   -H "Authorization: Bearer ADMIN_TOKEN"
 
-# 11. ADMIN - GET ALL EVENTS (Admin panel)
-curl -X GET "http://localhost:3000/api/admin/events?page=1&limit=10" \
+# 11. ADMIN - GET ALL HISTORIC EVENTS (Admin panel)
+curl -X GET "http://localhost:3000/api/events/admin/all-events?page=1&limit=10" \
   -H "Authorization: Bearer ADMIN_TOKEN"
+
+# 12. SEARCH EVENTS
+curl -X GET "http://localhost:3000/api/events?search=championship&limit=5"
 
 --- used till here --- Will use the below if needed 
 
@@ -101,9 +106,6 @@ curl -X GET "http://localhost:3000/api/events?sport=basketball&status=published"
 
 # 14. GET UPCOMING EVENTS
 curl -X GET "http://localhost:3000/api/events?startDate=2024-11-01T00:00:00Z&sortBy=startDate&sortOrder=asc"
-
-# 15. SEARCH EVENTS
-curl -X GET "http://localhost:3000/api/events?search=championship&limit=5"
 
 # 16. GET EVENTS BY LOCATION
 curl -X GET "http://localhost:3000/api/events?location=New York"

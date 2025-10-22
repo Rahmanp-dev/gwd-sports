@@ -22,7 +22,7 @@ const corsOptions = {
 
 // Middleware
 app.use(cors(corsOptions));
-// // Handle preflight requests
+// Handle preflight requests
 app.options('*', cors(corsOptions));
 // Security middleware
 app.use(helmet({

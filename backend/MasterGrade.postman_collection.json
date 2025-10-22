@@ -563,388 +563,6 @@
 					]
 				},
 				{
-					"name": "Event Ops",
-					"item": [
-						{
-							"name": "Create Event",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MzQ1MDk4LCJleHAiOjE3NTU5NDk4OTh9.HbdiUhY_r9VFUiFTA7CQAsbECcIWUXTg_dzMQtPadeQ"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"name\": \"Annual Football Championship\",\n    \"description\": \"A competitive football tournament for all skill levels\",\n    \"sport\": \"football\",\n    \"startDate\": \"2025-12-01T10:00:00Z\",\n    \"endDate\": \"2025-12-01T18:00:00Z\",\n    \"location\": \"New York\",\n    \"venue\": \"Central Stadium\",\n    \"maxParticipants\": 50,\n    \"registrationDeadline\": \"2025-12-01T10:00:00Z\",\n    \"entryFee\": 25.00,\n    \"contactInfo\": {\n      \"name\": \"John Organizer\",\n      \"phone\": \"+1234567890\",\n      \"email\": \"organizer@example.com\"\n    },\n    \"status\": \"published\",\n    \"isPublic\": true,\n    \"registrationOpen\": true,\n    \"tags\": [\"football\", \"championship\", \"competitive\"],\n    \"requirements\": \"Must bring own equipment\",\n    \"prizes\": [\"1st Place: $500\", \"2nd Place: $300\", \"3rd Place: $200\"]\n  }",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:3000/api/events",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"events"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get All Events",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:3000/api/events?page=1&limit=10&sport=football&status=published",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"events"
-									],
-									"query": [
-										{
-											"key": "page",
-											"value": "1"
-										},
-										{
-											"key": "limit",
-											"value": "10"
-										},
-										{
-											"key": "sport",
-											"value": "football"
-										},
-										{
-											"key": "status",
-											"value": "published"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get All Events With Filters",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:3000/api/events?page=1&limit=5&sport=football&isPublic=true&registrationOpen=true&search=championship&sortBy=startDate&sortOrder=asc",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"events"
-									],
-									"query": [
-										{
-											"key": "page",
-											"value": "1"
-										},
-										{
-											"key": "limit",
-											"value": "5"
-										},
-										{
-											"key": "sport",
-											"value": "football"
-										},
-										{
-											"key": "isPublic",
-											"value": "true"
-										},
-										{
-											"key": "registrationOpen",
-											"value": "true"
-										},
-										{
-											"key": "search",
-											"value": "championship"
-										},
-										{
-											"key": "sortBy",
-											"value": "startDate"
-										},
-										{
-											"key": "sortOrder",
-											"value": "asc"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Event By ID ⭕",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:3000/api/events/68a0714ae2e7cc5e98169b57",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"events",
-										"68a0714ae2e7cc5e98169b57"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Update Event",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MzQ1MDk4LCJleHAiOjE3NTU5NDk4OTh9.HbdiUhY_r9VFUiFTA7CQAsbECcIWUXTg_dzMQtPadeQ"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"name\": \"Updated Football Championship\",\n    \"maxParticipants\": 60,\n    \"entryFee\": 30.00,\n    \"description\": \"Updated description with new rules\"\n  }",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:3000/api/events/68a0714ae2e7cc5e98169b57",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"events",
-										"68a0714ae2e7cc5e98169b57"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Delete Event",
-							"request": {
-								"method": "DELETE",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MzQ1MDk4LCJleHAiOjE3NTU5NDk4OTh9.HbdiUhY_r9VFUiFTA7CQAsbECcIWUXTg_dzMQtPadeQ"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/events/68a06f01c00fb66e5b2defa0",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"events",
-										"68a06f01c00fb66e5b2defa0"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Join Event",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MzQ1MDk4LCJleHAiOjE3NTU5NDk4OTh9.HbdiUhY_r9VFUiFTA7CQAsbECcIWUXTg_dzMQtPadeQ"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/events/68a0714ae2e7cc5e98169b57/join",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"events",
-										"68a0714ae2e7cc5e98169b57",
-										"join"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Leave Event",
-							"request": {
-								"method": "DELETE",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MzQ1MDk4LCJleHAiOjE3NTU5NDk4OTh9.HbdiUhY_r9VFUiFTA7CQAsbECcIWUXTg_dzMQtPadeQ"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/events/68a0714ae2e7cc5e98169b57/leave",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"events",
-										"68a0714ae2e7cc5e98169b57",
-										"leave"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get User's Events",
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MzQ1MDk4LCJleHAiOjE3NTU5NDk4OTh9.HbdiUhY_r9VFUiFTA7CQAsbECcIWUXTg_dzMQtPadeQ"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/events/user/my-events?page=1&limit=10&upcoming=true",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"events",
-										"user",
-										"my-events"
-									],
-									"query": [
-										{
-											"key": "page",
-											"value": "1"
-										},
-										{
-											"key": "limit",
-											"value": "10"
-										},
-										{
-											"key": "upcoming",
-											"value": "true"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Event Statistics",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MzQ1MDk4LCJleHAiOjE3NTU5NDk4OTh9.HbdiUhY_r9VFUiFTA7CQAsbECcIWUXTg_dzMQtPadeQ"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/events/admin/stats",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"events",
-										"admin",
-										"stats"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get All Events - By Admin",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MzQ1MDk4LCJleHAiOjE3NTU5NDk4OTh9.HbdiUhY_r9VFUiFTA7CQAsbECcIWUXTg_dzMQtPadeQ"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/admin/events?page=1&limit=10",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"events"
-									],
-									"query": [
-										{
-											"key": "page",
-											"value": "1"
-										},
-										{
-											"key": "limit",
-											"value": "10"
-										}
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
 					"name": "Student Ops ⭕🚩",
 					"item": [
 						{
@@ -954,11 +572,11 @@
 								"header": [
 									{
 										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1NTMyNjg0LCJleHAiOjE3NTYxMzc0ODR9.cotVwCRcK3-tju9SRfCXowOUx5DZFVOAVTu7LVYxyXg"
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU2NTkzODk3LCJleHAiOjE3NTcxOTg2OTd9.07ixSPLLBUzgvYK_o-GFOnkso5iD_aQgtGj96GEpkCA"
 									}
 								],
 								"url": {
-									"raw": "http://localhost:3000/api/admin/students?page=1&limit=10&level=beginner&academyId=ACADEMY_ID",
+									"raw": "http://localhost:3000/api/admin/students",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -968,24 +586,6 @@
 										"api",
 										"admin",
 										"students"
-									],
-									"query": [
-										{
-											"key": "page",
-											"value": "1"
-										},
-										{
-											"key": "limit",
-											"value": "10"
-										},
-										{
-											"key": "level",
-											"value": "beginner"
-										},
-										{
-											"key": "academyId",
-											"value": "ACADEMY_ID"
-										}
 									]
 								}
 							},
@@ -998,11 +598,11 @@
 								"header": [
 									{
 										"key": "Authorization",
-										"value": "Bearer ADMIN_TOKEN"
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU2NTkzODk3LCJleHAiOjE3NTcxOTg2OTd9.07ixSPLLBUzgvYK_o-GFOnkso5iD_aQgtGj96GEpkCA"
 									}
 								],
 								"url": {
-									"raw": "http://localhost:3000/api/admin/students/STUDENT_ID_HERE",
+									"raw": "http://localhost:3000/api/admin/students/68a3376874f386a3a7ea126a",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -1012,7 +612,7 @@
 										"api",
 										"admin",
 										"students",
-										"STUDENT_ID_HERE"
+										"68a3376874f386a3a7ea126a"
 									]
 								}
 							},
@@ -1025,7 +625,7 @@
 								"header": [
 									{
 										"key": "Authorization",
-										"value": "Bearer ADMIN_TOKEN"
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU2NTkzODk3LCJleHAiOjE3NTcxOTg2OTd9.07ixSPLLBUzgvYK_o-GFOnkso5iD_aQgtGj96GEpkCA"
 									},
 									{
 										"key": "Content-Type",
@@ -1034,7 +634,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"level\": \"intermediate\",\n    \"sports\": [\"football\", \"basketball\", \"tennis\"],\n    \"trainerId\": \"TRAINER_USER_ID_HERE\"\n  }",
+									"raw": "{\n    \"level\": \"intermediate\",\n    \"sports\": [\"football\", \"basketball\", \"tennis\"]\n  }",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1042,7 +642,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/api/admin/students/STUDENT_ID_HERE",
+									"raw": "http://localhost:3000/api/admin/students/68a3376874f386a3a7ea126a",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -1052,7 +652,7 @@
 										"api",
 										"admin",
 										"students",
-										"STUDENT_ID_HERE"
+										"68a3376874f386a3a7ea126a"
 									]
 								}
 							},
@@ -1107,7 +707,7 @@
 								"header": [
 									{
 										"key": "Authorization",
-										"value": "Bearer ADMIN_TOKEN"
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU2NTkzODk3LCJleHAiOjE3NTcxOTg2OTd9.07ixSPLLBUzgvYK_o-GFOnkso5iD_aQgtGj96GEpkCA"
 									}
 								],
 								"url": {
@@ -2172,6 +1772,258 @@
 								"api",
 								"trainer",
 								"add-performance"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Events",
+			"item": [
+				{
+					"name": "Get All Events With Filters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/events?page=1&limit=5&sport=football&isPublic=true&registrationOpen=true&search=championship&sortBy=startDate&sortOrder=asc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"events"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "sport",
+									"value": "football"
+								},
+								{
+									"key": "isPublic",
+									"value": "true"
+								},
+								{
+									"key": "registrationOpen",
+									"value": "true"
+								},
+								{
+									"key": "search",
+									"value": "championship"
+								},
+								{
+									"key": "sortBy",
+									"value": "startDate"
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Event",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzYxMDkxNjk3LCJleHAiOjE3NjE2OTY0OTd9.65pTmc_U98k-o4h1thdHOlLTFNddcuncInnQ2-b8V7I"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Basketball tourney\",\n    \"description\": \"A competitive Basketball\",\n    \"sport\": \"basketball\",\n    \"startDate\": \"2025-12-01T10:00:00Z\",\n    \"endDate\": \"2025-12-01T18:00:00Z\",\n    \"location\": \"New babi\",\n    \"venue\": \"Central Stadium\",\n    \"maxParticipants\": 100,\n    \"registrationDeadline\": \"2025-12-01T10:00:00Z\",\n    \"entryFee\": 0.00,\n    \"contactInfo\": {\n      \"name\": \"baburao Organizer\",\n      \"phone\": \"+1234567890\",\n      \"email\": \"baburao@example.com\"\n    },\n    \"status\": \"published\",\n    \"isPublic\": true,\n    \"registrationOpen\": true,\n    \"tags\": [\"basketball\", \"championship\", \"competitive\"],\n    \"requirements\": \"Must bring own equipment\",\n    \"prizes\": [\"1st Place: $500\", \"2nd Place: $300\", \"3rd Place: $200\"]\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/events",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Event Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzYxMDkxNjk3LCJleHAiOjE3NjE2OTY0OTd9.65pTmc_U98k-o4h1thdHOlLTFNddcuncInnQ2-b8V7I"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/events/admin/stats",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"events",
+								"admin",
+								"stats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Join Event",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNDRhMjUxMDBmZjg4YzQwN2IwOTUiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MTA5MjI5MSwiZXhwIjoxNzYxNjk3MDkxfQ.-qwGYKOD1Rgvh6hoGxoWF4HmcIASJhPyQKtIwULN_yM"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/events/68f820ecb26e25ac4e25a5b6/join",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"events",
+								"68f820ecb26e25ac4e25a5b6",
+								"join"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Leave Event",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNDRhMjUxMDBmZjg4YzQwN2IwOTUiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MTA5MjI5MSwiZXhwIjoxNzYxNjk3MDkxfQ.-qwGYKOD1Rgvh6hoGxoWF4HmcIASJhPyQKtIwULN_yM"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/events/68f820ecb26e25ac4e25a5b6/leave",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"events",
+								"68f820ecb26e25ac4e25a5b6",
+								"leave"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User's Events",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNDRhMjUxMDBmZjg4YzQwN2IwOTUiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MTA5MjI5MSwiZXhwIjoxNzYxNjk3MDkxfQ.-qwGYKOD1Rgvh6hoGxoWF4HmcIASJhPyQKtIwULN_yM"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/events/user/my-events?page=1&limit=10&upcoming=true",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"events",
+								"user",
+								"my-events"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "upcoming",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Event",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/events?search=seirin&limit=5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"events"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "seirin"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
 							]
 						}
 					},

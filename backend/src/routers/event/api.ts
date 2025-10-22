@@ -27,5 +27,6 @@ router.post('/', adminMiddleware, validateCreateEvent, EventController.createEve
 router.put('/:id', adminMiddleware, validateUpdateEvent, EventController.updateEvent);
 router.delete('/:id', adminMiddleware, validateEventId, EventController.deleteEvent);
 router.get('/admin/stats', adminMiddleware, EventController.getEventStats);
+router.get('/admin/all-events', adminMiddleware, EventController.getAllHistoricEvents);
 
 export default router;
