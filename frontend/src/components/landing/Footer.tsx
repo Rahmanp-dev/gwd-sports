@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";

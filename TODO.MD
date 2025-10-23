@@ -6,10 +6,10 @@ TODO:
 - [ ] Check edit student - it is misbehaving
 - [ ] Fix the issue with backend build and frontend - new ts version
 - [ ] Update the landing page details
-- [ ] MgMun page
 - [ ] Migrate data folder to utils/constants
 - [ ] Can we use MCP or some auto prompt like thing to automate prompts? like prompt engineering but automated
 - [ ] improve isActive in events
+- [ ] refresh token 
 
 Done ✅
 
@@ -20,3 +20,4 @@ Done ✅
 - [x] Add Landing page 
 - [x] Add multiple pages 
 - [x] Update the landing page components and make them more modular
+- [x] MgMun page
