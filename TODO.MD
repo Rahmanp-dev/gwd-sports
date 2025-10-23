@@ -1,15 +1,24 @@
 TODO: 
 
-- [ ] What ESLINT does
-- [ ] Frontend logging
+P1:
+
+- [ ] Add student login 
+- [ ] Add trainer login 
 - [ ] Fix the build issue 
 - [ ] Check edit student - it is misbehaving
 - [ ] Fix the issue with backend build and frontend - new ts version
-- [ ] Update the landing page details
-- [ ] Migrate data folder to utils/constants
-- [ ] Can we use MCP or some auto prompt like thing to automate prompts? like prompt engineering but automated
+
+P2:
+- [ ] Frontend logging
+- [ ] refresh token - what is it and how to implement
 - [ ] improve isActive in events
-- [ ] refresh token 
+- [ ] Migrate data folder to utils/constants
+- [ ] Update the landing page details
+
+P3: 
+- [ ] What ESLINT does
+- [ ] Can we use MCP or some auto prompt like thing to automate prompts? like prompt engineering but automated
+
 
 Done ✅
 
