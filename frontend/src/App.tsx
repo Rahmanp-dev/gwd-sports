@@ -15,8 +15,8 @@ import GalaxyEventsPage from "./pages/sections/GalaxyEvents/page";
 import MGBCPage from "./pages/sections/MGBC/page";
 import MGFCPage from "./pages/sections/MGFC/page";
 import MgMunPage from "./pages/sections/MgMun/page";
-import MGFCStudentPage from "./pages/sections/MGFC/StudentPage";
-import MGFCTrainerPage from "./pages/sections/MGFC/TrainerPage";
+import MGFCStudentPage from "./pages/sections/MGFC/student/StudentPage";
+import MGFCTrainerPage from "./pages/sections/MGFC/trainer/TrainerPage";
 
 const AppRouter: React.FC = () => {
   const dispatch = useAppDispatch();

@@ -7,6 +7,7 @@ P1:
 - [ ] Fix the build issue 
 - [ ] Check edit student - it is misbehaving
 - [ ] Fix the issue with backend build and frontend - new ts version
+- [ ] Complete Student Login , Trainer Login, and their pages
 
 P2:
 - [ ] Frontend logging

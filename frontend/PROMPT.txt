@@ -19,6 +19,7 @@ rules:-
 5. any other best and modern practices can be used to implement if I forgot anything in this 
 6. properly look into the existing backend and forntend code and then give me the perfect code to be implemented 
 7. for every file code you give make sure you give the filename and their destination - basically their relative file path 
+8. Make sure that the code you give will not break any already existing working features
 
 /src/
 ├── types/
