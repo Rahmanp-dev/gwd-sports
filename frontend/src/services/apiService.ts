@@ -71,7 +71,7 @@ class ApiService {
 
           // Only redirect if not already on login page
           if (!window.location.pathname.includes("/login")) {
-            window.location.href = "/admin/login";
+            window.location.href = "/user/auth";
           }
         }
 

@@ -9,7 +9,7 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
   isAuthenticated: boolean;
-}
+};
 
 // Initialize with values from localStorage if available
 const initialState: AuthState = {
@@ -40,6 +40,32 @@ export const loginUser = createAsyncThunk(
   },
 );
 
+// Async thunk for user registration 
+export const registerUser = createAsyncThunk(
+  "auth/register",
+  async (
+    userData: {
+      name: string;
+      email: string;
+      password: string;
+      phone: string;
+      role?: "admin" | "student" | "trainer" | "user";
+      sports?: string[];
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      console.log("Attempting registration with:", userData.email);
+      const response = await authService.register(userData);
+      console.log("Registration response:", response);
+      return response.data;
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      return rejectWithValue(error.message || "Registration failed");
+    }
+  },
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -61,9 +87,14 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    setUser: (state, action) => {
+      state.user = action.payload;
+      localStorage.setItem("mg_user", JSON.stringify(action.payload));
+    },
   },
   extraReducers: (builder) => {
     builder
+      // Login cases
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -91,23 +122,16 @@ const authSlice = createSlice({
 
         // Store in localStorage with console logs for debugging
         if (accessToken) {
-          console.log(
-            "Storing access token in localStorage:",
-            accessToken.substring(0, 15) + "...",
-          );
+          console.log("Storing access token in localStorage:");
           localStorage.setItem("mg_auth_token", accessToken);
         }
 
         if (refreshToken) {
-          console.log(
-            "Storing refresh token in localStorage:",
-            refreshToken.substring(0, 15) + "...",
-          );
+          console.log("Storing refresh token in localStorage:");
           localStorage.setItem("mg_refresh_token", refreshToken);
         }
 
-        localStorage.setItem(
-          "mg_user",
+        localStorage.setItem("mg_user",
           JSON.stringify({
             _id: user._id,
             name: user.name,
@@ -129,9 +153,56 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.error = action.payload as string;
         console.error("Authentication failed:", action.payload);
+      })
+      // Registration cases
+      .addCase(registerUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state, action) => {
+        const { accessToken, refreshToken, user } = action.payload;
+
+        // Update state
+        state.isLoading = false;
+        state.isAuthenticated = true;
+        state.token = accessToken;
+        state.refreshToken = refreshToken;
+        state.user = {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone || "",
+          role: user.role as "admin" | "student" | "trainer" | "user",
+          sports: user.sports || [],
+          isActive: user.isActive,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+          lastLogin: user.lastLogin,
+        };
+
+        // Store in localStorage
+        if (accessToken) {
+          console.log("Storing access token in localStorage");
+          localStorage.setItem("mg_auth_token", accessToken);
+        }
+
+        if (refreshToken) {
+          console.log("Storing refresh token in localStorage");
+          localStorage.setItem("mg_refresh_token", refreshToken);
+        }
+
+        localStorage.setItem("mg_user", JSON.stringify(state.user));
+
+        console.log("Registration successful:", { user: state.user });
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isAuthenticated = false;
+        state.error = action.payload as string;
+        console.error("Registration failed:", action.payload);
       });
   },
 });
 
-export const { logout, clearError } = authSlice.actions;
+export const { logout, clearError, setUser } = authSlice.actions;
 export default authSlice.reducer;

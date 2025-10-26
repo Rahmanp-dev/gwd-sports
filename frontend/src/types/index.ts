@@ -1,11 +1,13 @@
 /** USER RELATED TYPE INTERFACES **/
 
+export type UserRole = "admin" | "trainer" | "student" | "user";
+
 export interface User {
   _id: string;
   name: string;
   email: string;
   phone: string;
-  role: "admin" | "student" | "trainer" | "user";
+  role: UserRole;
   sports?: string[];
   isActive: boolean;
   createdAt: string;
@@ -18,7 +20,7 @@ export interface UserFormData {
   email: string;
   password?: string;
   phone?: string;
-  role: "admin" | "student" | "trainer" | "user";
+  role: UserRole;
   sports?: string[];
   isActive?: boolean;
 }
@@ -56,6 +58,39 @@ export interface UserListResponse {
     users: User[];
     pagination: PaginationMeta;
   };
+}
+
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  data: {
+    user: User;
+    accessToken: string;
+    refreshToken: string;
+  };
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  role?: UserRole;
+  sports?: string[];
+}
+
+export interface ApiError {
+  success: boolean;
+  message: string;
+  errors?: Array<{
+    field: string;
+    message: string;
+  }>;
 }
 
 export interface UserResponse {

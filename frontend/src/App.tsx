@@ -3,12 +3,18 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useAppDispatch } from "@/store";
 import { clearError } from "@/store/slices/authSlice";
 
-// Pages
+// Admin Pages
 import AdminLogin from "@/pages/admin/AdminLogin";
 import AdminPage from "@/pages/admin/AdminPage";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import LandingPage from "@/pages/LandingPage";
+import { AdminProtectedRoute } from "@/components/auth/AdminProtectedRoute";
 
+// User Pages
+import UserAuth from "@/pages/user/UserAuth";
+import UserProfile from "@/pages/user/UserProfile";
+import { UserProtectedRoute } from "@/components/auth/UserProtectedRoute";
+
+// Public Pages
+import LandingPage from "@/pages/LandingPage";
 // Section Pages
 import MGRLPage from "./pages/sections/MGRL/page";
 import GalaxyEventsPage from "./pages/sections/GalaxyEvents/page";
@@ -46,6 +52,19 @@ const AppRouter: React.FC = () => {
         <Route path="trainer" element={<MGFCTrainerPage />} />
       </Route>
 
+      {/* User routes */}
+      <Route path="/user/auth" element={<UserAuth />} />
+      
+      {/* Protected user routes */}
+      <Route
+        path="/user/profile"
+        element={
+          <UserProtectedRoute>
+            <UserProfile />
+          </UserProtectedRoute>
+        }
+      />
+
       {/* Admin routes */}
       <Route path="/admin/login" element={<AdminLogin />} />
 
@@ -53,7 +72,7 @@ const AppRouter: React.FC = () => {
       <Route
         path="/admin/*"
         element={
-          <ProtectedRoute>
+          <AdminProtectedRoute>
             <Routes>
               <Route path="dashboard" element={<AdminPage />} />
               <Route
@@ -61,7 +80,7 @@ const AppRouter: React.FC = () => {
                 element={<Navigate to="/admin/dashboard" replace />}
               />
             </Routes>
-          </ProtectedRoute>
+          </AdminProtectedRoute>
         }
       />
 

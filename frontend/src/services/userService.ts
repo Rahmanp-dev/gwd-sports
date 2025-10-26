@@ -59,6 +59,69 @@ class UserService {
   async getUserStats(): Promise<UserStatsResponse> {
     return apiService.get<UserStatsResponse>(`${this.baseUrl}/stats`);
   }
+
+  // Get current user profile
+  async getProfile() {
+    const response = await apiService.get<{
+      success: boolean;
+      data: { 
+        user: {
+          _id: string;
+          name: string;
+          email: string;
+          phone: string;
+          role: string;
+          sports: string[];
+          isActive: boolean;
+          lastLogin?: string;
+          createdAt: string;
+          updatedAt: string;
+        }
+      };
+    }>("/user/profile");
+    return response;
+  }
+
+  // Update current user profile
+  async updateProfile(data: { name?: string; phone?: string; sports?: string[] }) {
+    const response = await apiService.put<{
+      success: boolean;
+      message: string;
+      data: { 
+        user: {
+          _id: string;
+          name: string;
+          email: string;
+          phone: string;
+          role: string;
+          sports: string[];
+          isActive: boolean;
+          lastLogin?: string;
+          createdAt: string;
+          updatedAt: string;
+        }
+      };
+    }>("/user/profile", data);
+    return response;
+  }
+
+  // Change password for current user
+  async changePassword(data: { currentPassword: string; newPassword: string }) {
+    const response = await apiService.put<{
+      success: boolean;
+      message: string;
+    }>("/user/change-password", data);
+    return response;
+  }
+
+  // Deactivate current user account
+  async deactivateAccount() {
+    const response = await apiService.put<{
+      success: boolean;
+      message: string;
+    }>("/user/deactivate");
+    return response;
+  }
 }
 
 export const userService = new UserService();

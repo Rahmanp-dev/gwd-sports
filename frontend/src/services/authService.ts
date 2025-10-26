@@ -1,3 +1,4 @@
+import type { User, RegisterData } from "@/types";
 import apiService from "./apiService";
 
 interface LoginCredentials {
@@ -29,6 +30,30 @@ class AuthService {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     console.log("AuthService: Sending login request with:", credentials.email);
     return apiService.post<LoginResponse>("/user/login", credentials);
+  }
+
+  async register(userData: RegisterData): Promise<LoginResponse> {
+    console.log("AuthService: Sending registration request with:", userData.email);
+    return apiService.post<LoginResponse>("/user/register", userData);
+  }
+
+  async getProfile(): Promise<{ success: boolean; data: { user: User } }> {
+    return apiService.get("/user/profile");
+  }
+
+  async updateProfile(data: { name?: string; phone?: string; sports?: string[] }): Promise<{
+    success: boolean;
+    message: string;
+    data: { user: User };
+  }> {
+    return apiService.put("/user/profile", data);
+  }
+
+  async changePassword(data: { currentPassword: string; newPassword: string }): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    return apiService.put("/user/change-password", data);
   }
 
   async refreshAccessToken(): Promise<string | null> {
