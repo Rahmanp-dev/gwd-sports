@@ -309,11 +309,8 @@
 				},
 				{
 					"name": "Check if user exist",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -322,10 +319,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"AdminPass123!\"\n  }"
+							"raw": "{\n    \"email\": \"gg@gg.com\"\n}"
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/user/gg@gg.com",
+							"raw": "http://localhost:3000/api/user/check-email",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -334,7 +331,7 @@
 							"path": [
 								"api",
 								"user",
-								"gg@gg.com"
+								"check-email"
 							]
 						}
 					},

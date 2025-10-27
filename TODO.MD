@@ -3,6 +3,7 @@ TODO:
 P1:
 
 - [ ] Add student register
+- [ ] Handle Existing Token in register pages and redirect them directly
 - [ ] Add trainer register
 - [ ] Fix the build issue 
 - [ ] Check edit student - it is misbehaving

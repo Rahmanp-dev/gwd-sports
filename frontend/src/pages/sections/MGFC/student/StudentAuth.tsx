@@ -50,20 +50,41 @@ export default function StudentRegister() {
       console.log(response);
 
       if (response.success) {
-        const { exists, hasProfile, user } = response.data;
 
-        if (exists && hasProfile) {
-          // User exists with profile - redirect to login
-          toast.info("Account found! Please login to continue.");
-        //   navigate("/user/auth", { state: { email } });
-        } else if (exists && !hasProfile) {
-          // User exists but no profile - continue registration
-          toast.success("Email verified! Complete your profile.");
-        //   navigate("/student/register/complete", { state: { email, userId: user?._id } });
-        } else {
-          // New user - create account first
-          toast.success("Email available! Let's create your account.");
-        //   navigate("/student/register/create", { state: { email } });
+        const message = response.message;
+        
+        // Fresh User - No account - create User Profile and Student Profile
+        if (message === 'User not found') {
+          toast.success("Hi there! Let's create your account.");
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          navigate("/mgfc/student/register/create", { state: { email } });
+        }
+        // Existing User - Has no profile OR incomplete profile - create Student Profile
+        else if (
+          message === 'User has a no other profile' || 
+          message === 'Student profile not found' || 
+          message === 'Trainer profile not found'
+        ) {
+          toast.success(`Welcome ${response.data.user.name}! Let's create your student profile.`);
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          navigate("/mgfc/student/register/complete", { state: { email, user: response.data.user } });
+        }
+        // Existing User - Has a student profile - redirect to login
+        // Existing User - Has a student or trainer profile - redirect to login
+        else if (
+          message === 'User has a student profile' || 
+          message === 'User has a trainer profile'
+        ) {
+          const profileType = message.includes('student') ? 'student' : 'trainer';
+          toast.info(`You already have a ${profileType} profile, ${response.data.user.name}! Please login to continue.`);
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          navigate("/user/auth", { state: { email } });
+        }
+        // Fallback - shouldn't reach here but handle gracefully
+        else {
+          toast.info("Please login to continue.");
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          navigate("/user/auth", { state: { email } });
         }
       }
     } catch (error: any) {

@@ -1,6 +1,8 @@
 import { Response } from 'express';
 import { AuthRequest } from '../../middleware/auth';
 import User, { IUser } from '../../schemas/userSchema';
+import studentSchema from '../../schemas/studentSchema';
+import trainerSchema from '../../schemas/trainerSchema';
 import { Types } from 'mongoose';
 import { generateTokens, verifyRefreshToken } from '../../utils/jwt';
 import { logger } from '../../utils/logger';
@@ -156,20 +158,57 @@ export class UserController {
       const user = await User.findOne({ email: email.toLowerCase() });
 
       if (!user) {
-        return res.status(404).json({
-          success: false,
+        return res.status(200).json({
+          success: true,
           message: 'User not found'
         });
       }
 
-      // check if the user role is student or trainer
+      // Check if the user role is student or trainer
+      if(user.role === 'student'){
+        // Check if the user has a student profile
+        const studentProfile = await studentSchema.findOne({ userId: user._id });
+        // If not there then proceed with creating profile
+        if (!studentProfile) {
+          return res.status(404).json({
+            success: true,
+            message: 'Student profile not found'
+          });
+        } 
+        // If there, then inform that user has student profile already
+        return res.status(200).json({
+          success: true,
+          message: 'User has a student profile',
+          data: { user }
+        });
+      } else if(user.role === 'trainer'){
+        // check if the user has a trainer profile 
+        const trainerProfile = await trainerSchema.findOne({ userId: user._id });
+        // If not there then proceed with creating profile
+        if (!trainerProfile) {
+          return res.status(404).json({
+            success: true,
+            message: 'Trainer profile not found'
+          });
+        }else{
+          // If there, then inform that user has trainer profile already
+          return res.status(200).json({
+            success: true,
+            message: 'User has a trainer profile',
+            data: { user }
+          });
+        }
+      } else if(user.role === 'admin'){
+        return res.status(500).json({
+          success: false,
+          message: 'Invalid user role for this operation',
+        });
+      }
 
-      // check if the user has a student profile 
-
-      // check if the user has a diff profile 
-
+      // User doesn't have any student or trainer profile
       res.json({
         success: true,
+        message: 'User has a no other profile',
         data: { user }
       });
     } catch (error) {
