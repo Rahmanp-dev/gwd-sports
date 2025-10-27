@@ -16,7 +16,7 @@ router.post('/login', validateLogin, UserController.login);
 router.post('/refresh-token', UserController.refreshToken);
 
 // TODO: can u use rolemiddleware here?
-router.get('/:email', UserController.getUserByEmail);
+router.post('/check-email', UserController.getUserByEmail);
 
 // Protected routes
 router.use(authMiddleware);

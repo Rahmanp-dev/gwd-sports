@@ -122,6 +122,12 @@ class UserService {
     }>("/user/deactivate");
     return response;
   }
+
+  async checkEmail(email: string) {
+    const response = await apiService.post<{
+    }>("/user/check-email", { email });
+    return response;
+  }
 }
 
 export const userService = new UserService();

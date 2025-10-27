@@ -21,8 +21,10 @@ import GalaxyEventsPage from "./pages/sections/GalaxyEvents/page";
 import MGBCPage from "./pages/sections/MGBC/page";
 import MGFCPage from "./pages/sections/MGFC/page";
 import MgMunPage from "./pages/sections/MgMun/page";
+
 import MGFCStudentPage from "./pages/sections/MGFC/student/StudentPage";
 import MGFCTrainerPage from "./pages/sections/MGFC/trainer/TrainerPage";
+import StudentRegister from "./pages/sections/MGFC/student/StudentAuth"; 
 
 const AppRouter: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -49,6 +51,7 @@ const AppRouter: React.FC = () => {
       {/* MGFC Section */}
       <Route path="/mgfc">
         <Route path="student" element={<MGFCStudentPage />} />
+        <Route path="student/register" element={<StudentRegister />} />
         <Route path="trainer" element={<MGFCTrainerPage />} />
       </Route>
 

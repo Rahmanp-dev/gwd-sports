@@ -222,8 +222,16 @@ class StudentAdminService {
 }
 
 class StudentPublicService {
-  
+
   private baseStudentUrl = "/student";
+
+  // Check if the student has a User profile
+  async checkStudentUserProfile(email: string) {
+    const response = await apiService.get<any>(`/user`, {
+      params: { email },
+    });
+    return response.data;
+  }
 
   // Create User + Student Profile
   async createFreshStudentProfile(){

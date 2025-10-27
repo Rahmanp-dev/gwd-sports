@@ -144,15 +144,29 @@ export class UserController {
   // Get if the User exists by that Email
   static async getUserByEmail(req: AuthRequest, res: Response) {
     try {
-      const { email } = req.params;
+      const { email } = req.body;
 
-      const user = await User.findOne({ email });
+      if (!email) {
+        return res.status(400).json({
+          success: false,
+          message: "Email is required",
+        });
+      }
+
+      const user = await User.findOne({ email: email.toLowerCase() });
+
       if (!user) {
         return res.status(404).json({
           success: false,
           message: 'User not found'
         });
       }
+
+      // check if the user role is student or trainer
+
+      // check if the user has a student profile 
+
+      // check if the user has a diff profile 
 
       res.json({
         success: true,
