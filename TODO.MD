@@ -2,8 +2,8 @@ TODO:
 
 P1:
 
-- [ ] Add student login 
-- [ ] Add trainer login 
+- [ ] Add student register
+- [ ] Add trainer register
 - [ ] Fix the build issue 
 - [ ] Check edit student - it is misbehaving
 - [ ] Fix the issue with backend build and frontend - new ts version
@@ -31,3 +31,4 @@ Done ✅
 - [x] Add multiple pages 
 - [x] Update the landing page components and make them more modular
 - [x] MgMun page
+- [x] Add user login 

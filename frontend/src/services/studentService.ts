@@ -9,8 +9,8 @@ import type {
   Student,
 } from "@/types";
 
-class StudentService {
-  private baseUrl = "/admin/students";
+class StudentAdminService {
+  private baseAdminUrl = "/admin/students";
 
   // Helper function to transform API response to match frontend types
   private transformStudent(apiStudent: any): Student {
@@ -162,7 +162,7 @@ class StudentService {
     if (filters.sortBy) queryParams.append("sortBy", filters.sortBy);
     if (filters.sortOrder) queryParams.append("sortOrder", filters.sortOrder);
 
-    const url = `${this.baseUrl}?${queryParams.toString()}`;
+    const url = `${this.baseAdminUrl}?${queryParams.toString()}`;
     const response = await apiService.get<any>(url);
 
     // Transform the response
@@ -178,7 +178,7 @@ class StudentService {
   }
 
   async getStudentById(id: string): Promise<StudentResponse> {
-    const response = await apiService.get<any>(`${this.baseUrl}/${id}`);
+    const response = await apiService.get<any>(`${this.baseAdminUrl}/${id}`);
 
     return {
       success: response.success,
@@ -193,7 +193,7 @@ class StudentService {
     studentData: StudentUpdateData,
   ): Promise<StudentResponse> {
     const response = await apiService.put<any>(
-      `${this.baseUrl}/${id}`,
+      `${this.baseAdminUrl}/${id}`,
       studentData,
     );
 
@@ -211,14 +211,68 @@ class StudentService {
     kitData: KitUpdateData,
   ): Promise<{ success: boolean; message: string }> {
     return apiService.put<{ success: boolean; message: string }>(
-      `${this.baseUrl}/${studentId}/kits/${kitId}`,
+      `${this.baseAdminUrl}/${studentId}/kits/${kitId}`,
       kitData,
     );
   }
 
   async getStudentStats(): Promise<StudentStatsResponse> {
-    return apiService.get<StudentStatsResponse>(`${this.baseUrl}/stats`);
+    return apiService.get<StudentStatsResponse>(`${this.baseAdminUrl}/stats`);
   }
 }
 
-export const studentService = new StudentService();
+class StudentPublicService {
+  
+  private baseStudentUrl = "/student";
+
+  // Create User + Student Profile
+  async createFreshStudentProfile(){
+    
+  }
+
+  // Create Student Profile for Existing User
+  async createStudentProfileForExistingUser() {
+    
+  }
+
+  // Get Own Student Profile
+  async getOwnStudentProfile() {
+    
+  }
+
+  // Update Own Student Profile
+  // TODO: implement this API first and then this
+  async updateOwnStudentProfile() {
+    
+  }
+
+  // Join Academy
+  async joinAcademy() {
+    
+  }
+
+  // Get Attendance Records
+  async getAttendanceRecords() {
+    
+  }
+
+  // Get Performance Records
+  async getPerformanceRecords() {
+    
+  }
+
+  // Request Kit
+  async requestKit() {
+    
+  }
+  
+  // Get Kits
+  async getKits() {
+  
+  }
+
+
+}
+
+export const studentAdminService = new StudentAdminService();
+export const studentPublicService = new StudentPublicService();

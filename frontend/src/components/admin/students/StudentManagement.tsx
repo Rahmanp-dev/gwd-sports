@@ -18,7 +18,7 @@ import type {
   KitUpdateData,
   Kit,
 } from "@/types";
-import { studentService } from "@/services/studentService";
+import { studentAdminService } from "@/services/studentService";
 import { BarChart3 } from "lucide-react";
 import { toastUtils } from "@/utils/toast";
 
@@ -76,7 +76,7 @@ export const StudentManagement: React.FC = () => {
   const fetchStudents = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await studentService.getAllStudents(filters);
+      const response = await studentAdminService.getAllStudents(filters);
       if (response?.data) {
         setStudents(response.data.students || []);
         setPagination({
@@ -99,7 +99,7 @@ export const StudentManagement: React.FC = () => {
   const fetchStats = async () => {
     setIsStatsLoading(true);
     try {
-      const response = await studentService.getStudentStats();
+      const response = await studentAdminService.getStudentStats();
       if (response?.data) {
         setStats(response.data);
       }
@@ -129,7 +129,7 @@ export const StudentManagement: React.FC = () => {
 
     setIsLoading(true);
     try {
-      await studentService.updateStudent(selectedStudent._id, data);
+      await studentAdminService.updateStudent(selectedStudent._id, data);
       toastUtils.success(
         "Student updated successfully",
         "The student information has been updated.",
@@ -152,7 +152,7 @@ export const StudentManagement: React.FC = () => {
 
     setIsLoading(true);
     try {
-      await studentService.updateKitStatus(
+      await studentAdminService.updateKitStatus(
         selectedStudent._id,
         selectedKit._id,
         data,
@@ -176,7 +176,7 @@ export const StudentManagement: React.FC = () => {
   // Handle view student details
   const handleViewStudent = async (studentId: string) => {
     try {
-      const response = await studentService.getStudentById(studentId);
+      const response = await studentAdminService.getStudentById(studentId);
       if (response?.data?.student) {
         setSelectedStudent(response.data.student);
         setShowDetails(true);
@@ -190,7 +190,7 @@ export const StudentManagement: React.FC = () => {
   // Handle edit student
   const handleEditStudent = async (studentId: string) => {
     try {
-      const response = await studentService.getStudentById(studentId);
+      const response = await studentAdminService.getStudentById(studentId);
       if (response?.data?.student) {
         setSelectedStudent(response.data.student);
         setShowForm(true);

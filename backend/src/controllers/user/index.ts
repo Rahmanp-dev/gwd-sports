@@ -141,6 +141,32 @@ export class UserController {
     }
   }
 
+  // Get if the User exists by that Email
+  static async getUserByEmail(req: AuthRequest, res: Response) {
+    try {
+      const { email } = req.params;
+
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      res.json({
+        success: true,
+        data: { user }
+      });
+    } catch (error) {
+      logger.error('Get User by email error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
   // Refresh access token
   static async refreshToken(req: AuthRequest, res: Response) {
     try {
