@@ -182,6 +182,52 @@ export interface Trainer {
   updatedAt: string;
 }
 
+export interface ITrainerProfile {
+  _id: string;
+  userId: string;
+  academyId: string | null;
+  sports: string[];
+  students: string[];
+  specializations: string[];
+  qualifications: IQualification[];
+  experience: IExperience[];
+  hourlyRate?: number;
+  availability: {
+    days: string[];
+    timeSlots: {
+      start: string;
+      end: string;
+      _id: string;
+    }[];
+  };
+  rating: {
+    average: number;
+    totalReviews: number;
+  };
+  joinedDate: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IQualification {
+  certification: string;
+  issuedBy: string;
+  issuedDate: string;
+  expiryDate?: string;
+  certificateUrl?: string;
+  _id: string;
+}
+
+export interface IExperience {
+  organization: string;
+  position: string;
+  startDate: string;
+  endDate?: string;
+  description: string;
+  _id: string;
+}
+
 /** ACADEMY RELATED TYPE INTERFACE **/
 
 export interface Academy {
