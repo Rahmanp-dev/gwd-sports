@@ -2,8 +2,11 @@ TODO:
 
 P1:
 
+- [ ] Add Edit Student Profile in F
+- [ ] Add Edit Trainer Profile in F
+- [ ] Student Dashboard
+- [ ] Trainer Dashboard
 - [ ] Handle Existing Token in register pages and redirect them directly
-- [ ] Add profile page for trainer - basically use the /user/profile page and update it for different use
 - [ ] Add trainer register
 - [ ] Fix the build issue 
 - [ ] Check edit student - it is misbehaving
@@ -36,3 +39,4 @@ Done ✅
 - [x] Add user login 
 - [x] Add student register
 - [x] Add profile page for student - basically use the /user/profile page and update it for different use
+- [x] Add profile page for trainer - basically use the /user/profile page and update it for different use
