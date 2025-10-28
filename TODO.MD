@@ -3,12 +3,13 @@ TODO:
 P1:
 
 - [ ] Handle Existing Token in register pages and redirect them directly
-- [ ] Add profile page for student and trainer - basically use the /user/profile page and update it for different users
+- [ ] Add profile page for student and trainer - basically use the /user/profile page and update it for different use
 - [ ] Add trainer register
 - [ ] Fix the build issue 
 - [ ] Check edit student - it is misbehaving
 - [ ] Fix the issue with backend build and frontend - new ts version
 - [ ] Complete Student Login , Trainer Login, and their pages
+- [ ] show if the student is verified or not in the profile
 
 P2:
 - [ ] Frontend logging
