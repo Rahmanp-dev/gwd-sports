@@ -5,6 +5,8 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { logout, setUser } from "@/store/slices/authSlice";
 import { userService } from "@/services/userService";
 import { authService } from "@/services/authService";
+import StudentProfile from "@/components/user/student/StudentProfile";
+import TrainerProfile from "@/components/user/trainer/TrainerProfile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -611,6 +613,23 @@ export default function UserProfile() {
               </CardContent>
             </Card>
           </motion.div>
+
+          {
+            user.role === "student" &&
+
+            // Student Profile
+            
+            <StudentProfile />
+          }       
+
+          {
+            user.role === "trainer" &&
+
+            // Trainer Profile 
+            
+            <TrainerProfile />
+          }
+          
         </motion.div>
       </div>
 

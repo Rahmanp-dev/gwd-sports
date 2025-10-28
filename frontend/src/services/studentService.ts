@@ -269,13 +269,64 @@ class StudentPublicService {
 
   // Get Own Student Profile
   async getOwnStudentProfile() {
-    
+    const response = await apiService.get<{
+      success: boolean;
+      data: {
+        studentProfile: {
+          _id: string;
+          userId: string;
+          academyId: string | null;
+          trainerId: string | null;
+          enrollmentDate: string | null;
+          totalFeesPaid: number;
+          outstandingFees: number;
+          sports: string[];
+          level: "beginner" | "intermediate" | "advanced";
+          isActive: boolean;
+          medicalInfo?: {
+            allergies?: string[];
+            medications?: string[];
+            emergencyContact: {
+              name: string;
+              phone: string;
+              relation: string;
+            };
+          };
+          feePayments: any[];
+          attendance: any[];
+          kits: any[];
+          performance: any[];
+          createdAt: string;
+          updatedAt: string;
+        };
+      };
+    }>(`${this.baseStudentUrl}/profile`);
+    return response;
   }
 
   // Update Own Student Profile
   // TODO: implement this API first and then this
-  async updateOwnStudentProfile() {
-    
+  async updateOwnStudentProfile(data: {
+    sports?: string[];
+    level?: "beginner" | "intermediate" | "advanced";
+    medicalInfo?: {
+      allergies?: string[];
+      medications?: string[];
+      emergencyContact?: {
+        name: string;
+        phone: string;
+        relation: string;
+      };
+    };
+  }) {
+    const response = await apiService.put<{
+      success: boolean;
+      message: string;
+      data: {
+        studentProfile: any;
+      };
+    }>(`${this.baseStudentUrl}/profile`, data);
+    return response;
   }
 
   // Join Academy
