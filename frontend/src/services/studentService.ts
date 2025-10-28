@@ -233,14 +233,38 @@ class StudentPublicService {
     return response.data;
   }
 
-  // Create User + Student Profile
-  async createFreshStudentProfile(){
-    
-  }
-
-  // Create Student Profile for Existing User
-  async createStudentProfileForExistingUser() {
-    
+  // Create Student Profile
+  async createStudentProfile(data: {
+    userId: string;
+    sports: string[];
+    level: "beginner" | "intermediate" | "advanced";
+    medicalInfo: {
+      allergies: string[];
+      medications: string[];
+      emergencyContact: {
+        name: string;
+        phone: string;
+        relation: string;
+      };
+    };
+  },
+  accessToken: string
+  ) {
+    const response = await apiService.post<{
+      success: boolean;
+      message: string;
+      data: {
+        studentProfile: any;
+      };
+    }>(`${this.baseStudentUrl}/profile`, 
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      }
+    );
+    return response;
   }
 
   // Get Own Student Profile

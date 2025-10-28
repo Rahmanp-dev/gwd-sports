@@ -24,13 +24,16 @@ class ApiService {
     // Add token to requests
     this.api.interceptors.request.use(
       (config) => {
-        const token = localStorage.getItem(this.tokenKey);
-        if (token) {
-          console.log(
-            "Adding token to request:",
-            token.substring(0, 15) + "...",
-          );
-          config.headers.Authorization = `Bearer ${token}`;
+        // Only add token if Authorization header is not already set
+        if (!config.headers.Authorization) {
+          const token = localStorage.getItem(this.tokenKey);
+          if (token) {
+            console.log(
+              "Adding token to request:",
+              token.substring(0, 15) + "...",
+            );
+            config.headers.Authorization = `Bearer ${token}`;
+          }
         }
         return config;
       },
@@ -42,6 +45,7 @@ class ApiService {
     // Handle response
     this.api.interceptors.response.use(
       (response) => {
+        // Return the data portion of the response
         return response.data;
       },
       async (error) => {
@@ -70,16 +74,25 @@ class ApiService {
           localStorage.removeItem("mg_user");
 
           // Only redirect if not already on login page
-          if (!window.location.pathname.includes("/login")) {
+          if (!window.location.pathname.includes("/login") && 
+              !window.location.pathname.includes("/auth")) {
             window.location.href = "/user/auth";
           }
         }
 
-        // Extract error message
+        // Extract error message - handle both response.data structure
         const errorMessage =
-          error.response?.data?.message || error.message || "An error occurred";
+          error.response?.data?.message || 
+          error.response?.data?.error ||
+          error.message || 
+          "An error occurred";
 
-        return Promise.reject(new Error(errorMessage));
+        // Return rejected promise with structured error
+        return Promise.reject({
+          success: false,
+          message: errorMessage,
+          status: error.response?.status
+        });
       },
     );
   }

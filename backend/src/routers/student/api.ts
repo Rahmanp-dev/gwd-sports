@@ -16,7 +16,7 @@ const router = Router();
 router.use(authMiddleware);
 
 // Student profile management
-router.post('/profile', roleMiddleware(['student', 'admin']), validateCreateStudentProfile, StudentController.createStudentProfile);
+router.post('/profile', roleMiddleware(['user', 'student', 'admin']), validateCreateStudentProfile, StudentController.createStudentProfile);
 router.get('/profile', roleMiddleware(['student', 'admin']), StudentController.getStudentProfile);
 
 // Academy operations

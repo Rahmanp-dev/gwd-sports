@@ -2,8 +2,8 @@ TODO:
 
 P1:
 
-- [ ] Add student register
 - [ ] Handle Existing Token in register pages and redirect them directly
+- [ ] Add profile page for student and trainer - basically use the /user/profile page and update it for different users
 - [ ] Add trainer register
 - [ ] Fix the build issue 
 - [ ] Check edit student - it is misbehaving
@@ -33,3 +33,4 @@ Done ✅
 - [x] Update the landing page components and make them more modular
 - [x] MgMun page
 - [x] Add user login 
+- [x] Add student register

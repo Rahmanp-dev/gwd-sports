@@ -519,6 +519,12 @@ export default function UserAuth() {
                   ← Back to Home
                 </Link>
               </div>
+
+              <div className="mt-6 text-center">
+                <Link to="/mgfc/student/register" className="text-sm text-blue-400 hover:text-blue-300">
+                  Register as a student
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </div>
