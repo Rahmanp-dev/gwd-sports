@@ -6,6 +6,8 @@ P1:
 - [ ] Add Edit Trainer Profile in F
 - [ ] Student Dashboard
 - [ ] Trainer Dashboard
+- [ ] Fix Admin Dashboard - some errors
+- [ ] Events page - event registration
 - [ ] Handle Existing Token in register pages and redirect them directly
 - [ ] Add trainer register
 - [ ] Check edit student - it is misbehaving
@@ -21,9 +23,7 @@ P2:
 - [ ] Update the landing page details
 
 P3: 
-- [ ] What ESLINT does
 - [ ] Can we use MCP or some auto prompt like thing to automate prompts? like prompt engineering but automated
-
 
 Done ✅
 
@@ -40,3 +40,4 @@ Done ✅
 - [x] Add profile page for student - basically use the /user/profile page and update it for different use
 - [x] Add profile page for trainer - basically use the /user/profile page and update it for different use
 - [x] Fix the build issue 
+- [x] What ESLINT does
