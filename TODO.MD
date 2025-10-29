@@ -8,7 +8,6 @@ P1:
 - [ ] Trainer Dashboard
 - [ ] Handle Existing Token in register pages and redirect them directly
 - [ ] Add trainer register
-- [ ] Fix the build issue 
 - [ ] Check edit student - it is misbehaving
 - [ ] Fix the issue with backend build and frontend - new ts version
 - [ ] Complete Student Login , Trainer Login, and their pages
@@ -40,3 +39,4 @@ Done ✅
 - [x] Add student register
 - [x] Add profile page for student - basically use the /user/profile page and update it for different use
 - [x] Add profile page for trainer - basically use the /user/profile page and update it for different use
+- [x] Fix the build issue 
