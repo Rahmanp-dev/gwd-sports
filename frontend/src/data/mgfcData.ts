@@ -5,9 +5,11 @@ import type { Feature } from "@/components/shared/FeaturesGrid";
 export const MGFC_HERO_DATA = {
   title: "MASTER GRADE FOOTBALL",
   subtitle: "Elite Football Academy",
-  description: "Where football dreams become reality. Train with professional coaches, compete at the highest level, and join a legacy of champions.",
+  description:
+    "Where football dreams become reality. Train with professional coaches, compete at the highest level, and join a legacy of champions.",
   icon: "⚽",
-  backgroundImage: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1920&h=1080&fit=crop",
+  backgroundImage:
+    "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1920&h=1080&fit=crop",
   stats: [
     { value: "500+", label: "Players" },
     { value: "15", label: "Trophies" },
@@ -21,7 +23,8 @@ export const MGFC_EVENTS: Event[] = [
     date: "Jan 20-28, 2026",
     location: "Master Grade Football Stadium",
     participants: "32 Teams",
-    image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&h=800&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&h=800&fit=crop",
     color: "from-green-600 to-emerald-500",
   },
   {
@@ -29,7 +32,8 @@ export const MGFC_EVENTS: Event[] = [
     date: "Feb 5-12, 2026",
     location: "MGFC Training Complex",
     participants: "200+ Young Players",
-    image: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=1200&h=800&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=1200&h=800&fit=crop",
     color: "from-blue-600 to-cyan-500",
   },
   {
@@ -37,7 +41,8 @@ export const MGFC_EVENTS: Event[] = [
     date: "Mar 15-20, 2026",
     location: "National Sports Arena",
     participants: "8 International Teams",
-    image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=1200&h=800&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=1200&h=800&fit=crop",
     color: "from-orange-600 to-red-500",
   },
 ];
@@ -46,13 +51,15 @@ export const MGFC_FEATURES: Feature[] = [
   {
     icon: Award,
     title: "Professional Coaching",
-    description: "Learn from UEFA-certified coaches and former professional players",
+    description:
+      "Learn from UEFA-certified coaches and former professional players",
     gradient: "from-green-500 to-emerald-500",
   },
   {
     icon: Target,
     title: "Technical Training",
-    description: "Master ball control, passing, shooting, and tactical awareness",
+    description:
+      "Master ball control, passing, shooting, and tactical awareness",
     gradient: "from-blue-500 to-cyan-500",
   },
   {

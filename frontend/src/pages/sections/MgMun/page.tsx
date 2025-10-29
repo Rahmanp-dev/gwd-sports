@@ -21,7 +21,6 @@ import Footer from "@/components/landing/Footer";
 import { mgmunData } from "@/data/mgmunData";
 
 export default function MgMunPage() {
-
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -59,8 +58,8 @@ export default function MgMunPage() {
       />
 
       {/* Stats Banner */}
-      <StatsBanner 
-        stats={mgmunData.hero.stats} 
+      <StatsBanner
+        stats={mgmunData.hero.stats}
         accentColor="from-blue-500 to-purple-500"
       />
 
@@ -120,7 +119,7 @@ export default function MgMunPage() {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-3xl" />
               <div className="absolute inset-0 backdrop-blur-3xl rounded-3xl border border-white/10" />
-              
+
               {/* Floating Cards */}
               <motion.div
                 animate={{
@@ -167,8 +166,12 @@ export default function MgMunPage() {
                 className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-indigo-600 to-indigo-800 p-8 rounded-2xl shadow-2xl border border-indigo-400/20"
               >
                 <Globe className="h-12 w-12 text-white mx-auto mb-2" />
-                <p className="text-white font-bold text-xl text-center">MG MUN</p>
-                <p className="text-indigo-200 text-sm text-center">Peace Through Dialogue</p>
+                <p className="text-white font-bold text-xl text-center">
+                  MG MUN
+                </p>
+                <p className="text-indigo-200 text-sm text-center">
+                  Peace Through Dialogue
+                </p>
               </motion.div>
             </motion.div>
           </motion.div>
@@ -265,10 +268,10 @@ export default function MgMunPage() {
                             committee.difficulty === "Beginner"
                               ? "border-green-500/50 text-green-400"
                               : committee.difficulty === "Intermediate"
-                              ? "border-yellow-500/50 text-yellow-400"
-                              : committee.difficulty === "Advanced"
-                              ? "border-orange-500/50 text-orange-400"
-                              : "border-red-500/50 text-red-400"
+                                ? "border-yellow-500/50 text-yellow-400"
+                                : committee.difficulty === "Advanced"
+                                  ? "border-orange-500/50 text-orange-400"
+                                  : "border-red-500/50 text-red-400"
                           }
                         `}
                       >
@@ -282,7 +285,9 @@ export default function MgMunPage() {
                     <p className="text-sm text-blue-400 mb-3">
                       {committee.abbreviation}
                     </p>
-                    <p className="text-gray-400 mb-4">{committee.description}</p>
+                    <p className="text-gray-400 mb-4">
+                      {committee.description}
+                    </p>
 
                     <div className="space-y-2">
                       <p className="text-sm font-semibold text-gray-300">
@@ -353,9 +358,7 @@ export default function MgMunPage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className={`flex items-center gap-8 ${
-                    index % 2 === 0
-                      ? "lg:flex-row"
-                      : "lg:flex-row-reverse"
+                    index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"
                   } flex-col lg:flex-row`}
                 >
                   {/* Content */}
@@ -374,7 +377,9 @@ export default function MgMunPage() {
                             {step.title}
                           </h3>
                         </div>
-                        <p className="text-gray-400 pl-16">{step.description}</p>
+                        <p className="text-gray-400 pl-16">
+                          {step.description}
+                        </p>
                       </CardContent>
                     </Card>
                   </div>
@@ -653,9 +658,12 @@ export default function MgMunPage() {
           >
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-10">
-              <div className="absolute inset-0" style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-              }} />
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                }}
+              />
             </div>
 
             <div className="relative text-center">

@@ -33,7 +33,12 @@ const stats = [
   },
 ];
 
-function AnimatedCounter({ value, suffix }) {
+interface AnimatedCounterProps {
+  value: number;
+  suffix: string;
+}
+
+function AnimatedCounter({ value, suffix }: AnimatedCounterProps) {
   const ref = React.useRef(null);
   const isInView = useInView(ref, { once: true });
   const [count, setCount] = React.useState(0);
@@ -60,7 +65,11 @@ function AnimatedCounter({ value, suffix }) {
   }, [isInView, value]);
 
   return (
-    <span ref={ref} className="text-6xl sm:text-7xl lg:text-8xl font-black" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+    <span
+      ref={ref}
+      className="text-6xl sm:text-7xl lg:text-8xl font-black"
+      style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+    >
       {count}
       {suffix}
     </span>
@@ -93,7 +102,10 @@ export default function StatsSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-20"
         >
-          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+          <h2
+            className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none"
+            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+          >
             Numbers That
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-500">
               Speak Volumes
@@ -136,12 +148,20 @@ export default function StatsSection() {
                 </motion.div>
 
                 {/* Number */}
-                <div className={`text-transparent bg-clip-text bg-gradient-to-br ${stat.color} mb-4 drop-shadow-[0_0_20px_rgba(251,191,36,0.3)]`}>
+                <div
+                  className={`text-transparent bg-clip-text bg-gradient-to-br ${stat.color} mb-4 drop-shadow-[0_0_20px_rgba(251,191,36,0.3)]`}
+                >
                   <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                 </div>
 
                 {/* Label */}
-                <div className="text-gray-300 font-black text-xl uppercase tracking-wider" style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.1em' }}>
+                <div
+                  className="text-gray-300 font-black text-xl uppercase tracking-wider"
+                  style={{
+                    fontFamily: "'Bebas Neue', sans-serif",
+                    letterSpacing: "0.1em",
+                  }}
+                >
                   {stat.label}
                 </div>
 
@@ -159,7 +179,9 @@ export default function StatsSection() {
                 />
 
                 {/* Glowing Border */}
-                <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500 -z-10`} />
+                <div
+                  className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500 -z-10`}
+                />
               </div>
             </motion.div>
           ))}
@@ -175,7 +197,10 @@ export default function StatsSection() {
         >
           <div className="inline-flex items-center gap-4 px-10 py-6 bg-gradient-to-r from-amber-500 to-yellow-500 text-black rounded-full shadow-2xl shadow-amber-500/50">
             <Trophy className="w-8 h-8" />
-            <span className="text-2xl font-black uppercase tracking-wider" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+            <span
+              className="text-2xl font-black uppercase tracking-wider"
+              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+            >
               #1 Rated Sports Academy
             </span>
           </div>

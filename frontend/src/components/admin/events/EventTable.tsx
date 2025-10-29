@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Table,
   TableBody,
@@ -6,9 +6,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,10 +16,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { MoreVertical, Edit, Trash2, Eye, Users } from 'lucide-react';
-import { EVENT_STATUS_COLORS } from '@/utils/constants';
-import type { Event } from '@/types';
+} from "@/components/ui/dropdown-menu";
+import { MoreVertical, Edit, Trash2, Eye, Users } from "lucide-react";
+import { EVENT_STATUS_COLORS } from "@/utils/constants";
+import type { Event } from "@/types";
 
 interface EventTableProps {
   events: Event[];
@@ -35,14 +35,13 @@ export const EventTable: React.FC<EventTableProps> = ({
   onDelete,
   onViewDetails,
 }) => {
-
   const formatDateTime = (date: string) => {
-    return new Date(date).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Date(date).toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -117,9 +116,13 @@ export const EventTable: React.FC<EventTableProps> = ({
                 </TableCell>
                 <TableCell>
                   <Badge
-                    className={event.registrationOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
+                    className={
+                      event.registrationOpen
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }
                   >
-                    {event.registrationOpen ? 'Open' : 'Closed'}
+                    {event.registrationOpen ? "Open" : "Closed"}
                   </Badge>
                   {!event.isPublic && (
                     <Badge variant="outline" className="ml-1">
@@ -129,10 +132,14 @@ export const EventTable: React.FC<EventTableProps> = ({
                 </TableCell>
                 <TableCell>
                   <Badge
-                    variant={event.isActive ? 'default' : 'secondary'}
-                    className={event.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
+                    variant={event.isActive ? "default" : "secondary"}
+                    className={
+                      event.isActive
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }
                   >
-                    {event.isActive ? 'Yes' : 'No'}
+                    {event.isActive ? "Yes" : "No"}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">

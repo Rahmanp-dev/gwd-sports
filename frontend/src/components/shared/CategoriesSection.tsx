@@ -74,15 +74,23 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({
             transition={{ duration: 0.6 }}
             className={`inline-flex items-center gap-3 px-8 py-3 bg-gradient-to-r ${accentColor} text-black rounded-full mb-8 shadow-[0_0_40px_rgba(245,158,11,0.6)]`}
           >
-            <span className="text-sm font-black uppercase tracking-[0.3em]" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+            <span
+              className="text-sm font-black uppercase tracking-[0.3em]"
+              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+            >
               {subtitle}
             </span>
           </motion.div>
-          
-          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
-            {title.split(' ').slice(0, -1).join(' ')}
-            <span className={`block text-transparent bg-clip-text bg-gradient-to-r ${accentColor} drop-shadow-[0_0_30px_rgba(245,158,11,0.8)]`}>
-              {title.split(' ').slice(-1)[0]}
+
+          <h2
+            className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none"
+            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+          >
+            {title.split(" ").slice(0, -1).join(" ")}
+            <span
+              className={`block text-transparent bg-clip-text bg-gradient-to-r ${accentColor} drop-shadow-[0_0_30px_rgba(245,158,11,0.8)]`}
+            >
+              {title.split(" ").slice(-1)[0]}
             </span>
           </h2>
           <motion.div
@@ -113,20 +121,30 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({
             >
               <div className="relative bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-md border-4 border-amber-500/20 rounded-3xl p-8 h-full shadow-2xl hover:shadow-[0_25px_70px_rgba(245,158,11,0.5)] transition-all duration-500 overflow-hidden">
                 {/* Gradient Overlay */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-30 transition-opacity duration-500`} />
-                
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-30 transition-opacity duration-500`}
+                />
+
                 {/* Animated Corner Lines */}
                 <motion.div
                   className="absolute top-0 left-0 w-20 h-20 border-t-4 border-l-4 border-amber-500/50 rounded-tl-3xl"
                   animate={{
-                    borderColor: ["rgba(245,158,11,0.5)", "rgba(245,158,11,1)", "rgba(245,158,11,0.5)"],
+                    borderColor: [
+                      "rgba(245,158,11,0.5)",
+                      "rgba(245,158,11,1)",
+                      "rgba(245,158,11,0.5)",
+                    ],
                   }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
                 <motion.div
                   className="absolute bottom-0 right-0 w-20 h-20 border-b-4 border-r-4 border-amber-500/50 rounded-br-3xl"
                   animate={{
-                    borderColor: ["rgba(245,158,11,0.5)", "rgba(245,158,11,1)", "rgba(245,158,11,0.5)"],
+                    borderColor: [
+                      "rgba(245,158,11,0.5)",
+                      "rgba(245,158,11,1)",
+                      "rgba(245,158,11,0.5)",
+                    ],
                   }}
                   transition={{ duration: 2, repeat: Infinity, delay: 1 }}
                 />
@@ -141,7 +159,10 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({
                 </motion.div>
 
                 {/* Content */}
-                <h3 className="relative text-3xl font-black text-white uppercase mb-4 tracking-tight group-hover:text-amber-400 transition-colors" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+                <h3
+                  className="relative text-3xl font-black text-white uppercase mb-4 tracking-tight group-hover:text-amber-400 transition-colors"
+                  style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                >
                   {category.title}
                 </h3>
                 <p className="relative text-gray-300 text-base font-semibold leading-relaxed mb-6">
@@ -149,10 +170,7 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({
                 </p>
 
                 {/* CTA */}
-                <motion.div
-                  whileHover={{ x: 5 }}
-                  className="relative"
-                >
+                <motion.div whileHover={{ x: 5 }} className="relative">
                   <Button
                     variant="ghost"
                     className="text-amber-400 hover:text-amber-300 hover:bg-transparent p-0 h-auto font-black uppercase tracking-wider group/btn"
@@ -184,12 +202,17 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({
                 </div>
 
                 {/* Glow Effect */}
-                <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-20 blur-2xl transition-opacity duration-500 -z-10`} />
-                
+                <div
+                  className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-20 blur-2xl transition-opacity duration-500 -z-10`}
+                />
+
                 {/* Number Badge */}
                 <div className="absolute top-4 right-4 w-12 h-12 rounded-full bg-black/50 border-2 border-amber-500/30 flex items-center justify-center">
-                  <span className="text-amber-500 text-xl font-black" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
-                    {(index + 1).toString().padStart(2, '0')}
+                  <span
+                    className="text-amber-500 text-xl font-black"
+                    style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                  >
+                    {(index + 1).toString().padStart(2, "0")}
                   </span>
                 </div>
               </div>

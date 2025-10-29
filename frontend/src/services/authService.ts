@@ -33,7 +33,10 @@ class AuthService {
   }
 
   async register(userData: RegisterData): Promise<LoginResponse> {
-    console.log("AuthService: Sending registration request with:", userData.email);
+    console.log(
+      "AuthService: Sending registration request with:",
+      userData.email,
+    );
     return apiService.post<LoginResponse>("/user/register", userData);
   }
 
@@ -41,7 +44,11 @@ class AuthService {
     return apiService.get("/user/profile");
   }
 
-  async updateProfile(data: { name?: string; phone?: string; sports?: string[] }): Promise<{
+  async updateProfile(data: {
+    name?: string;
+    phone?: string;
+    sports?: string[];
+  }): Promise<{
     success: boolean;
     message: string;
     data: { user: User };
@@ -49,7 +56,10 @@ class AuthService {
     return apiService.put("/user/profile", data);
   }
 
-  async changePassword(data: { currentPassword: string; newPassword: string }): Promise<{
+  async changePassword(data: {
+    currentPassword: string;
+    newPassword: string;
+  }): Promise<{
     success: boolean;
     message: string;
   }> {

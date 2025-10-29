@@ -93,15 +93,23 @@ export const FeaturedEventsShowcase: React.FC<FeaturedEventsShowcaseProps> = ({
             transition={{ duration: 0.6 }}
             className={`inline-flex items-center gap-3 px-8 py-3 bg-gradient-to-r ${accentColor} text-white rounded-full mb-8 shadow-[0_0_40px_rgba(168,85,247,0.6)]`}
           >
-            <span className="text-sm font-black uppercase tracking-[0.3em]" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+            <span
+              className="text-sm font-black uppercase tracking-[0.3em]"
+              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+            >
               {subtitle}
             </span>
           </motion.div>
-          
-          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
-            {title.split(' ').slice(0, -1).join(' ')}
-            <span className={`block text-transparent bg-clip-text bg-gradient-to-r ${accentColor} drop-shadow-[0_0_30px_rgba(168,85,247,0.8)]`}>
-              {title.split(' ').slice(-1)[0]}
+
+          <h2
+            className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none"
+            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+          >
+            {title.split(" ").slice(0, -1).join(" ")}
+            <span
+              className={`block text-transparent bg-clip-text bg-gradient-to-r ${accentColor} drop-shadow-[0_0_30px_rgba(168,85,247,0.8)]`}
+            >
+              {title.split(" ").slice(-1)[0]}
             </span>
           </h2>
           <motion.div
@@ -137,7 +145,9 @@ export const FeaturedEventsShowcase: React.FC<FeaturedEventsShowcaseProps> = ({
                 </div>
 
                 {/* Gradient Overlay */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${event.color} opacity-20 group-hover:opacity-40 transition-opacity duration-500`} />
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${event.color} opacity-20 group-hover:opacity-40 transition-opacity duration-500`}
+                />
 
                 {/* Content */}
                 <div className="relative h-full flex flex-col justify-end p-8">
@@ -150,10 +160,16 @@ export const FeaturedEventsShowcase: React.FC<FeaturedEventsShowcaseProps> = ({
                       transition={{ delay: 0.5 + index * 0.2, type: "spring" }}
                       className="absolute top-6 right-6"
                     >
-                      <div className={`bg-gradient-to-r ${event.color} px-4 py-2 rounded-full flex items-center gap-2 shadow-lg`}>
+                      <div
+                        className={`bg-gradient-to-r ${event.color} px-4 py-2 rounded-full flex items-center gap-2 shadow-lg`}
+                      >
                         <motion.div
                           animate={{ rotate: [0, 360] }}
-                          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                          transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            ease: "linear",
+                          }}
                         >
                           ⭐
                         </motion.div>
@@ -179,7 +195,10 @@ export const FeaturedEventsShowcase: React.FC<FeaturedEventsShowcaseProps> = ({
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-4xl font-black text-white uppercase tracking-tight leading-tight group-hover:text-purple-300 transition-colors" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+                    <h3
+                      className="text-4xl font-black text-white uppercase tracking-tight leading-tight group-hover:text-purple-300 transition-colors"
+                      style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                    >
                       {event.title}
                     </h3>
 
@@ -190,8 +209,13 @@ export const FeaturedEventsShowcase: React.FC<FeaturedEventsShowcaseProps> = ({
                     </div>
 
                     {/* CTA Button */}
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button className={`bg-gradient-to-r ${event.color} hover:shadow-2xl hover:shadow-purple-500/50 text-white font-black uppercase w-full group/btn mt-4`}>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Button
+                        className={`bg-gradient-to-r ${event.color} hover:shadow-2xl hover:shadow-purple-500/50 text-white font-black uppercase w-full group/btn mt-4`}
+                      >
                         Register Now
                         <ArrowRight className="ml-2 w-5 h-5 group-hover/btn:translate-x-2 transition-transform" />
                       </Button>

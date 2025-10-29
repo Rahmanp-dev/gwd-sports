@@ -5,14 +5,26 @@ import { userService } from "@/services/userService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Mail, ArrowRight, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
+import {
+  Mail,
+  ArrowRight,
+  AlertCircle,
+  CheckCircle,
+  Loader2,
+} from "lucide-react";
 import { toast } from "sonner";
 
 export default function StudentRegister() {
   const navigate = useNavigate();
-  
+
   const [email, setEmail] = useState("");
   const [isChecking, setIsChecking] = useState(false);
   const [error, setError] = useState("");
@@ -23,12 +35,12 @@ export default function StudentRegister() {
       setError("Email is required");
       return false;
     }
-    
+
     if (!/\S+@\S+\.\S+/.test(email)) {
       setError("Please enter a valid email address");
       return false;
     }
-    
+
     setError("");
     return true;
   };
@@ -50,40 +62,51 @@ export default function StudentRegister() {
       console.log(response);
 
       if (response.success) {
-
         const message = response.message;
-        
+
         // Fresh User - No account - create User Profile and Student Profile
-        if (message === 'User not found') {
+        if (message === "User not found") {
           toast.success("Hi there! Let's create your account.");
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          await new Promise((resolve) => setTimeout(resolve, 2000));
           navigate("/mgfc/student/register/create", { state: { email } });
         }
         // Existing User - Has no profile OR incomplete profile - create Student Profile
         else if (
-          message === 'User has a no other profile' || 
-          message === 'Student profile not found' || 
-          message === 'Trainer profile not found'
+          message === "User has a no other profile" ||
+          message === "Student profile not found" ||
+          message === "Trainer profile not found"
         ) {
-          toast.success(`Welcome ${response.data.user.name}! Let's create your student profile.`);
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          navigate("/mgfc/student/register/complete", { state: { email, user: response.data.user } });
+          if (response.data?.user) {
+            toast.success(
+              `Welcome ${response.data.user.name}! Let's create your student profile.`,
+            );
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+            navigate("/mgfc/student/register/complete", {
+              state: { email, user: response.data.user },
+            });
+          }
         }
         // Existing User - Has a student profile - redirect to login
         // Existing User - Has a student or trainer profile - redirect to login
         else if (
-          message === 'User has a student profile' || 
-          message === 'User has a trainer profile'
+          message === "User has a student profile" ||
+          message === "User has a trainer profile"
         ) {
-          const profileType = message.includes('student') ? 'student' : 'trainer';
-          toast.info(`You already have a ${profileType} profile, ${response.data.user.name}! Please login to continue.`);
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          const profileType = message.includes("student")
+            ? "student"
+            : "trainer";
+          if (response.data?.user) {
+            toast.info(
+              `You already have a ${profileType} profile, ${response.data.user.name}! Please login to continue.`,
+            );
+          }
+          await new Promise((resolve) => setTimeout(resolve, 2000));
           navigate("/user/auth", { state: { email } });
         }
         // Fallback - shouldn't reach here but handle gracefully
         else {
           toast.info("Please login to continue.");
-          await new Promise(resolve => setTimeout(resolve, 1500));
+          await new Promise((resolve) => setTimeout(resolve, 1500));
           navigate("/user/auth", { state: { email } });
         }
       }
@@ -139,7 +162,10 @@ export default function StudentRegister() {
             <form onSubmit={handleCheckEmail} className="space-y-6">
               {/* Error Alert */}
               {error && (
-                <Alert variant="destructive" className="animate-in slide-in-from-top">
+                <Alert
+                  variant="destructive"
+                  className="animate-in slide-in-from-top"
+                >
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
@@ -202,7 +228,9 @@ export default function StudentRegister() {
                     </p>
                     <ul className="text-xs text-gray-400 space-y-1">
                       <li>• If you have an account, we'll ask you to login</li>
-                      <li>• If you're new, we'll help you create your profile</li>
+                      <li>
+                        • If you're new, we'll help you create your profile
+                      </li>
                       <li>• Your data is secure and encrypted</li>
                     </ul>
                   </div>

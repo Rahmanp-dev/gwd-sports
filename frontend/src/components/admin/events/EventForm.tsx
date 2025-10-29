@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
-import { X, Plus } from 'lucide-react';
-import { SPORTS_LIST, EVENT_STATUS_OPTIONS } from '@/utils/constants';
-import type { Event, EventFormData } from '@/types';
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { X, Plus } from "lucide-react";
+import { SPORTS_LIST, EVENT_STATUS_OPTIONS } from "@/utils/constants";
+import type { Event, EventFormData } from "@/types";
 
 interface EventFormProps {
   event?: Event;
@@ -31,9 +31,9 @@ export const EventForm: React.FC<EventFormProps> = ({
   const [tags, setTags] = useState<string[]>(event?.tags || []);
   const [prizes, setPrizes] = useState<string[]>(event?.prizes || []);
   const [links, setLinks] = useState<string[]>(event?.links || []);
-  const [tagInput, setTagInput] = useState('');
-  const [prizeInput, setPrizeInput] = useState('');
-  const [linkInput, setLinkInput] = useState('');
+  const [tagInput, setTagInput] = useState("");
+  const [prizeInput, setPrizeInput] = useState("");
+  const [linkInput, setLinkInput] = useState("");
 
   const {
     register,
@@ -48,7 +48,9 @@ export const EventForm: React.FC<EventFormProps> = ({
           description: event.description,
           sport: event.sport,
           startDate: new Date(event.startDate).toISOString().slice(0, 16),
-          endDate: event.endDate ? new Date(event.endDate).toISOString().slice(0, 16) : undefined,
+          endDate: event.endDate
+            ? new Date(event.endDate).toISOString().slice(0, 16)
+            : undefined,
           location: event.location,
           venue: event.venue,
           maxParticipants: event.maxParticipants,
@@ -63,16 +65,16 @@ export const EventForm: React.FC<EventFormProps> = ({
           requirements: event.requirements,
         }
       : {
-          status: 'draft',
+          status: "draft",
           isPublic: true,
           registrationOpen: true,
-          contactInfo: { name: '', phone: '', email: '' },
+          contactInfo: { name: "", phone: "", email: "" },
         },
   });
 
-  const status = watch('status');
-  const isPublic = watch('isPublic');
-  const registrationOpen = watch('registrationOpen');
+  const status = watch("status");
+  const isPublic = watch("isPublic");
+  const registrationOpen = watch("registrationOpen");
 
   const handleFormSubmit = (data: EventFormData) => {
     onSubmit({
@@ -86,7 +88,7 @@ export const EventForm: React.FC<EventFormProps> = ({
   const addTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
       setTags([...tags, tagInput.trim()]);
-      setTagInput('');
+      setTagInput("");
     }
   };
 
@@ -97,7 +99,7 @@ export const EventForm: React.FC<EventFormProps> = ({
   const addPrize = () => {
     if (prizeInput.trim()) {
       setPrizes([...prizes, prizeInput.trim()]);
-      setPrizeInput('');
+      setPrizeInput("");
     }
   };
 
@@ -108,7 +110,7 @@ export const EventForm: React.FC<EventFormProps> = ({
   const addLink = () => {
     if (linkInput.trim()) {
       setLinks([...links, linkInput.trim()]);
-      setLinkInput('');
+      setLinkInput("");
     }
   };
 
@@ -121,7 +123,7 @@ export const EventForm: React.FC<EventFormProps> = ({
       {/* Basic Information */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Basic Information</h3>
-        
+
         <div className="grid md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="name">
@@ -129,10 +131,10 @@ export const EventForm: React.FC<EventFormProps> = ({
             </Label>
             <Input
               id="name"
-              {...register('name', {
-                required: 'Event name is required',
-                minLength: { value: 3, message: 'Minimum 3 characters' },
-                maxLength: { value: 100, message: 'Maximum 100 characters' },
+              {...register("name", {
+                required: "Event name is required",
+                minLength: { value: 3, message: "Minimum 3 characters" },
+                maxLength: { value: 100, message: "Maximum 100 characters" },
               })}
               placeholder="Annual Football Championship"
             />
@@ -146,8 +148,8 @@ export const EventForm: React.FC<EventFormProps> = ({
               Sport <span className="text-red-500">*</span>
             </Label>
             <Select
-              value={watch('sport')}
-              onValueChange={(value) => setValue('sport', value)}
+              value={watch("sport")}
+              onValueChange={(value) => setValue("sport", value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select sport" />
@@ -172,10 +174,10 @@ export const EventForm: React.FC<EventFormProps> = ({
           </Label>
           <Textarea
             id="description"
-            {...register('description', {
-              required: 'Description is required',
-              minLength: { value: 10, message: 'Minimum 10 characters' },
-              maxLength: { value: 2000, message: 'Maximum 2000 characters' },
+            {...register("description", {
+              required: "Description is required",
+              minLength: { value: 10, message: "Minimum 10 characters" },
+              maxLength: { value: 2000, message: "Maximum 2000 characters" },
             })}
             placeholder="Describe your event..."
             rows={4}
@@ -189,7 +191,7 @@ export const EventForm: React.FC<EventFormProps> = ({
       {/* Date & Location */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Date & Location</h3>
-        
+
         <div className="grid md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="startDate">
@@ -198,8 +200,8 @@ export const EventForm: React.FC<EventFormProps> = ({
             <Input
               id="startDate"
               type="datetime-local"
-              {...register('startDate', {
-                required: 'Start date is required',
+              {...register("startDate", {
+                required: "Start date is required",
               })}
             />
             {errors.startDate && (
@@ -212,7 +214,7 @@ export const EventForm: React.FC<EventFormProps> = ({
             <Input
               id="endDate"
               type="datetime-local"
-              {...register('endDate')}
+              {...register("endDate")}
             />
           </div>
         </div>
@@ -224,7 +226,7 @@ export const EventForm: React.FC<EventFormProps> = ({
             </Label>
             <Input
               id="location"
-              {...register('location', { required: 'Location is required' })}
+              {...register("location", { required: "Location is required" })}
               placeholder="City, State"
             />
             {errors.location && (
@@ -238,7 +240,7 @@ export const EventForm: React.FC<EventFormProps> = ({
             </Label>
             <Input
               id="venue"
-              {...register('venue', { required: 'Venue is required' })}
+              {...register("venue", { required: "Venue is required" })}
               placeholder="Stadium Name or Address"
             />
             {errors.venue && (
@@ -251,7 +253,7 @@ export const EventForm: React.FC<EventFormProps> = ({
       {/* Registration Details */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Registration Details</h3>
-        
+
         <div className="grid md:grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label htmlFor="maxParticipants">Max Participants</Label>
@@ -259,12 +261,12 @@ export const EventForm: React.FC<EventFormProps> = ({
               id="maxParticipants"
               type="number"
               min="1"
-              {...register('maxParticipants', {
-                min: { value: 1, message: 'Minimum 1 participant' },
+              {...register("maxParticipants", {
+                min: { value: 1, message: "Minimum 1 participant" },
               })}
               placeholder="50"
               onKeyDown={(e) => {
-                if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+                if (e.key === "-" || e.key === "e" || e.key === "E") {
                   e.preventDefault();
                 }
               }}
@@ -278,12 +280,12 @@ export const EventForm: React.FC<EventFormProps> = ({
               type="number"
               min="0"
               step="1.00"
-              {...register('entryFee', {
-                min: { value: 0, message: 'Cannot be negative' },
+              {...register("entryFee", {
+                min: { value: 0, message: "Cannot be negative" },
               })}
               placeholder="0"
               onKeyDown={(e) => {
-                if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+                if (e.key === "-" || e.key === "e" || e.key === "E") {
                   e.preventDefault();
                 }
               }}
@@ -295,7 +297,7 @@ export const EventForm: React.FC<EventFormProps> = ({
             <Input
               id="registrationDeadline"
               type="datetime-local"
-              {...register('registrationDeadline')}
+              {...register("registrationDeadline")}
             />
           </div>
         </div>
@@ -304,7 +306,7 @@ export const EventForm: React.FC<EventFormProps> = ({
       {/* Contact Information */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Contact Information</h3>
-        
+
         <div className="grid md:grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label htmlFor="contactName">
@@ -312,8 +314,8 @@ export const EventForm: React.FC<EventFormProps> = ({
             </Label>
             <Input
               id="contactName"
-              {...register('contactInfo.name', {
-                required: 'Contact name is required',
+              {...register("contactInfo.name", {
+                required: "Contact name is required",
               })}
               placeholder="John Doe"
             />
@@ -330,11 +332,11 @@ export const EventForm: React.FC<EventFormProps> = ({
             </Label>
             <Input
               id="contactPhone"
-              {...register('contactInfo.phone', {
-                required: 'Contact phone is required',
+              {...register("contactInfo.phone", {
+                required: "Contact phone is required",
                 pattern: {
                   value: /^[+]?[\d\s\-\(\)]{10,}$/,
-                  message: 'Invalid phone number',
+                  message: "Invalid phone number",
                 },
               })}
               placeholder="+1234567890"
@@ -353,11 +355,11 @@ export const EventForm: React.FC<EventFormProps> = ({
             <Input
               id="contactEmail"
               type="email"
-              {...register('contactInfo.email', {
-                required: 'Contact email is required',
+              {...register("contactInfo.email", {
+                required: "Contact email is required",
                 pattern: {
                   value: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-                  message: 'Invalid email',
+                  message: "Invalid email",
                 },
               })}
               placeholder="contact@example.com"
@@ -374,13 +376,13 @@ export const EventForm: React.FC<EventFormProps> = ({
       {/* Status & Settings */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Status & Settings</h3>
-        
+
         <div className="grid md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="status">Event Status</Label>
             <Select
               value={status}
-              onValueChange={(value) => setValue('status', value as any)}
+              onValueChange={(value) => setValue("status", value as any)}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -407,7 +409,7 @@ export const EventForm: React.FC<EventFormProps> = ({
             <Switch
               id="isPublic"
               checked={isPublic}
-              onCheckedChange={(checked) => setValue('isPublic', checked)}
+              onCheckedChange={(checked) => setValue("isPublic", checked)}
             />
           </div>
 
@@ -422,7 +424,7 @@ export const EventForm: React.FC<EventFormProps> = ({
               id="registrationOpen"
               checked={registrationOpen}
               onCheckedChange={(checked) =>
-                setValue('registrationOpen', checked)
+                setValue("registrationOpen", checked)
               }
             />
           </div>
@@ -432,7 +434,7 @@ export const EventForm: React.FC<EventFormProps> = ({
       {/* Additional Details */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Additional Details</h3>
-        
+
         {/* Tags */}
         <div className="space-y-2">
           <Label>Tags</Label>
@@ -440,7 +442,9 @@ export const EventForm: React.FC<EventFormProps> = ({
             <Input
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+              onKeyPress={(e) =>
+                e.key === "Enter" && (e.preventDefault(), addTag())
+              }
               placeholder="Add tag..."
             />
             <Button type="button" onClick={addTag} variant="outline">
@@ -467,7 +471,7 @@ export const EventForm: React.FC<EventFormProps> = ({
           <Label htmlFor="requirements">Requirements</Label>
           <Textarea
             id="requirements"
-            {...register('requirements')}
+            {...register("requirements")}
             placeholder="List any requirements for participants..."
             rows={3}
           />
@@ -480,7 +484,9 @@ export const EventForm: React.FC<EventFormProps> = ({
             <Input
               value={prizeInput}
               onChange={(e) => setPrizeInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addPrize())}
+              onKeyPress={(e) =>
+                e.key === "Enter" && (e.preventDefault(), addPrize())
+              }
               placeholder="Add prize..."
             />
             <Button type="button" onClick={addPrize} variant="outline">
@@ -516,7 +522,9 @@ export const EventForm: React.FC<EventFormProps> = ({
             <Input
               value={linkInput}
               onChange={(e) => setLinkInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addLink())}
+              onKeyPress={(e) =>
+                e.key === "Enter" && (e.preventDefault(), addLink())
+              }
               placeholder="https://..."
             />
             <Button type="button" onClick={addLink} variant="outline">
@@ -556,7 +564,7 @@ export const EventForm: React.FC<EventFormProps> = ({
       {/* Submit Button */}
       <div className="flex justify-end gap-4 pt-4 border-t">
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Saving...' : event ? 'Update Event' : 'Create Event'}
+          {isLoading ? "Saving..." : event ? "Update Event" : "Create Event"}
         </Button>
       </div>
     </form>

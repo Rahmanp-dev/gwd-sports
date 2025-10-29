@@ -41,9 +41,9 @@ export default function MGBCPage() {
       </div>
 
       {/* Stats Banner */}
-      <StatsBanner 
-        stats={MGBC_ACHIEVEMENTS} 
-        accentColor="from-orange-500 to-amber-500" 
+      <StatsBanner
+        stats={MGBC_ACHIEVEMENTS}
+        accentColor="from-orange-500 to-amber-500"
       />
 
       {/* Training Focus Section */}

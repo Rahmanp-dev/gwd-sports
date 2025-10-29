@@ -1,26 +1,26 @@
-import apiService from './apiService';
-import type { 
-  Event, 
-  EventFormData, 
-  EventFilters, 
+import apiService from "./apiService";
+import type {
+  Event,
+  EventFormData,
+  EventFilters,
   EventStats,
-  PaginatedEventsResponse 
-} from '@/types';
+  PaginatedEventsResponse,
+} from "@/types";
 
 class EventService {
-  private baseUrl = '/events';
+  private baseUrl = "/events";
 
   // Admin: Get all events with pagination and filters
   async getAllEvents(filters: EventFilters = {}) {
     const queryParams = new URLSearchParams();
-    
+
     Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
+      if (value !== undefined && value !== null && value !== "") {
         queryParams.append(key, value.toString());
       }
     });
 
-    const url = queryParams.toString() 
+    const url = queryParams.toString()
       ? `${this.baseUrl}/admin/all-events?${queryParams.toString()}`
       : `${this.baseUrl}/admin/all-events`;
 

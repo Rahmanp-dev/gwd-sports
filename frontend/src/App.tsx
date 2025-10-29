@@ -24,7 +24,7 @@ import MgMunPage from "./pages/sections/MgMun/page";
 
 import MGFCStudentPage from "./pages/sections/MGFC/student/StudentPage";
 import MGFCTrainerPage from "./pages/sections/MGFC/trainer/TrainerPage";
-import StudentRegister from "./pages/sections/MGFC/student/StudentAuth"; 
+import StudentRegister from "./pages/sections/MGFC/student/StudentAuth";
 import StudentCreate from "./pages/sections/MGFC/student/StudentCreate";
 import StudentComplete from "./pages/sections/MGFC/student/StudentComplete";
 
@@ -61,7 +61,7 @@ const AppRouter: React.FC = () => {
 
       {/* User routes */}
       <Route path="/user/auth" element={<UserAuth />} />
-      
+
       {/* Protected user routes */}
       <Route
         path="/user/profile"

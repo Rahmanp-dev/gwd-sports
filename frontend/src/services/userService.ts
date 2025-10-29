@@ -1,5 +1,6 @@
 import apiService from "./apiService";
 import type {
+  User,
   UserFormData,
   UserUpdateData,
   UserListResponse,
@@ -64,7 +65,7 @@ class UserService {
   async getProfile() {
     const response = await apiService.get<{
       success: boolean;
-      data: { 
+      data: {
         user: {
           _id: string;
           name: string;
@@ -76,18 +77,22 @@ class UserService {
           lastLogin?: string;
           createdAt: string;
           updatedAt: string;
-        }
+        };
       };
     }>("/user/profile");
     return response;
   }
 
   // Update current user profile
-  async updateProfile(data: { name?: string; phone?: string; sports?: string[] }) {
+  async updateProfile(data: {
+    name?: string;
+    phone?: string;
+    sports?: string[];
+  }) {
     const response = await apiService.put<{
       success: boolean;
       message: string;
-      data: { 
+      data: {
         user: {
           _id: string;
           name: string;
@@ -99,7 +104,7 @@ class UserService {
           lastLogin?: string;
           createdAt: string;
           updatedAt: string;
-        }
+        };
       };
     }>("/user/profile", data);
     return response;
@@ -123,10 +128,20 @@ class UserService {
     return response;
   }
 
-  async checkEmail(email: string) {
-    const response = await apiService.post<{
+  async checkEmail(email: string): Promise<{
+    success: boolean;
+    message: string;
+    data?: {
+      user: User;
+    };
+  }> {
+    return apiService.post<{
+      success: boolean;
+      message: string;
+      data?: {
+        user: User;
+      };
     }>("/user/check-email", { email });
-    return response;
   }
 }
 

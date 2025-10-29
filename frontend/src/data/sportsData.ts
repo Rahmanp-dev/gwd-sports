@@ -1,4 +1,11 @@
-import type { Sport, Testimonial, Event, Stat, Feature } from "@/types/landing";
+import type { Sport, Testimonial, Event, Stat } from "@/types/landing";
+
+interface Feature {
+  id: string;
+  icon: any; // LucideIcon type
+  title: string;
+  description: string;
+}
 
 export const SPORTS: Sport[] = [
   {

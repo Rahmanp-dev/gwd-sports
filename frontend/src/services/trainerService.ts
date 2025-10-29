@@ -1,9 +1,9 @@
 import apiService from "./apiService";
 import type {
-    Trainer,
-    IQualification,
-    IExperience,
-    ITrainerProfile
+  Trainer,
+  IQualification,
+  IExperience,
+  ITrainerProfile,
 } from "@/types";
 
 class TrainerAdminService {

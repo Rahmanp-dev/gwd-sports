@@ -1,5 +1,14 @@
 import { motion } from "framer-motion";
-import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin, Zap } from "lucide-react";
+import {
+  Facebook,
+  Instagram,
+  Twitter,
+  Youtube,
+  Mail,
+  Phone,
+  MapPin,
+  Zap,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -32,8 +41,14 @@ export default function Footer() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h3 className="text-5xl font-black uppercase mb-4 tracking-tight" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
-              Master <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-500">Grade</span>
+            <h3
+              className="text-5xl font-black uppercase mb-4 tracking-tight"
+              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+            >
+              Master{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-500">
+                Grade
+              </span>
             </h3>
             <div className="w-20 h-1 bg-gradient-to-r from-amber-500 to-yellow-500 mb-6 shadow-lg shadow-amber-500/50" />
             <p className="text-gray-300 mb-8 leading-relaxed font-semibold text-lg">
@@ -62,9 +77,20 @@ export default function Footer() {
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
           >
-            <h4 className="text-2xl font-black uppercase mb-8 tracking-tight" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>Quick Links</h4>
+            <h4
+              className="text-2xl font-black uppercase mb-8 tracking-tight"
+              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+            >
+              Quick Links
+            </h4>
             <ul className="space-y-4">
-              {['About Us', 'Our Programs', 'Success Stories', 'Events', 'Blog'].map((item) => (
+              {[
+                "About Us",
+                "Our Programs",
+                "Success Stories",
+                "Events",
+                "Blog",
+              ].map((item) => (
                 <li key={item}>
                   <motion.a
                     whileHover={{ x: 10 }}
@@ -86,20 +112,27 @@ export default function Footer() {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            <h4 className="text-2xl font-black uppercase mb-8 tracking-tight" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>Our Sports</h4>
+            <h4
+              className="text-2xl font-black uppercase mb-8 tracking-tight"
+              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+            >
+              Our Sports
+            </h4>
             <ul className="space-y-4">
-              {['Football', 'Basketball', 'Tennis', 'Swimming', 'Cricket'].map((sport) => (
-                <li key={sport}>
-                  <motion.a
-                    whileHover={{ x: 10 }}
-                    href="#"
-                    className="text-gray-400 hover:text-amber-500 transition-colors font-bold uppercase text-base tracking-wider flex items-center gap-2 group"
-                  >
-                    <Zap className="w-4 h-4 text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    {sport}
-                  </motion.a>
-                </li>
-              ))}
+              {["Football", "Basketball", "Tennis", "Swimming", "Cricket"].map(
+                (sport) => (
+                  <li key={sport}>
+                    <motion.a
+                      whileHover={{ x: 10 }}
+                      href="#"
+                      className="text-gray-400 hover:text-amber-500 transition-colors font-bold uppercase text-base tracking-wider flex items-center gap-2 group"
+                    >
+                      <Zap className="w-4 h-4 text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      {sport}
+                    </motion.a>
+                  </li>
+                ),
+              )}
             </ul>
           </motion.div>
 
@@ -110,25 +143,48 @@ export default function Footer() {
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
           >
-            <h4 className="text-2xl font-black uppercase mb-8 tracking-tight" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>Contact</h4>
+            <h4
+              className="text-2xl font-black uppercase mb-8 tracking-tight"
+              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+            >
+              Contact
+            </h4>
             <ul className="space-y-5 mb-8">
-              <motion.li whileHover={{ x: 5 }} className="flex items-start gap-4 text-gray-300">
+              <motion.li
+                whileHover={{ x: 5 }}
+                className="flex items-start gap-4 text-gray-300"
+              >
                 <Phone className="w-6 h-6 mt-1 text-amber-500 flex-shrink-0" />
                 <span className="font-bold text-base">+1 (555) 123-4567</span>
               </motion.li>
-              <motion.li whileHover={{ x: 5 }} className="flex items-start gap-4 text-gray-300">
+              <motion.li
+                whileHover={{ x: 5 }}
+                className="flex items-start gap-4 text-gray-300"
+              >
                 <Mail className="w-6 h-6 mt-1 text-amber-500 flex-shrink-0" />
-                <span className="font-bold text-base">hello@mastergrade.com</span>
+                <span className="font-bold text-base">
+                  hello@mastergrade.com
+                </span>
               </motion.li>
-              <motion.li whileHover={{ x: 5 }} className="flex items-start gap-4 text-gray-300">
+              <motion.li
+                whileHover={{ x: 5 }}
+                className="flex items-start gap-4 text-gray-300"
+              >
                 <MapPin className="w-6 h-6 mt-1 text-amber-500 flex-shrink-0" />
-                <span className="font-bold text-base">123 Champions Ave, Sports City</span>
+                <span className="font-bold text-base">
+                  123 Champions Ave, Sports City
+                </span>
               </motion.li>
             </ul>
 
             {/* Newsletter */}
             <div className="bg-amber-500/10 backdrop-blur-md rounded-2xl p-6 border border-amber-500/20">
-              <h5 className="text-xl font-black uppercase mb-4 tracking-wider" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>Newsletter</h5>
+              <h5
+                className="text-xl font-black uppercase mb-4 tracking-wider"
+                style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+              >
+                Newsletter
+              </h5>
               <div className="flex gap-2">
                 <Input
                   type="email"
@@ -155,10 +211,16 @@ export default function Footer() {
             © 2026 Master Grade. All Rights Reserved.
           </p>
           <div className="flex gap-8">
-            <a href="#" className="text-gray-400 hover:text-amber-500 transition-colors font-bold uppercase text-sm tracking-wider">
+            <a
+              href="#"
+              className="text-gray-400 hover:text-amber-500 transition-colors font-bold uppercase text-sm tracking-wider"
+            >
               Privacy
             </a>
-            <a href="#" className="text-gray-400 hover:text-amber-500 transition-colors font-bold uppercase text-sm tracking-wider">
+            <a
+              href="#"
+              className="text-gray-400 hover:text-amber-500 transition-colors font-bold uppercase text-sm tracking-wider"
+            >
               Terms
             </a>
           </div>

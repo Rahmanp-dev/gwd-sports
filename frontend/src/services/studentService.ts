@@ -222,7 +222,6 @@ class StudentAdminService {
 }
 
 class StudentPublicService {
-
   private baseStudentUrl = "/student";
 
   // Check if the student has a User profile
@@ -234,21 +233,22 @@ class StudentPublicService {
   }
 
   // Create Student Profile
-  async createStudentProfile(data: {
-    userId: string;
-    sports: string[];
-    level: "beginner" | "intermediate" | "advanced";
-    medicalInfo: {
-      allergies: string[];
-      medications: string[];
-      emergencyContact: {
-        name: string;
-        phone: string;
-        relation: string;
+  async createStudentProfile(
+    data: {
+      userId: string;
+      sports: string[];
+      level: "beginner" | "intermediate" | "advanced";
+      medicalInfo: {
+        allergies: string[];
+        medications: string[];
+        emergencyContact: {
+          name: string;
+          phone: string;
+          relation: string;
+        };
       };
-    };
-  },
-  accessToken: string
+    },
+    accessToken: string,
   ) {
     const response = await apiService.post<{
       success: boolean;
@@ -256,14 +256,11 @@ class StudentPublicService {
       data: {
         studentProfile: any;
       };
-    }>(`${this.baseStudentUrl}/profile`, 
-      data,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      }
-    );
+    }>(`${this.baseStudentUrl}/profile`, data, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
     return response;
   }
 
@@ -330,31 +327,19 @@ class StudentPublicService {
   }
 
   // Join Academy
-  async joinAcademy() {
-    
-  }
+  async joinAcademy() {}
 
   // Get Attendance Records
-  async getAttendanceRecords() {
-    
-  }
+  async getAttendanceRecords() {}
 
   // Get Performance Records
-  async getPerformanceRecords() {
-    
-  }
+  async getPerformanceRecords() {}
 
   // Request Kit
-  async requestKit() {
-    
-  }
-  
+  async requestKit() {}
+
   // Get Kits
-  async getKits() {
-  
-  }
-
-
+  async getKits() {}
 }
 
 export const studentAdminService = new StudentAdminService();

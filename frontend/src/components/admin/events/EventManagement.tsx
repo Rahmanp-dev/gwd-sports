@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,19 +24,23 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { LoadingSpinner } from '@/components/common/LoadingSpinner';
-import { EventTable } from './EventTable';
-import { EventForm } from './EventForm';
-import { EventDetails } from './EventDetails';
-import { EventStats } from './EventStats';
-import { eventService } from '@/services/eventService';
-import { showToast } from '@/utils/toast';
-import { Plus, Search, Filter, TrendingUp } from 'lucide-react';
-import type { Event, EventFormData, EventFilters } from '@/types';
-import { SPORTS_LIST, EVENT_STATUS_OPTIONS, EVENT_SORT_OPTIONS } from '@/utils/constants';
+} from "@/components/ui/alert-dialog";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { EventTable } from "./EventTable";
+import { EventForm } from "./EventForm";
+import { EventDetails } from "./EventDetails";
+import { EventStats } from "./EventStats";
+import { eventService } from "@/services/eventService";
+import { showToast } from "@/utils/toast";
+import { Plus, Search, Filter, TrendingUp } from "lucide-react";
+import type { Event, EventFormData, EventFilters } from "@/types";
+import {
+  SPORTS_LIST,
+  EVENT_STATUS_OPTIONS,
+  EVENT_SORT_OPTIONS,
+} from "@/utils/constants";
 
-type DialogMode = 'create' | 'edit' | 'view' | 'stats' | null;
+type DialogMode = "create" | "edit" | "view" | "stats" | null;
 
 export const EventManagement: React.FC = () => {
   const queryClient = useQueryClient();
@@ -51,32 +55,35 @@ export const EventManagement: React.FC = () => {
   const [filters, setFilters] = useState<EventFilters>({
     page: 1,
     limit: 10,
-    search: '',
-    sport: '',
+    search: "",
+    sport: "",
     status: undefined,
-    sortBy: 'startDate',
-    sortOrder: 'desc',
+    sortBy: "startDate",
+    sortOrder: "desc",
   });
 
   // Fetch events with filters
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['events', filters],
+    queryKey: ["events", filters],
     queryFn: () => eventService.getAllEvents(filters),
     staleTime: 30000, // 30 seconds
   });
 
   // Create event mutation
   const createMutation = useMutation({
-    mutationFn: (eventData: EventFormData) => eventService.createEvent(eventData),
+    mutationFn: (eventData: EventFormData) =>
+      eventService.createEvent(eventData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['events'] });
-      queryClient.invalidateQueries({ queryKey: ['eventStats'] });
-      showToast.success('Event created successfully');
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      queryClient.invalidateQueries({ queryKey: ["eventStats"] });
+      showToast.success("Event created successfully");
       setDialogMode(null);
       setSelectedEvent(null);
     },
     onError: (error: any) => {
-      showToast.error(error?.response?.data?.message || 'Failed to create event');
+      showToast.error(
+        error?.response?.data?.message || "Failed to create event",
+      );
     },
   });
 
@@ -85,14 +92,16 @@ export const EventManagement: React.FC = () => {
     mutationFn: ({ id, data }: { id: string; data: Partial<EventFormData> }) =>
       eventService.updateEvent(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['events'] });
-      queryClient.invalidateQueries({ queryKey: ['eventStats'] });
-      showToast.success('Event updated successfully');
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      queryClient.invalidateQueries({ queryKey: ["eventStats"] });
+      showToast.success("Event updated successfully");
       setDialogMode(null);
       setSelectedEvent(null);
     },
     onError: (error: any) => {
-      showToast.error(error?.response?.data?.message || 'Failed to update event');
+      showToast.error(
+        error?.response?.data?.message || "Failed to update event",
+      );
     },
   });
 
@@ -100,13 +109,15 @@ export const EventManagement: React.FC = () => {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => eventService.deleteEvent(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['events'] });
-      queryClient.invalidateQueries({ queryKey: ['eventStats'] });
-      showToast.success('Event deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      queryClient.invalidateQueries({ queryKey: ["eventStats"] });
+      showToast.success("Event deleted successfully");
       setDeleteEventId(null);
     },
     onError: (error: any) => {
-      showToast.error(error?.response?.data?.message || 'Failed to delete event');
+      showToast.error(
+        error?.response?.data?.message || "Failed to delete event",
+      );
     },
   });
 
@@ -129,17 +140,17 @@ export const EventManagement: React.FC = () => {
 
   const handleEdit = (event: Event) => {
     setSelectedEvent(event);
-    setDialogMode('edit');
+    setDialogMode("edit");
   };
 
   const handleViewDetails = (event: Event) => {
     setSelectedEvent(event);
-    setDialogMode('view');
+    setDialogMode("view");
   };
 
   const handleViewStats = (event: Event) => {
     setSelectedEvent(event);
-    setDialogMode('stats');
+    setDialogMode("stats");
   };
 
   const handleDelete = (eventId: string) => {
@@ -170,11 +181,11 @@ export const EventManagement: React.FC = () => {
     setFilters({
       page: 1,
       limit: 10,
-      search: '',
-      sport: '',
+      search: "",
+      sport: "",
       status: undefined,
-      sortBy: 'startDate',
-      sortOrder: 'desc',
+      sortBy: "startDate",
+      sortOrder: "desc",
     });
   };
 
@@ -186,7 +197,9 @@ export const EventManagement: React.FC = () => {
       {/* Header with Stats Button */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Event Management</h2>
+          <h2 className="text-3xl font-bold tracking-tight">
+            Event Management
+          </h2>
           <p className="text-muted-foreground mt-1">
             Manage all events and tournaments
           </p>
@@ -194,13 +207,13 @@ export const EventManagement: React.FC = () => {
         <div className="flex gap-2">
           <Button
             variant="outline"
-            onClick={() => setDialogMode('stats')}
+            onClick={() => setDialogMode("stats")}
             className="gap-2"
           >
             <TrendingUp className="h-4 w-4" />
             View Statistics
           </Button>
-          <Button onClick={() => setDialogMode('create')} className="gap-2">
+          <Button onClick={() => setDialogMode("create")} className="gap-2">
             <Plus className="h-4 w-4" />
             Create Event
           </Button>
@@ -228,7 +241,7 @@ export const EventManagement: React.FC = () => {
             className="gap-2"
           >
             <Filter className="h-4 w-4" />
-            {showFilters ? 'Hide Filters' : 'Show Filters'}
+            {showFilters ? "Hide Filters" : "Show Filters"}
           </Button>
         </div>
 
@@ -239,9 +252,9 @@ export const EventManagement: React.FC = () => {
             <div className="space-y-2">
               <label className="text-sm font-medium">Sport</label>
               <Select
-                value={filters.sport || 'all'}
+                value={filters.sport || "all"}
                 onValueChange={(value) =>
-                  handleFilterChange('sport', value === 'all' ? '' : value)
+                  handleFilterChange("sport", value === "all" ? "" : value)
                 }
               >
                 <SelectTrigger>
@@ -262,9 +275,12 @@ export const EventManagement: React.FC = () => {
             <div className="space-y-2">
               <label className="text-sm font-medium">Status</label>
               <Select
-                value={filters.status || 'all'}
+                value={filters.status || "all"}
                 onValueChange={(value) =>
-                  handleFilterChange('status', value === 'all' ? undefined : value)
+                  handleFilterChange(
+                    "status",
+                    value === "all" ? undefined : value,
+                  )
                 }
               >
                 <SelectTrigger>
@@ -285,8 +301,8 @@ export const EventManagement: React.FC = () => {
             <div className="space-y-2">
               <label className="text-sm font-medium">Sort By</label>
               <Select
-                value={filters.sortBy || 'startDate'}
-                onValueChange={(value) => handleFilterChange('sortBy', value)}
+                value={filters.sortBy || "startDate"}
+                onValueChange={(value) => handleFilterChange("sortBy", value)}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -305,9 +321,9 @@ export const EventManagement: React.FC = () => {
             <div className="space-y-2">
               <label className="text-sm font-medium">Sort Order</label>
               <Select
-                value={filters.sortOrder || 'desc'}
+                value={filters.sortOrder || "desc"}
                 onValueChange={(value) =>
-                  handleFilterChange('sortOrder', value as 'asc' | 'desc')
+                  handleFilterChange("sortOrder", value as "asc" | "desc")
                 }
               >
                 <SelectTrigger>
@@ -360,11 +376,15 @@ export const EventManagement: React.FC = () => {
           {pagination && pagination.totalPages > 1 && (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-muted/50 rounded-lg">
               <div className="text-sm text-muted-foreground">
-                Showing {(pagination.currentPage - 1) * (filters.limit || 10) + 1} to{' '}
-                {Math.min(pagination.currentPage * (filters.limit || 10), pagination.totalEvents)} of{' '}
-                {pagination.totalEvents} events
+                Showing{" "}
+                {(pagination.currentPage - 1) * (filters.limit || 10) + 1} to{" "}
+                {Math.min(
+                  pagination.currentPage * (filters.limit || 10),
+                  pagination.totalEvents,
+                )}{" "}
+                of {pagination.totalEvents} events
               </div>
-              
+
               <div className="flex items-center gap-2">
                 {/* First Page */}
                 <Button
@@ -405,20 +425,27 @@ export const EventManagement: React.FC = () => {
                   )}
 
                   {/* Show pages around current page */}
-                  {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
+                  {Array.from(
+                    { length: pagination.totalPages },
+                    (_, i) => i + 1,
+                  )
                     .filter(
                       (page) =>
                         page === pagination.currentPage ||
                         page === pagination.currentPage - 1 ||
                         page === pagination.currentPage + 1 ||
                         page === pagination.currentPage - 2 ||
-                        page === pagination.currentPage + 2
+                        page === pagination.currentPage + 2,
                     )
                     .filter((page) => page > 0 && page <= pagination.totalPages)
                     .map((page) => (
                       <Button
                         key={page}
-                        variant={page === pagination.currentPage ? "default" : "outline"}
+                        variant={
+                          page === pagination.currentPage
+                            ? "default"
+                            : "outline"
+                        }
                         size="sm"
                         onClick={() => handlePageChange(page)}
                         className={
@@ -481,7 +508,9 @@ export const EventManagement: React.FC = () => {
                 </span>
                 <Select
                   value={String(filters.limit || 10)}
-                  onValueChange={(value) => handleFilterChange('limit', Number(value))}
+                  onValueChange={(value) =>
+                    handleFilterChange("limit", Number(value))
+                  }
                 >
                   <SelectTrigger className="w-[70px] h-8">
                     <SelectValue />
@@ -502,7 +531,7 @@ export const EventManagement: React.FC = () => {
 
       {/* Create/Edit Dialog */}
       <Dialog
-        open={dialogMode === 'create' || dialogMode === 'edit'}
+        open={dialogMode === "create" || dialogMode === "edit"}
         onOpenChange={(open) => {
           if (!open) {
             setDialogMode(null);
@@ -513,12 +542,14 @@ export const EventManagement: React.FC = () => {
         <DialogContent className="max-w-[90vw] lg:max-w-[75vw] max-h-[95vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {dialogMode === 'create' ? 'Create New Event' : 'Edit Event'}
+              {dialogMode === "create" ? "Create New Event" : "Edit Event"}
             </DialogTitle>
           </DialogHeader>
           <EventForm
             event={selectedEvent || undefined}
-            onSubmit={dialogMode === 'create' ? handleCreateEvent : handleUpdateEvent}
+            onSubmit={
+              dialogMode === "create" ? handleCreateEvent : handleUpdateEvent
+            }
             isLoading={createMutation.isPending || updateMutation.isPending}
           />
         </DialogContent>
@@ -526,7 +557,7 @@ export const EventManagement: React.FC = () => {
 
       {/* View Details Dialog */}
       <Dialog
-        open={dialogMode === 'view'}
+        open={dialogMode === "view"}
         onOpenChange={(open) => {
           if (!open) {
             setDialogMode(null);
@@ -544,7 +575,7 @@ export const EventManagement: React.FC = () => {
 
       {/* Stats Dialog */}
       <Dialog
-        open={dialogMode === 'stats'}
+        open={dialogMode === "stats"}
         onOpenChange={(open) => {
           if (!open) {
             setDialogMode(null);
@@ -569,8 +600,9 @@ export const EventManagement: React.FC = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action will soft delete the event. The event will be marked as inactive
-              but can be restored if needed, and this event won't be visible to participants. All participant data will be preserved.
+              This action will soft delete the event. The event will be marked
+              as inactive but can be restored if needed, and this event won't be
+              visible to participants. All participant data will be preserved.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -582,7 +614,7 @@ export const EventManagement: React.FC = () => {
               disabled={deleteMutation.isPending}
               className="bg-red-600 hover:bg-red-700"
             >
-              {deleteMutation.isPending ? 'Deleting...' : 'Make Inactive'}
+              {deleteMutation.isPending ? "Deleting..." : "Make Inactive"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

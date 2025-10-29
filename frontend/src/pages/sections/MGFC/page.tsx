@@ -4,7 +4,12 @@ import { ProgramsSection } from "@/components/shared/ProgramsSection";
 import { EventsSection } from "@/components/shared/EventsSection";
 import { FeaturesGrid } from "@/components/shared/FeaturesGrid";
 import Footer from "@/components/landing/Footer";
-import { MGFC_HERO_DATA, MGFC_EVENTS, MGFC_FEATURES, MGFC_PROGRAMS } from "@/data/mgfcData";
+import {
+  MGFC_HERO_DATA,
+  MGFC_EVENTS,
+  MGFC_FEATURES,
+  MGFC_PROGRAMS,
+} from "@/data/mgfcData";
 
 export default function MGFCPage() {
   useEffect(() => {

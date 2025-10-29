@@ -18,7 +18,7 @@ export const BasketballAnimation: React.FC = () => {
           ease: "easeInOut",
         }}
       />
-      
+
       {/* Court Lines */}
       {[...Array(5)].map((_, i) => (
         <motion.div
@@ -35,7 +35,7 @@ export const BasketballAnimation: React.FC = () => {
           }}
         />
       ))}
-      
+
       {/* Net Effect */}
       <motion.div
         className="absolute top-1/3 right-1/4 w-32 h-32"
@@ -74,7 +74,7 @@ export const FootballAnimation: React.FC = () => {
           }}
         />
       ))}
-      
+
       {/* Moving Football */}
       <motion.div
         className="absolute top-1/2 w-12 h-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 opacity-20"
@@ -114,7 +114,7 @@ export const RacingAnimation: React.FC = () => {
           }}
         />
       ))}
-      
+
       {/* Checkered Flag Pattern */}
       <motion.div
         className="absolute top-1/4 right-1/4 w-24 h-24 opacity-10"
@@ -133,8 +133,8 @@ export const RacingAnimation: React.FC = () => {
               key={i}
               className={`${
                 (Math.floor(i / 4) + (i % 4)) % 2 === 0
-                  ? 'bg-amber-500'
-                  : 'bg-transparent'
+                  ? "bg-amber-500"
+                  : "bg-transparent"
               }`}
             />
           ))}

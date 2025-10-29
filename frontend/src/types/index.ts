@@ -499,7 +499,12 @@ export interface FormField {
 
 /** EVENT RELATED TYPE INTERFACES **/
 
-export type EventStatus = 'draft' | 'published' | 'ongoing' | 'completed' | 'cancelled';
+export type EventStatus =
+  | "draft"
+  | "published"
+  | "ongoing"
+  | "completed"
+  | "cancelled";
 
 export interface Event {
   _id: string;
@@ -578,7 +583,7 @@ export interface EventFilters {
   endDate?: string;
   location?: string;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 export interface EventStats {

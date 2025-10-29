@@ -54,7 +54,11 @@ export default function MGFCTrainerPage() {
     specialization: "Tactical & Technical Training",
     experience: "12 years",
     avatar: "/api/placeholder/150/150",
-    certifications: ["UEFA B License", "Sports Science Degree", "First Aid Certified"],
+    certifications: [
+      "UEFA B License",
+      "Sports Science Degree",
+      "First Aid Certified",
+    ],
     stats: {
       totalPlayers: 45,
       activeTeams: 3,
@@ -238,7 +242,10 @@ export default function MGFCTrainerPage() {
               <Avatar className="h-16 w-16 border-4 border-white">
                 <AvatarImage src={trainerData.avatar} />
                 <AvatarFallback className="bg-gradient-to-br from-blue-600 to-green-600 text-white text-xl font-bold">
-                  {trainerData.name.split(" ").map((n) => n[0]).join("")}
+                  {trainerData.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
                 </AvatarFallback>
               </Avatar>
               <div>
@@ -281,24 +288,46 @@ export default function MGFCTrainerPage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 bg-gray-800 border border-gray-700">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-blue-600">
+            <TabsTrigger
+              value="overview"
+              className="data-[state=active]:bg-blue-600"
+            >
               Overview
             </TabsTrigger>
-            <TabsTrigger value="players" className="data-[state=active]:bg-blue-600">
+            <TabsTrigger
+              value="players"
+              className="data-[state=active]:bg-blue-600"
+            >
               Players
             </TabsTrigger>
-            <TabsTrigger value="teams" className="data-[state=active]:bg-blue-600">
+            <TabsTrigger
+              value="teams"
+              className="data-[state=active]:bg-blue-600"
+            >
               Teams
             </TabsTrigger>
-            <TabsTrigger value="training" className="data-[state=active]:bg-blue-600">
+            <TabsTrigger
+              value="training"
+              className="data-[state=active]:bg-blue-600"
+            >
               Training
             </TabsTrigger>
-            <TabsTrigger value="matches" className="data-[state=active]:bg-blue-600">
+            <TabsTrigger
+              value="matches"
+              className="data-[state=active]:bg-blue-600"
+            >
               Matches
             </TabsTrigger>
-            <TabsTrigger value="reports" className="data-[state=active]:bg-blue-600">
+            <TabsTrigger
+              value="reports"
+              className="data-[state=active]:bg-blue-600"
+            >
               Reports
             </TabsTrigger>
           </TabsList>
@@ -436,13 +465,17 @@ export default function MGFCTrainerPage() {
                         </div>
                         <div className="mt-3 pt-3 border-t border-gray-700">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-400">Attendance:</span>
+                            <span className="text-sm text-gray-400">
+                              Attendance:
+                            </span>
                             <span className="text-white font-semibold">
                               {session.attendees}/{session.totalPlayers}
                             </span>
                           </div>
                           <Progress
-                            value={(session.attendees / session.totalPlayers) * 100}
+                            value={
+                              (session.attendees / session.totalPlayers) * 100
+                            }
                             className="h-2 mt-2"
                           />
                         </div>
@@ -473,8 +506,8 @@ export default function MGFCTrainerPage() {
                           notification.type === "urgent"
                             ? "bg-red-500/10 border-red-500/20"
                             : notification.type === "success"
-                            ? "bg-green-500/10 border-green-500/20"
-                            : "bg-blue-500/10 border-blue-500/20"
+                              ? "bg-green-500/10 border-green-500/20"
+                              : "bg-blue-500/10 border-blue-500/20"
                         }`}
                       >
                         <div className="flex items-start gap-2">
@@ -486,7 +519,9 @@ export default function MGFCTrainerPage() {
                             <Bell className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
                           )}
                           <div className="flex-1">
-                            <p className="text-white text-sm">{notification.message}</p>
+                            <p className="text-white text-sm">
+                              {notification.message}
+                            </p>
                             <p className="text-gray-400 text-xs mt-1">
                               {notification.time}
                             </p>
@@ -494,7 +529,10 @@ export default function MGFCTrainerPage() {
                         </div>
                       </div>
                     ))}
-                    <Button variant="outline" className="w-full border-gray-700">
+                    <Button
+                      variant="outline"
+                      className="w-full border-gray-700"
+                    >
                       View All Notifications
                     </Button>
                   </CardContent>
@@ -521,8 +559,12 @@ export default function MGFCTrainerPage() {
                       >
                         <div className="flex items-center justify-between mb-3">
                           <div>
-                            <h4 className="text-white font-semibold">{team.name}</h4>
-                            <p className="text-sm text-gray-400">{team.class}</p>
+                            <h4 className="text-white font-semibold">
+                              {team.name}
+                            </h4>
+                            <p className="text-sm text-gray-400">
+                              {team.class}
+                            </p>
                           </div>
                           <Badge
                             variant="outline"
@@ -530,8 +572,8 @@ export default function MGFCTrainerPage() {
                               team.performance === "Excellent"
                                 ? "text-green-400 border-green-500/50"
                                 : team.performance === "Good"
-                                ? "text-blue-400 border-blue-500/50"
-                                : "text-yellow-400 border-yellow-500/50"
+                                  ? "text-blue-400 border-blue-500/50"
+                                  : "text-yellow-400 border-yellow-500/50"
                             }`}
                           >
                             {team.performance}
@@ -569,7 +611,9 @@ export default function MGFCTrainerPage() {
                         className="p-4 bg-gray-800/50 rounded-lg border border-gray-700"
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-white font-semibold">{plan.title}</h4>
+                          <h4 className="text-white font-semibold">
+                            {plan.title}
+                          </h4>
                           <Badge
                             className={`${
                               plan.status === "Active"
@@ -621,8 +665,12 @@ export default function MGFCTrainerPage() {
                       >
                         <div className="flex items-start justify-between mb-3">
                           <div>
-                            <h4 className="text-white font-semibold">{match.team}</h4>
-                            <p className="text-sm text-gray-400">vs {match.opponent}</p>
+                            <h4 className="text-white font-semibold">
+                              {match.team}
+                            </h4>
+                            <p className="text-sm text-gray-400">
+                              vs {match.opponent}
+                            </p>
                           </div>
                           <Badge
                             className={`${
@@ -680,10 +728,7 @@ export default function MGFCTrainerPage() {
                           className="pl-10 bg-gray-800 border-gray-700"
                         />
                       </div>
-                      <Button
-                        variant="outline"
-                        className="border-gray-700"
-                      >
+                      <Button variant="outline" className="border-gray-700">
                         <Filter className="h-4 w-4 mr-2" />
                         Filter
                       </Button>
@@ -732,7 +777,10 @@ export default function MGFCTrainerPage() {
                               <div className="flex items-center gap-3">
                                 <Avatar className="h-10 w-10">
                                   <AvatarFallback className="bg-gradient-to-br from-blue-600 to-green-600 text-white">
-                                    {player.name.split(" ").map((n) => n[0]).join("")}
+                                    {player.name
+                                      .split(" ")
+                                      .map((n) => n[0])
+                                      .join("")}
                                   </AvatarFallback>
                                 </Avatar>
                                 <span className="text-white font-medium">
@@ -740,15 +788,23 @@ export default function MGFCTrainerPage() {
                                 </span>
                               </div>
                             </td>
-                            <td className="p-4 text-gray-400">{player.rollNo}</td>
+                            <td className="p-4 text-gray-400">
+                              {player.rollNo}
+                            </td>
                             <td className="p-4">
-                              <Badge variant="outline" className="border-gray-600">
+                              <Badge
+                                variant="outline"
+                                className="border-gray-600"
+                              >
                                 {player.position}
                               </Badge>
                             </td>
                             <td className="p-4">
                               <div className="flex items-center gap-2">
-                                <Progress value={player.attendance} className="h-2 w-16" />
+                                <Progress
+                                  value={player.attendance}
+                                  className="h-2 w-16"
+                                />
                                 <span className="text-white text-sm">
                                   {player.attendance}%
                                 </span>
@@ -760,8 +816,8 @@ export default function MGFCTrainerPage() {
                                   player.performance === "Excellent"
                                     ? "bg-green-500/10 text-green-400 border-green-500/20"
                                     : player.performance === "Very Good"
-                                    ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
-                                    : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
+                                      ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                                      : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
                                 }`}
                               >
                                 {player.performance}
@@ -818,8 +874,8 @@ export default function MGFCTrainerPage() {
                             team.performance === "Excellent"
                               ? "text-green-400 border-green-500/50"
                               : team.performance === "Good"
-                              ? "text-blue-400 border-blue-500/50"
-                              : "text-yellow-400 border-yellow-500/50"
+                                ? "text-blue-400 border-blue-500/50"
+                                : "text-yellow-400 border-yellow-500/50"
                           }`}
                         >
                           {team.performance}
@@ -840,8 +896,12 @@ export default function MGFCTrainerPage() {
                         <div className="flex items-center gap-2 text-gray-400 p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
                           <Clock className="h-5 w-5 text-blue-400" />
                           <div>
-                            <p className="text-sm text-gray-400">Next Session</p>
-                            <p className="text-white font-semibold">{team.nextSession}</p>
+                            <p className="text-sm text-gray-400">
+                              Next Session
+                            </p>
+                            <p className="text-white font-semibold">
+                              {team.nextSession}
+                            </p>
                           </div>
                         </div>
 
@@ -931,7 +991,9 @@ export default function MGFCTrainerPage() {
 
                       <div className="mb-4">
                         <div className="flex justify-between text-sm mb-2">
-                          <span className="text-gray-400">Overall Progress</span>
+                          <span className="text-gray-400">
+                            Overall Progress
+                          </span>
                           <span className="text-white font-semibold">
                             {plan.completion}%
                           </span>
@@ -940,15 +1002,27 @@ export default function MGFCTrainerPage() {
                       </div>
 
                       <div className="flex gap-2">
-                        <Button variant="outline" className="border-gray-700" size="sm">
+                        <Button
+                          variant="outline"
+                          className="border-gray-700"
+                          size="sm"
+                        >
                           <Edit className="h-4 w-4 mr-2" />
                           Edit Plan
                         </Button>
-                        <Button variant="outline" className="border-gray-700" size="sm">
+                        <Button
+                          variant="outline"
+                          className="border-gray-700"
+                          size="sm"
+                        >
                           <FileText className="h-4 w-4 mr-2" />
                           View Details
                         </Button>
-                        <Button variant="outline" className="border-gray-700" size="sm">
+                        <Button
+                          variant="outline"
+                          className="border-gray-700"
+                          size="sm"
+                        >
                           <Download className="h-4 w-4 mr-2" />
                           Export
                         </Button>
@@ -1023,21 +1097,27 @@ export default function MGFCTrainerPage() {
                           <Calendar className="h-5 w-5 text-blue-400" />
                           <div>
                             <p className="text-xs text-gray-500">Date</p>
-                            <p className="text-white font-semibold">{match.date}</p>
+                            <p className="text-white font-semibold">
+                              {match.date}
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 text-gray-400">
                           <Clock className="h-5 w-5 text-green-400" />
                           <div>
                             <p className="text-xs text-gray-500">Time</p>
-                            <p className="text-white font-semibold">{match.time}</p>
+                            <p className="text-white font-semibold">
+                              {match.time}
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 text-gray-400">
                           <MapPin className="h-5 w-5 text-purple-400" />
                           <div>
                             <p className="text-xs text-gray-500">Venue</p>
-                            <p className="text-white font-semibold">{match.venue}</p>
+                            <p className="text-white font-semibold">
+                              {match.venue}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -1059,11 +1139,15 @@ export default function MGFCTrainerPage() {
               <motion.div variants={itemVariants}>
                 <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
                   <CardHeader>
-                    <CardTitle className="text-white">Generate Report</CardTitle>
+                    <CardTitle className="text-white">
+                      Generate Report
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <label className="text-sm text-gray-400">Report Type</label>
+                      <label className="text-sm text-gray-400">
+                        Report Type
+                      </label>
                       <select className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white">
                         <option>Player Performance Report</option>
                         <option>Team Statistics Report</option>
@@ -1074,7 +1158,9 @@ export default function MGFCTrainerPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm text-gray-400">Time Period</label>
+                      <label className="text-sm text-gray-400">
+                        Time Period
+                      </label>
                       <select className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white">
                         <option>Last Week</option>
                         <option>Last Month</option>
@@ -1084,7 +1170,9 @@ export default function MGFCTrainerPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm text-gray-400">Select Team</label>
+                      <label className="text-sm text-gray-400">
+                        Select Team
+                      </label>
                       <select className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white">
                         <option>All Teams</option>
                         <option>Blue Dragons</option>
@@ -1152,7 +1240,10 @@ export default function MGFCTrainerPage() {
                       </div>
                     ))}
 
-                    <Button variant="outline" className="w-full border-gray-700">
+                    <Button
+                      variant="outline"
+                      className="w-full border-gray-700"
+                    >
                       View All Reports
                     </Button>
                   </CardContent>

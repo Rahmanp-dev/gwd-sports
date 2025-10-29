@@ -39,9 +39,9 @@ export default function GalaxyEventsPage() {
       />
 
       {/* Stats Banner */}
-      <StatsBanner 
-        stats={GALAXY_STATS} 
-        accentColor="from-purple-500 to-indigo-500" 
+      <StatsBanner
+        stats={GALAXY_STATS}
+        accentColor="from-purple-500 to-indigo-500"
       />
 
       {/* Featured Upcoming Events */}

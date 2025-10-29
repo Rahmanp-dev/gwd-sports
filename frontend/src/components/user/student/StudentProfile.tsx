@@ -2,16 +2,22 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { 
-  User, 
-  Mail, 
-  Phone, 
+import {
+  User,
+  Mail,
+  Phone,
   Calendar,
   Lock,
   LogOut,
@@ -24,7 +30,7 @@ import {
   Trophy,
   Heart,
   AlertCircle,
-  Loader2
+  Loader2,
 } from "lucide-react";
 import { studentPublicService } from "@/services/studentService";
 import { toast } from "sonner";
@@ -57,9 +63,12 @@ export default function StudentProfile() {
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [studentProfile, setStudentProfile] = useState<StudentProfileData | null>(null);
+  const [studentProfile, setStudentProfile] =
+    useState<StudentProfileData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedProfile, setEditedProfile] = useState<Partial<StudentProfileData>>({});
+  const [editedProfile, setEditedProfile] = useState<
+    Partial<StudentProfileData>
+  >({});
 
   // Fetch student profile on mount
   useEffect(() => {
@@ -70,7 +79,7 @@ export default function StudentProfile() {
     try {
       setIsLoading(true);
       const response = await studentPublicService.getOwnStudentProfile();
-      
+
       if (response.success) {
         setStudentProfile(response.data.studentProfile);
         setEditedProfile(response.data.studentProfile);
@@ -98,15 +107,16 @@ export default function StudentProfile() {
   const handleSave = async () => {
     try {
       toast.loading("Updating profile...");
-      
+
       const updateData = {
         sports: editedProfile.sports,
         level: editedProfile.level,
         medicalInfo: editedProfile.medicalInfo,
       };
 
-      const response = await studentPublicService.updateOwnStudentProfile(updateData);
-      
+      const response =
+        await studentPublicService.updateOwnStudentProfile(updateData);
+
       if (response.success) {
         setStudentProfile(response.data.studentProfile);
         setIsEditing(false);
@@ -133,8 +143,12 @@ export default function StudentProfile() {
       <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
         <CardContent className="p-12 text-center">
           <AlertCircle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-white mb-2">No Student Profile Found</h3>
-          <p className="text-gray-400 mb-4">You haven't created a student profile yet.</p>
+          <h3 className="text-xl font-semibold text-white mb-2">
+            No Student Profile Found
+          </h3>
+          <p className="text-gray-400 mb-4">
+            You haven't created a student profile yet.
+          </p>
           <Button onClick={() => navigate("/student/create")}>
             Create Student Profile
           </Button>
@@ -143,14 +157,16 @@ export default function StudentProfile() {
     );
   }
 
-   return (
+  return (
     <div className="space-y-6">
       {/* Header Card */}
       <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-white text-2xl">Student Profile</CardTitle>
+              <CardTitle className="text-white text-2xl">
+                Student Profile
+              </CardTitle>
               <CardDescription>
                 Manage your student information and preferences
               </CardDescription>
@@ -224,8 +240,8 @@ export default function StudentProfile() {
                   studentProfile.level === "beginner"
                     ? "bg-green-500/20 text-green-300 border-green-500/50"
                     : studentProfile.level === "intermediate"
-                    ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/50"
-                    : "bg-red-500/20 text-red-300 border-red-500/50"
+                      ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/50"
+                      : "bg-red-500/20 text-red-300 border-red-500/50"
                 }`}
               >
                 {studentProfile.level}
@@ -277,40 +293,46 @@ export default function StudentProfile() {
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Allergies */}
-            {studentProfile.medicalInfo.allergies && studentProfile.medicalInfo.allergies.length > 0 && (
-              <div className="space-y-2">
-                <Label className="text-white">Allergies</Label>
-                <div className="flex flex-wrap gap-2">
-                  {studentProfile.medicalInfo.allergies.map((allergy, index) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="bg-red-500/20 text-red-300 border-red-500/50"
-                    >
-                      {allergy}
-                    </Badge>
-                  ))}
+            {studentProfile.medicalInfo.allergies &&
+              studentProfile.medicalInfo.allergies.length > 0 && (
+                <div className="space-y-2">
+                  <Label className="text-white">Allergies</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {studentProfile.medicalInfo.allergies.map(
+                      (allergy, index) => (
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="bg-red-500/20 text-red-300 border-red-500/50"
+                        >
+                          {allergy}
+                        </Badge>
+                      ),
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Medications */}
-            {studentProfile.medicalInfo.medications && studentProfile.medicalInfo.medications.length > 0 && (
-              <div className="space-y-2">
-                <Label className="text-white">Current Medications</Label>
-                <div className="flex flex-wrap gap-2">
-                  {studentProfile.medicalInfo.medications.map((medication, index) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="bg-purple-500/20 text-purple-300 border-purple-500/50"
-                    >
-                      {medication}
-                    </Badge>
-                  ))}
+            {studentProfile.medicalInfo.medications &&
+              studentProfile.medicalInfo.medications.length > 0 && (
+                <div className="space-y-2">
+                  <Label className="text-white">Current Medications</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {studentProfile.medicalInfo.medications.map(
+                      (medication, index) => (
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="bg-purple-500/20 text-purple-300 border-purple-500/50"
+                        >
+                          {medication}
+                        </Badge>
+                      ),
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             <Separator className="bg-gray-700" />
 
@@ -318,21 +340,29 @@ export default function StudentProfile() {
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-yellow-400" />
-                <Label className="text-white font-semibold">Emergency Contact</Label>
+                <Label className="text-white font-semibold">
+                  Emergency Contact
+                </Label>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-1">
                   <Label className="text-gray-400 text-sm">Name</Label>
-                  <p className="text-white">{studentProfile.medicalInfo.emergencyContact.name}</p>
+                  <p className="text-white">
+                    {studentProfile.medicalInfo.emergencyContact.name}
+                  </p>
                 </div>
                 <div className="space-y-1">
                   <Label className="text-gray-400 text-sm">Phone</Label>
-                  <p className="text-white">{studentProfile.medicalInfo.emergencyContact.phone}</p>
+                  <p className="text-white">
+                    {studentProfile.medicalInfo.emergencyContact.phone}
+                  </p>
                 </div>
                 <div className="space-y-1">
                   <Label className="text-gray-400 text-sm">Relation</Label>
-                  <p className="text-white capitalize">{studentProfile.medicalInfo.emergencyContact.relation}</p>
+                  <p className="text-white capitalize">
+                    {studentProfile.medicalInfo.emergencyContact.relation}
+                  </p>
                 </div>
               </div>
             </div>

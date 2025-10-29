@@ -10,15 +10,21 @@ import TrainerProfile from "@/components/user/trainer/TrainerProfile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  User, 
-  Mail, 
-  Phone, 
+import {
+  User,
+  Mail,
+  Phone,
   Calendar,
   Lock,
   LogOut,
@@ -28,7 +34,7 @@ import {
   CheckCircle,
   Shield,
   Activity,
-  Trophy
+  Trophy,
 } from "lucide-react";
 import Footer from "@/components/landing/Footer";
 import { toast } from "sonner";
@@ -158,7 +164,7 @@ export default function UserProfile() {
     try {
       setIsUpdating(true);
       const response = await userService.updateProfile(profileData);
-      
+
       if (response.success) {
         dispatch(setUser(response.data.user));
         setIsEditing(false);
@@ -186,7 +192,7 @@ export default function UserProfile() {
         currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword,
       });
-      
+
       if (response.success) {
         setPasswordData({
           currentPassword: "",
@@ -343,7 +349,9 @@ export default function UserProfile() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-white text-2xl">Profile Details</CardTitle>
+                    <CardTitle className="text-white text-2xl">
+                      Profile Details
+                    </CardTitle>
                     <CardDescription>
                       Manage your personal information and settings
                     </CardDescription>
@@ -363,10 +371,16 @@ export default function UserProfile() {
               <CardContent>
                 <Tabs defaultValue="profile" className="space-y-6">
                   <TabsList className="grid w-full grid-cols-2 bg-gray-800">
-                    <TabsTrigger value="profile" className="data-[state=active]:bg-blue-600">
+                    <TabsTrigger
+                      value="profile"
+                      className="data-[state=active]:bg-blue-600"
+                    >
                       Profile Information
                     </TabsTrigger>
-                    <TabsTrigger value="security" className="data-[state=active]:bg-blue-600">
+                    <TabsTrigger
+                      value="security"
+                      className="data-[state=active]:bg-blue-600"
+                    >
                       Security
                     </TabsTrigger>
                   </TabsList>
@@ -374,7 +388,10 @@ export default function UserProfile() {
                   {/* Profile Tab */}
                   <TabsContent value="profile" className="space-y-6">
                     {isEditing ? (
-                      <form onSubmit={handleUpdateProfile} className="space-y-4">
+                      <form
+                        onSubmit={handleUpdateProfile}
+                        className="space-y-4"
+                      >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label htmlFor="name" className="text-white">
@@ -386,7 +403,10 @@ export default function UserProfile() {
                                 id="name"
                                 value={profileData.name}
                                 onChange={(e) =>
-                                  setProfileData({ ...profileData, name: e.target.value })
+                                  setProfileData({
+                                    ...profileData,
+                                    name: e.target.value,
+                                  })
                                 }
                                 className={`pl-10 bg-gray-800 border-gray-700 text-white ${
                                   validationErrors.name ? "border-red-500" : ""
@@ -394,7 +414,9 @@ export default function UserProfile() {
                               />
                             </div>
                             {validationErrors.name && (
-                              <p className="text-red-500 text-sm">{validationErrors.name}</p>
+                              <p className="text-red-500 text-sm">
+                                {validationErrors.name}
+                              </p>
                             )}
                           </div>
 
@@ -408,7 +430,10 @@ export default function UserProfile() {
                                 id="phone"
                                 value={profileData.phone}
                                 onChange={(e) =>
-                                  setProfileData({ ...profileData, phone: e.target.value })
+                                  setProfileData({
+                                    ...profileData,
+                                    phone: e.target.value,
+                                  })
                                 }
                                 className={`pl-10 bg-gray-800 border-gray-700 text-white ${
                                   validationErrors.phone ? "border-red-500" : ""
@@ -416,7 +441,9 @@ export default function UserProfile() {
                               />
                             </div>
                             {validationErrors.phone && (
-                              <p className="text-red-500 text-sm">{validationErrors.phone}</p>
+                              <p className="text-red-500 text-sm">
+                                {validationErrors.phone}
+                              </p>
                             )}
                           </div>
                         </div>
@@ -488,7 +515,8 @@ export default function UserProfile() {
                           <div className="flex items-center gap-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
                             <Shield className="h-5 w-5 text-gray-400" />
                             <span className="text-white">
-                              {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                              {user.role.charAt(0).toUpperCase() +
+                                user.role.slice(1)}
                             </span>
                           </div>
                         </div>
@@ -507,7 +535,10 @@ export default function UserProfile() {
                       </Alert>
 
                       <div className="space-y-2">
-                        <Label htmlFor="current-password" className="text-white">
+                        <Label
+                          htmlFor="current-password"
+                          className="text-white"
+                        >
                           Current Password
                         </Label>
                         <div className="relative">
@@ -523,7 +554,9 @@ export default function UserProfile() {
                               })
                             }
                             className={`pl-10 bg-gray-800 border-gray-700 text-white ${
-                              validationErrors.currentPassword ? "border-red-500" : ""
+                              validationErrors.currentPassword
+                                ? "border-red-500"
+                                : ""
                             }`}
                           />
                         </div>
@@ -551,7 +584,9 @@ export default function UserProfile() {
                               })
                             }
                             className={`pl-10 bg-gray-800 border-gray-700 text-white ${
-                              validationErrors.newPassword ? "border-red-500" : ""
+                              validationErrors.newPassword
+                                ? "border-red-500"
+                                : ""
                             }`}
                           />
                         </div>
@@ -563,7 +598,10 @@ export default function UserProfile() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="confirm-password" className="text-white">
+                        <Label
+                          htmlFor="confirm-password"
+                          className="text-white"
+                        >
                           Confirm New Password
                         </Label>
                         <div className="relative">
@@ -579,7 +617,9 @@ export default function UserProfile() {
                               })
                             }
                             className={`pl-10 bg-gray-800 border-gray-700 text-white ${
-                              validationErrors.confirmPassword ? "border-red-500" : ""
+                              validationErrors.confirmPassword
+                                ? "border-red-500"
+                                : ""
                             }`}
                           />
                         </div>
@@ -614,22 +654,17 @@ export default function UserProfile() {
             </Card>
           </motion.div>
 
-          {
-            user.role === "student" &&
-
+          {user.role === "student" && (
             // Student Profile
-            
+
             <StudentProfile />
-          }       
+          )}
 
-          {
-            user.role === "trainer" &&
+          {user.role === "trainer" && (
+            // Trainer Profile
 
-            // Trainer Profile 
-            
             <TrainerProfile />
-          }
-          
+          )}
         </motion.div>
       </div>
 

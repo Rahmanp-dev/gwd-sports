@@ -32,7 +32,7 @@ export const StatsBanner: React.FC<StatsBannerProps> = ({
         }}
         className={`absolute inset-0 bg-gradient-to-r ${accentColor} opacity-10`}
       />
-      
+
       {/* Speed Lines Background */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(10)].map((_, i) => (
@@ -71,8 +71,10 @@ export const StatsBanner: React.FC<StatsBannerProps> = ({
             >
               <div className="relative bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-md border-4 border-amber-500/20 rounded-2xl p-6 shadow-2xl hover:shadow-[0_20px_50px_rgba(245,158,11,0.4)] transition-all duration-500 overflow-hidden">
                 {/* Glow Effect */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-20 transition-opacity duration-500`} />
-                
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-20 transition-opacity duration-500`}
+                />
+
                 {/* Icon */}
                 <motion.div
                   whileHover={{ rotate: 360, scale: 1.2 }}

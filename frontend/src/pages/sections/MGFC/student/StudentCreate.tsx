@@ -6,21 +6,27 @@ import { studentPublicService } from "@/services/studentService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  Lock, 
-  AlertCircle, 
+import {
+  User,
+  Mail,
+  Phone,
+  Lock,
+  AlertCircle,
   CheckCircle,
   Loader2,
   Heart,
   Trophy,
   Shield,
-  Users
+  Users,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -40,7 +46,7 @@ export default function StudentCreate() {
   const emailFromState = location.state?.email || "";
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [currentStep, setCurrentStep] = useState<"user" | "both">("both");
+  //   const [currentStep, setCurrentStep] = useState<"user" | "both">("both");
 
   // User Details State
   const [userDetails, setUserDetails] = useState({
@@ -100,8 +106,13 @@ export default function StudentCreate() {
       errors.password = "Password is required";
     } else if (userDetails.password.length < 8) {
       errors.password = "Password must be at least 8 characters";
-    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/.test(userDetails.password)) {
-      errors.password = "Password must contain uppercase, lowercase, number, and special character (@$!%*?&#)";
+    } else if (
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/.test(
+        userDetails.password,
+      )
+    ) {
+      errors.password =
+        "Password must contain uppercase, lowercase, number, and special character (@$!%*?&#)";
     }
 
     if (userDetails.password !== userDetails.confirmPassword) {
@@ -187,7 +198,7 @@ export default function StudentCreate() {
 
       const userId = userResponse.data.user._id;
       const accessToken = userResponse.data.accessToken;
-      
+
       toast.dismiss();
       toast.success("Account created successfully!");
 
@@ -197,10 +208,16 @@ export default function StudentCreate() {
       // Prepare medical info
       const medicalInfo: MedicalInfo = {
         allergies: studentDetails.allergies
-          ? studentDetails.allergies.split(",").map((a) => a.trim()).filter(Boolean)
+          ? studentDetails.allergies
+              .split(",")
+              .map((a) => a.trim())
+              .filter(Boolean)
           : [],
         medications: studentDetails.medications
-          ? studentDetails.medications.split(",").map((m) => m.trim()).filter(Boolean)
+          ? studentDetails.medications
+              .split(",")
+              .map((m) => m.trim())
+              .filter(Boolean)
           : [],
         emergencyContact: {
           name: studentDetails.emergencyName,
@@ -211,12 +228,12 @@ export default function StudentCreate() {
 
       const studentResponse = await studentPublicService.createStudentProfile(
         {
-            userId,
-            sports: studentDetails.sports,
-            level: studentDetails.level,
-            medicalInfo,
+          userId,
+          sports: studentDetails.sports,
+          level: studentDetails.level,
+          medicalInfo,
         },
-        accessToken
+        accessToken,
       );
 
       if (!studentResponse.success) {
@@ -279,7 +296,10 @@ export default function StudentCreate() {
         {/* Header */}
         <motion.div variants={itemVariants} className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Join <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500">MGFC</span>
+            Join{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500">
+              MGFC
+            </span>
           </h1>
           <p className="text-xl text-gray-400">
             Complete your registration to start your football journey
@@ -298,8 +318,12 @@ export default function StudentCreate() {
                       <User className="h-5 w-5 text-blue-400" />
                     </div>
                     <div>
-                      <CardTitle className="text-white">Personal Details</CardTitle>
-                      <CardDescription>Your account information</CardDescription>
+                      <CardTitle className="text-white">
+                        Personal Details
+                      </CardTitle>
+                      <CardDescription>
+                        Your account information
+                      </CardDescription>
                     </div>
                   </div>
                 </CardHeader>
@@ -317,7 +341,10 @@ export default function StudentCreate() {
                         placeholder="John Doe"
                         value={userDetails.name}
                         onChange={(e) =>
-                          setUserDetails({ ...userDetails, name: e.target.value })
+                          setUserDetails({
+                            ...userDetails,
+                            name: e.target.value,
+                          })
                         }
                         className={`pl-10 bg-gray-800 border-gray-700 text-white ${
                           validationErrors.name ? "border-red-500" : ""
@@ -346,7 +373,10 @@ export default function StudentCreate() {
                         placeholder="john@example.com"
                         value={userDetails.email}
                         onChange={(e) =>
-                          setUserDetails({ ...userDetails, email: e.target.value })
+                          setUserDetails({
+                            ...userDetails,
+                            email: e.target.value,
+                          })
                         }
                         className={`pl-10 bg-gray-800 border-gray-700 text-white ${
                           validationErrors.email ? "border-red-500" : ""
@@ -375,7 +405,10 @@ export default function StudentCreate() {
                         placeholder="+1234567890"
                         value={userDetails.phone}
                         onChange={(e) =>
-                          setUserDetails({ ...userDetails, phone: e.target.value })
+                          setUserDetails({
+                            ...userDetails,
+                            phone: e.target.value,
+                          })
                         }
                         className={`pl-10 bg-gray-800 border-gray-700 text-white ${
                           validationErrors.phone ? "border-red-500" : ""
@@ -404,7 +437,10 @@ export default function StudentCreate() {
                         placeholder="••••••••"
                         value={userDetails.password}
                         onChange={(e) =>
-                          setUserDetails({ ...userDetails, password: e.target.value })
+                          setUserDetails({
+                            ...userDetails,
+                            password: e.target.value,
+                          })
                         }
                         className={`pl-10 bg-gray-800 border-gray-700 text-white ${
                           validationErrors.password ? "border-red-500" : ""
@@ -419,7 +455,8 @@ export default function StudentCreate() {
                       </p>
                     )}
                     <p className="text-xs text-gray-400">
-                      Min 8 characters with uppercase, lowercase, number & special char
+                      Min 8 characters with uppercase, lowercase, number &
+                      special char
                     </p>
                   </div>
 
@@ -442,7 +479,9 @@ export default function StudentCreate() {
                           })
                         }
                         className={`pl-10 bg-gray-800 border-gray-700 text-white ${
-                          validationErrors.confirmPassword ? "border-red-500" : ""
+                          validationErrors.confirmPassword
+                            ? "border-red-500"
+                            : ""
                         }`}
                         disabled={isSubmitting}
                       />
@@ -467,17 +506,19 @@ export default function StudentCreate() {
                       <Trophy className="h-5 w-5 text-green-400" />
                     </div>
                     <div>
-                      <CardTitle className="text-white">Student Profile</CardTitle>
-                      <CardDescription>Your athletic information</CardDescription>
+                      <CardTitle className="text-white">
+                        Student Profile
+                      </CardTitle>
+                      <CardDescription>
+                        Your athletic information
+                      </CardDescription>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Sports Selection */}
                   <div className="space-y-3">
-                    <Label className="text-white">
-                      Sports Interests
-                    </Label>
+                    <Label className="text-white">Sports Interests</Label>
                     <div className="grid grid-cols-2 gap-3">
                       {availableSports.map((sport) => (
                         <div
@@ -491,19 +532,25 @@ export default function StudentCreate() {
                           <Checkbox
                             id={sport.id}
                             checked={studentDetails.sports.includes(sport.id)}
-                            onCheckedChange={() => !sport.mandatory && handleSportToggle(sport.id)}
+                            onCheckedChange={() =>
+                              !sport.mandatory && handleSportToggle(sport.id)
+                            }
                             disabled={sport.mandatory || isSubmitting}
                             className="border-gray-600"
                           />
                           <Label
                             htmlFor={sport.id}
                             className={`text-sm text-white flex-1 ${
-                              !sport.mandatory ? "cursor-pointer" : "cursor-not-allowed"
+                              !sport.mandatory
+                                ? "cursor-pointer"
+                                : "cursor-not-allowed"
                             }`}
                           >
                             {sport.label}
                             {sport.mandatory && (
-                              <span className="text-xs text-blue-400 ml-1">(Required)</span>
+                              <span className="text-xs text-blue-400 ml-1">
+                                (Required)
+                              </span>
                             )}
                           </Label>
                         </div>
@@ -528,28 +575,30 @@ export default function StudentCreate() {
                       disabled={isSubmitting}
                       className="grid grid-cols-3 gap-3"
                     >
-                      {(["beginner", "intermediate", "advanced"] as const).map((level) => (
-                        <div
-                          key={level}
-                          className={`relative flex items-center space-x-2 p-3 rounded-lg border cursor-pointer ${
-                            studentDetails.level === level
-                              ? "bg-green-500/20 border-green-500/50"
-                              : "bg-gray-800/50 border-gray-700 hover:bg-gray-700/50"
-                          }`}
-                        >
-                          <RadioGroupItem
-                            value={level}
-                            id={level}
-                            className="border-gray-600"
-                          />
-                          <Label
-                            htmlFor={level}
-                            className="text-sm text-white cursor-pointer capitalize"
+                      {(["beginner", "intermediate", "advanced"] as const).map(
+                        (level) => (
+                          <div
+                            key={level}
+                            className={`relative flex items-center space-x-2 p-3 rounded-lg border cursor-pointer ${
+                              studentDetails.level === level
+                                ? "bg-green-500/20 border-green-500/50"
+                                : "bg-gray-800/50 border-gray-700 hover:bg-gray-700/50"
+                            }`}
                           >
-                            {level}
-                          </Label>
-                        </div>
-                      ))}
+                            <RadioGroupItem
+                              value={level}
+                              id={level}
+                              className="border-gray-600"
+                            />
+                            <Label
+                              htmlFor={level}
+                              className="text-sm text-white cursor-pointer capitalize"
+                            >
+                              {level}
+                            </Label>
+                          </div>
+                        ),
+                      )}
                     </RadioGroup>
                   </div>
 
@@ -557,7 +606,9 @@ export default function StudentCreate() {
                   <div className="space-y-4 pt-4 border-t border-gray-700">
                     <div className="flex items-center gap-2">
                       <Heart className="h-5 w-5 text-red-400" />
-                      <Label className="text-white font-semibold">Medical Information</Label>
+                      <Label className="text-white font-semibold">
+                        Medical Information
+                      </Label>
                     </div>
 
                     {/* Allergies */}
@@ -571,7 +622,10 @@ export default function StudentCreate() {
                         placeholder="e.g., peanuts, shellfish"
                         value={studentDetails.allergies}
                         onChange={(e) =>
-                          setStudentDetails({ ...studentDetails, allergies: e.target.value })
+                          setStudentDetails({
+                            ...studentDetails,
+                            allergies: e.target.value,
+                          })
                         }
                         className="bg-gray-800 border-gray-700 text-white"
                         disabled={isSubmitting}
@@ -580,7 +634,10 @@ export default function StudentCreate() {
 
                     {/* Medications */}
                     <div className="space-y-2">
-                      <Label htmlFor="medications" className="text-white text-sm">
+                      <Label
+                        htmlFor="medications"
+                        className="text-white text-sm"
+                      >
                         Current Medications (comma-separated, optional)
                       </Label>
                       <Input
@@ -589,7 +646,10 @@ export default function StudentCreate() {
                         placeholder="e.g., inhaler, insulin"
                         value={studentDetails.medications}
                         onChange={(e) =>
-                          setStudentDetails({ ...studentDetails, medications: e.target.value })
+                          setStudentDetails({
+                            ...studentDetails,
+                            medications: e.target.value,
+                          })
                         }
                         className="bg-gray-800 border-gray-700 text-white"
                         disabled={isSubmitting}
@@ -601,13 +661,18 @@ export default function StudentCreate() {
                   <div className="space-y-4 pt-4 border-t border-gray-700">
                     <div className="flex items-center gap-2">
                       <Shield className="h-5 w-5 text-yellow-400" />
-                      <Label className="text-white font-semibold">Emergency Contact *</Label>
+                      <Label className="text-white font-semibold">
+                        Emergency Contact *
+                      </Label>
                     </div>
 
                     <div className="space-y-3">
                       {/* Emergency Name */}
                       <div className="space-y-2">
-                        <Label htmlFor="emergencyName" className="text-white text-sm">
+                        <Label
+                          htmlFor="emergencyName"
+                          className="text-white text-sm"
+                        >
                           Contact Name *
                         </Label>
                         <div className="relative">
@@ -624,7 +689,9 @@ export default function StudentCreate() {
                               })
                             }
                             className={`pl-10 bg-gray-800 border-gray-700 text-white ${
-                              validationErrors.emergencyName ? "border-red-500" : ""
+                              validationErrors.emergencyName
+                                ? "border-red-500"
+                                : ""
                             }`}
                             disabled={isSubmitting}
                           />
@@ -639,7 +706,10 @@ export default function StudentCreate() {
 
                       {/* Emergency Phone */}
                       <div className="space-y-2">
-                        <Label htmlFor="emergencyPhone" className="text-white text-sm">
+                        <Label
+                          htmlFor="emergencyPhone"
+                          className="text-white text-sm"
+                        >
                           Contact Phone *
                         </Label>
                         <div className="relative">
@@ -656,7 +726,9 @@ export default function StudentCreate() {
                               })
                             }
                             className={`pl-10 bg-gray-800 border-gray-700 text-white ${
-                              validationErrors.emergencyPhone ? "border-red-500" : ""
+                              validationErrors.emergencyPhone
+                                ? "border-red-500"
+                                : ""
                             }`}
                             disabled={isSubmitting}
                           />
@@ -671,7 +743,10 @@ export default function StudentCreate() {
 
                       {/* Emergency Relation */}
                       <div className="space-y-2">
-                        <Label htmlFor="emergencyRelation" className="text-white text-sm">
+                        <Label
+                          htmlFor="emergencyRelation"
+                          className="text-white text-sm"
+                        >
                           Relation *
                         </Label>
                         <Input
@@ -686,7 +761,9 @@ export default function StudentCreate() {
                             })
                           }
                           className={`bg-gray-800 border-gray-700 text-white ${
-                            validationErrors.emergencyRelation ? "border-red-500" : ""
+                            validationErrors.emergencyRelation
+                              ? "border-red-500"
+                              : ""
                           }`}
                           disabled={isSubmitting}
                         />
@@ -714,7 +791,8 @@ export default function StudentCreate() {
                     <div className="space-y-1">
                       <p className="text-white font-medium">Ready to join?</p>
                       <p className="text-sm text-gray-400">
-                        By registering, you agree to our Terms of Service and Privacy Policy
+                        By registering, you agree to our Terms of Service and
+                        Privacy Policy
                       </p>
                     </div>
                   </div>

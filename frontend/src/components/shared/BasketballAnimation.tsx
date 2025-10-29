@@ -17,7 +17,7 @@ export const BasketballAnimation: React.FC = () => {
           ease: "easeInOut",
         }}
       />
-      
+
       {/* Court Lines */}
       {[...Array(5)].map((_, i) => (
         <motion.div
@@ -34,7 +34,7 @@ export const BasketballAnimation: React.FC = () => {
           }}
         />
       ))}
-      
+
       {/* Net Effect */}
       <motion.div
         className="absolute top-1/3 right-1/4 w-32 h-32"

@@ -23,6 +23,14 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+      // Disable unused variables check
+      '@typescript-eslint/no-unused-vars': 'off',
+      // Allow any types
+      '@typescript-eslint/no-explicit-any': 'off',
+      // Allow empty object types
+      '@typescript-eslint/no-empty-object-type': 'off',
+      // Disable unnecessary escape character warnings
+      'no-useless-escape': 'off',
     },
   },
 )

@@ -6,28 +6,34 @@ import { loginUser, registerUser, clearError } from "@/store/slices/authSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { 
-  User, 
-  Mail, 
-  Lock, 
-  Phone, 
-  UserPlus, 
-  LogIn, 
+import {
+  User,
+  Mail,
+  Lock,
+  Phone,
+  UserPlus,
+  LogIn,
   AlertCircle,
   Trophy,
   Users,
-  Target
+  Target,
 } from "lucide-react";
 
 export default function UserAuth() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isLoading, error, isAuthenticated, user } = useAppSelector(
-    (state) => state.auth
+    (state) => state.auth,
   );
 
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
@@ -113,8 +119,13 @@ export default function UserAuth() {
       errors.password = "Password is required";
     } else if (registerData.password.length < 8) {
       errors.password = "Password must be at least 8 characters";
-    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/.test(registerData.password)) {
-      errors.password = "Password must contain uppercase, lowercase, number, and special character (@$!%*?&#)";
+    } else if (
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/.test(
+        registerData.password,
+      )
+    ) {
+      errors.password =
+        "Password must contain uppercase, lowercase, number, and special character (@$!%*?&#)";
     }
 
     if (registerData.password !== registerData.confirmPassword) {
@@ -138,7 +149,7 @@ export default function UserAuth() {
         loginUser({
           email: loginData.email,
           password: loginData.password,
-        })
+        }),
       ).unwrap();
     } catch (error: any) {
       console.error("Login failed:", error);
@@ -162,7 +173,7 @@ export default function UserAuth() {
           phone: registerData.phone,
           role: "user",
           sports: [],
-        })
+        }),
       ).unwrap();
     } catch (error: any) {
       console.error("Registration failed:", error);
@@ -200,7 +211,10 @@ export default function UserAuth() {
           <div className="hidden lg:block space-y-8">
             <div>
               <h1 className="text-5xl font-bold text-white mb-4">
-                Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500">MasterGrade</span>
+                Welcome to{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500">
+                  MasterGrade
+                </span>
               </h1>
               <p className="text-xl text-gray-400">
                 Join our community of athletes and achieve your sports dreams
@@ -213,7 +227,9 @@ export default function UserAuth() {
                   <Trophy className="h-6 w-6 text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">World-Class Training</h3>
+                  <h3 className="text-white font-semibold mb-1">
+                    World-Class Training
+                  </h3>
                   <p className="text-gray-400 text-sm">
                     Access professional coaching and state-of-the-art facilities
                   </p>
@@ -225,9 +241,12 @@ export default function UserAuth() {
                   <Users className="h-6 w-6 text-green-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">Join a Community</h3>
+                  <h3 className="text-white font-semibold mb-1">
+                    Join a Community
+                  </h3>
                   <p className="text-gray-400 text-sm">
-                    Connect with like-minded athletes and build lasting friendships
+                    Connect with like-minded athletes and build lasting
+                    friendships
                   </p>
                 </div>
               </div>
@@ -237,7 +256,9 @@ export default function UserAuth() {
                   <Target className="h-6 w-6 text-purple-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">Achieve Your Goals</h3>
+                  <h3 className="text-white font-semibold mb-1">
+                    Achieve Your Goals
+                  </h3>
                   <p className="text-gray-400 text-sm">
                     Track your progress and reach new milestones in your journey
                   </p>
@@ -271,13 +292,22 @@ export default function UserAuth() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "login" | "register")}>
+              <Tabs
+                value={activeTab}
+                onValueChange={(v) => setActiveTab(v as "login" | "register")}
+              >
                 <TabsList className="grid w-full grid-cols-2 bg-gray-800 mb-6">
-                  <TabsTrigger value="login" className="data-[state=active]:bg-blue-600">
+                  <TabsTrigger
+                    value="login"
+                    className="data-[state=active]:bg-blue-600"
+                  >
                     <LogIn className="h-4 w-4 mr-2" />
                     Login
                   </TabsTrigger>
-                  <TabsTrigger value="register" className="data-[state=active]:bg-green-600">
+                  <TabsTrigger
+                    value="register"
+                    className="data-[state=active]:bg-green-600"
+                  >
                     <UserPlus className="h-4 w-4 mr-2" />
                     Register
                   </TabsTrigger>
@@ -306,7 +336,10 @@ export default function UserAuth() {
                           placeholder="your.email@example.com"
                           value={loginData.email}
                           onChange={(e) =>
-                            setLoginData({ ...loginData, email: e.target.value })
+                            setLoginData({
+                              ...loginData,
+                              email: e.target.value,
+                            })
                           }
                           className={`pl-10 bg-gray-800 border-gray-700 text-white ${
                             validationErrors.email ? "border-red-500" : ""
@@ -314,7 +347,9 @@ export default function UserAuth() {
                         />
                       </div>
                       {validationErrors.email && (
-                        <p className="text-red-500 text-sm">{validationErrors.email}</p>
+                        <p className="text-red-500 text-sm">
+                          {validationErrors.email}
+                        </p>
                       )}
                     </div>
 
@@ -330,7 +365,10 @@ export default function UserAuth() {
                           placeholder="••••••••"
                           value={loginData.password}
                           onChange={(e) =>
-                            setLoginData({ ...loginData, password: e.target.value })
+                            setLoginData({
+                              ...loginData,
+                              password: e.target.value,
+                            })
                           }
                           className={`pl-10 bg-gray-800 border-gray-700 text-white ${
                             validationErrors.password ? "border-red-500" : ""
@@ -338,7 +376,9 @@ export default function UserAuth() {
                         />
                       </div>
                       {validationErrors.password && (
-                        <p className="text-red-500 text-sm">{validationErrors.password}</p>
+                        <p className="text-red-500 text-sm">
+                          {validationErrors.password}
+                        </p>
                       )}
                     </div>
 
@@ -377,7 +417,10 @@ export default function UserAuth() {
                           placeholder="John Doe"
                           value={registerData.name}
                           onChange={(e) =>
-                            setRegisterData({ ...registerData, name: e.target.value })
+                            setRegisterData({
+                              ...registerData,
+                              name: e.target.value,
+                            })
                           }
                           className={`pl-10 bg-gray-800 border-gray-700 text-white ${
                             validationErrors.name ? "border-red-500" : ""
@@ -385,7 +428,9 @@ export default function UserAuth() {
                         />
                       </div>
                       {validationErrors.name && (
-                        <p className="text-red-500 text-sm">{validationErrors.name}</p>
+                        <p className="text-red-500 text-sm">
+                          {validationErrors.name}
+                        </p>
                       )}
                     </div>
 
@@ -401,7 +446,10 @@ export default function UserAuth() {
                           placeholder="your.email@example.com"
                           value={registerData.email}
                           onChange={(e) =>
-                            setRegisterData({ ...registerData, email: e.target.value })
+                            setRegisterData({
+                              ...registerData,
+                              email: e.target.value,
+                            })
                           }
                           className={`pl-10 bg-gray-800 border-gray-700 text-white ${
                             validationErrors.email ? "border-red-500" : ""
@@ -409,7 +457,9 @@ export default function UserAuth() {
                         />
                       </div>
                       {validationErrors.email && (
-                        <p className="text-red-500 text-sm">{validationErrors.email}</p>
+                        <p className="text-red-500 text-sm">
+                          {validationErrors.email}
+                        </p>
                       )}
                     </div>
 
@@ -425,7 +475,10 @@ export default function UserAuth() {
                           placeholder="+1234567890"
                           value={registerData.phone}
                           onChange={(e) =>
-                            setRegisterData({ ...registerData, phone: e.target.value })
+                            setRegisterData({
+                              ...registerData,
+                              phone: e.target.value,
+                            })
                           }
                           className={`pl-10 bg-gray-800 border-gray-700 text-white ${
                             validationErrors.phone ? "border-red-500" : ""
@@ -433,7 +486,9 @@ export default function UserAuth() {
                         />
                       </div>
                       {validationErrors.phone && (
-                        <p className="text-red-500 text-sm">{validationErrors.phone}</p>
+                        <p className="text-red-500 text-sm">
+                          {validationErrors.phone}
+                        </p>
                       )}
                     </div>
 
@@ -460,12 +515,17 @@ export default function UserAuth() {
                         />
                       </div>
                       {validationErrors.password && (
-                        <p className="text-red-500 text-sm">{validationErrors.password}</p>
+                        <p className="text-red-500 text-sm">
+                          {validationErrors.password}
+                        </p>
                       )}
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="register-confirm-password" className="text-white">
+                      <Label
+                        htmlFor="register-confirm-password"
+                        className="text-white"
+                      >
                         Confirm Password
                       </Label>
                       <div className="relative">
@@ -482,7 +542,9 @@ export default function UserAuth() {
                             })
                           }
                           className={`pl-10 bg-gray-800 border-gray-700 text-white ${
-                            validationErrors.confirmPassword ? "border-red-500" : ""
+                            validationErrors.confirmPassword
+                              ? "border-red-500"
+                              : ""
                           }`}
                         />
                       </div>
@@ -515,13 +577,19 @@ export default function UserAuth() {
               </Tabs>
 
               <div className="mt-6 text-center">
-                <Link to="/" className="text-sm text-blue-400 hover:text-blue-300">
+                <Link
+                  to="/"
+                  className="text-sm text-blue-400 hover:text-blue-300"
+                >
                   ← Back to Home
                 </Link>
               </div>
 
               <div className="mt-6 text-center">
-                <Link to="/mgfc/student/register" className="text-sm text-blue-400 hover:text-blue-300">
+                <Link
+                  to="/mgfc/student/register"
+                  className="text-sm text-blue-400 hover:text-blue-300"
+                >
                   Register as a student
                 </Link>
               </div>

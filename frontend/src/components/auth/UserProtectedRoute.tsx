@@ -6,7 +6,9 @@ interface UserProtectedRouteProps {
 }
 
 export const UserProtectedRoute = ({ children }: UserProtectedRouteProps) => {
-  const { isAuthenticated, user, token } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, user, token } = useAppSelector(
+    (state) => state.auth,
+  );
 
   // Check if user is authenticated and has a token
   if (!isAuthenticated || !token || !user) {

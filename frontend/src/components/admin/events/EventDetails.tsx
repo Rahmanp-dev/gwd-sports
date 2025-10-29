@@ -1,6 +1,6 @@
-import React from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import React from "react";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
   Calendar,
   MapPin,
@@ -13,9 +13,9 @@ import {
   Award,
   FileText,
   Tag,
-} from 'lucide-react';
-import { EVENT_STATUS_COLORS } from '@/utils/constants';
-import type { Event } from '@/types';
+} from "lucide-react";
+import { EVENT_STATUS_COLORS } from "@/utils/constants";
+import type { Event } from "@/types";
 
 interface EventDetailsProps {
   event: Event;
@@ -23,13 +23,13 @@ interface EventDetailsProps {
 
 export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
   const formatDateTime = (date: string) => {
-    return new Date(date).toLocaleString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Date(date).toLocaleString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -207,7 +207,10 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
           <h3 className="text-lg font-semibold mb-3">Prizes</h3>
           <div className="space-y-2">
             {event.prizes.map((prize, index) => (
-              <div key={index} className="flex items-start gap-2 p-3 bg-muted rounded-lg">
+              <div
+                key={index}
+                className="flex items-start gap-2 p-3 bg-muted rounded-lg"
+              >
                 <Award className="h-5 w-5 text-yellow-600 mt-0.5" />
                 <span className="text-sm">{prize}</span>
               </div>

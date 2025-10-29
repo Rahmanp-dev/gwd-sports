@@ -65,7 +65,10 @@ export default function MGRLPage() {
       />
 
       {/* Stats Banner */}
-      <StatsBanner stats={racingStats} accentColor="from-amber-500 to-yellow-500" />
+      <StatsBanner
+        stats={racingStats}
+        accentColor="from-amber-500 to-yellow-500"
+      />
 
       {/* Racing Categories Section */}
       <CategoriesSection

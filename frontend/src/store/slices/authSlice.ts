@@ -9,7 +9,7 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
   isAuthenticated: boolean;
-};
+}
 
 // Initialize with values from localStorage if available
 const initialState: AuthState = {
@@ -40,7 +40,7 @@ export const loginUser = createAsyncThunk(
   },
 );
 
-// Async thunk for user registration 
+// Async thunk for user registration
 export const registerUser = createAsyncThunk(
   "auth/register",
   async (
@@ -131,7 +131,8 @@ const authSlice = createSlice({
           localStorage.setItem("mg_refresh_token", refreshToken);
         }
 
-        localStorage.setItem("mg_user",
+        localStorage.setItem(
+          "mg_user",
           JSON.stringify({
             _id: user._id,
             name: user.name,

@@ -7,29 +7,29 @@ export const mgmunData = {
     description:
       "Empowering young minds to become global leaders through diplomatic excellence, critical thinking, and collaborative problem-solving.",
     stats: [
-      { 
-        label: "Conferences Hosted", 
+      {
+        label: "Conferences Hosted",
         value: "15+",
         icon: Trophy,
-        gradient: "from-blue-500 to-cyan-500"
+        gradient: "from-blue-500 to-cyan-500",
       },
-      { 
-        label: "Student Delegates", 
+      {
+        label: "Student Delegates",
         value: "500+",
         icon: Users,
-        gradient: "from-purple-500 to-pink-500"
+        gradient: "from-purple-500 to-pink-500",
       },
-      { 
-        label: "Countries Represented", 
+      {
+        label: "Countries Represented",
         value: "50+",
         icon: Globe,
-        gradient: "from-green-500 to-emerald-500"
+        gradient: "from-green-500 to-emerald-500",
       },
-      { 
-        label: "Award Winners", 
+      {
+        label: "Award Winners",
         value: "200+",
         icon: Award,
-        gradient: "from-orange-500 to-red-500"
+        gradient: "from-orange-500 to-red-500",
       },
     ],
   },
@@ -171,8 +171,7 @@ export const mgmunData = {
     {
       step: 3,
       title: "Preparation",
-      description:
-        "Attend training sessions and prepare your position papers.",
+      description: "Attend training sessions and prepare your position papers.",
       icon: "📖",
     },
     {

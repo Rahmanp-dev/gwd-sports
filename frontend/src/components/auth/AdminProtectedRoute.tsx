@@ -6,7 +6,9 @@ interface AdminProtectedRouteProps {
   children: React.ReactNode;
 }
 
-export const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ children }) => {
+export const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
+  children,
+}) => {
   const location = useLocation();
   const { isAuthenticated, isLoading } = useAppSelector((state) => state.auth);
 
@@ -16,7 +18,9 @@ export const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ childr
   }
 
   if (!isAuthenticated) {
-    console.log("AdminProtectedRoute: User not authenticated, redirecting to login");
+    console.log(
+      "AdminProtectedRoute: User not authenticated, redirecting to login",
+    );
     return (
       <Navigate to="/user/auth" state={{ from: location.pathname }} replace />
     );

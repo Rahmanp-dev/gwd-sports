@@ -74,24 +74,26 @@ class ApiService {
           localStorage.removeItem("mg_user");
 
           // Only redirect if not already on login page
-          if (!window.location.pathname.includes("/login") && 
-              !window.location.pathname.includes("/auth")) {
+          if (
+            !window.location.pathname.includes("/login") &&
+            !window.location.pathname.includes("/auth")
+          ) {
             window.location.href = "/user/auth";
           }
         }
 
         // Extract error message - handle both response.data structure
         const errorMessage =
-          error.response?.data?.message || 
+          error.response?.data?.message ||
           error.response?.data?.error ||
-          error.message || 
+          error.message ||
           "An error occurred";
 
         // Return rejected promise with structured error
         return Promise.reject({
           success: false,
           message: errorMessage,
-          status: error.response?.status
+          status: error.response?.status,
         });
       },
     );

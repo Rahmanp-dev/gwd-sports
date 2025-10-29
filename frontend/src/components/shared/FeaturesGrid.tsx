@@ -67,15 +67,23 @@ export const FeaturesGrid: React.FC<FeaturesGridProps> = ({
             viewport={{ once: true }}
             className={`inline-flex items-center gap-3 px-8 py-3 bg-green-500/20 backdrop-blur-md border border-green-500/30 text-green-400 rounded-full mb-8`}
           >
-            <span className="text-sm font-black uppercase tracking-[0.3em]" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+            <span
+              className="text-sm font-black uppercase tracking-[0.3em]"
+              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+            >
               {subtitle}
             </span>
           </motion.div>
-          
-          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
-            {title.split(' ').slice(0, -1).join(' ')}
-            <span className={`block text-transparent bg-clip-text bg-gradient-to-r ${accentColor}`}>
-              {title.split(' ').slice(-1)[0]}
+
+          <h2
+            className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none"
+            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+          >
+            {title.split(" ").slice(0, -1).join(" ")}
+            <span
+              className={`block text-transparent bg-clip-text bg-gradient-to-r ${accentColor}`}
+            >
+              {title.split(" ").slice(-1)[0]}
             </span>
           </h2>
           <motion.div
@@ -106,8 +114,10 @@ export const FeaturesGrid: React.FC<FeaturesGridProps> = ({
             >
               <div className="relative bg-gray-900/50 backdrop-blur-md border border-green-500/20 rounded-3xl p-8 h-full shadow-2xl hover:shadow-[0_20px_60px_rgba(34,197,94,0.4)] transition-all duration-500 overflow-hidden">
                 {/* Gradient Overlay */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-20 transition-opacity duration-500`} />
-                
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-20 transition-opacity duration-500`}
+                />
+
                 {/* Icon */}
                 <motion.div
                   whileHover={{ scale: 1.2, rotate: 360 }}
@@ -118,7 +128,10 @@ export const FeaturesGrid: React.FC<FeaturesGridProps> = ({
                 </motion.div>
 
                 {/* Content */}
-                <h3 className="text-3xl font-black text-white uppercase mb-4 tracking-tight" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+                <h3
+                  className="text-3xl font-black text-white uppercase mb-4 tracking-tight"
+                  style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                >
                   {feature.title}
                 </h3>
                 <p className="text-gray-300 text-lg font-semibold leading-relaxed">
@@ -126,12 +139,17 @@ export const FeaturesGrid: React.FC<FeaturesGridProps> = ({
                 </p>
 
                 {/* Floating Number */}
-                <div className="absolute top-4 right-4 text-8xl font-black text-green-500/5 group-hover:text-green-500/10 transition-colors" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+                <div
+                  className="absolute top-4 right-4 text-8xl font-black text-green-500/5 group-hover:text-green-500/10 transition-colors"
+                  style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                >
                   {index + 1}
                 </div>
 
                 {/* Glow Effect */}
-                <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-20 blur-2xl transition-opacity duration-500 -z-10`} />
+                <div
+                  className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-20 blur-2xl transition-opacity duration-500 -z-10`}
+                />
               </div>
             </motion.div>
           ))}

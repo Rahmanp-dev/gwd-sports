@@ -7,24 +7,30 @@ const testimonials = [
   {
     name: "Sarah Johnson",
     role: "Basketball Champion",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
-    content: "Master Grade didn't just improve my game - they transformed my entire life. From struggling player to state champion in 18 months. The coaches here are legends!",
+    image:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
+    content:
+      "Master Grade didn't just improve my game - they transformed my entire life. From struggling player to state champion in 18 months. The coaches here are legends!",
     rating: 5,
     achievement: "State Champion 2025",
   },
   {
     name: "Michael Chen",
     role: "Professional Footballer",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
-    content: "The intensity, professionalism, and world-class training here pushed me beyond my limits. Now I'm playing professionally. Dreams do come true at Master Grade!",
+    image:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
+    content:
+      "The intensity, professionalism, and world-class training here pushed me beyond my limits. Now I'm playing professionally. Dreams do come true at Master Grade!",
     rating: 5,
     achievement: "Pro League Player",
   },
   {
     name: "Priya Sharma",
     role: "National Swimming Champion",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
-    content: "Olympic-standard facilities, expert coaches, and a supportive community. Master Grade gave me everything I needed to become a national champion. Forever grateful!",
+    image:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
+    content:
+      "Olympic-standard facilities, expert coaches, and a supportive community. Master Grade gave me everything I needed to become a national champion. Forever grateful!",
     rating: 5,
     achievement: "National Gold Medalist",
   },
@@ -34,7 +40,8 @@ export default function TestimonialsCarousel() {
   const [current, setCurrent] = useState(0);
 
   const next = () => setCurrent((current + 1) % testimonials.length);
-  const prev = () => setCurrent((current - 1 + testimonials.length) % testimonials.length);
+  const prev = () =>
+    setCurrent((current - 1 + testimonials.length) % testimonials.length);
 
   return (
     <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-900 via-black to-gray-900 overflow-hidden">
@@ -67,12 +74,18 @@ export default function TestimonialsCarousel() {
             viewport={{ once: true }}
             className="inline-flex items-center gap-3 px-8 py-3 bg-gradient-to-r from-amber-500 to-yellow-500 text-black rounded-full mb-8 shadow-lg shadow-amber-500/50"
           >
-            <span className="text-sm font-black uppercase tracking-[0.3em]" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+            <span
+              className="text-sm font-black uppercase tracking-[0.3em]"
+              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+            >
               Success Stories
             </span>
           </motion.div>
-          
-          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+
+          <h2
+            className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none"
+            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+          >
             Champion
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-500">
               Testimonials
@@ -130,16 +143,18 @@ export default function TestimonialsCarousel() {
                   <div className="flex-1 text-center lg:text-left">
                     {/* Rating */}
                     <div className="flex gap-2 mb-6 justify-center lg:justify-start">
-                      {Array.from({ length: testimonials[current].rating }).map((_, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, scale: 0 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: i * 0.1 }}
-                        >
-                          <Star className="w-8 h-8 fill-amber-500 text-amber-500 drop-shadow-lg" />
-                        </motion.div>
-                      ))}
+                      {Array.from({ length: testimonials[current].rating }).map(
+                        (_, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ opacity: 0, scale: 0 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: i * 0.1 }}
+                          >
+                            <Star className="w-8 h-8 fill-amber-500 text-amber-500 drop-shadow-lg" />
+                          </motion.div>
+                        ),
+                      )}
                     </div>
 
                     {/* Quote */}
@@ -149,7 +164,10 @@ export default function TestimonialsCarousel() {
 
                     {/* Author */}
                     <div className="mb-4">
-                      <div className="text-3xl font-black text-white uppercase mb-2" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+                      <div
+                        className="text-3xl font-black text-white uppercase mb-2"
+                        style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                      >
                         {testimonials[current].name}
                       </div>
                       <div className="text-amber-400 font-bold uppercase tracking-wider text-lg mb-2">

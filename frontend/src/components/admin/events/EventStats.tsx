@@ -1,22 +1,22 @@
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LoadingSpinner } from '@/components/common/LoadingSpinner';
-import { eventService } from '@/services/eventService';
-import { 
-  Calendar, 
-  Users, 
-  TrendingUp, 
-  CheckCircle, 
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { eventService } from "@/services/eventService";
+import {
+  Calendar,
+  Users,
+  TrendingUp,
+  CheckCircle,
   XCircle,
-  Clock
-} from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { EVENT_STATUS_COLORS } from '@/utils/constants';
+  Clock,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { EVENT_STATUS_COLORS } from "@/utils/constants";
 
 export const EventStats: React.FC = () => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ['eventStats'],
+    queryKey: ["eventStats"],
     queryFn: () => eventService.getEventStats(),
   });
 
@@ -40,46 +40,46 @@ export const EventStats: React.FC = () => {
 
   const statCards = [
     {
-      title: 'Total Events',
+      title: "Total Events",
       value: stats.totalEvents,
       icon: Calendar,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100',
+      color: "text-blue-600",
+      bgColor: "bg-blue-100",
     },
     {
-      title: 'Upcoming Events',
+      title: "Upcoming Events",
       value: stats.upcomingEvents,
       icon: Clock,
-      color: 'text-green-600',
-      bgColor: 'bg-green-100',
+      color: "text-green-600",
+      bgColor: "bg-green-100",
     },
     {
-      title: 'Ongoing Events',
+      title: "Ongoing Events",
       value: stats.ongoingEvents,
       icon: TrendingUp,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-100',
+      color: "text-orange-600",
+      bgColor: "bg-orange-100",
     },
     {
-      title: 'Completed Events',
+      title: "Completed Events",
       value: stats.completedEvents,
       icon: CheckCircle,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-100',
+      color: "text-purple-600",
+      bgColor: "bg-purple-100",
     },
     {
-      title: 'Total Participants',
+      title: "Total Participants",
       value: stats.totalParticipants,
       icon: Users,
-      color: 'text-indigo-600',
-      bgColor: 'bg-indigo-100',
+      color: "text-indigo-600",
+      bgColor: "bg-indigo-100",
     },
     {
-      title: 'Avg. Participants',
+      title: "Avg. Participants",
       value: Math.round(stats.averageParticipants),
       icon: Users,
-      color: 'text-teal-600',
-      bgColor: 'bg-teal-100',
+      color: "text-teal-600",
+      bgColor: "bg-teal-100",
     },
   ];
 
@@ -116,13 +116,16 @@ export const EventStats: React.FC = () => {
           <CardContent>
             <div className="space-y-3">
               {stats.eventsByStatus.map((item) => (
-                <div key={item._id} className="flex items-center justify-between">
+                <div
+                  key={item._id}
+                  className="flex items-center justify-between"
+                >
                   <div className="flex items-center gap-3">
                     <Badge className={EVENT_STATUS_COLORS[item._id]}>
                       {item._id}
                     </Badge>
                     <span className="text-sm text-muted-foreground">
-                      {item.count} event{item.count !== 1 ? 's' : ''}
+                      {item.count} event{item.count !== 1 ? "s" : ""}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
@@ -143,7 +146,10 @@ export const EventStats: React.FC = () => {
           <CardContent>
             <div className="space-y-3">
               {stats.eventsBySport.slice(0, 5).map((item) => (
-                <div key={item._id} className="flex items-center justify-between">
+                <div
+                  key={item._id}
+                  className="flex items-center justify-between"
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full" />
                     <span className="text-sm font-medium capitalize">
@@ -152,7 +158,7 @@ export const EventStats: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="text-sm text-muted-foreground">
-                      {item.count} event{item.count !== 1 ? 's' : ''}
+                      {item.count} event{item.count !== 1 ? "s" : ""}
                     </span>
                     <div className="flex items-center gap-1 text-sm">
                       <Users className="h-4 w-4 text-muted-foreground" />
@@ -175,8 +181,8 @@ export const EventStats: React.FC = () => {
           <CardContent>
             <div className="space-y-3">
               {stats.upcomingEventsList.slice(0, 5).map((event) => (
-                <div 
-                  key={event._id} 
+                <div
+                  key={event._id}
                   className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-lg bg-muted/50 gap-2"
                 >
                   <div className="flex-1">
