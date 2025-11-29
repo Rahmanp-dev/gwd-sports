@@ -13,8 +13,13 @@ import UserAuth from "@/pages/user/UserAuth";
 import UserProfile from "@/pages/user/UserProfile";
 import { UserProtectedRoute } from "@/components/auth/UserProtectedRoute";
 
+// Event Pages
+import MyEventsPage from "./pages/events/MyEventsPage";
+import EventPage from "./pages/events/EventPage";
+
 // Public Pages
 import LandingPage from "@/pages/LandingPage";
+
 // Section Pages
 import MGRLPage from "./pages/sections/MGRL/page";
 import GalaxyEventsPage from "./pages/sections/GalaxyEvents/page";
@@ -22,6 +27,7 @@ import MGBCPage from "./pages/sections/MGBC/page";
 import MGFCPage from "./pages/sections/MGFC/page";
 import MgMunPage from "./pages/sections/MgMun/page";
 
+// MGFC Sub-Pages
 import MGFCStudentPage from "./pages/sections/MGFC/student/StudentPage";
 import MGFCTrainerPage from "./pages/sections/MGFC/trainer/TrainerPage";
 import StudentRegister from "./pages/sections/MGFC/student/StudentAuth";
@@ -40,6 +46,10 @@ const AppRouter: React.FC = () => {
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<LandingPage />} />
+
+      {/* Public routes */}
+      <Route path="/events" element={<EventPage />} />
+      <Route path="/my-events" element={<MyEventsPage />} />
 
       {/* Programs Section - Main endpoint with sub-pages */}
       <Route path="/programs">

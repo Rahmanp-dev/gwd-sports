@@ -2,12 +2,12 @@ TODO:
 
 P1:
 
+- [ ] Events page - event registration
 - [ ] Add Edit Student Profile in F
 - [ ] Add Edit Trainer Profile in F
 - [ ] Student Dashboard
 - [ ] Trainer Dashboard
 - [ ] Fix Admin Dashboard - some errors
-- [ ] Events page - event registration
 - [ ] Handle Existing Token in register pages and redirect them directly
 - [ ] Add trainer register
 - [ ] Check edit student - it is misbehaving
@@ -25,6 +25,18 @@ P2:
 P3: 
 - [ ] Can we use MCP or some auto prompt like thing to automate prompts? like prompt engineering but automated
 
+PROD:
+- [ ] Disable console logs in production
+- [ ] Optimize the build for production
+- [ ] Add SEO tags to the pages
+- [ ] Add meta descriptions
+- [ ] Disable dev tools in production
+- [ ] Add proper error handling and logging
+- [ ] Optimize images and assets
+- [ ] Implement code splitting and lazy loading
+- [ ] Disable admin signup in production
+- [ ] Implement security best practices
+
 Done ✅
 
 - [x] Implement user APIs
@@ -41,3 +53,4 @@ Done ✅
 - [x] Add profile page for trainer - basically use the /user/profile page and update it for different use
 - [x] Fix the build issue 
 - [x] What ESLINT does
+- [x] Change the JWT token and then check app working with new users  

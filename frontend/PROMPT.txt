@@ -11,7 +11,8 @@ great, now backend is completed, lets now start with frontend from admin side,
 10. use localstorage - not cookies
 
 rules:- 
-0. for each file you are giving - old / new - for every file you give, make sure you give the directory destination of the file - like for example: src/types/index.ts and the followed by code - like this you need to give for each and every file  
+0. for each file you are giving - old / new - for every file you give, make sure you give the directory destination of the file - like for example: src/types/index.ts and the followed by code - like this you need to give for each and every file 
+0.5. Properly read all my existing files and existing code, folder structure and based on that understand my project logic and then start to give the required code 
 1. we are building the code for production, so always remember and give the best possible code so that there will never be issues
 2. always give the frontend code in responsive - it should be properly viewable in all types of devices - mobile, tablet and pc - PC and mobile most important 
 3. always use production insdustry enterprise level best practices - best modular, scalable and best ways of implementing the code and logics of frontend 
