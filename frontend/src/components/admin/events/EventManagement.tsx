@@ -30,7 +30,7 @@ import { EventTable } from "./EventTable";
 import { EventForm } from "./EventForm";
 import { EventDetails } from "./EventDetails";
 import { EventStats } from "./EventStats";
-import { eventService } from "@/services/eventService";
+import { adminEventService } from "@/services/eventService";
 import { showToast } from "@/utils/toast";
 import { Plus, Search, Filter, TrendingUp } from "lucide-react";
 import type { Event, EventFormData, EventFilters } from "@/types";
@@ -65,14 +65,14 @@ export const EventManagement: React.FC = () => {
   // Fetch events with filters
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["events", filters],
-    queryFn: () => eventService.getAllEvents(filters),
+    queryFn: () => adminEventService.getAllEvents(filters),
     staleTime: 30000, // 30 seconds
   });
 
   // Create event mutation
   const createMutation = useMutation({
     mutationFn: (eventData: EventFormData) =>
-      eventService.createEvent(eventData),
+      adminEventService.createEvent(eventData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events"] });
       queryClient.invalidateQueries({ queryKey: ["eventStats"] });
@@ -90,7 +90,7 @@ export const EventManagement: React.FC = () => {
   // Update event mutation
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<EventFormData> }) =>
-      eventService.updateEvent(id, data),
+      adminEventService.updateEvent(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events"] });
       queryClient.invalidateQueries({ queryKey: ["eventStats"] });
@@ -107,7 +107,7 @@ export const EventManagement: React.FC = () => {
 
   // Delete event mutation
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => eventService.deleteEvent(id),
+    mutationFn: (id: string) => adminEventService.deleteEvent(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events"] });
       queryClient.invalidateQueries({ queryKey: ["eventStats"] });

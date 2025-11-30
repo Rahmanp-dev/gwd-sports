@@ -48,19 +48,6 @@ export const PAYMENT_STATUS = {
   OVERDUE: "overdue",
 } as const;
 
-export const SPORTS_LIST = [
-  "Football",
-  "Basketball",
-  "Tennis",
-  "Cricket",
-  "Swimming",
-  "Athletics",
-  "Badminton",
-  "Boxing",
-  "Martial Arts",
-  "Fitness",
-] as const;
-
 export const DAYS_OF_WEEK = [
   "monday",
   "tuesday",
@@ -105,18 +92,34 @@ export const EVENT_STATUS_OPTIONS = [
   { value: "cancelled", label: "Cancelled" },
 ] as const;
 
+// Event Status Colors
 export const EVENT_STATUS_COLORS: Record<string, string> = {
-  draft: "bg-gray-100 text-gray-800",
-  published: "bg-blue-100 text-blue-800",
-  ongoing: "bg-green-100 text-green-800",
-  completed: "bg-purple-100 text-purple-800",
-  cancelled: "bg-red-100 text-red-800",
+  draft: 'bg-gray-500 text-white',
+  published: 'bg-blue-500 text-white',
+  ongoing: 'bg-green-500 text-white',
+  completed: 'bg-purple-500 text-white',
+  cancelled: 'bg-red-500 text-white',
 };
 
+// Sports List
+export const SPORTS_LIST = [
+  'Football',
+  'Basketball',
+  'Cricket',
+  'Tennis',
+  'Badminton',
+  'Volleyball',
+  'Hockey',
+  'Athletics',
+  'Swimming',
+  'Other',
+];
+
+// Event Sort Options
 export const EVENT_SORT_OPTIONS = [
-  { value: "startDate", label: "Start Date" },
-  { value: "name", label: "Name" },
-  { value: "sport", label: "Sport" },
-  { value: "createdAt", label: "Created Date" },
-  { value: "participantCount", label: "Participants" },
-] as const;
+  { value: 'startDate', label: 'Start Date' },
+  { value: 'endDate', label: 'End Date' },
+  { value: 'createdAt', label: 'Created Date' },
+  { value: 'name', label: 'Name' },
+  { value: 'participants', label: 'Participants' },
+];

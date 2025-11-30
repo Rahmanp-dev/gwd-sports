@@ -3,6 +3,7 @@ TODO:
 P1:
 
 - [ ] Events page - event registration
+- [ ] Homepage Customization
 - [ ] Add Edit Student Profile in F
 - [ ] Add Edit Trainer Profile in F
 - [ ] Student Dashboard
@@ -17,6 +18,7 @@ P1:
 
 P2:
 - [ ] Frontend logging
+- [ ] Soft delete When leaving events
 - [ ] refresh token - what is it and how to implement
 - [ ] improve isActive in events
 - [ ] Migrate data folder to utils/constants

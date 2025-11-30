@@ -16,6 +16,7 @@ import { UserProtectedRoute } from "@/components/auth/UserProtectedRoute";
 // Event Pages
 import MyEventsPage from "./pages/events/MyEventsPage";
 import EventPage from "./pages/events/EventPage";
+import EventDetailsPage from "./pages/events/EventDetailsPage"; 
 
 // Public Pages
 import LandingPage from "@/pages/LandingPage";
@@ -49,7 +50,7 @@ const AppRouter: React.FC = () => {
 
       {/* Public routes */}
       <Route path="/events" element={<EventPage />} />
-      <Route path="/my-events" element={<MyEventsPage />} />
+      <Route path="/events/:eventId" element={<EventDetailsPage />} />
 
       {/* Programs Section - Main endpoint with sub-pages */}
       <Route path="/programs">
@@ -80,6 +81,14 @@ const AppRouter: React.FC = () => {
             <UserProfile />
           </UserProtectedRoute>
         }
+      />
+      <Route
+          path="/events/my-events"
+          element={
+            <UserProtectedRoute>
+              <MyEventsPage />
+            </UserProtectedRoute>
+          }
       />
 
       {/* Admin routes */}

@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
-import { eventService } from "@/services/eventService";
+import { adminEventService } from "@/services/eventService";
 import {
   Calendar,
   Users,
@@ -17,7 +17,7 @@ import { EVENT_STATUS_COLORS } from "@/utils/constants";
 export const EventStats: React.FC = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["eventStats"],
-    queryFn: () => eventService.getEventStats(),
+    queryFn: () => adminEventService.getEventStats(),
   });
 
   if (isLoading) {

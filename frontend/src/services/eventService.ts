@@ -10,7 +10,9 @@ import type {
 class EventService {
   private baseUrl = "/events";
 
-  // Admin: Get all events with pagination and filters
+  // ============= ADMIN METHODS =============
+  
+  // Admin: Get all events with pagination and filters (including soft-deleted)
   async getAllEvents(filters: EventFilters = {}) {
     const queryParams = new URLSearchParams();
 
@@ -64,6 +66,28 @@ class EventService {
     }>(`${this.baseUrl}/${id}`);
   }
 
+  // ============= PUBLIC METHODS =============
+
+  // Public: Get all public events with filters (no auth required)
+  async getPublicEvents(filters: EventFilters = {}) {
+    const queryParams = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        queryParams.append(key, value.toString());
+      }
+    });
+
+    const url = queryParams.toString()
+      ? `${this.baseUrl}?${queryParams.toString()}`
+      : this.baseUrl;
+
+    return apiService.get<{
+      success: boolean;
+      data: PaginatedEventsResponse;
+    }>(url);
+  }
+
   // Public: Get event by ID
   async getEventById(id: string) {
     return apiService.get<{
@@ -71,6 +95,55 @@ class EventService {
       data: { event: Event };
     }>(`${this.baseUrl}/${id}`);
   }
+
+  // ============= USER METHODS (Requires Auth) =============
+
+  // User: Register/Join event
+  async joinEvent(id: string) {
+    return apiService.post<{
+      success: boolean;
+      message: string;
+      data: { event: { _id: string; name: string; participantCount: number } };
+    }>(`${this.baseUrl}/${id}/join`);
+  }
+
+  // User: Leave event
+  async leaveEvent(id: string) {
+    return apiService.delete<{
+      success: boolean;
+      message: string;
+    }>(`${this.baseUrl}/${id}/leave`);
+  }
+
+  // User: Get my events
+  async getMyEvents(filters: { 
+    page?: number; 
+    limit?: number; 
+    status?: string; 
+    upcoming?: boolean 
+  } = {}) {
+    const queryParams = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        queryParams.append(key, value.toString());
+      }
+    });
+
+    const url = queryParams.toString()
+      ? `${this.baseUrl}/user/my-events?${queryParams.toString()}`
+      : `${this.baseUrl}/user/my-events`;
+
+    return apiService.get<{
+      success: boolean;
+      data: PaginatedEventsResponse;
+    }>(url);
+  }
 }
 
+// Export single instance
 export const eventService = new EventService();
+
+// Keep backward compatibility
+export const adminEventService = eventService;
+export const publicEventService = eventService;
