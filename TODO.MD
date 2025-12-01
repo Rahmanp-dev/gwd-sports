@@ -3,6 +3,7 @@ TODO:
 P1:
 
 - [ ] Events page - event registration
+- [ ] Centralized login and logout marker on top right corner
 - [ ] Homepage Customization
 - [ ] Add Edit Student Profile in F
 - [ ] Add Edit Trainer Profile in F
