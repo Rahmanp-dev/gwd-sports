@@ -65,7 +65,7 @@ export default function EventPage() {
   const events = data?.data?.events || [];
   const pagination = data?.data?.pagination;
 
-  const handleJoinEvent = (eventId: string) => {
+  const viewDetails = (eventId: string) => {
     if (!isAuthenticated) {
       showToast.error("Please login to join events");
       navigate("/user/auth");
@@ -296,13 +296,10 @@ export default function EventPage() {
                           {/* Action Buttons */}
                           <div className="flex gap-2">
                             <Button
-                              onClick={() => handleJoinEvent(event._id)}
+                              onClick={() => viewDetails(event._id)}
                               className="flex-1 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600"
                               disabled={
-                                !event.registrationOpen ||
-                                (event.maxParticipants &&
-                                  event.participants?.length >=
-                                    event.maxParticipants)
+                                !event.registrationOpen
                               }
                             >
                               {event.registrationOpen

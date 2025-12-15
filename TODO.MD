@@ -3,6 +3,9 @@ TODO:
 P1:
 
 - [ ] Events page - event registration
+- [ ] Fix Event Edit page - event is active
+- [ ] Events page - show the status properly - ongoing, upcoming, completed 
+- [ ] Events page - proper error handling  
 - [ ] Centralized login and logout marker on top right corner
 - [ ] Homepage Customization
 - [ ] Add Edit Student Profile in F

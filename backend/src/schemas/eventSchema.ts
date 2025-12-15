@@ -93,7 +93,7 @@ const EventSchema = new Schema<IEvent>({
     type: String,
     validate: {
       validator: function(url: string) {
-        return /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+        return /^https?:\/\/.+/.test(url);
       },
       message: 'Images must be valid image URLs'
     }

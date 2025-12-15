@@ -82,18 +82,38 @@ class ApiService {
           }
         }
 
-        // Extract error message - handle both response.data structure
-        const errorMessage =
+        // Extract error message - handle validation errors and other errors
+        let errorMessage =
           error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An error occurred";
+
+        // Handle Mongoose validation errors
+        if (error.response?.data?.errors) {
+          const validationErrors = error.response.data.errors;
+          
+          // If it's a validation error object, format it nicely
+          if (typeof validationErrors === 'object') {
+            const errorMessages = Object.entries(validationErrors)
+              .map(([field, err]: [string, any]) => {
+                const fieldName = field.replace(/\.\d+$/, ''); // Remove array indices
+                const message = err.message || err.kind || 'Invalid value';
+                return `${fieldName}: ${message}`;
+              })
+              .join('\n');
+            
+            errorMessage = errorMessages || errorMessage;
+          }
+        }
 
         // Return rejected promise with structured error
         return Promise.reject({
           success: false,
           message: errorMessage,
           status: error.response?.status,
+          errors: error.response?.data?.errors, // Include raw errors for custom handling
+          response: error.response, // Include full response for debugging
         });
       },
     );

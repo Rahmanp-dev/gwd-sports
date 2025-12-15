@@ -13,27 +13,32 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Image as ImageIcon, AlertCircle } from "lucide-react";
 import { SPORTS_LIST, EVENT_STATUS_OPTIONS } from "@/utils/constants";
 import type { Event, EventFormData } from "@/types";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface EventFormProps {
   event?: Event;
   onSubmit: (data: EventFormData) => void;
   isLoading?: boolean;
+  error?: string | null;
 }
 
 export const EventForm: React.FC<EventFormProps> = ({
   event,
   onSubmit,
   isLoading = false,
+  error = null,
 }) => {
   const [tags, setTags] = useState<string[]>(event?.tags || []);
   const [prizes, setPrizes] = useState<string[]>(event?.prizes || []);
   const [links, setLinks] = useState<string[]>(event?.links || []);
+  const [images, setImages] = useState<string[]>(event?.images || []);
   const [tagInput, setTagInput] = useState("");
   const [prizeInput, setPrizeInput] = useState("");
   const [linkInput, setLinkInput] = useState("");
+  const [imageInput, setImageInput] = useState("");
 
   const {
     register,
@@ -82,6 +87,7 @@ export const EventForm: React.FC<EventFormProps> = ({
       tags,
       prizes,
       links,
+      images,
     });
   };
 
@@ -118,8 +124,35 @@ export const EventForm: React.FC<EventFormProps> = ({
     setLinks(links.filter((_, i) => i !== index));
   };
 
+  const addImage = () => {
+    if (imageInput.trim()) {
+      // Basic URL validation
+      try {
+        new URL(imageInput.trim());
+        setImages([...images, imageInput.trim()]);
+        setImageInput("");
+      } catch {
+        alert("Please enter a valid image URL");
+      }
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setImages(images.filter((_, i) => i !== index));
+  };
+
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+      {/* Error Alert */}
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="whitespace-pre-line">
+            {error}
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Basic Information */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Basic Information</h3>
@@ -279,6 +312,7 @@ export const EventForm: React.FC<EventFormProps> = ({
               id="entryFee"
               type="number"
               min="0"
+              value="0"
               step="1.00"
               {...register("entryFee", {
                 min: { value: 0, message: "Cannot be negative" },
@@ -557,6 +591,72 @@ export const EventForm: React.FC<EventFormProps> = ({
                 </li>
               ))}
             </ul>
+          )}
+        </div>
+
+        {/* Event Images */}
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2">
+            <ImageIcon className="h-4 w-4" />
+            Event Images (URLs)
+          </Label>
+          <p className="text-sm text-muted-foreground">
+            Add valid image URLs (must end with .jpg, .jpeg, .png, .gif, .webp)
+          </p>
+          <div className="flex gap-2">
+            <Input
+              value={imageInput}
+              onChange={(e) => setImageInput(e.target.value)}
+              onKeyPress={(e) =>
+                e.key === "Enter" && (e.preventDefault(), addImage())
+              }
+              placeholder="https://example.com/image.jpg"
+              type="url"
+            />
+            <Button type="button" onClick={addImage} variant="outline">
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+          {images.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+              {images.map((image, index) => (
+                <div
+                  key={index}
+                  className="relative group rounded-lg overflow-hidden border bg-muted"
+                >
+                  <img
+                    src={image}
+                    alt={`Event image ${index + 1}`}
+                    className="w-full h-40 object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src =
+                        "https://via.placeholder.com/400x300?text=Invalid+Image+URL";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeImage(index)}
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      Remove
+                    </Button>
+                  </div>
+                  <div className="p-2 bg-background/95">
+                    <a
+                      href={image}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-blue-600 hover:underline truncate block"
+                    >
+                      {image}
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>
