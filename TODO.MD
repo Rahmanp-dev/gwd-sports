@@ -2,10 +2,7 @@ TODO:
 
 P1:
 
-- [ ] Events page - event registration
 - [ ] Fix Event Edit page - event is active
-- [ ] Events page - show the status properly - ongoing, upcoming, completed 
-- [ ] Events page - proper error handling  
 - [ ] Centralized login and logout marker on top right corner
 - [ ] Homepage Customization
 - [ ] Add Edit Student Profile in F
@@ -60,3 +57,6 @@ Done ✅
 - [x] Fix the build issue 
 - [x] What ESLINT does
 - [x] Change the JWT token and then check app working with new users  
+- [x] Events page - show the status properly - ongoing, upcoming, completed 
+- [x] Events page - proper error handling - can't register when ongoing, upcoming, completed 
+- [x] Events page - event registration

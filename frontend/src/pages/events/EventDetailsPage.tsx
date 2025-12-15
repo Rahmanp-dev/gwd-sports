@@ -16,6 +16,7 @@ import {
   FileText,
   Tag,
   ExternalLink,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -54,6 +55,7 @@ export default function EventDetailsPage() {
   });
 
   const event = data?.data?.event;
+  console.log(event);
   const isRegistered = event?.participants 
     ? event.participants.some((participant: any) => {
         // Handle both cases: participant is an object or a string
@@ -64,11 +66,28 @@ export default function EventDetailsPage() {
         return participant._id === user?._id;
       })
     : false;
+  
   const now = new Date();
   const isUpcoming = event ? new Date(event.startDate) > now : false;
   const isEventCompleted = event?.endDate ? new Date(event.endDate) < now : false;
   const isRegistrationDeadlinePassed = event?.registrationDeadline 
     ? new Date(event.registrationDeadline) < now 
+    : false;
+  
+  // Event is open for registration if:
+  // 1. Status is published
+  // 2. registrationOpen flag is true
+  // 3. Registration deadline hasn't passed (if set)
+  // 4. Event hasn't completed
+  const isRegistrationOpen = 
+    event?.status === 'published' && 
+    event?.registrationOpen && 
+    !isRegistrationDeadlinePassed && 
+    !isEventCompleted;
+
+  // Check if event is full
+  const isEventFull = event?.maxParticipants 
+    ? event.participants.length >= event.maxParticipants 
     : false;
 
   // Join event mutation
@@ -134,6 +153,23 @@ export default function EventDetailsPage() {
     });
   };
 
+  // Get registration button text
+  const getRegistrationButtonText = () => {
+    if (!event.registrationOpen) {
+      return "Registration Closed";
+    }
+    if (isRegistrationDeadlinePassed) {
+      return "Registration Deadline Passed";
+    }
+    if (!isUpcoming) {
+      return "Event Has Started";
+    }
+    if (isEventFull) {
+      return "Event is Full";
+    }
+    return "Register Now";
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-black">
@@ -183,12 +219,17 @@ export default function EventDetailsPage() {
                         Event Completed
                       </Badge>
                     )}
-                    {!isEventCompleted && isRegistrationDeadlinePassed && (
+                    {!isEventCompleted && !isRegistrationOpen && isRegistrationDeadlinePassed && (
+                      <Badge className="bg-red-600 text-white">
+                        Registration Deadline Passed
+                      </Badge>
+                    )}
+                    {!isEventCompleted && !isRegistrationOpen && !isRegistrationDeadlinePassed && (
                       <Badge className="bg-red-600 text-white">
                         Registration Closed
                       </Badge>
                     )}
-                    {!isEventCompleted && !isRegistrationDeadlinePassed && event.registrationOpen && isUpcoming && (
+                    {!isEventCompleted && isRegistrationOpen && (
                       <Badge className="bg-green-600 text-white">
                         Registration Open
                       </Badge>
@@ -343,34 +384,28 @@ export default function EventDetailsPage() {
                     </>
                   ) : (
                     <>
-                      {isRegistrationDeadlinePassed ? (
+                      {!isRegistrationOpen ? (
                         <div className="p-4 bg-red-900/30 border border-red-500/50 rounded-lg">
-                          <p className="text-red-400 font-medium text-center">
-                            ⏰ Registration Deadline Has Passed
+                          <p className="text-red-400 font-medium text-center flex items-center justify-center gap-2">
+                            <AlertCircle className="h-5 w-5" />
+                            {isRegistrationDeadlinePassed 
+                              ? "Registration Deadline Has Passed" 
+                              : "Registration is Closed"}
+                          </p>
+                        </div>
+                      ) : isEventFull ? (
+                        <div className="p-4 bg-yellow-900/30 border border-yellow-500/50 rounded-lg">
+                          <p className="text-yellow-400 font-medium text-center">
+                            Event is Full
                           </p>
                         </div>
                       ) : (
                         <Button
                           className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600"
                           onClick={handleJoin}
-                          disabled={
-                            !event.registrationOpen ||
-                            !isUpcoming ||
-                            isRegistrationDeadlinePassed ||
-                            (event.maxParticipants &&
-                              event.participants.length >= event.maxParticipants)
-                          }
+                          disabled={!isRegistrationOpen || !isUpcoming || isEventFull}
                         >
-                          {!event.registrationOpen
-                            ? "Registration Closed"
-                            : isRegistrationDeadlinePassed
-                            ? "Registration Deadline Passed"
-                            : !isUpcoming
-                            ? "Event Has Started"
-                            : event.maxParticipants &&
-                              event.participants.length >= event.maxParticipants
-                            ? "Event is Full"
-                            : "Register Now"}
+                          {getRegistrationButtonText()}
                         </Button>
                       )}
                     </>
@@ -384,6 +419,34 @@ export default function EventDetailsPage() {
                   <CardTitle className="text-white">Event Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* Event Status */}
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="h-5 w-5 text-purple-400 mt-0.5 shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-400">Status</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge className={EVENT_STATUS_COLORS[event.status]}>
+                          {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+                        </Badge>
+                        {isRegistrationOpen ? (
+                          <Badge className="bg-green-600 text-white">
+                            Registration Open
+                          </Badge>
+                        ) : isRegistrationDeadlinePassed ? (
+                          <Badge className="bg-red-600 text-white">
+                            Deadline Passed
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-red-600 text-white">
+                            Registration Closed
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <Separator className="bg-gray-700" />
+
                   <div className="flex items-start gap-3">
                     <Calendar className="h-5 w-5 text-purple-400 mt-0.5 shrink-0" />
                     <div className="flex-1">
@@ -423,6 +486,9 @@ export default function EventDetailsPage() {
                       <p className="text-sm text-white">
                         {event.participants.length || 0}
                         {event.maxParticipants && ` / ${event.maxParticipants}`}
+                        {isEventFull && (
+                          <span className="ml-2 text-yellow-400 font-semibold">(Full)</span>
+                        )}
                       </p>
                     </div>
                   </div>

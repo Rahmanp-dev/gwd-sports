@@ -18,6 +18,77 @@ export class EventController {
         });
       }
 
+      const { startDate, endDate, registrationDeadline } = req.body;
+
+      // Convert dates to Date objects for comparison
+      const start = new Date(startDate);
+      const now = new Date();
+
+      // Validate start date is in the future
+      if (start <= now) {
+        return res.status(400).json({
+          success: false,
+          message: 'Start date must be in the future',
+          errors: {
+            startDate: {
+              message: 'Start date must be in the future',
+              value: startDate
+            }
+          }
+        });
+      }
+
+      // Validate end date if provided
+      if (endDate) {
+        const end = new Date(endDate);
+        
+        if (end <= start) {
+          return res.status(400).json({
+            success: false,
+            message: 'End date must be after start date',
+            errors: {
+              endDate: {
+                message: 'End date must be after start date',
+                value: endDate
+              }
+            }
+          });
+        }
+      }
+
+      // Validate registration deadline if provided
+      if (registrationDeadline) {
+        const regDeadline = new Date(registrationDeadline);
+        
+        // Registration deadline must be in the future
+        if (regDeadline <= now) {
+          return res.status(400).json({
+            success: false,
+            message: 'Registration deadline must be in the future',
+            errors: {
+              registrationDeadline: {
+                message: 'Registration deadline must be in the future',
+                value: registrationDeadline
+              }
+            }
+          });
+        }
+
+        // Registration deadline must be before or on the start date
+        if (regDeadline > start) {
+          return res.status(400).json({
+            success: false,
+            message: 'Registration deadline must be before or on the event start date',
+            errors: {
+              registrationDeadline: {
+                message: 'Registration deadline must be before or on the event start date',
+                value: registrationDeadline
+              }
+            }
+          });
+        }
+      }
+
       const eventData = {
         ...req.body,
         createdBy: req.user!._id
