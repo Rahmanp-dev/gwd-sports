@@ -2,7 +2,6 @@ TODO:
 
 P1:
 
-- [ ] Events page - event registration
 - [ ] Homepage Customization
 - [ ] Add Edit Student Profile in F
 - [ ] Add Edit Trainer Profile in F
@@ -18,6 +17,8 @@ P1:
 
 P2:
 - [ ] Frontend logging
+- [ ] Health care API
+- [ ] Refresh token implementation -> [1] {"expiredAt":"2025-12-07T11:09:05.000Z","level":"error","message":"Refresh token error: jwt expired","name":"TokenExpiredError","stack":"TokenExpiredError: jwt expired\n    at C:\\Projects\\mastergrade\\backend\\node_modules\\jsonwebtoken\\verify.js:190:21\n    at getSecret (C:\\Projects\\mastergrade\\backend\\node_modules\\jsonwebtoken\\verify.js:97:14)\n    at module.exports [as verify] (C:\\Projects\\mastergrade\\backend\\node_modules\\jsonwebtoken\\verify.js:101:10)\n    at verifyRefreshToken (C:\\Projects\\mastergrade\\backend\\src\\utils\\jwt.ts:26:14)\n    at refreshToken (C:\\Projects\\mastergrade\\backend\\src\\controllers\\user\\index.ts:236:23)\n    at Layer.handle [as handle_request] (C:\\Projects\\mastergrade\\backend\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at next (C:\\Projects\\mastergrade\\backend\\node_modules\\express\\lib\\router\\route.js:149:13)\n    at Route.dispatch (C:\\Projects\\mastergrade\\backend\\node_modules\\express\\lib\\router\\route.js:119:3)\n    at Layer.handle [as handle_request] (C:\\Projects\\mastergrade\\backend\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at C:\\Projects\\mastergrade\\backend\\node_modules\\express\\lib\\router\\index.js:284:15","timestamp":"2025-12-15T21:50:15.142Z"}
 - [ ] Soft delete When leaving events
 - [ ] refresh token - what is it and how to implement
 - [ ] improve isActive in events
@@ -56,3 +57,4 @@ Done ✅
 - [x] Fix the build issue 
 - [x] What ESLINT does
 - [x] Change the JWT token and then check app working with new users  
+- [x] Events page - event registration

@@ -16,9 +16,10 @@ import {
   MGBC_ACHIEVEMENTS,
 } from "@/data/mgbcData";
 
+import mgbcLogo from "/logos/mgbc.png";
+
 export default function MGBCPage() {
   useEffect(() => {
-    // Scroll to top on component mount
     window.scrollTo(0, 0);
   }, []);
 
@@ -37,16 +38,15 @@ export default function MGBCPage() {
           accentColor="from-orange-500 to-red-500"
           ctaText="Join MGBC"
           secondaryCtaText="Book Free Trial"
+          logo={mgbcLogo}
         />
       </div>
 
-      {/* Stats Banner */}
       <StatsBanner
         stats={MGBC_ACHIEVEMENTS}
         accentColor="from-orange-500 to-amber-500"
       />
 
-      {/* Training Focus Section */}
       <CategoriesSection
         title="Training Focus Areas"
         subtitle="Master The Game"
@@ -55,7 +55,6 @@ export default function MGBCPage() {
         bgGradient="from-orange-500/20 to-amber-500/20"
       />
 
-      {/* Programs Section */}
       <ProgramsSection
         title="Our Training Programs"
         subtitle="Find Your Level"
@@ -64,7 +63,6 @@ export default function MGBCPage() {
         accentColor="from-orange-500 to-red-500"
       />
 
-      {/* Events Section */}
       <EventsSection
         title="Upcoming Tournaments & Events"
         subtitle="Basketball Events"
@@ -73,7 +71,6 @@ export default function MGBCPage() {
         bgGradient="from-orange-500/10 to-red-500/10"
       />
 
-      {/* Features Section */}
       <FeaturesGrid
         title="The MGBC Advantage"
         subtitle="Why Choose MGBC"
@@ -82,7 +79,6 @@ export default function MGBCPage() {
         bgGradient="from-orange-500/20 to-red-500/20"
       />
 
-      {/* Footer */}
       <Footer />
     </div>
   );

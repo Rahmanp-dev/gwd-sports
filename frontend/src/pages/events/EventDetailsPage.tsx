@@ -54,8 +54,22 @@ export default function EventDetailsPage() {
   });
 
   const event = data?.data?.event;
-  const isRegistered = event?.participants.includes(user?._id || "");
-  const isUpcoming = event ? new Date(event.startDate) > new Date() : false;
+  const isRegistered = event?.participants 
+    ? event.participants.some((participant: any) => {
+        // Handle both cases: participant is an object or a string
+        if (typeof participant === 'string') {
+          return participant === user?._id;
+        }
+        // If participant is an object, check _id property
+        return participant._id === user?._id;
+      })
+    : false;
+  const now = new Date();
+  const isUpcoming = event ? new Date(event.startDate) > now : false;
+  const isEventCompleted = event?.endDate ? new Date(event.endDate) < now : false;
+  const isRegistrationDeadlinePassed = event?.registrationDeadline 
+    ? new Date(event.registrationDeadline) < now 
+    : false;
 
   // Join event mutation
   const joinMutation = useMutation({
@@ -164,7 +178,17 @@ export default function EventDetailsPage() {
                     <Badge variant="outline" className="capitalize border-purple-500/50 text-purple-400">
                       {event.sport}
                     </Badge>
-                    {event.registrationOpen && isUpcoming && (
+                    {isEventCompleted && (
+                      <Badge className="bg-gray-600 text-white">
+                        Event Completed
+                      </Badge>
+                    )}
+                    {!isEventCompleted && isRegistrationDeadlinePassed && (
+                      <Badge className="bg-red-600 text-white">
+                        Registration Closed
+                      </Badge>
+                    )}
+                    {!isEventCompleted && !isRegistrationDeadlinePassed && event.registrationOpen && isUpcoming && (
                       <Badge className="bg-green-600 text-white">
                         Registration Open
                       </Badge>
@@ -293,14 +317,20 @@ export default function EventDetailsPage() {
                   <CardTitle className="text-white">Registration</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {isRegistered ? (
+                  {isEventCompleted ? (
+                    <div className="p-4 bg-gray-900/30 border border-gray-500/50 rounded-lg">
+                      <p className="text-gray-400 font-medium text-center">
+                        🏁 Event Completed
+                      </p>
+                    </div>
+                  ) : isRegistered ? (
                     <>
                       <div className="p-4 bg-green-900/30 border border-green-500/50 rounded-lg">
                         <p className="text-green-400 font-medium">
                           ✓ You are registered for this event
                         </p>
                       </div>
-                      {isUpcoming && (
+                      {isUpcoming && !isEventCompleted && (
                         <Button
                           variant="destructive"
                           className="w-full"
@@ -312,25 +342,38 @@ export default function EventDetailsPage() {
                       )}
                     </>
                   ) : (
-                    <Button
-                      className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600"
-                      onClick={handleJoin}
-                      disabled={
-                        !event.registrationOpen ||
-                        !isUpcoming ||
-                        (event.maxParticipants &&
-                          event.participants.length >= event.maxParticipants)
-                      }
-                    >
-                      {!event.registrationOpen
-                        ? "Registration Closed"
-                        : !isUpcoming
-                        ? "Event Has Started"
-                        : event.maxParticipants &&
-                          event.participants.length >= event.maxParticipants
-                        ? "Event is Full"
-                        : "Register Now"}
-                    </Button>
+                    <>
+                      {isRegistrationDeadlinePassed ? (
+                        <div className="p-4 bg-red-900/30 border border-red-500/50 rounded-lg">
+                          <p className="text-red-400 font-medium text-center">
+                            ⏰ Registration Deadline Has Passed
+                          </p>
+                        </div>
+                      ) : (
+                        <Button
+                          className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600"
+                          onClick={handleJoin}
+                          disabled={
+                            !event.registrationOpen ||
+                            !isUpcoming ||
+                            isRegistrationDeadlinePassed ||
+                            (event.maxParticipants &&
+                              event.participants.length >= event.maxParticipants)
+                          }
+                        >
+                          {!event.registrationOpen
+                            ? "Registration Closed"
+                            : isRegistrationDeadlinePassed
+                            ? "Registration Deadline Passed"
+                            : !isUpcoming
+                            ? "Event Has Started"
+                            : event.maxParticipants &&
+                              event.participants.length >= event.maxParticipants
+                            ? "Event is Full"
+                            : "Register Now"}
+                        </Button>
+                      )}
+                    </>
                   )}
                 </CardContent>
               </Card>
@@ -378,7 +421,7 @@ export default function EventDetailsPage() {
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-400">Participants</p>
                       <p className="text-sm text-white">
-                        {event.participantCount || 0}
+                        {event.participants.length || 0}
                         {event.maxParticipants && ` / ${event.maxParticipants}`}
                       </p>
                     </div>
@@ -394,15 +437,20 @@ export default function EventDetailsPage() {
                     </div>
                   )}
 
-                  {event.registrationDeadline && isUpcoming && (
+                  {event.registrationDeadline && (
                     <div className="flex items-start gap-3">
-                      <Clock className="h-5 w-5 text-orange-400 mt-0.5 shrink-0" />
+                      <Clock className={`h-5 w-5 mt-0.5 shrink-0 ${
+                        isRegistrationDeadlinePassed ? "text-red-400" : "text-orange-400"
+                      }`} />
                       <div className="flex-1">
                         <p className="text-sm font-medium text-gray-400">
                           Registration Deadline
                         </p>
-                        <p className="text-sm text-white">
+                        <p className={`text-sm ${
+                          isRegistrationDeadlinePassed ? "text-red-400 font-semibold" : "text-white"
+                        }`}>
                           {formatDate(event.registrationDeadline)}
+                          {isRegistrationDeadlinePassed && " (Passed)"}
                         </p>
                       </div>
                     </div>

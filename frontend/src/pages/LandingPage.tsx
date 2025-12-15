@@ -1,6 +1,3 @@
-import React from "react";
-import { motion } from "framer-motion";
-
 import HeroSection from "@/components/landing/HeroSection";
 import SportsGrid from "@/components/landing/SportsGrid";
 import TestimonialsCarousel from "@/components/landing/TestimonialsCarousel";
