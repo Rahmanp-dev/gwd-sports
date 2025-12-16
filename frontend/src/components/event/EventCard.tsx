@@ -1,10 +1,16 @@
-import { IEvent } from '@/types/event';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Calendar, MapPin, Users, DollarSign, Clock } from 'lucide-react';
-import { format } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
+import { IEvent } from "@/types/event";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Calendar, MapPin, Users, DollarSign, Clock } from "lucide-react";
+import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 interface EventCardProps {
   event: IEvent;
@@ -14,24 +20,24 @@ interface EventCardProps {
   isRegistered?: boolean;
 }
 
-export default function EventCard({ 
-  event, 
-  showActions = true, 
-  onRegister, 
+export default function EventCard({
+  event,
+  showActions = true,
+  onRegister,
   onLeave,
-  isRegistered = false 
+  isRegistered = false,
 }: EventCardProps) {
   const navigate = useNavigate();
 
   const getStatusColor = (status: string) => {
     const colors = {
-      draft: 'bg-gray-500',
-      published: 'bg-blue-500',
-      ongoing: 'bg-green-500',
-      completed: 'bg-purple-500',
-      cancelled: 'bg-red-500',
+      draft: "bg-gray-500",
+      published: "bg-blue-500",
+      ongoing: "bg-green-500",
+      completed: "bg-purple-500",
+      cancelled: "bg-red-500",
     };
-    return colors[status as keyof typeof colors] || 'bg-gray-500';
+    return colors[status as keyof typeof colors] || "bg-gray-500";
   };
 
   const isUpcoming = new Date(event.startDate) > new Date();
@@ -41,8 +47,12 @@ export default function EventCard({
     <Card className="hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
       <CardHeader>
         <div className="flex items-start justify-between gap-2 mb-2">
-          <CardTitle className="text-lg md:text-xl line-clamp-2">{event.name}</CardTitle>
-          <Badge className={`${getStatusColor(event.status)} text-white shrink-0`}>
+          <CardTitle className="text-lg md:text-xl line-clamp-2">
+            {event.name}
+          </CardTitle>
+          <Badge
+            className={`${getStatusColor(event.status)} text-white shrink-0`}
+          >
             {event.status}
           </Badge>
         </div>
@@ -55,9 +65,7 @@ export default function EventCard({
               Open
             </Badge>
           )}
-          {!event.isPublic && (
-            <Badge variant="secondary">Private</Badge>
-          )}
+          {!event.isPublic && <Badge variant="secondary">Private</Badge>}
         </div>
       </CardHeader>
 
@@ -70,21 +78,25 @@ export default function EventCard({
           <div className="flex items-center gap-2 text-muted-foreground">
             <Calendar className="h-4 w-4 shrink-0" />
             <span className="truncate">
-              {format(new Date(event.startDate), 'MMM dd, yyyy')}
-              {event.endDate && ` - ${format(new Date(event.endDate), 'MMM dd, yyyy')}`}
+              {format(new Date(event.startDate), "MMM dd, yyyy")}
+              {event.endDate &&
+                ` - ${format(new Date(event.endDate), "MMM dd, yyyy")}`}
             </span>
           </div>
 
           <div className="flex items-center gap-2 text-muted-foreground">
             <MapPin className="h-4 w-4 shrink-0" />
-            <span className="truncate">{event.venue}, {event.location}</span>
+            <span className="truncate">
+              {event.venue}, {event.location}
+            </span>
           </div>
 
           <div className="flex items-center gap-2 text-muted-foreground">
             <Users className="h-4 w-4 shrink-0" />
             <span>
               {event.participantCount || 0}
-              {event.maxParticipants && ` / ${event.maxParticipants}`} participants
+              {event.maxParticipants && ` / ${event.maxParticipants}`}{" "}
+              participants
             </span>
           </div>
 
@@ -99,7 +111,8 @@ export default function EventCard({
             <div className="flex items-center gap-2 text-orange-600">
               <Clock className="h-4 w-4 shrink-0" />
               <span className="text-xs">
-                Register by {format(new Date(event.registrationDeadline), 'MMM dd, yyyy')}
+                Register by{" "}
+                {format(new Date(event.registrationDeadline), "MMM dd, yyyy")}
               </span>
             </div>
           )}
@@ -132,27 +145,26 @@ export default function EventCard({
 
         {showActions && (
           <>
-            {isRegistered ? (
-              isUpcoming && (
-                <Button
-                  variant="destructive"
-                  className="w-full sm:flex-1"
-                  onClick={() => onLeave?.(event._id)}
-                >
-                  Leave Event
-                </Button>
-              )
-            ) : (
-              event.canRegister && !hasEnded && (
-                <Button
-                  className="w-full sm:flex-1"
-                  onClick={() => onRegister?.(event._id)}
-                  disabled={!event.registrationOpen}
-                >
-                  Register Now
-                </Button>
-              )
-            )}
+            {isRegistered
+              ? isUpcoming && (
+                  <Button
+                    variant="destructive"
+                    className="w-full sm:flex-1"
+                    onClick={() => onLeave?.(event._id)}
+                  >
+                    Leave Event
+                  </Button>
+                )
+              : event.canRegister &&
+                !hasEnded && (
+                  <Button
+                    className="w-full sm:flex-1"
+                    onClick={() => onRegister?.(event._id)}
+                    disabled={!event.registrationOpen}
+                  >
+                    Register Now
+                  </Button>
+                )}
           </>
         )}
       </CardFooter>

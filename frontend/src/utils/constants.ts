@@ -94,32 +94,32 @@ export const EVENT_STATUS_OPTIONS = [
 
 // Event Status Colors
 export const EVENT_STATUS_COLORS: Record<string, string> = {
-  draft: 'bg-gray-500 text-white',
-  published: 'bg-blue-500 text-white',
-  ongoing: 'bg-green-500 text-white',
-  completed: 'bg-purple-500 text-white',
-  cancelled: 'bg-red-500 text-white',
+  draft: "bg-gray-500 text-white",
+  published: "bg-blue-500 text-white",
+  ongoing: "bg-green-500 text-white",
+  completed: "bg-purple-500 text-white",
+  cancelled: "bg-red-500 text-white",
 };
 
 // Sports List
 export const SPORTS_LIST = [
-  'Football',
-  'Basketball',
-  'Cricket',
-  'Tennis',
-  'Badminton',
-  'Volleyball',
-  'Hockey',
-  'Athletics',
-  'Swimming',
-  'Other',
+  "Football",
+  "Basketball",
+  "Cricket",
+  "Tennis",
+  "Badminton",
+  "Volleyball",
+  "Hockey",
+  "Athletics",
+  "Swimming",
+  "Other",
 ];
 
 // Event Sort Options
 export const EVENT_SORT_OPTIONS = [
-  { value: 'startDate', label: 'Start Date' },
-  { value: 'endDate', label: 'End Date' },
-  { value: 'createdAt', label: 'Created Date' },
-  { value: 'name', label: 'Name' },
-  { value: 'participants', label: 'Participants' },
+  { value: "startDate", label: "Start Date" },
+  { value: "endDate", label: "End Date" },
+  { value: "createdAt", label: "Created Date" },
+  { value: "name", label: "Name" },
+  { value: "participants", label: "Participants" },
 ];

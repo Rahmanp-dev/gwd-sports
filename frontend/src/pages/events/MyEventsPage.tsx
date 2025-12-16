@@ -64,9 +64,7 @@ function MyEventsContent() {
       setLeaveEventId(null);
     },
     onError: (error: any) => {
-      showToast.error(
-        error.response?.data?.message || "Failed to leave event",
-      );
+      showToast.error(error.response?.data?.message || "Failed to leave event");
     },
   });
 
@@ -191,7 +189,10 @@ function MyEventsContent() {
             </div>
 
             <div className="text-gray-400">
-              Total Events: <span className="text-white font-bold">{pagination?.totalEvents || 0}</span>
+              Total Events:{" "}
+              <span className="text-white font-bold">
+                {pagination?.totalEvents || 0}
+              </span>
             </div>
           </div>
         </div>

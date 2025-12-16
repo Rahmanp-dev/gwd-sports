@@ -92,17 +92,17 @@ class ApiService {
         // Handle Mongoose validation errors
         if (error.response?.data?.errors) {
           const validationErrors = error.response.data.errors;
-          
+
           // If it's a validation error object, format it nicely
-          if (typeof validationErrors === 'object') {
+          if (typeof validationErrors === "object") {
             const errorMessages = Object.entries(validationErrors)
               .map(([field, err]: [string, any]) => {
-                const fieldName = field.replace(/\.\d+$/, ''); // Remove array indices
-                const message = err.message || err.kind || 'Invalid value';
+                const fieldName = field.replace(/\.\d+$/, ""); // Remove array indices
+                const message = err.message || err.kind || "Invalid value";
                 return `${fieldName}: ${message}`;
               })
-              .join('\n');
-            
+              .join("\n");
+
             errorMessage = errorMessages || errorMessage;
           }
         }

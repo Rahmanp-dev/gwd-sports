@@ -47,7 +47,7 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
           <Badge variant="outline" className="capitalize">
             {event.sport}
           </Badge>
-          {event.isPublic && <Badge variant="secondary">Public</Badge>}
+          {event.isPublic ? <Badge variant="secondary">Public</Badge> : <Badge variant="secondary">Private</Badge>}
           {event.registrationOpen ? (
             <Badge className="bg-green-100 text-green-800">
               Registration Open

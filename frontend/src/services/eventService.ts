@@ -11,7 +11,7 @@ class EventService {
   private baseUrl = "/events";
 
   // ============= ADMIN METHODS =============
-  
+
   // Admin: Get all events with pagination and filters (including soft-deleted)
   async getAllEvents(filters: EventFilters = {}) {
     const queryParams = new URLSearchParams();
@@ -116,12 +116,14 @@ class EventService {
   }
 
   // User: Get my events
-  async getMyEvents(filters: { 
-    page?: number; 
-    limit?: number; 
-    status?: string; 
-    upcoming?: boolean 
-  } = {}) {
+  async getMyEvents(
+    filters: {
+      page?: number;
+      limit?: number;
+      status?: string;
+      upcoming?: boolean;
+    } = {},
+  ) {
     const queryParams = new URLSearchParams();
 
     Object.entries(filters).forEach(([key, value]) => {

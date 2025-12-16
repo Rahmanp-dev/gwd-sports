@@ -146,7 +146,9 @@ export default function MgMunPage() {
                 className="absolute bottom-10 left-10 bg-gradient-to-br from-purple-600 to-purple-800 p-6 rounded-2xl shadow-2xl border border-purple-400/20"
               >
                 <Target className="h-8 w-8 text-white mb-2" />
-                <p className="text-white font-semibold font-display">Resolution</p>
+                <p className="text-white font-semibold font-display">
+                  Resolution
+                </p>
                 <p className="text-purple-200 text-sm font-body">Drafting</p>
               </motion.div>
 
@@ -217,7 +219,9 @@ export default function MgMunPage() {
                     <h3 className="text-xl font-bold text-white mb-2 font-display">
                       {skill.title}
                     </h3>
-                    <p className="text-gray-400 font-body">{skill.description}</p>
+                    <p className="text-gray-400 font-body">
+                      {skill.description}
+                    </p>
                   </CardContent>
                 </Card>
               </motion.div>

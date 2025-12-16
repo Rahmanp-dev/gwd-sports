@@ -56,38 +56,40 @@ export default function EventDetailsPage() {
 
   const event = data?.data?.event;
   console.log(event);
-  const isRegistered = event?.participants 
+  const isRegistered = event?.participants
     ? event.participants.some((participant: any) => {
         // Handle both cases: participant is an object or a string
-        if (typeof participant === 'string') {
+        if (typeof participant === "string") {
           return participant === user?._id;
         }
         // If participant is an object, check _id property
         return participant._id === user?._id;
       })
     : false;
-  
+
   const now = new Date();
   const isUpcoming = event ? new Date(event.startDate) > now : false;
-  const isEventCompleted = event?.endDate ? new Date(event.endDate) < now : false;
-  const isRegistrationDeadlinePassed = event?.registrationDeadline 
-    ? new Date(event.registrationDeadline) < now 
+  const isEventCompleted = event?.endDate
+    ? new Date(event.endDate) < now
     : false;
-  
+  const isRegistrationDeadlinePassed = event?.registrationDeadline
+    ? new Date(event.registrationDeadline) < now
+    : false;
+
   // Event is open for registration if:
   // 1. Status is published
   // 2. registrationOpen flag is true
   // 3. Registration deadline hasn't passed (if set)
   // 4. Event hasn't completed
-  const isRegistrationOpen = 
-    event?.status === 'published' && 
-    event?.registrationOpen && 
-    !isRegistrationDeadlinePassed && 
+  const isRegistrationOpen =
+    event?.status === "published" &&
+    event?.registrationOpen &&
+    !isRegistrationDeadlinePassed &&
     !isEventCompleted;
 
   // Check if event is full
-  const isEventFull = event?.maxParticipants 
-    ? event.participants.length >= event.maxParticipants 
+  const isEventFull = event?.maxParticipants
+    ? event.participants.length >= event.maxParticipants
     : false;
 
   // Join event mutation
@@ -100,9 +102,7 @@ export default function EventDetailsPage() {
       setShowJoinDialog(false);
     },
     onError: (error: any) => {
-      showToast.error(
-        error.response?.data?.message || "Failed to join event"
-      );
+      showToast.error(error.response?.data?.message || "Failed to join event");
     },
   });
 
@@ -115,9 +115,7 @@ export default function EventDetailsPage() {
       queryClient.invalidateQueries({ queryKey: ["myEvents"] });
     },
     onError: (error: any) => {
-      showToast.error(
-        error.response?.data?.message || "Failed to leave event"
-      );
+      showToast.error(error.response?.data?.message || "Failed to leave event");
     },
   });
 
@@ -211,7 +209,10 @@ export default function EventDetailsPage() {
                     <Badge className={EVENT_STATUS_COLORS[event.status]}>
                       {event.status}
                     </Badge>
-                    <Badge variant="outline" className="capitalize border-purple-500/50 text-purple-400">
+                    <Badge
+                      variant="outline"
+                      className="capitalize border-purple-500/50 text-purple-400"
+                    >
                       {event.sport}
                     </Badge>
                     {isEventCompleted && (
@@ -219,16 +220,20 @@ export default function EventDetailsPage() {
                         Event Completed
                       </Badge>
                     )}
-                    {!isEventCompleted && !isRegistrationOpen && isRegistrationDeadlinePassed && (
-                      <Badge className="bg-red-600 text-white">
-                        Registration Deadline Passed
-                      </Badge>
-                    )}
-                    {!isEventCompleted && !isRegistrationOpen && !isRegistrationDeadlinePassed && (
-                      <Badge className="bg-red-600 text-white">
-                        Registration Closed
-                      </Badge>
-                    )}
+                    {!isEventCompleted &&
+                      !isRegistrationOpen &&
+                      isRegistrationDeadlinePassed && (
+                        <Badge className="bg-red-600 text-white">
+                          Registration Deadline Passed
+                        </Badge>
+                      )}
+                    {!isEventCompleted &&
+                      !isRegistrationOpen &&
+                      !isRegistrationDeadlinePassed && (
+                        <Badge className="bg-red-600 text-white">
+                          Registration Closed
+                        </Badge>
+                      )}
                     {!isEventCompleted && isRegistrationOpen && (
                       <Badge className="bg-green-600 text-white">
                         Registration Open
@@ -312,7 +317,11 @@ export default function EventDetailsPage() {
                       </h3>
                       <div className="flex flex-wrap gap-2">
                         {event.tags.map((tag, index) => (
-                          <Badge key={index} variant="outline" className="border-gray-600 text-gray-300">
+                          <Badge
+                            key={index}
+                            variant="outline"
+                            className="border-gray-600 text-gray-300"
+                          >
                             {tag}
                           </Badge>
                         ))}
@@ -378,7 +387,9 @@ export default function EventDetailsPage() {
                           onClick={handleLeave}
                           disabled={leaveMutation.isPending}
                         >
-                          {leaveMutation.isPending ? "Processing..." : "Leave Event"}
+                          {leaveMutation.isPending
+                            ? "Processing..."
+                            : "Leave Event"}
                         </Button>
                       )}
                     </>
@@ -388,8 +399,8 @@ export default function EventDetailsPage() {
                         <div className="p-4 bg-red-900/30 border border-red-500/50 rounded-lg">
                           <p className="text-red-400 font-medium text-center flex items-center justify-center gap-2">
                             <AlertCircle className="h-5 w-5" />
-                            {isRegistrationDeadlinePassed 
-                              ? "Registration Deadline Has Passed" 
+                            {isRegistrationDeadlinePassed
+                              ? "Registration Deadline Has Passed"
                               : "Registration is Closed"}
                           </p>
                         </div>
@@ -403,7 +414,9 @@ export default function EventDetailsPage() {
                         <Button
                           className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600"
                           onClick={handleJoin}
-                          disabled={!isRegistrationOpen || !isUpcoming || isEventFull}
+                          disabled={
+                            !isRegistrationOpen || !isUpcoming || isEventFull
+                          }
                         >
                           {getRegistrationButtonText()}
                         </Button>
@@ -416,17 +429,22 @@ export default function EventDetailsPage() {
               {/* Event Info Card */}
               <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
                 <CardHeader>
-                  <CardTitle className="text-white">Event Information</CardTitle>
+                  <CardTitle className="text-white">
+                    Event Information
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* Event Status */}
                   <div className="flex items-start gap-3">
                     <AlertCircle className="h-5 w-5 text-purple-400 mt-0.5 shrink-0" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-400">Status</p>
+                      <p className="text-sm font-medium text-gray-400">
+                        Status
+                      </p>
                       <div className="flex items-center gap-2 mt-1">
                         <Badge className={EVENT_STATUS_COLORS[event.status]}>
-                          {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+                          {event.status.charAt(0).toUpperCase() +
+                            event.status.slice(1)}
                         </Badge>
                         {isRegistrationOpen ? (
                           <Badge className="bg-green-600 text-white">
@@ -450,7 +468,9 @@ export default function EventDetailsPage() {
                   <div className="flex items-start gap-3">
                     <Calendar className="h-5 w-5 text-purple-400 mt-0.5 shrink-0" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-400">Start Date</p>
+                      <p className="text-sm font-medium text-gray-400">
+                        Start Date
+                      </p>
                       <p className="text-sm text-white">
                         {formatDate(event.startDate)}
                       </p>
@@ -461,7 +481,9 @@ export default function EventDetailsPage() {
                     <div className="flex items-start gap-3">
                       <Calendar className="h-5 w-5 text-purple-400 mt-0.5 shrink-0" />
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-400">End Date</p>
+                        <p className="text-sm font-medium text-gray-400">
+                          End Date
+                        </p>
                         <p className="text-sm text-white">
                           {formatDate(event.endDate)}
                         </p>
@@ -472,7 +494,9 @@ export default function EventDetailsPage() {
                   <div className="flex items-start gap-3">
                     <MapPin className="h-5 w-5 text-green-400 mt-0.5 shrink-0" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-400">Location</p>
+                      <p className="text-sm font-medium text-gray-400">
+                        Location
+                      </p>
                       <p className="text-sm text-white">
                         {event.venue}, {event.location}
                       </p>
@@ -482,12 +506,16 @@ export default function EventDetailsPage() {
                   <div className="flex items-start gap-3">
                     <Users className="h-5 w-5 text-blue-400 mt-0.5 shrink-0" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-400">Participants</p>
+                      <p className="text-sm font-medium text-gray-400">
+                        Participants
+                      </p>
                       <p className="text-sm text-white">
                         {event.participants.length || 0}
                         {event.maxParticipants && ` / ${event.maxParticipants}`}
                         {isEventFull && (
-                          <span className="ml-2 text-yellow-400 font-semibold">(Full)</span>
+                          <span className="ml-2 text-yellow-400 font-semibold">
+                            (Full)
+                          </span>
                         )}
                       </p>
                     </div>
@@ -497,7 +525,9 @@ export default function EventDetailsPage() {
                     <div className="flex items-start gap-3">
                       <DollarSign className="h-5 w-5 text-yellow-400 mt-0.5 shrink-0" />
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-400">Entry Fee</p>
+                        <p className="text-sm font-medium text-gray-400">
+                          Entry Fee
+                        </p>
                         <p className="text-sm text-white">₹{event.entryFee}</p>
                       </div>
                     </div>
@@ -505,16 +535,24 @@ export default function EventDetailsPage() {
 
                   {event.registrationDeadline && (
                     <div className="flex items-start gap-3">
-                      <Clock className={`h-5 w-5 mt-0.5 shrink-0 ${
-                        isRegistrationDeadlinePassed ? "text-red-400" : "text-orange-400"
-                      }`} />
+                      <Clock
+                        className={`h-5 w-5 mt-0.5 shrink-0 ${
+                          isRegistrationDeadlinePassed
+                            ? "text-red-400"
+                            : "text-orange-400"
+                        }`}
+                      />
                       <div className="flex-1">
                         <p className="text-sm font-medium text-gray-400">
                           Registration Deadline
                         </p>
-                        <p className={`text-sm ${
-                          isRegistrationDeadlinePassed ? "text-red-400 font-semibold" : "text-white"
-                        }`}>
+                        <p
+                          className={`text-sm ${
+                            isRegistrationDeadlinePassed
+                              ? "text-red-400 font-semibold"
+                              : "text-white"
+                          }`}
+                        >
                           {formatDate(event.registrationDeadline)}
                           {isRegistrationDeadlinePassed && " (Passed)"}
                         </p>
@@ -527,13 +565,17 @@ export default function EventDetailsPage() {
               {/* Contact Info Card */}
               <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
                 <CardHeader>
-                  <CardTitle className="text-white">Contact Information</CardTitle>
+                  <CardTitle className="text-white">
+                    Contact Information
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-3">
                     <User className="h-5 w-5 text-gray-400 shrink-0" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-400">Contact Person</p>
+                      <p className="text-sm font-medium text-gray-400">
+                        Contact Person
+                      </p>
                       <p className="text-sm text-white">
                         {event.contactInfo.name}
                       </p>

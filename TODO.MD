@@ -2,18 +2,19 @@ TODO:
 
 P1:
 
-- [ ] Fix Event Edit page - event is active
-- [ ] Centralized login and logout marker on top right corner
+- [ ] Better filters in events page
 - [ ] Homepage Customization
-- [ ] Add Edit Student Profile in F
-- [ ] Add Edit Trainer Profile in F
+- [ ] Fix npm builds
 - [ ] Student Dashboard
 - [ ] Trainer Dashboard
+- [ ] Centralized login and logout marker on top right corner
+- [ ] Add Edit Student Profile in F
+- [ ] Add Edit Trainer Profile in F
 - [ ] Fix Admin Dashboard - some errors
+- [ ] Refresh token logic in frontend
 - [ ] Handle Existing Token in register pages and redirect them directly
 - [ ] Add trainer register
 - [ ] Check edit student - it is misbehaving
-- [ ] Fix the issue with backend build and frontend - new ts version
 - [ ] Complete Student Login , Trainer Login, and their pages
 - [ ] show if the student is verified or not in the profile
 
@@ -24,9 +25,13 @@ P2:
 - [ ] improve isActive in events
 - [ ] Migrate data folder to utils/constants
 - [ ] Update the landing page details
+- [ ] Add events agenda - in event management compone- like explaining all options
 
 P3: 
 - [ ] Can we use MCP or some auto prompt like thing to automate prompts? like prompt engineering but automated
+- [ ] Dockerize the application
+- [ ] Do we hide the info of private (inactive) events? - http://localhost:5173/events/69409c9d306af5ffab0e1a5b
+- [ ] event re-activation needed?
 
 PROD:
 - [ ] Disable console logs in production
@@ -60,3 +65,4 @@ Done ✅
 - [x] Events page - show the status properly - ongoing, upcoming, completed 
 - [x] Events page - proper error handling - can't register when ongoing, upcoming, completed 
 - [x] Events page - event registration
+- [x] Fix Event Edit page - event is active

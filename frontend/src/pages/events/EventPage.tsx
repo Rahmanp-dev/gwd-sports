@@ -298,9 +298,7 @@ export default function EventPage() {
                             <Button
                               onClick={() => viewDetails(event._id)}
                               className="flex-1 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600"
-                              disabled={
-                                !event.registrationOpen
-                              }
+                              disabled={!event.registrationOpen}
                             >
                               {event.registrationOpen
                                 ? "View Details"

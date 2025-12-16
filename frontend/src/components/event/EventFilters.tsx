@@ -1,18 +1,24 @@
-import { useState } from 'react';
-import { EventFilters } from '@/types/event';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useState } from "react";
+import { EventFilters } from "@/types/event";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Filter, X } from 'lucide-react';
-import { Checkbox } from '@/components/ui/checkbox';
+} from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Filter, X } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface EventFiltersProps {
   filters: EventFilters;
@@ -21,32 +27,32 @@ interface EventFiltersProps {
 }
 
 const sports = [
-  'All Sports',
-  'football',
-  'basketball',
-  'cricket',
-  'tennis',
-  'badminton',
-  'volleyball',
-  'hockey',
-  'athletics',
-  'swimming',
-  'other',
+  "All Sports",
+  "football",
+  "basketball",
+  "cricket",
+  "tennis",
+  "badminton",
+  "volleyball",
+  "hockey",
+  "athletics",
+  "swimming",
+  "other",
 ];
 
 const statuses = [
-  'All Status',
-  'draft',
-  'published',
-  'ongoing',
-  'completed',
-  'cancelled',
+  "All Status",
+  "draft",
+  "published",
+  "ongoing",
+  "completed",
+  "cancelled",
 ];
 
-export default function EventFilters({ 
-  filters, 
+export default function EventFilters({
+  filters,
   onFiltersChange,
-  showUpcomingFilter = false 
+  showUpcomingFilter = false,
 }: EventFiltersProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [localFilters, setLocalFilters] = useState<EventFilters>(filters);
@@ -67,7 +73,8 @@ export default function EventFilters({
   };
 
   const hasActiveFilters = Object.keys(filters).some(
-    key => key !== 'page' && key !== 'limit' && filters[key as keyof EventFilters]
+    (key) =>
+      key !== "page" && key !== "limit" && filters[key as keyof EventFilters],
   );
 
   return (
@@ -91,11 +98,11 @@ export default function EventFilters({
           <div className="space-y-2">
             <Label>Sport</Label>
             <Select
-              value={localFilters.sport || 'All Sports'}
+              value={localFilters.sport || "All Sports"}
               onValueChange={(value) =>
                 setLocalFilters({
                   ...localFilters,
-                  sport: value === 'All Sports' ? undefined : value,
+                  sport: value === "All Sports" ? undefined : value,
                 })
               }
             >
@@ -116,11 +123,11 @@ export default function EventFilters({
           <div className="space-y-2">
             <Label>Status</Label>
             <Select
-              value={localFilters.status || 'All Status'}
+              value={localFilters.status || "All Status"}
               onValueChange={(value) =>
                 setLocalFilters({
                   ...localFilters,
-                  status: value === 'All Status' ? undefined : (value as any),
+                  status: value === "All Status" ? undefined : (value as any),
                 })
               }
             >
@@ -129,7 +136,11 @@ export default function EventFilters({
               </SelectTrigger>
               <SelectContent>
                 {statuses.map((status) => (
-                  <SelectItem key={status} value={status} className="capitalize">
+                  <SelectItem
+                    key={status}
+                    value={status}
+                    className="capitalize"
+                  >
                     {status}
                   </SelectItem>
                 ))}
@@ -141,7 +152,7 @@ export default function EventFilters({
           <div className="space-y-2">
             <Label>Sort By</Label>
             <Select
-              value={localFilters.sortBy || 'startDate'}
+              value={localFilters.sortBy || "startDate"}
               onValueChange={(value) =>
                 setLocalFilters({
                   ...localFilters,
@@ -166,11 +177,11 @@ export default function EventFilters({
           <div className="space-y-2">
             <Label>Sort Order</Label>
             <Select
-              value={localFilters.sortOrder || 'asc'}
+              value={localFilters.sortOrder || "asc"}
               onValueChange={(value) =>
                 setLocalFilters({
                   ...localFilters,
-                  sortOrder: value as 'asc' | 'desc',
+                  sortOrder: value as "asc" | "desc",
                 })
               }
             >
@@ -259,7 +270,7 @@ export default function EventFilters({
           <div className="space-y-2">
             <Label>Items per page</Label>
             <Select
-              value={localFilters.limit?.toString() || '12'}
+              value={localFilters.limit?.toString() || "12"}
               onValueChange={(value) =>
                 setLocalFilters({
                   ...localFilters,
@@ -282,7 +293,11 @@ export default function EventFilters({
         </div>
 
         <div className="flex gap-2">
-          <Button onClick={handleResetFilters} variant="outline" className="flex-1">
+          <Button
+            onClick={handleResetFilters}
+            variant="outline"
+            className="flex-1"
+          >
             <X className="h-4 w-4 mr-2" />
             Reset
           </Button>
