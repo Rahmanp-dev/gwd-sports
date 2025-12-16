@@ -86,8 +86,7 @@ export const StatsBanner: React.FC<StatsBannerProps> = ({
 
                 {/* Value */}
                 <motion.div
-                  className="relative text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-400 mb-2 drop-shadow-[0_0_20px_rgba(245,158,11,0.6)]"
-                  style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                  className="relative text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-400 mb-2 drop-shadow-[0_0_20px_rgba(245,158,11,0.6)] font-display"
                   whileHover={{ scale: 1.1 }}
                 >
                   {stat.value}

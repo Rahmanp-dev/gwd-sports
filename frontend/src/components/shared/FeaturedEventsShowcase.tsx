@@ -93,18 +93,12 @@ export const FeaturedEventsShowcase: React.FC<FeaturedEventsShowcaseProps> = ({
             transition={{ duration: 0.6 }}
             className={`inline-flex items-center gap-3 px-8 py-3 bg-gradient-to-r ${accentColor} text-white rounded-full mb-8 shadow-[0_0_40px_rgba(168,85,247,0.6)]`}
           >
-            <span
-              className="text-sm font-black uppercase tracking-[0.3em]"
-              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-            >
+            <span className="text-sm font-black uppercase tracking-[0.3em] font-display">
               {subtitle}
             </span>
           </motion.div>
 
-          <h2
-            className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none"
-            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-          >
+          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase leading-none font-display">
             {title.split(" ").slice(0, -1).join(" ")}
             <span
               className={`block text-transparent bg-clip-text bg-gradient-to-r ${accentColor} drop-shadow-[0_0_30px_rgba(168,85,247,0.8)]`}
@@ -195,10 +189,7 @@ export const FeaturedEventsShowcase: React.FC<FeaturedEventsShowcaseProps> = ({
                     </div>
 
                     {/* Title */}
-                    <h3
-                      className="text-4xl font-black text-white uppercase tracking-tight leading-tight group-hover:text-purple-300 transition-colors"
-                      style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                    >
+                    <h3 className="text-4xl font-black text-white uppercase tracking-wide leading-tight group-hover:text-purple-300 transition-colors font-display">
                       {event.title}
                     </h3>
 

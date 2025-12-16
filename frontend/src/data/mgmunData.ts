@@ -20,12 +20,6 @@ export const mgmunData = {
         gradient: "from-purple-500 to-pink-500",
       },
       {
-        label: "Countries Represented",
-        value: "50+",
-        icon: Globe,
-        gradient: "from-green-500 to-emerald-500",
-      },
-      {
         label: "Award Winners",
         value: "200+",
         icon: Award,

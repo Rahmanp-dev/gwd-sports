@@ -151,8 +151,7 @@ export const SectionHero: React.FC<SectionHeroProps> = ({
                       : isAmberTheme
                         ? "text-amber-400"
                         : "text-green-400"
-                  } text-sm font-black uppercase tracking-[0.3em]`}
-                  style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                  } text-sm font-black uppercase tracking-[0.3em] font-display`}
                 >
                   {subtitle}
                 </span>
@@ -175,8 +174,7 @@ export const SectionHero: React.FC<SectionHeroProps> = ({
                     : isAmberTheme
                       ? "text-amber-400"
                       : "text-green-400"
-                } text-sm font-black uppercase tracking-[0.3em]`}
-                style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                } text-sm font-black uppercase tracking-[0.3em] font-display`}
               >
                 {subtitle}
               </span>
@@ -190,10 +188,7 @@ export const SectionHero: React.FC<SectionHeroProps> = ({
             transition={{ duration: 0.8, delay: 0.4 }}
             className="mb-8"
           >
-            <h1
-              className="text-7xl sm:text-8xl lg:text-[140px] font-black text-white mb-6 uppercase leading-[0.9] tracking-tighter"
-              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-            >
+            <h1 className="text-6xl sm:text-7xl lg:text-[120px] font-black text-white mb-6 uppercase leading-[0.9] font-display">
               {title.split(" ").slice(0, -1).join(" ")}
               <motion.span
                 initial={{ opacity: 0, x: -50 }}
@@ -311,8 +306,7 @@ export const SectionHero: React.FC<SectionHeroProps> = ({
                           : isAmberTheme
                             ? "text-amber-500 drop-shadow-[0_0_20px_rgba(245,158,11,0.5)]"
                             : "text-green-500 drop-shadow-[0_0_20px_rgba(34,197,94,0.5)]"
-                      } mb-2`}
-                      style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                      } mb-2 font-display`}
                     >
                       {stat.value}
                     </div>
@@ -348,7 +342,7 @@ export const SectionHero: React.FC<SectionHeroProps> = ({
       <motion.div
         animate={{ y: [0, 15, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2"
+        className="absolute bottom-5 left-1/2 -translate-x-1/2"
       >
         <div
           className={`w-8 h-14 border-4 ${

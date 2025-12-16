@@ -14,26 +14,26 @@ import UserProfile from "@/pages/user/UserProfile";
 import { UserProtectedRoute } from "@/components/auth/UserProtectedRoute";
 
 // Event Pages
-import MyEventsPage from "./pages/events/MyEventsPage";
-import EventPage from "./pages/events/EventPage";
-import EventDetailsPage from "./pages/events/EventDetailsPage";
+import MyEventsPage from "@/pages/events/MyEventsPage";
+import EventPage from "@/pages/events/EventPage";
+import EventDetailsPage from "@/pages/events/EventDetailsPage";
 
 // Public Pages
 import LandingPage from "@/pages/LandingPage";
 
 // Section Pages
-import MGRLPage from "./pages/sections/MGRL/page";
-import GalaxyEventsPage from "./pages/sections/GalaxyEvents/page";
-import MGBCPage from "./pages/sections/MGBC/page";
-import MGFCPage from "./pages/sections/MGFC/page";
-import MgMunPage from "./pages/sections/MgMun/page";
+import MGRLPage from "@/pages/sections/MGRL/page";
+import GalaxyEventsPage from "@/pages/sections/GalaxyEvents/page";
+import MGBCPage from "@/pages/sections/MGBC/page";
+import MGFCPage from "@/pages/sections/MGFC/page";
+import MgMunPage from "@/pages/sections/MgMun/page";
 
 // MGFC Sub-Pages
-import MGFCStudentPage from "./pages/sections/MGFC/student/StudentPage";
-import MGFCTrainerPage from "./pages/sections/MGFC/trainer/TrainerPage";
-import StudentRegister from "./pages/sections/MGFC/student/StudentAuth";
-import StudentCreate from "./pages/sections/MGFC/student/StudentCreate";
-import StudentComplete from "./pages/sections/MGFC/student/StudentComplete";
+import MGFCStudentPage from "@/pages/sections/MGFC/student/StudentPage";
+import MGFCTrainerPage from "@/pages/sections/MGFC/trainer/TrainerPage";
+import StudentRegister from "@/pages/sections/MGFC/student/StudentAuth";
+import StudentCreate from "@/pages/sections/MGFC/student/StudentCreate";
+import StudentComplete from "@/pages/sections/MGFC/student/StudentComplete";
 
 const AppRouter: React.FC = () => {
   const dispatch = useAppDispatch();

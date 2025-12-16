@@ -55,13 +55,13 @@ export default function MGBCPage() {
         bgGradient="from-orange-500/20 to-amber-500/20"
       />
 
-      <ProgramsSection
+      {/* <ProgramsSection
         title="Our Training Programs"
         subtitle="Find Your Level"
         programs={MGBC_PROGRAMS}
         icon="🏀"
         accentColor="from-orange-500 to-red-500"
-      />
+      /> */}
 
       <EventsSection
         title="Upcoming Tournaments & Events"

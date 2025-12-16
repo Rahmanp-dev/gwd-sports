@@ -74,18 +74,12 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({
             transition={{ duration: 0.6 }}
             className={`inline-flex items-center gap-3 px-8 py-3 bg-gradient-to-r ${accentColor} text-black rounded-full mb-8 shadow-[0_0_40px_rgba(245,158,11,0.6)]`}
           >
-            <span
-              className="text-sm font-black uppercase tracking-[0.3em]"
-              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-            >
+            <span className="text-sm font-black uppercase tracking-[0.3em] font-display">
               {subtitle}
             </span>
           </motion.div>
 
-          <h2
-            className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none"
-            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-          >
+          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase leading-none font-display">
             {title.split(" ").slice(0, -1).join(" ")}
             <span
               className={`block text-transparent bg-clip-text bg-gradient-to-r ${accentColor} drop-shadow-[0_0_30px_rgba(245,158,11,0.8)]`}
@@ -159,10 +153,7 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({
                 </motion.div>
 
                 {/* Content */}
-                <h3
-                  className="relative text-3xl font-black text-white uppercase mb-4 tracking-tight group-hover:text-amber-400 transition-colors"
-                  style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                >
+                <h3 className="relative text-3xl font-black text-white uppercase mb-4 tracking-tight group-hover:text-amber-400 transition-colors font-display">
                   {category.title}
                 </h3>
                 <p className="relative text-gray-300 text-base font-semibold leading-relaxed mb-6">
@@ -208,10 +199,7 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({
 
                 {/* Number Badge */}
                 <div className="absolute top-4 right-4 w-12 h-12 rounded-full bg-black/50 border-2 border-amber-500/30 flex items-center justify-center">
-                  <span
-                    className="text-amber-500 text-xl font-black"
-                    style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                  >
+                  <span className="text-amber-500 text-xl font-black uppercase font-display">
                     {(index + 1).toString().padStart(2, "0")}
                   </span>
                 </div>
@@ -221,7 +209,7 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({
         </div>
 
         {/* Bottom CTA */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
@@ -237,7 +225,7 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({
               <ArrowRight className="ml-3 w-6 h-6 group-hover/btn:translate-x-2 transition-transform" />
             </Button>
           </motion.div>
-        </motion.div>
+        </motion.div> */}
       </div>
     </section>
   );

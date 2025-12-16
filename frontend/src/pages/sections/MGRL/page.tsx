@@ -80,12 +80,12 @@ export default function MGRLPage() {
       />
 
       {/* Programs Section */}
-      <ProgramsSection
+      {/* <ProgramsSection
         title="Our Training Programs"
         subtitle="Develop Your Skills"
         programs={MGRL_PROGRAMS}
         icon="🏁"
-      />
+      /> */}
 
       {/* Events Section */}
       <EventsSection

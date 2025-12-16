@@ -71,13 +71,13 @@ export default function GalaxyEventsPage() {
       />
 
       {/* Event Types Section */}
-      <ProgramsSection
+      {/* <ProgramsSection
         title="Types of Events"
         subtitle="For Everyone"
         programs={GALAXY_EVENT_TYPES}
         icon="🌟"
         accentColor="from-purple-500 to-indigo-500"
-      />
+      /> */}
 
       {/* Features Section */}
       <FeaturesGrid

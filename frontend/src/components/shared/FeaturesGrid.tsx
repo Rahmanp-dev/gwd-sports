@@ -67,18 +67,12 @@ export const FeaturesGrid: React.FC<FeaturesGridProps> = ({
             viewport={{ once: true }}
             className={`inline-flex items-center gap-3 px-8 py-3 bg-green-500/20 backdrop-blur-md border border-green-500/30 text-green-400 rounded-full mb-8`}
           >
-            <span
-              className="text-sm font-black uppercase tracking-[0.3em]"
-              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-            >
+            <span className="text-sm font-black uppercase tracking-[0.3em] font-display">
               {subtitle}
             </span>
           </motion.div>
 
-          <h2
-            className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none"
-            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-          >
+          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase leading-none font-display">
             {title.split(" ").slice(0, -1).join(" ")}
             <span
               className={`block text-transparent bg-clip-text bg-gradient-to-r ${accentColor}`}
@@ -128,10 +122,7 @@ export const FeaturesGrid: React.FC<FeaturesGridProps> = ({
                 </motion.div>
 
                 {/* Content */}
-                <h3
-                  className="text-3xl font-black text-white uppercase mb-4 tracking-tight"
-                  style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                >
+                <h3 className="text-3xl font-black text-white uppercase mb-4 tracking-tight font-display">
                   {feature.title}
                 </h3>
                 <p className="text-gray-300 text-lg font-semibold leading-relaxed">
@@ -139,10 +130,7 @@ export const FeaturesGrid: React.FC<FeaturesGridProps> = ({
                 </p>
 
                 {/* Floating Number */}
-                <div
-                  className="absolute top-4 right-4 text-8xl font-black text-green-500/5 group-hover:text-green-500/10 transition-colors"
-                  style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                >
+                <div className="absolute top-4 right-4 text-8xl font-black text-green-500/5 group-hover:text-green-500/10 transition-colors font-display">
                   {index + 1}
                 </div>
 

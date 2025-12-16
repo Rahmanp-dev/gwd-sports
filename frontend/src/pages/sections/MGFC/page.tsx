@@ -33,12 +33,12 @@ export default function MGFCPage() {
       />
 
       {/* Programs Section */}
-      <ProgramsSection
+      {/* <ProgramsSection
         title="Our Training Programs"
         subtitle="Choose Your Path"
         programs={MGFC_PROGRAMS}
         icon="⚽"
-      />
+      /> */}
 
       {/* Events Section */}
       <EventsSection
