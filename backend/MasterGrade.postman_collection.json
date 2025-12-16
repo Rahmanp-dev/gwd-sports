@@ -54,7 +54,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"john@example.com\",\n    \"password\": \"NewPassword123!\"\n  }",
+							"raw": "{\n    \"email\": \"john@example.com\",\n    \"password\": \"Password123!\"\n  }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -406,7 +406,7 @@
 								"header": [
 									{
 										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzYxMzcwNjAwLCJleHAiOjE3NjE5NzU0MDB9.WqeCHHFiev1sabIn34lQDKaw0pHOM0NTuzNWIDgUj3U"
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
 									}
 								],
 								"url": {
@@ -459,7 +459,7 @@
 								"header": [
 									{
 										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
 									},
 									{
 										"key": "Content-Type",
@@ -468,7 +468,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"name\": \"Jane Doe\",\n    \"email\": \"jane@example.com\",\n    \"password\": \"Password123!\",\n    \"phone\": \"+1234567892\",\n    \"role\": \"trainer\",\n    \"sports\": [\"swimming\"]\n  }",
+									"raw": "{\n    \"name\": \"Jane Doe\",\n    \"email\": \"jane@example.com\",\n    \"password\": \"Password123!\",\n    \"phone\": \"+1234567892\",\n    \"role\": \"user\",\n    \"sports\": [\"football\"]\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -798,7 +798,7 @@
 								"header": [
 									{
 										"key": "Authorization",
-										"value": "Bearer ADMIN_TOKEN"
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
 									},
 									{
 										"key": "Content-Type",
@@ -807,7 +807,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"userId\": \"68a33c1171f5b7e03e9e70be\",\n    \"sports\": [\"football\", \"fitness\"],\n    \"specializations\": [\"Youth Training\", \"Fitness Coaching\"],\n    \"qualifications\": [{\n      \"certification\": \"FIFA Level 1 Coaching\",\n      \"issuedBy\": \"FIFA\",\n      \"issuedDate\": \"2023-01-15T00:00:00Z\",\n      \"expiryDate\": \"2026-01-15T00:00:00Z\"\n    }],\n    \"experience\": [{\n      \"organization\": \"Local Sports Club\",\n      \"position\": \"Youth Coach\",\n      \"startDate\": \"2022-01-01T00:00:00Z\",\n      \"endDate\": \"2023-12-31T00:00:00Z\",\n      \"description\": \"Coached youth football teams aged 12-16\"\n    }],\n    \"hourlyRate\": 50.00,\n    \"availability\": {\n      \"days\": [\"monday\", \"tuesday\", \"wednesday\", \"thursday\", \"friday\"],\n      \"timeSlots\": [{\n        \"start\": \"09:00\",\n        \"end\": \"17:00\"\n      }]\n    }\n  }",
+									"raw": "{\n    \"userId\": \"69415fa1a5735556f3eae840\",\n    \"sports\": [\"football\"],\n    \"specializations\": [\"Youth Training\", \"Fitness Coaching\"],\n    \"qualifications\": [{\n      \"certification\": \"FIFA Level 1 Coaching\",\n      \"issuedBy\": \"FIFA\",\n      \"issuedDate\": \"2023-01-15T00:00:00Z\",\n      \"expiryDate\": \"2026-01-15T00:00:00Z\"\n    }],\n    \"experience\": [{\n      \"organization\": \"Local Sports Club\",\n      \"position\": \"Youth Coach\",\n      \"startDate\": \"2022-01-01T00:00:00Z\",\n      \"endDate\": \"2023-12-31T00:00:00Z\",\n      \"description\": \"Coached youth football teams aged 12-16\"\n    }],\n    \"hourlyRate\": 50.00,\n    \"availability\": {\n      \"days\": [\"monday\", \"tuesday\", \"wednesday\", \"thursday\", \"friday\"],\n      \"timeSlots\": [{\n        \"start\": \"09:00\",\n        \"end\": \"17:00\"\n      }]\n    }\n  }",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -837,7 +837,7 @@
 								"header": [
 									{
 										"key": "Authorization",
-										"value": "Bearer ADMIN_TOKEN"
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
 									}
 								],
 								"url": {
@@ -904,11 +904,11 @@
 								"header": [
 									{
 										"key": "Authorization",
-										"value": "Bearer ADMIN_TOKEN"
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
 									}
 								],
 								"url": {
-									"raw": "http://localhost:3000/api/admin/trainers/TRAINER_ID_HERE",
+									"raw": "http://localhost:3000/api/admin/trainers/69415fdaa5735556f3eae844",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -918,7 +918,7 @@
 										"api",
 										"admin",
 										"trainers",
-										"TRAINER_ID_HERE"
+										"69415fdaa5735556f3eae844"
 									]
 								}
 							},
@@ -931,7 +931,7 @@
 								"header": [
 									{
 										"key": "Authorization",
-										"value": "Bearer ADMIN_TOKEN"
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
 									},
 									{
 										"key": "Content-Type",
@@ -940,7 +940,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"sports\": [\"football\", \"basketball\", \"fitness\"],\n    \"hourlyRate\": 60.00,\n    \"specializations\": [\"Youth Training\", \"Advanced Techniques\"]\n  }",
+									"raw": "{\n    \"sports\": [\"football\"],\n    \"hourlyRate\": 60.00,\n    \"specializations\": [\"Youth Training\", \"Advanced Techniques\"]\n  }",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -948,7 +948,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/api/admin/trainers/TRAINER_ID_HERE",
+									"raw": "http://localhost:3000/api/admin/trainers/69415fdaa5735556f3eae844",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -958,7 +958,7 @@
 										"api",
 										"admin",
 										"trainers",
-										"TRAINER_ID_HERE"
+										"69415fdaa5735556f3eae844"
 									]
 								}
 							},
@@ -1005,7 +1005,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Admin User\",\n    \"email\": \"admin@example.com\",\n    \"password\": \"AdminPass123!\",\n    \"phone\": \"+1234567899\",\n    \"role\": \"admin\"\n  }",
+							"raw": "{\n    \"name\": \"Admin User\",\n    \"email\": \"admin@example.com\",\n    \"password\": \"AdminPass123!\",\n    \"phone\": \"+1234567899\",\n    \"role\": \"admin\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1038,7 +1038,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"AdminPass123!\"\n  }",
+							"raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"AdminPass123!\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1618,7 +1618,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzM2MxMTcxZjViN2UwM2U5ZTcwYmUiLCJlbWFpbCI6InRyYWluZXJAbWcuY29tIiwicm9sZSI6InRyYWluZXIiLCJpYXQiOjE3NTU1Mjg1ODYsImV4cCI6MTc1NjEzMzM4Nn0.kb-pB0m3r8qpXV4UQcIi_xosQIxZREKhNLWrNKf-ob8"
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGZkZmJhMWEwOTliMTg4YjIzMzM4MzAiLCJlbWFpbCI6InRyYWlAdHJhaS5jb20iLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTc2MTY2NzIxOSwiZXhwIjoxNzYyMjcyMDE5fQ.Nbr-a_nhszBJc90XMn75o0IYFYEs3pEa3E93idfYFSU"
 							}
 						],
 						"url": {
@@ -1939,7 +1939,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/events/68f820ecb26e25ac4e25a5b6",
+							"raw": "http://localhost:3000/api/events/692c22c30159a67d8de0fd7c",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1948,7 +1948,7 @@
 							"path": [
 								"api",
 								"events",
-								"68f820ecb26e25ac4e25a5b6"
+								"692c22c30159a67d8de0fd7c"
 							]
 						}
 					},
@@ -1961,7 +1961,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzYxMDkxNjk3LCJleHAiOjE3NjE2OTY0OTd9.65pTmc_U98k-o4h1thdHOlLTFNddcuncInnQ2-b8V7I"
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY0NDk5OTE2LCJleHAiOjE3NjUxMDQ3MTZ9.aMCRK6Mrt9skd0WQfRpOhPDLWg6DCeGJkhKr17-5a5Y"
 							},
 							{
 								"key": "Content-Type",
@@ -1970,7 +1970,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Basketball tourney\",\n    \"description\": \"A competitive Basketball\",\n    \"sport\": \"basketball\",\n    \"startDate\": \"2025-12-01T10:00:00Z\",\n    \"endDate\": \"2025-12-01T18:00:00Z\",\n    \"location\": \"New babi\",\n    \"venue\": \"Central Stadium\",\n    \"maxParticipants\": 100,\n    \"registrationDeadline\": \"2025-12-01T10:00:00Z\",\n    \"entryFee\": 0.00,\n    \"contactInfo\": {\n      \"name\": \"baburao Organizer\",\n      \"phone\": \"+1234567890\",\n      \"email\": \"baburao@example.com\"\n    },\n    \"status\": \"published\",\n    \"isPublic\": true,\n    \"registrationOpen\": true,\n    \"tags\": [\"basketball\", \"championship\", \"competitive\"],\n    \"requirements\": \"Must bring own equipment\",\n    \"prizes\": [\"1st Place: $500\", \"2nd Place: $300\", \"3rd Place: $200\"]\n  }",
+							"raw": "{\n  \"name\": \"Summer Basketball Championship 2025\",\n  \"description\": \"Annual basketball tournament for all skill levels\",\n  \"sport\": \"basketball\",\n  \"startDate\": \"2025-12-15T10:00:00Z\",\n  \"endDate\": \"2025-12-15T18:00:00Z\",\n  \"location\": \"Los Angeles\",\n  \"venue\": \"Staples Center\",\n  \"maxParticipants\": 100,\n  \"registrationDeadline\": \"2025-12-10T23:59:59Z\",\n  \"entryFee\": 25.00,\n  \"contactInfo\": {\n    \"name\": \"John Smith\",\n    \"phone\": \"+1234567890\",\n    \"email\": \"events@mastergrade.com\"\n  },\n  \"status\": \"published\",\n  \"isPublic\": true,\n  \"registrationOpen\": true,\n  \"tags\": [\"basketball\", \"championship\", \"summer\"],\n  \"requirements\": \"Players must bring their own basketball shoes\",\n  \"prizes\": [\"1st Place: $1000\", \"2nd Place: $500\", \"3rd Place: $250\"],\n  \"links\": [\"https://example.com/rules\", \"https://example.com/schedule\"],\n  \"images\": [\"https://example.com/event1.jpg\"]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1999,7 +1999,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzYxMDkxNjk3LCJleHAiOjE3NjE2OTY0OTd9.65pTmc_U98k-o4h1thdHOlLTFNddcuncInnQ2-b8V7I"
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY0NDk5OTE2LCJleHAiOjE3NjUxMDQ3MTZ9.aMCRK6Mrt9skd0WQfRpOhPDLWg6DCeGJkhKr17-5a5Y"
 							},
 							{
 								"key": "Content-Type",
@@ -2008,7 +2008,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Seirin championship\",\n    \"maxParticipants\": 900,\n    \"entryFee\": 10.00,\n    \"description\": \"Updated description with new rules\"\n  }",
+							"raw": "{\n  \"maxParticipants\": 150,\n  \"entryFee\": 30.00,\n  \"status\": \"ongoing\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2016,7 +2016,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/events/68f820ecb26e25ac4e25a5b6",
+							"raw": "http://localhost:3000/api/events/692c22c30159a67d8de0fd7c",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2025,7 +2025,7 @@
 							"path": [
 								"api",
 								"events",
-								"68f820ecb26e25ac4e25a5b6"
+								"692c22c30159a67d8de0fd7c"
 							]
 						}
 					},
@@ -2038,11 +2038,11 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzYxMDkxNjk3LCJleHAiOjE3NjE2OTY0OTd9.65pTmc_U98k-o4h1thdHOlLTFNddcuncInnQ2-b8V7I"
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY0NDk5OTE2LCJleHAiOjE3NjUxMDQ3MTZ9.aMCRK6Mrt9skd0WQfRpOhPDLWg6DCeGJkhKr17-5a5Y"
 							}
 						],
 						"url": {
-							"raw": "http://localhost:3000/api/events/68f82097b26e25ac4e25a5b2",
+							"raw": "http://localhost:3000/api/events/692c22130159a67d8de0fd62",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2051,7 +2051,7 @@
 							"path": [
 								"api",
 								"events",
-								"68f82097b26e25ac4e25a5b2"
+								"692c22130159a67d8de0fd62"
 							]
 						}
 					},
@@ -2064,7 +2064,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzYxMDkxNjk3LCJleHAiOjE3NjE2OTY0OTd9.65pTmc_U98k-o4h1thdHOlLTFNddcuncInnQ2-b8V7I"
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY0NDk5OTE2LCJleHAiOjE3NjUxMDQ3MTZ9.aMCRK6Mrt9skd0WQfRpOhPDLWg6DCeGJkhKr17-5a5Y"
 							}
 						],
 						"url": {
@@ -2091,7 +2091,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzYxMDkxNjk3LCJleHAiOjE3NjE2OTY0OTd9.65pTmc_U98k-o4h1thdHOlLTFNddcuncInnQ2-b8V7I"
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY0NDk5OTE2LCJleHAiOjE3NjUxMDQ3MTZ9.aMCRK6Mrt9skd0WQfRpOhPDLWg6DCeGJkhKr17-5a5Y"
 							}
 						],
 						"url": {
@@ -2129,11 +2129,11 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNDRhMjUxMDBmZjg4YzQwN2IwOTUiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MTA5MjI5MSwiZXhwIjoxNzYxNjk3MDkxfQ.-qwGYKOD1Rgvh6hoGxoWF4HmcIASJhPyQKtIwULN_yM"
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2RmYjFmNTY1OGU0Y2Y4ZDY2MjIiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDUwMDQzMiwiZXhwIjoxNzY1MTA1MjMyfQ.eOPGWrg2hOh_JIG7CLtUl1Q53LWBf0cknR7RD8GgrGk"
 							}
 						],
 						"url": {
-							"raw": "http://localhost:3000/api/events/68f820ecb26e25ac4e25a5b6/join",
+							"raw": "http://localhost:3000/api/events/692c22c30159a67d8de0fd7c/join",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2142,7 +2142,7 @@
 							"path": [
 								"api",
 								"events",
-								"68f820ecb26e25ac4e25a5b6",
+								"692c22c30159a67d8de0fd7c",
 								"join"
 							]
 						}
@@ -2156,11 +2156,11 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNDRhMjUxMDBmZjg4YzQwN2IwOTUiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MTA5MjI5MSwiZXhwIjoxNzYxNjk3MDkxfQ.-qwGYKOD1Rgvh6hoGxoWF4HmcIASJhPyQKtIwULN_yM"
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2RmYjFmNTY1OGU0Y2Y4ZDY2MjIiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDUwMDQzMiwiZXhwIjoxNzY1MTA1MjMyfQ.eOPGWrg2hOh_JIG7CLtUl1Q53LWBf0cknR7RD8GgrGk"
 							}
 						],
 						"url": {
-							"raw": "http://localhost:3000/api/events/68f820ecb26e25ac4e25a5b6/leave",
+							"raw": "http://localhost:3000/api/events/692c22c30159a67d8de0fd7c/leave",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2169,7 +2169,7 @@
 							"path": [
 								"api",
 								"events",
-								"68f820ecb26e25ac4e25a5b6",
+								"692c22c30159a67d8de0fd7c",
 								"leave"
 							]
 						}
@@ -2186,7 +2186,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNDRhMjUxMDBmZjg4YzQwN2IwOTUiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MTA5MjI5MSwiZXhwIjoxNzYxNjk3MDkxfQ.-qwGYKOD1Rgvh6hoGxoWF4HmcIASJhPyQKtIwULN_yM"
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2RmYjFmNTY1OGU0Y2Y4ZDY2MjIiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDUwMDQzMiwiZXhwIjoxNzY1MTA1MjMyfQ.eOPGWrg2hOh_JIG7CLtUl1Q53LWBf0cknR7RD8GgrGk"
 							}
 						],
 						"url": {
@@ -2226,7 +2226,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/events?search=seirin&limit=5",
+							"raw": "http://localhost:3000/api/events?search=championship&limit=5",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2239,7 +2239,7 @@
 							"query": [
 								{
 									"key": "search",
-									"value": "seirin"
+									"value": "championship"
 								},
 								{
 									"key": "limit",

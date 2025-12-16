@@ -160,23 +160,36 @@ export interface Student {
 
 export interface Trainer {
   _id: string;
-  userId: User;
+  userId?: User | string;
+  user?: {
+    _id: string;
+    name: string;
+    email: string;
+    phone?: string;
+    isActive: boolean;
+  };
+  academyId?: Academy | string | null;
+  academy?: any[];
   sports: string[];
+  students: User[] | string[];
+  studentCount?: number;
   specializations: string[];
-  qualifications: Qualification[];
-  experience: Experience[];
-  academyId?: Academy;
-  students: User[];
+  qualifications: IQualification[];
+  experience: IExperience[];
   hourlyRate?: number;
   availability: {
     days: string[];
-    timeSlots: TimeSlot[];
+    timeSlots: {
+      start: string;
+      end: string;
+      _id?: string;
+    }[];
   };
   rating: {
     average: number;
-    count: number;
+    totalReviews: number;
   };
-  joinedDate: string;
+  joinedDate?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -442,6 +455,7 @@ export interface TrainerFilters {
   limit?: number;
   academyId?: string;
   sport?: string;
+  isActive?: boolean;
   search?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";

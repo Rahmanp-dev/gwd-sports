@@ -15,6 +15,7 @@ import { logout } from "@/store/slices/authSlice";
 import { UserManagement } from "@/components/admin/users/UserManagement";
 import { StudentManagement } from "@/components/admin/students/StudentManagement";
 import { EventManagement } from "@/components/admin/events/EventManagement";
+import { TrainerManagement } from "@/components/admin/trainers/TrainerManagement";
 import { SPORTS_LIST } from "@/utils/constants";
 
 export default function AdminPage() {
@@ -225,15 +226,7 @@ export default function AdminPage() {
           <TabsContent value="trainers">
             <Card>
               <CardContent className="p-6">
-                <div className="text-center p-8">
-                  <h3 className="text-xl font-semibold mb-2">
-                    Trainers Management
-                  </h3>
-                  <p className="text-muted-foreground mb-4">
-                    This section will be implemented in the next iteration.
-                  </p>
-                  <Button variant="outline">Coming Soon</Button>
-                </div>
+                <TrainerManagement />
               </CardContent>
             </Card>
           </TabsContent>

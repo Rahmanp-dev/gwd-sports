@@ -9,8 +9,6 @@ import {
   MapPin,
   Zap,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 export default function Footer() {
   return (
@@ -176,7 +174,7 @@ export default function Footer() {
           className="pt-10 border-t border-amber-500/20 flex flex-col sm:flex-row justify-between items-center gap-6"
         >
           <p className="text-gray-400 font-bold uppercase tracking-widest text-sm">
-            © 2026 Master Grade. All Rights Reserved.
+            © {new Date().getFullYear()} Master Grade. All Rights Reserved.
           </p>
           <div className="flex gap-8">
             <a
