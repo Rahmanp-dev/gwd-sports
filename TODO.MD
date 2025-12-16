@@ -2,7 +2,6 @@ TODO:
 
 P1:
 
-- [ ] Fix npm builds
 - [ ] Homepage Customization
 - [ ] Student Dashboard
 - [ ] Trainer Dashboard
@@ -10,6 +9,10 @@ P1:
 - [ ] Add Edit Student Profile in F
 - [ ] Add Edit Trainer Profile in F
 - [ ] Fix Admin Dashboard - some errors
+- [ ] Student functionalities - check what all actions are present and what needs to be added
+- [ ] Trainer functionalities - check what all actions are present and what needs to be added
+- [ ] Student, trainer interactions - check the flow
+- [ ] Student, trainer, admin interactions - check the flow
 - [ ] Refresh token logic in frontend
 - [ ] Handle Existing Token in register pages and redirect them directly
 - [ ] Add trainer register
@@ -66,3 +69,4 @@ Done ✅
 - [x] Events page - event registration
 - [x] Fix Event Edit page - event is active
 - [x] Better filters in events page
+- [x] Fix npm builds
