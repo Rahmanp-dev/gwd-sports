@@ -10,6 +10,24 @@ great, now backend is completed, lets now start with frontend from admin side,
 9. we will take care of event managemenet later, not in this iteration 
 10. use localstorage - not cookies
 
+Task: Need to make .ts
+Reference: Take Reference from .ts and the directory  for the implementation - do remember it is only an implementation reference but not to be implemented exactly the same 
+
+Functionalitites needed: 
+* 
+* 
+* 
+
+Understand the flow 
+1. 
+2. 
+3. 
+
+NOW
+What I want is you to implement  
+I've given context for all the  and also for the backend API implementation of 
+
+
 rules:- 
 0. for each file you are giving - old / new - for every file you give, make sure you give the directory destination of the file - like for example: src/types/index.ts and the followed by code - like this you need to give for each and every file 
 0.5. Properly read all my existing files and existing code, folder structure and based on that understand my project logic and then start to give the required code 

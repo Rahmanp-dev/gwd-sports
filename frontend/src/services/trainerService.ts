@@ -73,7 +73,9 @@ class TrainerAdminService {
   private userBaseUrl = "/admin/users";
 
   // Get all trainers with filters
-  async getAllTrainers(filters: TrainerFilters = {}): Promise<TrainerListResponse> {
+  async getAllTrainers(
+    filters: TrainerFilters = {},
+  ): Promise<TrainerListResponse> {
     const params = new URLSearchParams();
 
     if (filters.page) params.append("page", filters.page.toString());
@@ -82,10 +84,11 @@ class TrainerAdminService {
     if (filters.search) params.append("search", filters.search);
     if (filters.sortBy) params.append("sortBy", filters.sortBy);
     if (filters.sortOrder) params.append("sortOrder", filters.sortOrder);
-    if (filters.isActive !== undefined) params.append("isActive", filters.isActive.toString());
+    if (filters.isActive !== undefined)
+      params.append("isActive", filters.isActive.toString());
 
     const response = await apiService.get<TrainerListResponse>(
-      `${this.baseUrl}?${params.toString()}`
+      `${this.baseUrl}?${params.toString()}`,
     );
     return response.data;
   }
@@ -93,7 +96,7 @@ class TrainerAdminService {
   // Get trainer by ID
   async getTrainerById(trainerId: string): Promise<TrainerResponse> {
     const response = await apiService.get<TrainerResponse>(
-      `${this.baseUrl}/${trainerId}`
+      `${this.baseUrl}/${trainerId}`,
     );
     return response.data;
   }
@@ -102,16 +105,18 @@ class TrainerAdminService {
   async createUser(userData: UserFormData): Promise<UserResponse> {
     const response = await apiService.post<UserResponse>(
       this.userBaseUrl,
-      userData
+      userData,
     );
     return response.data;
   }
 
   // Create trainer profile (step 2 of trainer creation)
-  async createTrainerProfile(trainerData: TrainerProfileData): Promise<TrainerResponse> {
+  async createTrainerProfile(
+    trainerData: TrainerProfileData,
+  ): Promise<TrainerResponse> {
     const response = await apiService.post<TrainerResponse>(
       this.baseUrl,
-      trainerData
+      trainerData,
     );
     return response.data;
   }
@@ -119,27 +124,30 @@ class TrainerAdminService {
   // Update trainer profile
   async updateTrainer(
     trainerId: string,
-    trainerData: Partial<TrainerProfileData>
+    trainerData: Partial<TrainerProfileData>,
   ): Promise<TrainerResponse> {
     const response = await apiService.put<TrainerResponse>(
       `${this.baseUrl}/${trainerId}`,
-      trainerData
+      trainerData,
     );
     return response.data;
   }
 
   // Delete trainer (deactivate)
-  async deleteTrainer(trainerId: string): Promise<{ success: boolean; message: string }> {
-    const response = await apiService.delete<{ success: boolean; message: string }>(
-      `${this.baseUrl}/${trainerId}`
-    );
+  async deleteTrainer(
+    trainerId: string,
+  ): Promise<{ success: boolean; message: string }> {
+    const response = await apiService.delete<{
+      success: boolean;
+      message: string;
+    }>(`${this.baseUrl}/${trainerId}`);
     return response.data;
   }
 
   // Toggle trainer status
   async toggleTrainerStatus(trainerId: string): Promise<TrainerResponse> {
     const response = await apiService.patch<TrainerResponse>(
-      `${this.baseUrl}/${trainerId}/toggle-status`
+      `${this.baseUrl}/${trainerId}/toggle-status`,
     );
     return response.data;
   }
@@ -193,4 +201,9 @@ class TrainerService {
 
 export const trainerService = new TrainerService();
 export const trainerAdminService = new TrainerAdminService();
-export type { ITrainerProfile, IQualification, IExperience, TrainerProfileData };
+export type {
+  ITrainerProfile,
+  IQualification,
+  IExperience,
+  TrainerProfileData,
+};

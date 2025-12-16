@@ -63,50 +63,72 @@ const DAYS_OF_WEEK = [
 // Form validation schema
 const trainerFormSchema = z.object({
   // User fields (for creation only)
-  name: z.string().min(2, { message: "Name must be at least 2 characters" }).optional(),
-  email: z.string().email({ message: "Please enter a valid email address" }).optional(),
+  name: z
+    .string()
+    .min(2, { message: "Name must be at least 2 characters" })
+    .optional(),
+  email: z
+    .string()
+    .email({ message: "Please enter a valid email address" })
+    .optional(),
   password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters" })
     .optional()
     .or(z.literal("")),
   phone: z.string().optional(),
-  
+
   // Trainer profile fields
   sports: z.array(z.string()).min(1, { message: "Select at least one sport" }),
   specializations: z.array(z.string()).optional(),
   hourlyRate: z.number().min(0).optional(),
-  
+
   // Qualifications
-  qualifications: z.array(
-    z.object({
-      certification: z.string().min(1, "Certification name is required"),
-      issuedBy: z.string().min(1, "Issuing organization is required"),
-      issuedDate: z.string().min(1, "Issue date is required"),
-      expiryDate: z.string().optional(),
-      certificateUrl: z.string().url().optional().or(z.literal("")),
-    })
-  ).optional(),
-  
+  qualifications: z
+    .array(
+      z.object({
+        certification: z.string().min(1, "Certification name is required"),
+        issuedBy: z.string().min(1, "Issuing organization is required"),
+        issuedDate: z.string().min(1, "Issue date is required"),
+        expiryDate: z.string().optional(),
+        certificateUrl: z.string().url().optional().or(z.literal("")),
+      }),
+    )
+    .optional(),
+
   // Experience
-  experience: z.array(
-    z.object({
-      organization: z.string().min(1, "Organization is required"),
-      position: z.string().min(1, "Position is required"),
-      startDate: z.string().min(1, "Start date is required"),
-      endDate: z.string().optional(),
-      description: z.string().min(1, "Description is required"),
-    })
-  ).optional(),
-  
+  experience: z
+    .array(
+      z.object({
+        organization: z.string().min(1, "Organization is required"),
+        position: z.string().min(1, "Position is required"),
+        startDate: z.string().min(1, "Start date is required"),
+        endDate: z.string().optional(),
+        description: z.string().min(1, "Description is required"),
+      }),
+    )
+    .optional(),
+
   // Availability
   availabilityDays: z.array(z.string()).optional(),
-  timeSlots: z.array(
-    z.object({
-      start: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format (HH:MM)"),
-      end: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format (HH:MM)"),
-    })
-  ).optional(),
+  timeSlots: z
+    .array(
+      z.object({
+        start: z
+          .string()
+          .regex(
+            /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
+            "Invalid time format (HH:MM)",
+          ),
+        end: z
+          .string()
+          .regex(
+            /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
+            "Invalid time format (HH:MM)",
+          ),
+      }),
+    )
+    .optional(),
 });
 
 type TrainerFormData = z.infer<typeof trainerFormSchema>;
@@ -125,11 +147,11 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
   onCancel,
 }) => {
   const isEditMode = !!trainer;
-  
+
   // Additional state for dynamic fields
   const [specializationInput, setSpecializationInput] = useState("");
   const [specializations, setSpecializations] = useState<string[]>(
-    trainer?.specializations || []
+    trainer?.specializations || [],
   );
 
   const form = useForm<TrainerFormData>({
@@ -142,20 +164,30 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
       sports: trainer?.sports || [],
       specializations: trainer?.specializations || [],
       hourlyRate: trainer?.hourlyRate || undefined,
-      qualifications: trainer?.qualifications?.map(q => ({
-        certification: q.certification,
-        issuedBy: q.issuedBy,
-        issuedDate: q.issuedDate ? new Date(q.issuedDate).toISOString().split('T')[0] : "",
-        expiryDate: q.expiryDate ? new Date(q.expiryDate).toISOString().split('T')[0] : "",
-        certificateUrl: q.certificateUrl || "",
-      })) || [],
-      experience: trainer?.experience?.map(e => ({
-        organization: e.organization,
-        position: e.position,
-        startDate: e.startDate ? new Date(e.startDate).toISOString().split('T')[0] : "",
-        endDate: e.endDate ? new Date(e.endDate).toISOString().split('T')[0] : "",
-        description: e.description,
-      })) || [],
+      qualifications:
+        trainer?.qualifications?.map((q) => ({
+          certification: q.certification,
+          issuedBy: q.issuedBy,
+          issuedDate: q.issuedDate
+            ? new Date(q.issuedDate).toISOString().split("T")[0]
+            : "",
+          expiryDate: q.expiryDate
+            ? new Date(q.expiryDate).toISOString().split("T")[0]
+            : "",
+          certificateUrl: q.certificateUrl || "",
+        })) || [],
+      experience:
+        trainer?.experience?.map((e) => ({
+          organization: e.organization,
+          position: e.position,
+          startDate: e.startDate
+            ? new Date(e.startDate).toISOString().split("T")[0]
+            : "",
+          endDate: e.endDate
+            ? new Date(e.endDate).toISOString().split("T")[0]
+            : "",
+          description: e.description,
+        })) || [],
       availabilityDays: trainer?.availability?.days || [],
       timeSlots: trainer?.availability?.timeSlots || [],
     },
@@ -199,7 +231,7 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
   const removeQualification = (index: number) => {
     form.setValue(
       "qualifications",
-      watchedQualifications.filter((_, i) => i !== index)
+      watchedQualifications.filter((_, i) => i !== index),
     );
   };
 
@@ -219,7 +251,7 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
   const removeExperience = (index: number) => {
     form.setValue(
       "experience",
-      watchedExperience.filter((_, i) => i !== index)
+      watchedExperience.filter((_, i) => i !== index),
     );
   };
 
@@ -233,7 +265,7 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
   const removeTimeSlot = (index: number) => {
     form.setValue(
       "timeSlots",
-      watchedTimeSlots.filter((_, i) => i !== index)
+      watchedTimeSlots.filter((_, i) => i !== index),
     );
   };
 
@@ -256,20 +288,24 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
       sports: data.sports,
       specializations: data.specializations || [],
       hourlyRate: data.hourlyRate,
-      qualifications: data.qualifications?.map(q => ({
-        certification: q.certification,
-        issuedBy: q.issuedBy,
-        issuedDate: new Date(q.issuedDate).toISOString(),
-        expiryDate: q.expiryDate ? new Date(q.expiryDate).toISOString() : undefined,
-        certificateUrl: q.certificateUrl || undefined,
-      })) || [],
-      experience: data.experience?.map(e => ({
-        organization: e.organization,
-        position: e.position,
-        startDate: new Date(e.startDate).toISOString(),
-        endDate: e.endDate ? new Date(e.endDate).toISOString() : undefined,
-        description: e.description,
-      })) || [],
+      qualifications:
+        data.qualifications?.map((q) => ({
+          certification: q.certification,
+          issuedBy: q.issuedBy,
+          issuedDate: new Date(q.issuedDate).toISOString(),
+          expiryDate: q.expiryDate
+            ? new Date(q.expiryDate).toISOString()
+            : undefined,
+          certificateUrl: q.certificateUrl || undefined,
+        })) || [],
+      experience:
+        data.experience?.map((e) => ({
+          organization: e.organization,
+          position: e.position,
+          startDate: new Date(e.startDate).toISOString(),
+          endDate: e.endDate ? new Date(e.endDate).toISOString() : undefined,
+          description: e.description,
+        })) || [],
       availability: {
         days: data.availabilityDays || [],
         timeSlots: data.timeSlots || [],
@@ -282,7 +318,9 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
   return (
     <Card className="w-full max-w-5xl mx-auto">
       <CardHeader>
-        <CardTitle>{isEditMode ? "Edit Trainer" : "Create New Trainer"}</CardTitle>
+        <CardTitle>
+          {isEditMode ? "Edit Trainer" : "Create New Trainer"}
+        </CardTitle>
         <CardDescription>
           {isEditMode
             ? "Update trainer profile information."
@@ -297,7 +335,9 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
             {!isEditMode && (
               <>
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">User Information</h3>
+                  <h3 className="text-lg font-semibold mb-4">
+                    User Information
+                  </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
@@ -370,7 +410,9 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
 
             {/* Sports */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Sports & Specializations</h3>
+              <h3 className="text-lg font-semibold mb-4">
+                Sports & Specializations
+              </h3>
               <FormField
                 control={form.control}
                 name="sports"
@@ -394,7 +436,7 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                                       field.onChange([...value, sport]);
                                     } else {
                                       field.onChange(
-                                        value.filter((s) => s !== sport)
+                                        value.filter((s) => s !== sport),
                                       );
                                     }
                                   }}
@@ -467,7 +509,9 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                           {...field}
                           onChange={(e) => {
                             const value = e.target.value;
-                            field.onChange(value ? parseFloat(value) : undefined);
+                            field.onChange(
+                              value ? parseFloat(value) : undefined,
+                            );
                           }}
                           value={field.value ?? ""}
                         />
@@ -485,7 +529,12 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">Qualifications</h3>
-                <Button type="button" onClick={addQualification} size="sm" variant="outline">
+                <Button
+                  type="button"
+                  onClick={addQualification}
+                  size="sm"
+                  variant="outline"
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Qualification
                 </Button>
@@ -494,7 +543,9 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                 {watchedQualifications.map((_, index) => (
                   <div key={index} className="p-4 border rounded-lg space-y-3">
                     <div className="flex justify-between items-start">
-                      <h4 className="font-medium">Qualification #{index + 1}</h4>
+                      <h4 className="font-medium">
+                        Qualification #{index + 1}
+                      </h4>
                       <Button
                         type="button"
                         variant="ghost"
@@ -513,7 +564,10 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                           <FormItem>
                             <FormLabel>Certification Name *</FormLabel>
                             <FormControl>
-                              <Input placeholder="FIFA Level 1 Coaching" {...field} />
+                              <Input
+                                placeholder="FIFA Level 1 Coaching"
+                                {...field}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -587,7 +641,12 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">Experience</h3>
-                <Button type="button" onClick={addExperience} size="sm" variant="outline">
+                <Button
+                  type="button"
+                  onClick={addExperience}
+                  size="sm"
+                  variant="outline"
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Experience
                 </Button>
@@ -615,7 +674,10 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                           <FormItem>
                             <FormLabel>Organization *</FormLabel>
                             <FormControl>
-                              <Input placeholder="Local Sports Club" {...field} />
+                              <Input
+                                placeholder="Local Sports Club"
+                                {...field}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -659,7 +721,9 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                             <FormControl>
                               <Input type="date" {...field} />
                             </FormControl>
-                            <FormDescription>Leave empty if current</FormDescription>
+                            <FormDescription>
+                              Leave empty if current
+                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -692,7 +756,7 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
             {/* Availability */}
             <div>
               <h3 className="text-lg font-semibold mb-4">Availability</h3>
-              
+
               {/* Days */}
               <FormField
                 control={form.control}
@@ -717,7 +781,7 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                                       field.onChange([...value, day]);
                                     } else {
                                       field.onChange(
-                                        value.filter((d) => d !== day)
+                                        value.filter((d) => d !== day),
                                       );
                                     }
                                   }}
@@ -740,7 +804,12 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
               <div className="mt-4">
                 <div className="flex justify-between items-center mb-3">
                   <Label>Time Slots</Label>
-                  <Button type="button" onClick={addTimeSlot} size="sm" variant="outline">
+                  <Button
+                    type="button"
+                    onClick={addTimeSlot}
+                    size="sm"
+                    variant="outline"
+                  >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Time Slot
                   </Button>
@@ -790,7 +859,12 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
           </CardContent>
 
           <CardFooter className="flex justify-between">
-            <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              disabled={isLoading}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>

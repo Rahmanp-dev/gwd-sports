@@ -49,7 +49,8 @@ export const TrainerDetails: React.FC<TrainerDetailsProps> = ({
 
   const userName = trainer.userId?.name || trainer.user?.name || "Unknown";
   const userEmail = trainer.userId?.email || trainer.user?.email || "N/A";
-  const userPhone = trainer.userId?.phone || trainer.user?.phone || "Not provided";
+  const userPhone =
+    trainer.userId?.phone || trainer.user?.phone || "Not provided";
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
@@ -116,13 +117,15 @@ export const TrainerDetails: React.FC<TrainerDetailsProps> = ({
             <div className="space-y-1">
               <span className="text-sm text-muted-foreground">Hourly Rate</span>
               <p className="flex items-center">
-                <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" />
-                ${trainer.hourlyRate || "Not set"}
+                <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" />$
+                {trainer.hourlyRate || "Not set"}
               </p>
             </div>
 
             <div className="space-y-1">
-              <span className="text-sm text-muted-foreground">Student Count</span>
+              <span className="text-sm text-muted-foreground">
+                Student Count
+              </span>
               <p className="flex items-center">
                 <Users className="h-4 w-4 mr-2 text-muted-foreground" />
                 {trainer.studentCount || trainer.students?.length || 0} students
@@ -133,7 +136,8 @@ export const TrainerDetails: React.FC<TrainerDetailsProps> = ({
               <span className="text-sm text-muted-foreground">Rating</span>
               <p className="flex items-center">
                 <Star className="h-4 w-4 mr-2 text-yellow-500" />
-                {trainer.rating?.average?.toFixed(1) || "0.0"} ({trainer.rating?.totalReviews || 0} reviews)
+                {trainer.rating?.average?.toFixed(1) || "0.0"} (
+                {trainer.rating?.totalReviews || 0} reviews)
               </p>
             </div>
 
@@ -202,13 +206,9 @@ export const TrainerDetails: React.FC<TrainerDetailsProps> = ({
                       Issued by: {qual.issuedBy}
                     </p>
                     <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                      <span>
-                        Issued: {formatDate(qual.issuedDate)}
-                      </span>
+                      <span>Issued: {formatDate(qual.issuedDate)}</span>
                       {qual.expiryDate && (
-                        <span>
-                          Expires: {formatDate(qual.expiryDate)}
-                        </span>
+                        <span>Expires: {formatDate(qual.expiryDate)}</span>
                       )}
                     </div>
                   </div>
@@ -260,30 +260,38 @@ export const TrainerDetails: React.FC<TrainerDetailsProps> = ({
               Availability
             </h3>
             <div className="space-y-3">
-              {trainer.availability.days && trainer.availability.days.length > 0 && (
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">Days</p>
-                  <div className="flex flex-wrap gap-2">
-                    {trainer.availability.days.map((day) => (
-                      <Badge key={day} variant="secondary" className="capitalize">
-                        {day}
-                      </Badge>
-                    ))}
+              {trainer.availability.days &&
+                trainer.availability.days.length > 0 && (
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-2">Days</p>
+                    <div className="flex flex-wrap gap-2">
+                      {trainer.availability.days.map((day) => (
+                        <Badge
+                          key={day}
+                          variant="secondary"
+                          className="capitalize"
+                        >
+                          {day}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-              {trainer.availability.timeSlots && trainer.availability.timeSlots.length > 0 && (
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">Time Slots</p>
-                  <div className="space-y-1">
-                    {trainer.availability.timeSlots.map((slot, index) => (
-                      <p key={index} className="text-sm">
-                        {slot.start} - {slot.end}
-                      </p>
-                    ))}
+                )}
+              {trainer.availability.timeSlots &&
+                trainer.availability.timeSlots.length > 0 && (
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Time Slots
+                    </p>
+                    <div className="space-y-1">
+                      {trainer.availability.timeSlots.map((slot, index) => (
+                        <p key={index} className="text-sm">
+                          {slot.start} - {slot.end}
+                        </p>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
           </div>
         )}
@@ -292,10 +300,12 @@ export const TrainerDetails: React.FC<TrainerDetailsProps> = ({
         <Separator />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
           <div>
-            <span className="font-medium">Created:</span> {formatDate(trainer.createdAt)}
+            <span className="font-medium">Created:</span>{" "}
+            {formatDate(trainer.createdAt)}
           </div>
           <div>
-            <span className="font-medium">Last Updated:</span> {formatDate(trainer.updatedAt)}
+            <span className="font-medium">Last Updated:</span>{" "}
+            {formatDate(trainer.updatedAt)}
           </div>
         </div>
       </CardContent>

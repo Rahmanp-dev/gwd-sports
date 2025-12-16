@@ -6,7 +6,7 @@ import { TrainerTable } from "./TrainerTable";
 import { TrainerForm } from "./TrainerForm";
 import { TrainerDetails } from "./TrainerDetails";
 import { trainerAdminService } from "@/services/trainerService";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -70,18 +70,22 @@ export const TrainerManagement: React.FC = () => {
     try {
       const response = await trainerAdminService.getAllTrainers(filters);
       console.log(response);
-    //   console.log(response.data);
-    //   console.log(response.trainers);
-    //   console.log(response.pagination);
+      //   console.log(response.data);
+      //   console.log(response.trainers);
+      //   console.log(response.pagination);
       setTrainers(response.trainers);
       setPagination(response.pagination);
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
       console.log("its me fetch trainers");
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: errorMessage,
-        variant: "destructive",
+        style: {
+          background: "#fef2f2",
+          borderColor: "#fecaca",
+          color: "#991b1b",
+        },
+        className: "border-l-4 border-l-red-500",
       });
     } finally {
       setIsLoading(false);
@@ -96,20 +100,28 @@ export const TrainerManagement: React.FC = () => {
   // Handle create/update trainer
   const handleTrainerSubmit = async (
     userData: UserFormData | null,
-    trainerData: any
+    trainerData: any,
   ) => {
     setIsLoading(true);
+    console.log("its me handleTrainerSubmit");
+    console.log(userData);
+    console.log(trainerData);
     try {
       if (selectedTrainer) {
         // Update existing trainer
         await trainerAdminService.updateTrainer(
           selectedTrainer._id,
-          trainerData
+          trainerData,
         );
 
-        toast({
-          title: "Success",
-          description: "Trainer updated successfully",
+        toast.success("Trainer updated successfully", {
+          description: "The trainer information has been updated.",
+          style: {
+            background: "#f0fdf4",
+            borderColor: "#bbf7d0",
+            color: "#166534",
+          },
+          className: "border-l-4 border-l-green-500",
         });
       } else {
         // Create new trainer (two-step process)
@@ -119,7 +131,8 @@ export const TrainerManagement: React.FC = () => {
 
         // Step 1: Create user
         const userResponse = await trainerAdminService.createUser(userData);
-        const createdUserId = userResponse.data.user._id;
+        console.log(userResponse);
+        const createdUserId = userResponse.user._id;
 
         // Step 2: Create trainer profile
         await trainerAdminService.createTrainerProfile({
@@ -127,9 +140,14 @@ export const TrainerManagement: React.FC = () => {
           ...trainerData,
         });
 
-        toast({
-          title: "Success",
-          description: "Trainer created successfully",
+        toast.success("Trainer created successfully", {
+          description: "The trainer information has been created.",
+          style: {
+            background: "#f0fdf4",
+            borderColor: "#bbf7d0",
+            color: "#166534",
+          },
+          className: "border-l-4 border-l-green-500",
         });
       }
 
@@ -139,10 +157,15 @@ export const TrainerManagement: React.FC = () => {
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
       console.log("its me handleTrainerSubmit");
-      toast({
-        title: "Error",
+
+      toast.error("Failed to save trainer", {
         description: errorMessage,
-        variant: "destructive",
+        style: {
+          background: "#fef2f2",
+          borderColor: "#fecaca",
+          color: "#991b1b",
+        },
+        className: "border-l-4 border-l-red-500",
       });
     } finally {
       setIsLoading(false);
@@ -157,9 +180,14 @@ export const TrainerManagement: React.FC = () => {
     try {
       await trainerAdminService.deleteTrainer(trainerToDelete);
 
-      toast({
-        title: "Success",
-        description: "Trainer deleted successfully",
+      toast.success("Trainer deleted successfully", {
+        description: "The trainer information has been deleted.",
+        style: {
+          background: "#f0fdf4",
+          borderColor: "#bbf7d0",
+          color: "#166534",
+        },
+        className: "border-l-4 border-l-green-500",
       });
 
       setTrainerToDelete(null);
@@ -167,35 +195,18 @@ export const TrainerManagement: React.FC = () => {
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
       console.log("its me delete trainers");
-      toast({
-        title: "Error",
+
+      toast.error("Failed to delete trainer", {
         description: errorMessage,
-        variant: "destructive",
+        style: {
+          background: "#fef2f2",
+          borderColor: "#fecaca",
+          color: "#991b1b",
+        },
+        className: "border-l-4 border-l-red-500",
       });
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  // Handle toggle trainer status
-  const handleToggleTrainerStatus = async (trainerId: string) => {
-    try {
-      await trainerAdminService.toggleTrainerStatus(trainerId);
-
-      toast({
-        title: "Success",
-        description: "Trainer status updated successfully",
-      });
-
-      fetchTrainers();
-    } catch (error: any) {
-      const errorMessage = extractErrorMessage(error);
-      console.log("its me toggle trainer status");
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
     }
   };
 
@@ -203,15 +214,19 @@ export const TrainerManagement: React.FC = () => {
   const handleViewTrainer = async (trainerId: string) => {
     try {
       const response = await trainerAdminService.getTrainerById(trainerId);
-      setSelectedTrainer(response.data.trainer);
+      setSelectedTrainer(response.trainer);
       setShowDetails(true);
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
       console.log("its me handle view");
-      toast({
-        title: "Error",
+      toast.error("Failed to fetch trainer details", {
         description: errorMessage,
-        variant: "destructive",
+        style: {
+          background: "#fef2f2",
+          borderColor: "#fecaca",
+          color: "#991b1b",
+        },
+        className: "border-l-4 border-l-red-500",
       });
     }
   };
@@ -220,7 +235,7 @@ export const TrainerManagement: React.FC = () => {
   const handleEditTrainer = async (trainerId: string) => {
     try {
       const response = await trainerAdminService.getTrainerById(trainerId);
-      setSelectedTrainer(response.data.trainer);
+      setSelectedTrainer(response.trainer);
       setShowForm(true);
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
@@ -260,7 +275,6 @@ export const TrainerManagement: React.FC = () => {
         onViewTrainer={handleViewTrainer}
         onEditTrainer={handleEditTrainer}
         onDeleteTrainer={(trainerId) => setTrainerToDelete(trainerId)}
-        onToggleTrainerStatus={handleToggleTrainerStatus}
         onFilterChange={setFilters}
         currentFilters={filters}
         pagination={pagination}

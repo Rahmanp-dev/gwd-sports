@@ -38,7 +38,6 @@ interface TrainerTableProps {
   onViewTrainer: (trainerId: string) => void;
   onEditTrainer: (trainerId: string) => void;
   onDeleteTrainer: (trainerId: string) => void;
-  onToggleTrainerStatus: (trainerId: string) => void;
   onFilterChange: (filters: TrainerFilters) => void;
   currentFilters: TrainerFilters;
   pagination: {
@@ -69,7 +68,6 @@ export const TrainerTable: React.FC<TrainerTableProps> = ({
   onViewTrainer,
   onEditTrainer,
   onDeleteTrainer,
-  onToggleTrainerStatus,
   onFilterChange,
   currentFilters,
   pagination,
@@ -217,7 +215,9 @@ export const TrainerTable: React.FC<TrainerTableProps> = ({
       <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableCaption>
-            {isLoading ? "Loading trainers..." : `Total ${trainers.length} trainer(s)`}
+            {isLoading
+              ? "Loading trainers..."
+              : `Total ${trainers.length} trainer(s)`}
           </TableCaption>
           <TableHeader>
             <TableRow>
@@ -257,7 +257,10 @@ export const TrainerTable: React.FC<TrainerTableProps> = ({
               </TableRow>
             ) : trainers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-10 text-muted-foreground">
+                <TableCell
+                  colSpan={7}
+                  className="text-center py-10 text-muted-foreground"
+                >
                   No trainers found
                 </TableCell>
               </TableRow>
@@ -273,7 +276,11 @@ export const TrainerTable: React.FC<TrainerTableProps> = ({
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
                       {trainer.sports.slice(0, 2).map((sport) => (
-                        <Badge key={sport} variant="secondary" className="text-xs">
+                        <Badge
+                          key={sport}
+                          variant="secondary"
+                          className="text-xs"
+                        >
                           {sport}
                         </Badge>
                       ))}
@@ -321,21 +328,6 @@ export const TrainerTable: React.FC<TrainerTableProps> = ({
                         >
                           <Edit className="h-4 w-4 mr-2" />
                           Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => onToggleTrainerStatus(trainer._id)}
-                        >
-                          {trainer.isActive ? (
-                            <>
-                              <ToggleRight className="h-4 w-4 mr-2" />
-                              Deactivate
-                            </>
-                          ) : (
-                            <>
-                              <ToggleLeft className="h-4 w-4 mr-2" />
-                              Activate
-                            </>
-                          )}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => onDeleteTrainer(trainer._id)}
