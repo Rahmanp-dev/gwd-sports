@@ -15,13 +15,7 @@ export const validateCreateEvent = [
     .withMessage('Sport must be between 2 and 50 characters'),
   body('startDate')
     .isISO8601()
-    .withMessage('Start date must be a valid date')
-    .custom((value) => {
-      if (new Date(value) <= new Date()) {
-        throw new Error('Start date must be in the future');
-      }
-      return true;
-    }),
+    .withMessage('Start date must be a valid date'),
   body('endDate')
     .optional()
     .isISO8601()

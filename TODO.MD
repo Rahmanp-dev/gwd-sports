@@ -2,9 +2,8 @@ TODO:
 
 P1:
 
-- [ ] Better filters in events page
-- [ ] Homepage Customization
 - [ ] Fix npm builds
+- [ ] Homepage Customization
 - [ ] Student Dashboard
 - [ ] Trainer Dashboard
 - [ ] Centralized login and logout marker on top right corner
@@ -66,3 +65,4 @@ Done ✅
 - [x] Events page - proper error handling - can't register when ongoing, upcoming, completed 
 - [x] Events page - event registration
 - [x] Fix Event Edit page - event is active
+- [x] Better filters in events page

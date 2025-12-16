@@ -386,14 +386,6 @@ export class EventController {
         }
       }
 
-      // Validate startDate if being updated
-      if (updates.startDate && new Date(updates.startDate) <= new Date()) {
-        return res.status(400).json({
-          success: false,
-          message: 'Start date must be in the future',
-        });
-      }
-
       // Remove fields that shouldn't be updated directly
       delete updates.createdBy;
       delete updates.createdAt;
