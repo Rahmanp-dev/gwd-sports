@@ -1,4 +1,4 @@
-import { IEvent } from "@/types/event";
+import type { IEvent } from "@/types/event";
 import {
   Card,
   CardContent,

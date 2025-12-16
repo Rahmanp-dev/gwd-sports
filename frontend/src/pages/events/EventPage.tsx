@@ -52,14 +52,22 @@ const EVENT_STATUS_LIST = [
 // Status badge colors
 const getStatusBadge = (status: string) => {
   const statusConfig: Record<string, { label: string; className: string }> = {
-    published: { label: "Open for Registration", className: "bg-green-600 text-white" },
+    published: {
+      label: "Open for Registration",
+      className: "bg-green-600 text-white",
+    },
     ongoing: { label: "Ongoing", className: "bg-blue-600 text-white" },
     completed: { label: "Completed", className: "bg-gray-600 text-white" },
     cancelled: { label: "Cancelled", className: "bg-red-600 text-white" },
     draft: { label: "Draft", className: "bg-yellow-600 text-white" },
   };
 
-  return statusConfig[status] || { label: status, className: "bg-gray-600 text-white" };
+  return (
+    statusConfig[status] || {
+      label: status,
+      className: "bg-gray-600 text-white",
+    }
+  );
 };
 
 export default function EventPage() {
@@ -80,8 +88,8 @@ export default function EventPage() {
         search,
         sport: sport === "All Sports" ? "" : sport.toLowerCase(),
         location,
-        status: status === "all" ? "" : status,
-        isPublic: "true",
+        status: status === "all" ? undefined : (status as any),
+        isPublic: true,
       }),
   });
 
@@ -106,10 +114,10 @@ export default function EventPage() {
     setPage(1);
   };
 
-  const hasActiveFilters = 
-    search || 
-    (sport && sport !== "All Sports") || 
-    location || 
+  const hasActiveFilters =
+    search ||
+    (sport && sport !== "All Sports") ||
+    location ||
     (status && status !== "all");
 
   const formatDate = (date: string) => {
@@ -280,8 +288,10 @@ export default function EventPage() {
                   variant="secondary"
                   className="bg-purple-600/20 text-purple-300 border-purple-500/50"
                 >
-                  Status: {EVENT_STATUS_LIST.find((s) => s.value === status)?.label}
-F                </Badge>
+                  Status:{" "}
+                  {EVENT_STATUS_LIST.find((s) => s.value === status)?.label}
+                  F{" "}
+                </Badge>
               )}
             </div>
           )}

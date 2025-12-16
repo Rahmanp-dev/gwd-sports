@@ -161,23 +161,21 @@ export const EventTable: React.FC<EventTableProps> = ({
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </DropdownMenuItem>
-                      {
-                        event.isActive ? 
-                        (<DropdownMenuItem
+                      {event.isActive ? (
+                        <DropdownMenuItem
                           onClick={() => onDelete(event._id)}
                           className="text-red-600"
                         >
                           <Trash2 className="mr-2 h-4 w-4 text-red-600" />
                           Make inactive
-                        </DropdownMenuItem>) : 
+                        </DropdownMenuItem>
+                      ) : (
                         // Make event active here
-                        (<DropdownMenuItem
-                          className="text-red-600"
-                        >
+                        <DropdownMenuItem className="text-red-600">
                           <Trash2 className="mr-2 h-4 w-4 text-red-600" />
                           Event Already Deleted
-                        </DropdownMenuItem>)
-                      }
+                        </DropdownMenuItem>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

@@ -153,7 +153,7 @@ export default function EventDetailsPage() {
 
   // Get registration button text
   const getRegistrationButtonText = () => {
-    if (!event.registrationOpen) {
+    if (!event?.registrationOpen) {
       return "Registration Closed";
     }
     if (isRegistrationDeadlinePassed) {

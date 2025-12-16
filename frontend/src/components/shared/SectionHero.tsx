@@ -12,6 +12,7 @@ interface SectionHeroProps {
   backgroundImage: string;
   accentColor?: string;
   icon?: string;
+  logo?: string;
   stats?: Array<{ value: string; label: string }>;
   onCtaClick?: () => void;
   onSecondaryCtaClick?: () => void;
@@ -26,6 +27,7 @@ export const SectionHero: React.FC<SectionHeroProps> = ({
   backgroundImage,
   accentColor = "from-amber-500 to-yellow-500",
   icon = "⚽",
+  logo,
   stats,
   onCtaClick,
   onSecondaryCtaClick,
@@ -121,16 +123,51 @@ export const SectionHero: React.FC<SectionHeroProps> = ({
             transition={{ duration: 0.8, delay: 0.2 }}
             className="inline-block mb-8"
           >
-            <div
-              className={`inline-flex items-center gap-3 px-8 py-4 ${
-                isOrangeTheme
-                  ? "bg-orange-500/20 border-orange-500/30 shadow-orange-500/30"
-                  : isAmberTheme
-                    ? "bg-amber-500/20 border-amber-500/30 shadow-amber-500/30"
-                    : "bg-green-500/20 border-green-500/30 shadow-green-500/30"
-              } backdrop-blur-md border rounded-full shadow-2xl`}
+            {logo ? (
+              // Display logo if provided
+              <div className="inline-flex items-center justify-center mb-4">
+                <img
+                  src={logo}
+                  alt={title}
+                  className="h-24 w-auto object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+                />
+              </div>
+            ) : (
+              // Display icon badge if no logo
+              <div
+                className={`inline-flex items-center gap-3 px-8 py-4 ${
+                  isOrangeTheme
+                    ? "bg-orange-500/20 border-orange-500/30 shadow-orange-500/30"
+                    : isAmberTheme
+                      ? "bg-amber-500/20 border-amber-500/30 shadow-amber-500/30"
+                      : "bg-green-500/20 border-green-500/30 shadow-green-500/30"
+                } backdrop-blur-md border rounded-full shadow-2xl`}
+              >
+                <span className="text-4xl">{icon}</span>
+                <span
+                  className={`${
+                    isOrangeTheme
+                      ? "text-orange-400"
+                      : isAmberTheme
+                        ? "text-amber-400"
+                        : "text-green-400"
+                  } text-sm font-black uppercase tracking-[0.3em]`}
+                  style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                >
+                  {subtitle}
+                </span>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Subtitle text (always shown below logo/icon) */}
+          {logo && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="mb-8"
             >
-              <span className="text-4xl">{icon}</span>
               <span
                 className={`${
                   isOrangeTheme
@@ -143,8 +180,8 @@ export const SectionHero: React.FC<SectionHeroProps> = ({
               >
                 {subtitle}
               </span>
-            </div>
-          </motion.div>
+            </motion.div>
+          )}
 
           {/* Main Heading */}
           <motion.div
