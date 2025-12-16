@@ -5,14 +5,14 @@ import { Trophy, Users, Target, Award } from "lucide-react";
 const stats = [
   {
     icon: Users,
-    value: 10000,
+    value: 1000,
     suffix: "+",
     label: "Athletes Trained",
     color: "from-blue-500 to-cyan-400",
   },
   {
     icon: Trophy,
-    value: 250,
+    value: 25,
     suffix: "+",
     label: "Championships",
     color: "from-amber-500 to-yellow-400",
@@ -26,7 +26,7 @@ const stats = [
   },
   {
     icon: Award,
-    value: 15,
+    value: 10,
     suffix: "+",
     label: "Years Excellence",
     color: "from-orange-500 to-amber-400",
@@ -67,8 +67,7 @@ function AnimatedCounter({ value, suffix }: AnimatedCounterProps) {
   return (
     <span
       ref={ref}
-      className="text-6xl sm:text-7xl lg:text-8xl font-black"
-      style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+      className="text-4xl sm:text-5xl lg:text-6xl font-black font-display"
     >
       {count}
       {suffix}
@@ -102,12 +101,9 @@ export default function StatsSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-20"
         >
-          <h2
-            className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none"
-            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-          >
+          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase leading-none font-display">
             Numbers That
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-500">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-500 font-display">
               Speak Volumes
             </span>
           </h2>
@@ -155,13 +151,7 @@ export default function StatsSection() {
                 </div>
 
                 {/* Label */}
-                <div
-                  className="text-gray-300 font-black text-xl uppercase tracking-wider"
-                  style={{
-                    fontFamily: "'Bebas Neue', sans-serif",
-                    letterSpacing: "0.1em",
-                  }}
-                >
+                <div className="text-gray-300 font-black text-xl uppercase tracking-wider">
                   {stat.label}
                 </div>
 
@@ -197,10 +187,7 @@ export default function StatsSection() {
         >
           <div className="inline-flex items-center gap-4 px-10 py-6 bg-gradient-to-r from-amber-500 to-yellow-500 text-black rounded-full shadow-2xl shadow-amber-500/50">
             <Trophy className="w-8 h-8" />
-            <span
-              className="text-2xl font-black uppercase tracking-wider"
-              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-            >
+            <span className="text-2xl font-black uppercase font-display tracking-wider">
               #1 Rated Sports Academy
             </span>
           </div>

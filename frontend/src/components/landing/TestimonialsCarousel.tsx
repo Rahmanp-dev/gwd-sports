@@ -74,20 +74,14 @@ export default function TestimonialsCarousel() {
             viewport={{ once: true }}
             className="inline-flex items-center gap-3 px-8 py-3 bg-gradient-to-r from-amber-500 to-yellow-500 text-black rounded-full mb-8 shadow-lg shadow-amber-500/50"
           >
-            <span
-              className="text-sm font-black uppercase tracking-[0.3em]"
-              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-            >
+            <span className="text-sm font-black uppercase tracking-[0.3em] font-display">
               Success Stories
             </span>
           </motion.div>
 
-          <h2
-            className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none"
-            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-          >
+          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-wider leading-none font-display">
             Champion
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-500">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-500 font-display">
               Testimonials
             </span>
           </h2>

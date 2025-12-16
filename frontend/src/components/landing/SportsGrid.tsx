@@ -4,9 +4,9 @@ import { ArrowRight, Zap } from "lucide-react";
 
 const sports = [
   {
-    name: "Football",
+    name: "Football Academy",
     icon: "⚽",
-    tagline: "Power & Precision",
+    tagline: "Elite Training",
     image:
       "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&h=600&fit=crop",
     color: "from-green-600 to-emerald-500",
@@ -14,50 +14,34 @@ const sports = [
   {
     name: "Basketball",
     icon: "🏀",
-    tagline: "Speed & Strategy",
+    tagline: "Champions League",
     image:
       "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&h=600&fit=crop",
     color: "from-orange-600 to-red-500",
   },
   {
-    name: "Table Tennis",
-    icon: "🏓",
-    tagline: "Agility & Focus",
+    name: "Racing League",
+    icon: "🏎️",
+    tagline: "Speed & Adrenaline",
     image:
-      "https://images.unsplash.com/photo-1534158914592-062992fbe900?w=800&h=600&fit=crop",
-    color: "from-cyan-600 to-blue-500",
+      "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=800&h=600&fit=crop",
+    color: "from-red-600 to-orange-500",
   },
   {
-    name: "Tennis",
-    icon: "🎾",
-    tagline: "Strength & Skill",
+    name: "Model United Nations",
+    icon: "🎤",
+    tagline: "Leadership & Oratory",
     image:
-      "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800&h=600&fit=crop",
-    color: "from-yellow-600 to-amber-500",
-  },
-  {
-    name: "Swimming",
-    icon: "🏊",
-    tagline: "Endurance & Grace",
-    image:
-      "https://images.unsplash.com/photo-1519315901367-f34ff9154487?w=800&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&h=600&fit=crop",
     color: "from-blue-600 to-indigo-500",
   },
   {
-    name: "Badminton",
-    icon: "🏸",
-    tagline: "Speed & Reflexes",
+    name: "Galaxy Events",
+    icon: "🌟",
+    tagline: "Premier Tournaments",
     image:
-      "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800&h=600&fit=crop",
-    color: "from-pink-600 to-rose-500",
-  },
-  {
-    name: "Cricket",
-    icon: "🏏",
-    tagline: "Power & Technique",
-    image:
-      "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=800&h=600&fit=crop",
-    color: "from-red-600 to-orange-500",
+      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&h=600&fit=crop",
+    color: "from-purple-600 to-pink-500",
   },
 ];
 
@@ -96,18 +80,12 @@ export default function SportsGrid() {
             className="inline-flex items-center gap-3 px-8 py-3 bg-gradient-to-r from-amber-500 to-yellow-500 text-black rounded-full mb-8 shadow-lg shadow-amber-500/50"
           >
             <Zap className="w-5 h-5" />
-            <span
-              className="text-sm font-black uppercase tracking-[0.3em]"
-              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-            >
+            <span className="text-sm font-black uppercase tracking-[0.3em] font-display">
               Our Programs
             </span>
           </motion.div>
 
-          <h2
-            className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none"
-            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-          >
+          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none font-display">
             Choose Your
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500">
               Champion Path
@@ -121,12 +99,12 @@ export default function SportsGrid() {
             className="w-32 h-2 bg-gradient-to-r from-amber-500 to-yellow-500 mx-auto mb-8 shadow-lg shadow-amber-500/50"
           />
           <p className="text-xl sm:text-2xl text-gray-400 max-w-3xl mx-auto font-bold">
-            Seven elite disciplines. One legendary destination.
+            Five elite disciplines. One legendary destination.
           </p>
         </motion.div>
 
         {/* Sports Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {sports.map((sport, index) => (
             <motion.div
               key={sport.name}
@@ -169,10 +147,7 @@ export default function SportsGrid() {
                       className="text-center"
                     >
                       <div className="text-7xl mb-4">{sport.icon}</div>
-                      <div
-                        className="text-white text-2xl font-black uppercase tracking-wider mb-2"
-                        style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                      >
+                      <div className="text-white text-2xl font-black uppercase tracking-wider mb-2 font-display">
                         {sport.tagline}
                       </div>
                       <div className="flex items-center justify-center gap-2 text-white font-black uppercase text-sm">
@@ -184,10 +159,7 @@ export default function SportsGrid() {
 
                 {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
-                  <h3
-                    className="text-4xl font-black text-white uppercase tracking-tight mb-2"
-                    style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                  >
+                  <h3 className="text-4xl font-black text-white uppercase tracking-tight mb-2 font-display">
                     {sport.name}
                   </h3>
                   <div className="text-amber-400 font-bold uppercase tracking-wider text-sm">
@@ -221,10 +193,7 @@ export default function SportsGrid() {
                 >
                   💪
                 </motion.div>
-                <h3
-                  className="text-5xl font-black text-black uppercase mb-4 tracking-tight"
-                  style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                >
+                <h3 className="text-5xl font-black text-black uppercase mb-4 tracking-tight font-display">
                   Not Sure?
                 </h3>
                 <p className="text-black text-xl mb-6 font-bold">

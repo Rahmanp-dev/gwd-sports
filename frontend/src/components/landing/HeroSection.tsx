@@ -54,13 +54,7 @@ export default function HeroSection() {
           >
             <div className="inline-flex items-center gap-3 px-8 py-4 bg-amber-500/20 backdrop-blur-md border border-amber-500/30 rounded-full shadow-2xl shadow-amber-500/30">
               <Zap className="w-5 h-5 text-amber-400 animate-pulse" />
-              <span
-                className="text-amber-400 text-sm font-black uppercase tracking-[0.3em]"
-                style={{
-                  fontFamily: "'Bebas Neue', sans-serif",
-                  letterSpacing: "0.3em",
-                }}
-              >
+              <span className="text-amber-400 text-sm font-black uppercase tracking-[0.3em] font-display">
                 Elite Sports Academy
               </span>
             </div>
@@ -73,16 +67,13 @@ export default function HeroSection() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="mb-8"
           >
-            <h1
-              className="text-7xl sm:text-8xl lg:text-[140px] font-black text-white mb-6 uppercase leading-[0.9] tracking-tighter"
-              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-            >
+            <h1 className="text-7xl sm:text-8xl lg:text-[140px] font-black text-white mb-6 uppercase leading-[0.9] tracking-tighter font-display">
               MASTER
               <motion.span
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
-                className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 drop-shadow-[0_0_30px_rgba(251,191,36,0.8)]"
+                className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 drop-shadow-[0_0_30px_rgba(251,191,36,0.8)] font-display"
               >
                 GRADE
               </motion.span>
@@ -100,11 +91,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1 }}
-            className="text-3xl sm:text-4xl lg:text-5xl text-white font-black uppercase mb-6 tracking-wider drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
-            style={{
-              fontFamily: "'Bebas Neue', sans-serif",
-              letterSpacing: "0.1em",
-            }}
+            className="text-3xl sm:text-4xl lg:text-5xl text-white font-black uppercase mb-6 tracking-wider drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] font-display"
           >
             Where Legends Are Born
           </motion.p>
@@ -130,7 +117,7 @@ export default function HeroSection() {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 size="lg"
-                className="relative bg-gradient-to-r from-amber-500 to-yellow-500 text-black hover:from-amber-600 hover:to-yellow-600 text-xl font-black uppercase tracking-widest px-12 py-8 rounded-none shadow-[0_0_40px_rgba(251,191,36,0.6)] hover:shadow-[0_0_60px_rgba(251,191,36,0.8)] transition-all duration-300 group overflow-hidden"
+                className="relative bg-gradient-to-r from-amber-500 to-yellow-500 text-black hover:from-amber-600 hover:to-yellow-600 text-xl font-black uppercase tracking-widest px-12 py-8 rounded-none shadow-[0_0_40px_rgba(251,191,36,0.6)] hover:shadow-[0_0_60px_rgba(251,191,36,0.8)] transition-all duration-300 group overflow-hidden font-display"
               >
                 <span className="relative z-10 flex items-center gap-3">
                   Start Your Journey
@@ -142,7 +129,7 @@ export default function HeroSection() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-4 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black text-xl font-black uppercase tracking-widest px-12 py-8 rounded-none backdrop-blur-md bg-amber-500/10 transition-all duration-300"
+                className="border-4 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black text-xl font-black uppercase tracking-widest px-12 py-8 rounded-none backdrop-blur-md bg-amber-500/10 transition-all duration-300 font-display"
               >
                 <Phone className="mr-3 w-6 h-6" />
                 Book Free Trial
@@ -171,13 +158,10 @@ export default function HeroSection() {
                 className="relative group"
               >
                 <div className="bg-amber-500/10 backdrop-blur-md border border-amber-500/20 p-6 rounded-2xl shadow-2xl hover:shadow-[0_0_40px_rgba(251,191,36,0.4)] transition-all duration-300">
-                  <div
-                    className="text-5xl sm:text-6xl font-black text-amber-500 mb-2 drop-shadow-[0_0_20px_rgba(251,191,36,0.5)]"
-                    style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                  >
+                  <div className="text-5xl sm:text-6xl font-black text-amber-500 mb-2 drop-shadow-[0_0_20px_rgba(251,191,36,0.5)] font-display">
                     {stat.value}
                   </div>
-                  <div className="text-amber-300 uppercase tracking-[0.2em] font-bold text-sm">
+                  <div className="text-amber-300 uppercase tracking-[0.2em] font-bold text-sm font-display">
                     {stat.label}
                   </div>
                 </div>
@@ -192,7 +176,7 @@ export default function HeroSection() {
       <motion.div
         animate={{ y: [0, 15, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2"
+        className="absolute bottom-5 left-1/2 -translate-x-1/2"
       >
         <div className="w-8 h-14 border-4 border-amber-500/40 rounded-full flex justify-center p-2">
           <motion.div

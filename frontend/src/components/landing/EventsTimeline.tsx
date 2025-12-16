@@ -66,18 +66,12 @@ export default function EventsTimeline() {
             className="inline-flex items-center gap-3 px-8 py-3 bg-gradient-to-r from-amber-500 to-yellow-500 text-black rounded-full mb-8 shadow-lg shadow-amber-500/50"
           >
             <Zap className="w-5 h-5" />
-            <span
-              className="text-sm font-black uppercase tracking-[0.3em]"
-              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-            >
+            <span className="text-sm font-black uppercase tracking-[0.3em] font-display">
               Upcoming Events
             </span>
           </motion.div>
 
-          <h2
-            className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none"
-            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-          >
+          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase  leading-none font-display">
             Compete &
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-500">
               Conquer
@@ -128,10 +122,7 @@ export default function EventsTimeline() {
 
                   {/* Content */}
                   <div className="p-12 flex flex-col justify-center bg-gradient-to-br from-gray-900 to-black">
-                    <h3
-                      className="text-4xl sm:text-5xl font-black text-white uppercase mb-8 tracking-tight group-hover:text-amber-500 transition-colors"
-                      style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                    >
+                    <h3 className="text-4xl sm:text-5xl font-black text-white uppercase mb-8 tracking-tight group-hover:text-amber-500 transition-colors font-display">
                       {event.title}
                     </h3>
 
@@ -145,10 +136,7 @@ export default function EventsTimeline() {
                         >
                           <Calendar className="w-7 h-7 text-white" />
                         </div>
-                        <span
-                          className="text-white font-black text-lg uppercase"
-                          style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                        >
+                        <span className="text-white font-black text-lg uppercase font-display">
                           {event.date}
                         </span>
                       </motion.div>
@@ -162,10 +150,7 @@ export default function EventsTimeline() {
                         >
                           <MapPin className="w-7 h-7 text-white" />
                         </div>
-                        <span
-                          className="text-white font-black text-lg uppercase"
-                          style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                        >
+                        <span className="text-white font-black text-lg uppercase font-display">
                           {event.location}
                         </span>
                       </motion.div>
@@ -179,10 +164,7 @@ export default function EventsTimeline() {
                         >
                           <Users className="w-7 h-7 text-white" />
                         </div>
-                        <span
-                          className="text-white font-black text-lg uppercase"
-                          style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                        >
+                        <span className="text-white font-black text-lg uppercase font-display">
                           {event.participants}
                         </span>
                       </motion.div>

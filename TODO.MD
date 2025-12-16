@@ -3,6 +3,7 @@ TODO:
 P1:
 
 - [ ] Homepage Customization
+- [ ] In football page - promote MGFC and link to its page
 - [ ] Student Dashboard
 - [ ] Trainer Dashboard
 - [ ] Centralized login and logout marker on top right corner
@@ -19,6 +20,10 @@ P1:
 - [ ] Check edit student - it is misbehaving
 - [ ] Complete Student Login , Trainer Login, and their pages
 - [ ] show if the student is verified or not in the profile
+- [ ] Privacy Policy and Terms and Conditions pages
+- [ ] 404 Page
+- [ ] Contact Us Page
+- [ ] About Us Page
 
 P2:
 - [ ] Frontend logging
