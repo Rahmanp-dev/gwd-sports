@@ -109,6 +109,41 @@ export default function StudentProfile() {
 
   const handleSave = async () => {
     try {
+      // Validate football is in sports
+      if (!editedProfile.sports?.includes("football")) {
+        toast.error("Football is mandatory and cannot be removed");
+        return;
+      }
+
+      // Validate emergency contact details
+      if (editedProfile.medicalInfo) {
+        const emergencyContact = editedProfile.medicalInfo.emergencyContact;
+
+        if (!emergencyContact?.name?.trim()) {
+          toast.error("Emergency contact name is required");
+          return;
+        }
+
+        if (!emergencyContact?.phone?.trim()) {
+          toast.error("Emergency contact phone is required");
+          return;
+        }
+
+        if (!emergencyContact?.relation?.trim()) {
+          toast.error("Emergency contact relation is required");
+          return;
+        }
+
+        // Validate phone number format (basic check for digits)
+        const phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(emergencyContact.phone.replace(/\s+/g, ""))) {
+          toast.error(
+            "Emergency contact phone must be a valid 10-digit number",
+          );
+          return;
+        }
+      }
+
       toast.loading("Updating profile...");
 
       const updateData = {

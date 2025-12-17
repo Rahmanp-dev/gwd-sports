@@ -17,6 +17,7 @@ router.use(authMiddleware);
 
 // Trainer profile management
 router.get('/profile', roleMiddleware(['trainer', 'admin']), TrainerController.getTrainerProfile);
+router.put('/profile', roleMiddleware(['trainer', 'admin']), TrainerController.updateTrainerProfile);
 
 // Student management
 router.get('/students', roleMiddleware(['trainer', 'admin']), validateTrainerStudentsQuery, TrainerController.getTrainerStudents);

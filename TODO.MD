@@ -1,15 +1,15 @@
 TODO: 
 
 P1:
+- [ ] delete trainer / student - deactivate instead of delete -> soft delete -> deactivate their user account. So make sure that they can't login
+- [ ] Admin can reactivate trainer / student 
 
 - [ ] Functional Student Dashboard - /mgfc/student
 - [ ] Functional Trainer Dashboard - /mgfc/trainer
 - [ ] if (!studentProfile) in frontend\src\components\user\student\StudentProfile.tsx fix this
-- [ ] Create connecttion between user profile and their profiles - should easily navigate to student/trainer profile from user profile  
-- [ ] Add Edit Trainer Profile in F 
+- [ ] Create connection between user profile and their profiles - should easily navigate to student/trainer profile from user profile  -> in the profile page only have a tab to switch between dashboard and the profile 
 - [ ] Student functionalities - check what all actions are present and what needs to be added
 - [ ] show if the student is verified or not in the profile
-- [ ] delete trainer - delete user too? Based on what is done with students
 - [ ] Trainer functionalities - check what all actions are present and what needs to be added
 - [ ] Student, trainer interactions - check the flow
 - [ ] Student, trainer, admin interactions - check the flow
@@ -38,6 +38,7 @@ P2:
 - [ ] Update the landing page details
 - [ ] Add events agenda - in event management compone- like explaining all options
 - [ ] Forgot password, reset password 
+- [ ] Implement permanent delete of student / trainer by admin
 - [ ] Take care of placeholders in forms 
 
 P3: 
@@ -92,3 +93,4 @@ Done ✅
 - [x] Validation in trainer register form - unique email, phone, password strength - show the error from user APIs response 
 - [x] trainer profile was able to snuck into /admin -> fix that 
 - [x] Add Edit Student Profile in F
+- [x] Add Edit Trainer Profile in F 

@@ -631,12 +631,50 @@ export default function UserAuth() {
                 </Link>
               </div>
 
-              <div className="mt-6 text-center">
+              <div className="mt-6 relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-green-500/20 to-blue-500/20 rounded-lg blur-xl" />
                 <Link
                   to="/mgfc/student/register"
-                  className="text-sm text-blue-400 hover:text-blue-300"
+                  className="relative block p-6 bg-gradient-to-br from-gray-800/80 to-gray-900/80 border border-gray-700/50 rounded-lg hover:border-blue-500/50 transition-all duration-300 group"
                 >
-                  Register as a student
+                  <div className="flex items-center justify-center gap-3 mb-2">
+                    <Trophy className="h-6 w-6 text-blue-400 group-hover:text-blue-300 transition-colors" />
+                    <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-green-400 to-blue-400 group-hover:from-blue-300 group-hover:via-green-300 group-hover:to-blue-300 transition-all">
+                      Join MGFC Academy
+                    </h3>
+                    <Trophy className="h-6 w-6 text-green-400 group-hover:text-green-300 transition-colors" />
+                  </div>
+                  <p className="text-gray-400 text-sm mb-3">
+                    Register as a student and unlock professional training
+                    programs
+                  </p>
+                  <div className="flex items-center justify-center gap-2 text-blue-400 group-hover:text-blue-300 transition-colors font-semibold">
+                    <span>Get Started Now</span>
+                    <svg
+                      className="h-5 w-5 group-hover:translate-x-1 transition-transform"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 7l5 5m0 0l-5 5m5-5H6"
+                      />
+                    </svg>
+                  </div>
+                  <div className="mt-4 flex justify-center gap-3">
+                    <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-xs">
+                      ⚡ Quick Setup
+                    </Badge>
+                    <Badge className="bg-green-500/10 text-green-400 border-green-500/20 text-xs">
+                      🎯 Expert Coaches
+                    </Badge>
+                    <Badge className="bg-purple-500/10 text-purple-400 border-purple-500/20 text-xs">
+                      🏆 Track Progress
+                    </Badge>
+                  </div>
                 </Link>
               </div>
             </CardContent>

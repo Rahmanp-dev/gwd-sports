@@ -87,6 +87,142 @@ export class TrainerController {
     }
   }
 
+  // Update trainer
+  static async updateTrainerProfile(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user!._id;
+      const updates = req.body;
+
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid trainer ID'
+        });
+      }
+
+      const trainer = await TrainerProfile.findOne({ userId });
+
+      if (!trainer) {
+        return res.status(404).json({
+          success: false,
+          message: 'Trainer profile not found'
+        });
+      }
+
+      // Validate and process sports update
+      if (updates.sports !== undefined) {
+        if (!Array.isArray(updates.sports)) {
+          return res.status(400).json({
+            success: false,
+            message: 'Sports must be an array'
+          });
+        }
+
+        // Ensure football is always included (convert to lowercase for comparison)
+        const hasFootball = updates.sports.some((sport: string) => sport.toLowerCase() === 'football');
+        if (!hasFootball) {
+          return res.status(400).json({
+            success: false,
+            message: 'Football is mandatory and cannot be removed'
+          });
+        }
+
+        trainer.sports = updates.sports.map((sport: string) => sport.toLowerCase());
+      }
+
+      // Update specializations
+      if (updates.specializations !== undefined) {
+        if (!Array.isArray(updates.specializations)) {
+          return res.status(400).json({
+            success: false,
+            message: 'Specializations must be an array'
+          });
+        }
+        trainer.specializations = updates.specializations;
+      }
+
+      // Update qualifications
+      if (updates.qualifications !== undefined) {
+        if (!Array.isArray(updates.qualifications)) {
+          return res.status(400).json({
+            success: false,
+            message: 'Qualifications must be an array'
+          });
+        }
+        trainer.qualifications = updates.qualifications.map((q: any) => ({
+          certification: q.certification,
+          issuedBy: q.issuedBy,
+          issuedDate: new Date(q.issuedDate),
+          expiryDate: q.expiryDate ? new Date(q.expiryDate) : undefined,
+          certificateUrl: q.certificateUrl || undefined
+        }));
+      }
+
+      // Update experience
+      if (updates.experience !== undefined) {
+        if (!Array.isArray(updates.experience)) {
+          return res.status(400).json({
+            success: false,
+            message: 'Experience must be an array'
+          });
+        }
+        trainer.experience = updates.experience.map((e: any) => ({
+          organization: e.organization,
+          position: e.position,
+          startDate: new Date(e.startDate),
+          endDate: e.endDate ? new Date(e.endDate) : undefined,
+          description: e.description
+        }));
+      }
+
+      // Update availability
+      if (updates.availability !== undefined) {
+        if (typeof updates.availability !== 'object') {
+          return res.status(400).json({
+            success: false,
+            message: 'Availability must be an object'
+          });
+        }
+
+        if (updates.availability.days !== undefined) {
+          if (!Array.isArray(updates.availability.days)) {
+            return res.status(400).json({
+              success: false,
+              message: 'Availability days must be an array'
+            });
+          }
+          trainer.availability.days = updates.availability.days;
+        }
+
+        if (updates.availability.timeSlots !== undefined) {
+          if (!Array.isArray(updates.availability.timeSlots)) {
+            return res.status(400).json({
+              success: false,
+              message: 'Availability timeSlots must be an array'
+            });
+          }
+          trainer.availability.timeSlots = updates.availability.timeSlots;
+        }
+      }
+
+      await trainer.save();
+
+      logger.info(`Trainer profile updated by trainer ${req.user!.email}`);
+
+      res.json({
+        success: true,
+        message: 'Trainer profile updated successfully',
+        data: { trainerProfile: trainer }
+      });
+    } catch (error) {
+      logger.error('Update trainer error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
   // Get trainer students
   static async getTrainerStudents(req: AuthRequest, res: Response) {
     try {

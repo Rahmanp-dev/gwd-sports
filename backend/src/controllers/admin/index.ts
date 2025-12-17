@@ -626,6 +626,7 @@ export class AdminTrainerController {
         limit = 10,
         academyId,
         sport,
+        isActive,
         search,
         sortBy = 'joinedDate',
         sortOrder = 'desc'
@@ -635,10 +636,11 @@ export class AdminTrainerController {
       const limitNum = parseInt(limit as string);
       const skip = (pageNum - 1) * limitNum;
 
-      const filter: any = { isActive: true };
+      const filter: any = {};
       
       if (academyId) filter.academyId = academyId;
       if (sport) filter.sports = { $in: [sport] };
+      if (isActive !== undefined) filter.isActive = isActive === 'true';
 
       const sort: any = {};
       sort[sortBy as string] = sortOrder === 'desc' ? -1 : 1;

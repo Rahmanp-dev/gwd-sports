@@ -1384,6 +1384,41 @@
 					"response": []
 				},
 				{
+					"name": "Update Stud Prof",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQyNDVkODBiOWEyMzhiZDA0ZDNhZjEiLCJlbWFpbCI6InNua0Bhb3QuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NjU5NjA2NTMsImV4cCI6MTc2NjU2NTQ1M30.nfwPBCAPGig0lo8O3l7vhEseLGe2mrLt3aEZM9OK6Pk"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"sports\": [\"football\", \"basketball\", \"cricket\"],\r\n    \"level\": \"intermediate\",\r\n    \"medicalInfo\": {\r\n      \"allergies\": [],\r\n      \"medications\": [],\r\n      \"emergencyContact\": {\r\n        \"name\": \"Jane Doe Updated\",\r\n        \"phone\": \"9999999999\",\r\n        \"relation\": \"mother\"\r\n      }\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/student/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"student",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Join Acad",
 					"request": {
 						"method": "POST",
@@ -1618,9 +1653,44 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGZkZmJhMWEwOTliMTg4YjIzMzM4MzAiLCJlbWFpbCI6InRyYWlAdHJhaS5jb20iLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTc2MTY2NzIxOSwiZXhwIjoxNzYyMjcyMDE5fQ.Nbr-a_nhszBJc90XMn75o0IYFYEs3pEa3E93idfYFSU"
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQxNWZhMWE1NzM1NTU2ZjNlYWU4NDAiLCJlbWFpbCI6ImphbmVAZXhhbXBsZS5jb20iLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTc2NTk2NDk3NywiZXhwIjoxNzY2NTY5Nzc3fQ.WSZ4PvmgXrI-dY9OHRFLkVluBtnsZ2caZ9bImGvCnSA"
 							}
 						],
+						"url": {
+							"raw": "http://localhost:3000/api/trainer/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"trainer",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Trainer Prof Copy",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQxNWZhMWE1NzM1NTU2ZjNlYWU4NDAiLCJlbWFpbCI6ImphbmVAZXhhbXBsZS5jb20iLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTc2NTk2NDk3NywiZXhwIjoxNzY2NTY5Nzc3fQ.WSZ4PvmgXrI-dY9OHRFLkVluBtnsZ2caZ9bImGvCnSA"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"sports\": [\"football\", \"basketball\", \"cricket\"],\r\n  \"specializations\": [\"Youth Training\", \"Advanced Tactics\", \"Fitness Coaching\"],\r\n  \"qualifications\": [\r\n    {\r\n      \"certification\": \"UEFA B License\",\r\n      \"issuedBy\": \"UEFA\",\r\n      \"issuedDate\": \"2023-01-15\",\r\n      \"expiryDate\": \"2028-01-15\",\r\n      \"certificateUrl\": \"https://example.com/certificate1.pdf\"\r\n    },\r\n    {\r\n      \"certification\": \"Sports Science Diploma\",\r\n      \"issuedBy\": \"Sports Institute\",\r\n      \"issuedDate\": \"2022-06-10\",\r\n      \"certificateUrl\": \"https://example.com/certificate2.pdf\"\r\n    }\r\n  ],\r\n  \"experience\": [\r\n    {\r\n      \"organization\": \"City Football Academy\",\r\n      \"position\": \"Head Coach\",\r\n      \"startDate\": \"2020-03-01\",\r\n      \"endDate\": \"2023-12-31\",\r\n      \"description\": \"Led youth training programs and managed a team of 30+ students\"\r\n    },\r\n    {\r\n      \"organization\": \"National Sports Club\",\r\n      \"position\": \"Assistant Coach\",\r\n      \"startDate\": \"2018-01-15\",\r\n      \"endDate\": \"2020-02-28\",\r\n      \"description\": \"Assisted in training sessions and player development\"\r\n    }\r\n  ],\r\n  \"availability\": {\r\n    \"days\": [\"monday\", \"wednesday\", \"friday\", \"saturday\"],\r\n    \"timeSlots\": [\r\n      {\r\n        \"start\": \"09:00\",\r\n        \"end\": \"12:00\"\r\n      },\r\n      {\r\n        \"start\": \"16:00\",\r\n        \"end\": \"19:00\"\r\n      }\r\n    ]\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "http://localhost:3000/api/trainer/profile",
 							"protocol": "http",
