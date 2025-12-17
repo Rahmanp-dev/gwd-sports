@@ -21,7 +21,9 @@ export const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
   }
 
   if (user?.role !== "admin" || !isAuthenticated) {
-    return <Navigate to="/user/auth" state={{ from: location.pathname }} replace />;
+    return (
+      <Navigate to="/user/auth" state={{ from: location.pathname }} replace />
+    );
   }
 
   return <>{children}</>;

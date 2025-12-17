@@ -269,7 +269,7 @@ export default function UserProfile() {
             </div>
             <Button
               variant="outline"
-              className="border-white text-white hover:bg-white/10"
+              className="border-white"
               onClick={handleLogout}
             >
               <LogOut className="h-4 w-4 mr-2" />

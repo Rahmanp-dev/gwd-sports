@@ -151,10 +151,10 @@ export default function TrainerProfile() {
               <Button
                 variant="outline"
                 onClick={handleEdit}
-                className="border-gray-600 text-white hover:bg-gray-700"
+                className="border-gray-600"
               >
                 <Edit className="h-4 w-4 mr-2" />
-                Edit Profile
+                Edit Trainer Profile
               </Button>
             ) : (
               <div className="flex gap-2">
@@ -367,7 +367,6 @@ export default function TrainerProfile() {
             <div className="space-y-2">
               <Label className="text-white">Hourly Rate</Label>
               <div className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-green-400" />
                 <span className="text-2xl font-bold text-green-400">
                   ₹{trainerProfile.hourlyRate}
                 </span>

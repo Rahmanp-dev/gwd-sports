@@ -28,6 +28,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Eye, EyeOff } from "lucide-react";
 import type { User, UserFormData } from "@/types";
 import { SPORTS_LIST } from "@/utils/constants";
 
@@ -78,6 +79,7 @@ export const UserForm: React.FC<UserFormProps> = ({
   const [selectedSports, setSelectedSports] = React.useState<string[]>(
     user?.sports || [],
   );
+  const [showPassword, setShowPassword] = React.useState(false);
 
   // Phone number input handler - only allow numbers, +, spaces, and hyphens
   const handlePhoneInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,14 +124,16 @@ export const UserForm: React.FC<UserFormProps> = ({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {/* Name Field */}
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>
+                      Full Name <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="John Doe"
@@ -148,7 +152,9 @@ export const UserForm: React.FC<UserFormProps> = ({
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>
+                      Email <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="email"
@@ -163,7 +169,7 @@ export const UserForm: React.FC<UserFormProps> = ({
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {/* Password Field */}
               <FormField
                 control={form.control}
@@ -172,18 +178,35 @@ export const UserForm: React.FC<UserFormProps> = ({
                   <FormItem>
                     <FormLabel>
                       {isEditMode
-                        ? "New Password (leave blank to keep current)"
-                        : "Password"}
+                        ? "New Password (leave blank to keep current) "
+                        : "Password "}
+                      <span className="text-red-500">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder={
-                          isEditMode ? "••••••••" : "Create a password"
-                        }
-                        {...field}
-                        disabled={isLoading}
-                      />
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder={
+                            isEditMode ? "••••••••" : "Create a password"
+                          }
+                          {...field}
+                          disabled={isLoading}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          onClick={() => setShowPassword(!showPassword)}
+                          disabled={isLoading}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4 text-gray-400" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-gray-400" />
+                          )}
+                        </Button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -196,7 +219,9 @@ export const UserForm: React.FC<UserFormProps> = ({
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone (optional)</FormLabel>
+                    <FormLabel>
+                      Phone <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="+1 234 567 8900"
@@ -219,7 +244,9 @@ export const UserForm: React.FC<UserFormProps> = ({
                 name="role"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Role</FormLabel>
+                    <FormLabel>
+                      Role <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}

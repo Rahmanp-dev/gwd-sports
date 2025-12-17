@@ -27,6 +27,8 @@ import {
   Trophy,
   Shield,
   Users,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -71,6 +73,10 @@ export default function StudentCreate() {
   const [validationErrors, setValidationErrors] = useState<{
     [key: string]: string;
   }>({});
+
+  // Password visibility states
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Available sports (football is mandatory)
   const availableSports = [
@@ -433,7 +439,7 @@ export default function StudentCreate() {
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                       <Input
                         id="password"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
                         value={userDetails.password}
                         onChange={(e) =>
@@ -442,11 +448,23 @@ export default function StudentCreate() {
                             password: e.target.value,
                           })
                         }
-                        className={`pl-10 bg-gray-800 border-gray-700 text-white ${
+                        className={`pl-10 pr-10 bg-gray-800 border-gray-700 text-white ${
                           validationErrors.password ? "border-red-500" : ""
                         }`}
                         disabled={isSubmitting}
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                        disabled={isSubmitting}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-5 w-5" />
+                        ) : (
+                          <Eye className="h-5 w-5" />
+                        )}
+                      </button>
                     </div>
                     {validationErrors.password && (
                       <p className="text-red-500 text-sm flex items-center gap-1">
@@ -469,7 +487,7 @@ export default function StudentCreate() {
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                       <Input
                         id="confirmPassword"
-                        type="password"
+                        type={showConfirmPassword ? "text" : "password"}
                         placeholder="••••••••"
                         value={userDetails.confirmPassword}
                         onChange={(e) =>
@@ -478,13 +496,27 @@ export default function StudentCreate() {
                             confirmPassword: e.target.value,
                           })
                         }
-                        className={`pl-10 bg-gray-800 border-gray-700 text-white ${
+                        className={`pl-10 pr-10 bg-gray-800 border-gray-700 text-white ${
                           validationErrors.confirmPassword
                             ? "border-red-500"
                             : ""
                         }`}
                         disabled={isSubmitting}
                       />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                        disabled={isSubmitting}
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="h-5 w-5" />
+                        ) : (
+                          <Eye className="h-5 w-5" />
+                        )}
+                      </button>
                     </div>
                     {validationErrors.confirmPassword && (
                       <p className="text-red-500 text-sm flex items-center gap-1">
@@ -802,7 +834,7 @@ export default function StudentCreate() {
                       variant="outline"
                       onClick={() => navigate(-1)}
                       disabled={isSubmitting}
-                      className="flex-1 sm:flex-initial border-gray-600 text-white hover:bg-gray-800"
+                      className="flex-1 sm:flex-initial border-gray-600 text-black hover:bg-gray-800 hover:text-white"
                     >
                       Back
                     </Button>

@@ -27,6 +27,8 @@ import {
   Trophy,
   Users,
   Target,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 export default function UserAuth() {
@@ -57,6 +59,11 @@ export default function UserAuth() {
   const [validationErrors, setValidationErrors] = useState<{
     [key: string]: string;
   }>({});
+
+  // Password visibility states
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -361,7 +368,7 @@ export default function UserAuth() {
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                         <Input
                           id="login-password"
-                          type="password"
+                          type={showLoginPassword ? "text" : "password"}
                           placeholder="••••••••"
                           value={loginData.password}
                           onChange={(e) =>
@@ -370,10 +377,23 @@ export default function UserAuth() {
                               password: e.target.value,
                             })
                           }
-                          className={`pl-10 bg-gray-800 border-gray-700 text-white ${
+                          className={`pl-10 pr-10 bg-gray-800 border-gray-700 text-white ${
                             validationErrors.password ? "border-red-500" : ""
                           }`}
                         />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowLoginPassword(!showLoginPassword)
+                          }
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                        >
+                          {showLoginPassword ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </button>
                       </div>
                       {validationErrors.password && (
                         <p className="text-red-500 text-sm">
@@ -500,7 +520,7 @@ export default function UserAuth() {
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                         <Input
                           id="register-password"
-                          type="password"
+                          type={showRegisterPassword ? "text" : "password"}
                           placeholder="••••••••"
                           value={registerData.password}
                           onChange={(e) =>
@@ -509,10 +529,23 @@ export default function UserAuth() {
                               password: e.target.value,
                             })
                           }
-                          className={`pl-10 bg-gray-800 border-gray-700 text-white ${
+                          className={`pl-10 pr-10 bg-gray-800 border-gray-700 text-white ${
                             validationErrors.password ? "border-red-500" : ""
                           }`}
                         />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowRegisterPassword(!showRegisterPassword)
+                          }
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                        >
+                          {showRegisterPassword ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </button>
                       </div>
                       {validationErrors.password && (
                         <p className="text-red-500 text-sm">
@@ -532,7 +565,7 @@ export default function UserAuth() {
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                         <Input
                           id="register-confirm-password"
-                          type="password"
+                          type={showConfirmPassword ? "text" : "password"}
                           placeholder="••••••••"
                           value={registerData.confirmPassword}
                           onChange={(e) =>
@@ -541,12 +574,25 @@ export default function UserAuth() {
                               confirmPassword: e.target.value,
                             })
                           }
-                          className={`pl-10 bg-gray-800 border-gray-700 text-white ${
+                          className={`pl-10 pr-10 bg-gray-800 border-gray-700 text-white ${
                             validationErrors.confirmPassword
                               ? "border-red-500"
                               : ""
                           }`}
                         />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                        >
+                          {showConfirmPassword ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </button>
                       </div>
                       {validationErrors.confirmPassword && (
                         <p className="text-red-500 text-sm">

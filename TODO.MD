@@ -3,16 +3,18 @@ TODO:
 P1:
 
 - [ ] Functional Student Dashboard
+- [ ] Create connecttion between user profile and their profiles - should easily navigate to student/trainer profile from user profile  
 - [ ] Add Edit Student Profile in F
 - [ ] Student functionalities - check what all actions are present and what needs to be added
 - [ ] show if the student is verified or not in the profile
 - [ ] Functional Trainer Dashboard
-- [ ] delete trainer - delete user too?
+- [ ] delete trainer - delete user too? Based on what is done with students
 - [ ] Trainer functionalities - check what all actions are present and what needs to be added
 - [ ] Add Edit Trainer Profile in F
 - [ ] Student, trainer interactions - check the flow
 - [ ] Student, trainer, admin interactions - check the flow
 - [ ] Centralized login and logout marker on top right corner
+- [ ] Centralized my profile and my dashboard marker on top right corner
 
 - [ ] Homepage Customization
 - [ ] In football page - promote MGFC and link to its page
@@ -24,6 +26,7 @@ P1:
 - [ ] 404 Page
 - [ ] Contact Us Page
 - [ ] About Us Page
+- [ ] Do something about the "inactive" users
 
 P2:
 - [ ] Frontend logging
@@ -34,6 +37,7 @@ P2:
 - [ ] Update the landing page details
 - [ ] Add events agenda - in event management compone- like explaining all options
 - [ ] Forgot password, reset password 
+- [ ] Take care of placeholders in forms 
 
 P3: 
 - [ ] Can we use MCP or some auto prompt like thing to automate prompts? like prompt engineering but automated

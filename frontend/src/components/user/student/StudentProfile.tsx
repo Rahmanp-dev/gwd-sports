@@ -175,10 +175,10 @@ export default function StudentProfile() {
               <Button
                 variant="outline"
                 onClick={handleEdit}
-                className="border-gray-600 text-white hover:bg-gray-700"
+                className="border-gray-600"
               >
                 <Edit className="h-4 w-4 mr-2" />
-                Edit Profile
+                Edit Student Profile
               </Button>
             ) : (
               <div className="flex gap-2">
