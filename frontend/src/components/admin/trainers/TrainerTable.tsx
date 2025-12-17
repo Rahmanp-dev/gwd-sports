@@ -307,7 +307,7 @@ export const TrainerTable: React.FC<TrainerTableProps> = ({
                     {trainer.studentCount || trainer.students?.length || 0}
                   </TableCell>
                   <TableCell className="hidden lg:table-cell">
-                    {trainer.hourlyRate ? `$${trainer.hourlyRate}` : "N/A"}
+                    {trainer.hourlyRate ? `₹${trainer.hourlyRate}` : "N/A"}
                   </TableCell>
                   <TableCell>
                     <Badge

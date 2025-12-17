@@ -34,7 +34,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Plus, X, Loader2 } from "lucide-react";
+import { Plus, X, Loader2, Eye, EyeOff } from "lucide-react";
 
 // Sports list
 const SPORTS_LIST = [
@@ -153,6 +153,7 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
   const [specializations, setSpecializations] = useState<string[]>(
     trainer?.specializations || [],
   );
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<TrainerFormData>({
     resolver: zodResolver(trainerFormSchema),
@@ -347,13 +348,15 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                   <h3 className="text-lg font-semibold mb-4">
                     User Information
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <FormField
                       control={form.control}
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Full Name *</FormLabel>
+                          <FormLabel>
+                            Full Name <span className="text-red-600">*</span>
+                          </FormLabel>
                           <FormControl>
                             <Input placeholder="John Doe" {...field} />
                           </FormControl>
@@ -367,7 +370,9 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Email *</FormLabel>
+                          <FormLabel>
+                            Email <span className="text-red-600">*</span>
+                          </FormLabel>
                           <FormControl>
                             <Input
                               type="email"
@@ -385,13 +390,30 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Password *</FormLabel>
+                          <FormLabel>
+                            Password <span className="text-red-600">*</span>
+                          </FormLabel>
                           <FormControl>
-                            <Input
-                              type="password"
-                              placeholder="Min. 8 characters"
-                              {...field}
-                            />
+                            <div className="relative">
+                              <Input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Min. 8 characters"
+                                {...field}
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                onClick={() => setShowPassword(!showPassword)}
+                              >
+                                {showPassword ? (
+                                  <EyeOff className="h-4 w-4 text-gray-400" />
+                                ) : (
+                                  <Eye className="h-4 w-4 text-gray-400" />
+                                )}
+                              </Button>
+                            </div>
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -403,7 +425,9 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                       name="phone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Phone</FormLabel>
+                          <FormLabel>
+                            Phone <span className="text-red-600">*</span>
+                          </FormLabel>
                           <FormControl>
                             <Input placeholder="+1234567890" {...field} />
                           </FormControl>
@@ -427,8 +451,11 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                 name="sports"
                 render={() => (
                   <FormItem>
-                    <FormLabel>Sports * (Select at least one)</FormLabel>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    <FormLabel>
+                      Sports <span className="text-red-600">*</span> (Select at
+                      least one)
+                    </FormLabel>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 py-2">
                       {SPORTS_LIST.map((sport) => (
                         <FormField
                           key={sport}
@@ -520,7 +547,9 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                   name="hourlyRate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Hourly Rate ($)</FormLabel>
+                      <FormLabel>
+                        Hourly Rate ₹<span className="text-red-600">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -776,7 +805,9 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
 
             {/* Availability */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Availability</h3>
+              <h3 className="text-lg font-semibold mb-4">
+                Availability <span className="text-red-600">*</span>
+              </h3>
 
               {/* Days */}
               <FormField
@@ -785,7 +816,7 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                 render={() => (
                   <FormItem>
                     <FormLabel>Available Days</FormLabel>
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       {DAYS_OF_WEEK.map((day) => (
                         <FormField
                           key={day}

@@ -2,8 +2,6 @@ TODO:
 
 P1:
 
-- [ ] In trainer create form - mark * for required fields
-- [ ] In trainer create form - show/hide password functionality
 - [ ] In trainer edit - make sure ntg is empty while editing like hourly rate as blank
 - [ ] Validation in trainer register form - unique email, phone, password strength - show the error from user APIs response 
 - [ ] Functional Student Dashboard
@@ -11,6 +9,8 @@ P1:
 - [ ] Student functionalities - check what all actions are present and what needs to be added
 - [ ] show if the student is verified or not in the profile
 - [ ] Functional Trainer Dashboard
+- [ ] trainer profile was able to snuck into /admin -> fix that 
+- [ ] delete trainer - delete user too?
 - [ ] Trainer functionalities - check what all actions are present and what needs to be added
 - [ ] Add Edit Trainer Profile in F
 - [ ] Student, trainer interactions - check the flow
@@ -84,3 +84,5 @@ Done ✅
 - [x] Fix the Trainer Management page - fix filter
 - [x] Fix Edit Trainer -> multi-select sports and specializations 
 - [x] Fix Build errors in frontend after adding Trainer Management
+- [x] In trainer create form - mark * for required fields
+- [x] In trainer create form - show/hide password functionality
