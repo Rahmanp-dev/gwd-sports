@@ -10,6 +10,7 @@ import {
   MGFC_FEATURES,
   MGFC_PROGRAMS,
 } from "@/utils/data/mgfcData";
+import StatsSection from "@/components/landing/StatsSection";
 
 export default function MGFCPage() {
   useEffect(() => {
@@ -23,14 +24,17 @@ export default function MGFCPage() {
       <SectionHero
         title={MGFC_HERO_DATA.title}
         subtitle={MGFC_HERO_DATA.subtitle}
-        description={MGFC_HERO_DATA.description}
+        description=""
         backgroundImage={MGFC_HERO_DATA.backgroundImage}
         icon={MGFC_HERO_DATA.icon}
+        logo="/logos/mgfc.png"
         stats={MGFC_HERO_DATA.stats}
-        accentColor="from-green-500 to-emerald-500"
+        accentColor="from-amber-400 to-yellow-500"
         ctaText="Join MGFC"
         secondaryCtaText="Book Trial"
       />
+
+      <StatsSection />
 
       {/* Programs Section */}
       {/* <ProgramsSection
@@ -45,8 +49,8 @@ export default function MGFCPage() {
         title="Upcoming & Tournaments"
         subtitle="Football Events"
         events={MGFC_EVENTS}
-        accentColor="from-green-500 to-emerald-500"
-        bgGradient="from-green-500/10 to-emerald-500/10"
+        accentColor="from-amber-400 to-yellow-500"
+        bgGradient="from-amber-500/10 to-yellow-500/10"
       />
 
       {/* Features Section */}
@@ -54,8 +58,8 @@ export default function MGFCPage() {
         title="The MGFC Advantage"
         subtitle="Why Choose MGFC"
         features={MGFC_FEATURES}
-        accentColor="from-green-500 to-emerald-500"
-        bgGradient="from-green-500/20 to-emerald-500/20"
+        accentColor="from-amber-400 to-yellow-500"
+        bgGradient="from-amber-500/20 to-yellow-500/20"
       />
 
       {/* Footer */}

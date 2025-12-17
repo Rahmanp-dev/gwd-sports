@@ -27,25 +27,25 @@ export default function MGRLPage() {
       icon: Trophy,
       value: "24",
       label: "Championships",
-      gradient: "from-amber-500 to-yellow-500",
+      gradient: "from-red-600 to-red-500",
     },
     {
       icon: Users,
       value: "200+",
       label: "Active Racers",
-      gradient: "from-yellow-500 to-amber-500",
+      gradient: "from-red-500 to-rose-500",
     },
     {
       icon: Target,
       value: "95%",
       label: "Safety Rate",
-      gradient: "from-orange-500 to-amber-500",
+      gradient: "from-red-600 to-red-400",
     },
     {
       icon: Award,
       value: "50+",
       label: "Podium Finishes",
-      gradient: "from-red-500 to-orange-500",
+      gradient: "from-rose-600 to-red-500",
     },
   ];
 
@@ -58,25 +58,23 @@ export default function MGRLPage() {
         description={MGRL_HERO_DATA.description}
         backgroundImage={MGRL_HERO_DATA.backgroundImage}
         icon={MGRL_HERO_DATA.icon}
+        logo="/logos/mgrl.png"
         stats={MGRL_HERO_DATA.stats}
-        accentColor="from-amber-500 to-yellow-500"
+        accentColor="from-red-500 to-red-600"
         ctaText="Join MGRL"
         secondaryCtaText="Book Test Drive"
       />
 
       {/* Stats Banner */}
-      <StatsBanner
-        stats={racingStats}
-        accentColor="from-amber-500 to-yellow-500"
-      />
+      <StatsBanner stats={racingStats} accentColor="from-red-500 to-red-600" />
 
       {/* Racing Categories Section */}
       <CategoriesSection
         title="Racing Categories"
         subtitle="Choose Your Track"
         categories={MGRL_RACING_CATEGORIES}
-        accentColor="from-amber-500 to-yellow-500"
-        bgGradient="from-amber-500/20 to-yellow-500/20"
+        accentColor="from-red-500 to-red-600"
+        bgGradient="from-red-500/20 to-red-600/20"
       />
 
       {/* Programs Section */}
@@ -92,8 +90,8 @@ export default function MGRLPage() {
         title="Upcoming Championships & Events"
         subtitle="Racing Events"
         events={MGRL_EVENTS}
-        accentColor="from-amber-500 to-yellow-500"
-        bgGradient="from-amber-500/10 to-yellow-500/10"
+        accentColor="from-red-500 to-red-600"
+        bgGradient="from-red-500/10 to-red-600/10"
       />
 
       {/* Features Section */}
@@ -101,8 +99,8 @@ export default function MGRLPage() {
         title="The MGRL Advantage"
         subtitle="Why Choose MGRL"
         features={MGRL_FEATURES}
-        accentColor="from-amber-500 to-yellow-500"
-        bgGradient="from-amber-500/20 to-yellow-500/20"
+        accentColor="from-red-500 to-red-600"
+        bgGradient="from-red-500/20 to-red-600/20"
       />
 
       {/* Footer */}

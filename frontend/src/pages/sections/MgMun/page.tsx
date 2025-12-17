@@ -49,7 +49,7 @@ export default function MgMunPage() {
         subtitle={mgmunData.hero.subtitle}
         description={mgmunData.hero.description}
         backgroundImage="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1920&h=1080&fit=crop"
-        accentColor="from-blue-500 to-purple-500"
+        accentColor="from-blue-500 to-amber-500"
         ctaText="Register Now"
         secondaryCtaText="Learn More"
         stats={mgmunData.hero.stats}
@@ -58,7 +58,7 @@ export default function MgMunPage() {
 
       <StatsBanner
         stats={mgmunData.hero.stats}
-        accentColor="from-blue-500 to-purple-500"
+        accentColor="from-blue-500 to-amber-500"
       />
 
       {/* About Section */}

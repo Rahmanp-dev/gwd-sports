@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
   MapPin,
@@ -78,6 +78,7 @@ export default function EventPage() {
   const [sport, setSport] = useState("All Sports");
   const [location, setLocation] = useState("");
   const [status, setStatus] = useState("all");
+  const [showConfetti] = useState(true);
 
   const { data, isLoading } = useQuery({
     queryKey: ["publicEvents", page, search, sport, location, status],
@@ -154,6 +155,57 @@ export default function EventPage() {
           ))}
         </div>
 
+        {/* Lightweight Continuous Confetti Effect */}
+        <AnimatePresence>
+          {showConfetti && (
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              {[...Array(25)].map((_, i) => {
+                const colors = [
+                  "bg-purple-500/40",
+                  "bg-red-500/40",
+                  "bg-white-500/40",
+                  "bg-orange-500/40",
+                  "bg-indigo-500/40",
+                  "bg-pink-500/40",
+                  "bg-blue-500/40",
+                  "bg-yellow-500/40",
+                  "bg-green-500/40",
+                ];
+                const randomColor =
+                  colors[Math.floor(Math.random() * colors.length)];
+                const randomX = Math.random() * 100;
+                const randomDelay = Math.random() * 3;
+                const randomDuration = 4 + Math.random() * 3;
+                const randomRotation = Math.random() * 360;
+
+                return (
+                  <motion.div
+                    key={i}
+                    className={`absolute w-3 h-3 ${randomColor} rounded-sm`}
+                    style={{
+                      left: `${randomX}%`,
+                      top: "-10%",
+                    }}
+                    animate={{
+                      y: ["0vh", "120vh"],
+                      x: [0, (Math.random() - 0.5) * 80],
+                      opacity: [10, 8, 6, 10],
+                      rotate: [0, randomRotation, randomRotation * 2],
+                    }}
+                    transition={{
+                      duration: randomDuration,
+                      delay: randomDelay,
+                      ease: "linear",
+                      repeat: Infinity,
+                      repeatDelay: Math.random() * 2,
+                    }}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </AnimatePresence>
+
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -161,10 +213,7 @@ export default function EventPage() {
             className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-full mb-8 shadow-lg"
           >
             <Zap className="w-5 h-5" />
-            <span
-              className="text-sm font-black uppercase tracking-[0.3em]"
-              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-            >
+            <span className="text-sm font-black uppercase tracking-[0.3em] font-display">
               All Events
             </span>
           </motion.div>
@@ -173,8 +222,7 @@ export default function EventPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none"
-            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+            className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase font-display leading-none"
           >
             Discover
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-500">

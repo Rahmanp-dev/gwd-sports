@@ -32,8 +32,9 @@ export default function GalaxyEventsPage() {
         description={GALAXY_EVENTS_HERO_DATA.description}
         backgroundImage={GALAXY_EVENTS_HERO_DATA.backgroundImage}
         icon={GALAXY_EVENTS_HERO_DATA.icon}
+        logo="/logos/galaxy-events.png"
         stats={GALAXY_EVENTS_HERO_DATA.stats}
-        accentColor="from-purple-500 to-indigo-500"
+        accentColor="from-blue-500 to-slate-100"
         ctaText="View Events"
         secondaryCtaText="Register Interest"
       />

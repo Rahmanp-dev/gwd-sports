@@ -8,11 +8,11 @@ P1:
 - [ ] Create connection between user profile and their profiles - should easily navigate to student/trainer profile from user profile  -> in the profile page only have a tab to switch between dashboard and the profile 
 - [ ] Student, trainer interactions - check the flow
 - [ ] Student, trainer, admin interactions - check the flow
+- [ ] Specific Event to take to that event details page 
 - [ ] Centralized login and logout marker on top right corner - Centralized my profile and my dashboard marker on top right corner
-  
+
 P1.5:
 
-- [ ] Revamp landing page 
 - [ ] Homepage Customization
 - [ ] In football page - promote MGFC and link to its page
 - [ ] Fix Admin Dashboard - some errors
@@ -29,8 +29,6 @@ P2:
 - [ ] Soft delete When leaving events
 - [ ] refresh token - what is it and how to implement
 - [ ] improve isActive in events
-- [ ] Migrate data folder to utils/constants
-- [ ] Update the landing page details
 - [ ] Add events agenda - in event management compone- like explaining all options
 - [ ] Forgot password, reset password 
 - [ ] Implement permanent delete of student / trainer by admin
@@ -99,3 +97,6 @@ Done ✅
 - [x] Integrate Academy to Admin Panel
 - [x] Student functionalities - check what all actions are present and what needs to be added
 - [x] Trainer functionalities - check what all actions are present and what needs to be added
+- [x] Revamp landing page 
+- [x] Migrate data folder to utils/constants
+- [x] Update the landing page details

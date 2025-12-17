@@ -76,20 +76,25 @@ export default function Footer() {
               Quick Links
             </h4>
             <ul className="space-y-4">
-              {["About Us", "Our Programs", "Success Stories", "Events"].map(
-                (item) => (
-                  <li key={item}>
-                    <motion.a
-                      whileHover={{ x: 10 }}
-                      href="#"
-                      className="text-gray-400 hover:text-amber-500 transition-colors font-bold uppercase text-base tracking-wider flex items-center gap-2 group"
-                    >
-                      <Zap className="w-4 h-4 text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      {item}
-                    </motion.a>
-                  </li>
-                ),
-              )}
+              {(
+                [
+                  { label: "About Us", href: "/about" },
+                  { label: "Our Programs", href: "/programs" },
+                  { label: "Success Stories", href: "/success-stories" },
+                  { label: "Events", href: "/events" },
+                ] as { label: string; href: string }[]
+              ).map((item) => (
+                <li key={item.label}>
+                  <motion.a
+                    whileHover={{ x: 10 }}
+                    href={item.href}
+                    className="text-gray-400 hover:text-amber-500 transition-colors font-bold uppercase text-base tracking-wider flex items-center gap-2 group"
+                  >
+                    <Zap className="w-4 h-4 text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {item.label}
+                  </motion.a>
+                </li>
+              ))}
             </ul>
           </motion.div>
 
@@ -104,21 +109,23 @@ export default function Footer() {
               Our Sports
             </h4>
             <ul className="space-y-4">
-              {[
-                "Football",
-                "Basketball",
-                "Racing League",
-                "Model United Nations",
-                "Galaxy Events",
-              ].map((sport) => (
-                <li key={sport}>
+              {(
+                [
+                  { label: "Football", href: "/programs/football" },
+                  { label: "Basketball", href: "/programs/basketball" },
+                  { label: "Racing League", href: "/programs/racing-league" },
+                  { label: "Model United Nations", href: "/programs/mun" },
+                  { label: "Galaxy Events", href: "/programs/galaxy-events" },
+                ] as { label: string; href: string }[]
+              ).map((sport) => (
+                <li key={sport.label}>
                   <motion.a
                     whileHover={{ x: 10 }}
-                    href="#"
+                    href={sport.href}
                     className="text-gray-400 hover:text-amber-500 transition-colors font-bold uppercase text-base tracking-wider flex items-center gap-2 group"
                   >
                     <Zap className="w-4 h-4 text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    {sport}
+                    {sport.label}
                   </motion.a>
                 </li>
               ))}
@@ -178,13 +185,19 @@ export default function Footer() {
           </p>
           <div className="flex gap-8">
             <a
-              href="#"
+              href="/contact"
+              className="text-gray-400 hover:text-amber-500 transition-colors font-bold uppercase text-sm tracking-wider"
+            >
+              Contact us
+            </a>
+            <a
+              href="/privacy-policy"
               className="text-gray-400 hover:text-amber-500 transition-colors font-bold uppercase text-sm tracking-wider"
             >
               Privacy
             </a>
             <a
-              href="#"
+              href="/terms-and-conditions"
               className="text-gray-400 hover:text-amber-500 transition-colors font-bold uppercase text-sm tracking-wider"
             >
               Terms

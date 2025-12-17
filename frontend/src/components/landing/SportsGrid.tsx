@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const sports = [
   {
@@ -9,7 +10,8 @@ const sports = [
     tagline: "Elite Training",
     image:
       "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&h=600&fit=crop",
-    color: "from-green-600 to-emerald-500",
+    color: "from-yellow-600 to-amber-500",
+    link: "/programs/football",
   },
   {
     name: "Basketball",
@@ -18,6 +20,7 @@ const sports = [
     image:
       "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&h=600&fit=crop",
     color: "from-orange-600 to-red-500",
+    link: "/programs/basketball",
   },
   {
     name: "Racing League",
@@ -26,6 +29,7 @@ const sports = [
     image:
       "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=800&h=600&fit=crop",
     color: "from-red-600 to-orange-500",
+    link: "/programs/racing-league",
   },
   {
     name: "Model United Nations",
@@ -34,6 +38,7 @@ const sports = [
     image:
       "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&h=600&fit=crop",
     color: "from-blue-600 to-indigo-500",
+    link: "/programs/mun",
   },
   {
     name: "Galaxy Events",
@@ -42,6 +47,7 @@ const sports = [
     image:
       "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&h=600&fit=crop",
     color: "from-purple-600 to-pink-500",
+    link: "/programs/galaxy-events",
   },
 ];
 
@@ -116,62 +122,64 @@ export default function SportsGrid() {
               className="group relative"
               style={{ perspective: "1000px" }}
             >
-              <div className="relative overflow-hidden bg-gray-900 rounded-3xl shadow-2xl hover:shadow-[0_20px_60px_rgba(251,191,36,0.3)] transition-all duration-500 transform-gpu">
-                {/* Image */}
-                <div className="relative h-80 overflow-hidden">
-                  <motion.img
-                    whileHover={{ scale: 1.2 }}
-                    transition={{ duration: 0.6 }}
-                    src={sport.image}
-                    alt={sport.name}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+              <Link to={sport.link} className="block">
+                <div className="relative overflow-hidden bg-gray-900 rounded-3xl shadow-2xl hover:shadow-[0_20px_60px_rgba(251,191,36,0.3)] transition-all duration-500 transform-gpu">
+                  {/* Image */}
+                  <div className="relative h-80 overflow-hidden">
+                    <motion.img
+                      whileHover={{ scale: 1.2 }}
+                      transition={{ duration: 0.6 }}
+                      src={sport.image}
+                      alt={sport.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
 
-                  {/* Icon Badge */}
-                  <motion.div
-                    whileHover={{ scale: 1.2, rotate: 360 }}
-                    transition={{ duration: 0.6 }}
-                    className="absolute top-6 left-6 w-20 h-20 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-2xl flex items-center justify-center text-4xl shadow-2xl"
-                  >
-                    {sport.icon}
-                  </motion.div>
-
-                  {/* Gradient Overlay on Hover */}
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${sport.color} opacity-0 group-hover:opacity-90 transition-opacity duration-500 flex items-center justify-center`}
-                  >
+                    {/* Icon Badge */}
                     <motion.div
-                      initial={{ scale: 0 }}
-                      whileHover={{ scale: 1 }}
-                      className="text-center"
+                      whileHover={{ scale: 1.2, rotate: 360 }}
+                      transition={{ duration: 0.6 }}
+                      className="absolute top-6 left-6 w-20 h-20 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-2xl flex items-center justify-center text-4xl shadow-2xl"
                     >
-                      <div className="text-7xl mb-4">{sport.icon}</div>
-                      <div className="text-white text-2xl font-black uppercase tracking-wider mb-2 font-display">
-                        {sport.tagline}
-                      </div>
-                      <div className="flex items-center justify-center gap-2 text-white font-black uppercase text-sm">
-                        Explore <ArrowRight className="w-5 h-5" />
-                      </div>
+                      {sport.icon}
                     </motion.div>
-                  </div>
-                </div>
 
-                {/* Content */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
-                  <h3 className="text-4xl font-black text-white uppercase tracking-tight mb-2 font-display">
-                    {sport.name}
-                  </h3>
-                  <div className="text-amber-400 font-bold uppercase tracking-wider text-sm">
-                    {sport.tagline}
+                    {/* Gradient Overlay on Hover */}
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${sport.color} opacity-10 group-hover:opacity-40 transition-opacity duration-500 flex items-center justify-center`}
+                    >
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        whileHover={{ scale: 1 }}
+                        className="text-center"
+                      >
+                        <div className="text-7xl mb-4">{sport.icon}</div>
+                        <div className="text-white text-2xl font-black uppercase tracking-wider mb-2 font-display">
+                          {sport.tagline}
+                        </div>
+                        <div className="flex items-center justify-center gap-2 text-white font-black uppercase text-sm">
+                          Explore <ArrowRight className="w-5 h-5" />
+                        </div>
+                      </motion.div>
+                    </div>
                   </div>
-                </div>
 
-                {/* Glowing Border */}
-                <div
-                  className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${sport.color} opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 -z-10`}
-                />
-              </div>
+                  {/* Content */}
+                  <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
+                    <h3 className="text-4xl font-black text-white uppercase tracking-tight mb-2 font-display">
+                      {sport.name}
+                    </h3>
+                    <div className="text-amber-400 font-bold uppercase tracking-wider text-sm">
+                      {sport.tagline}
+                    </div>
+                  </div>
+
+                  {/* Glowing Border */}
+                  <div
+                    className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${sport.color} opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 -z-10`}
+                  />
+                </div>
+              </Link>
             </motion.div>
           ))}
 

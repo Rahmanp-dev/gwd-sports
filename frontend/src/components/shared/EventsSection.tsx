@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Users, ArrowRight, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export interface Event {
   title: string;
@@ -197,14 +198,16 @@ export const EventsSection: React.FC<EventsSectionProps> = ({
           className="text-center mt-16"
         >
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              size="lg"
-              variant="outline"
-              className={`border-4 border-green-500 text-green-500 hover:bg-green-500 hover:text-black text-xl font-black uppercase px-12 py-7 rounded-xl shadow-xl hover:shadow-2xl hover:shadow-green-500/50 transition-all`}
-            >
-              View All Events
-              <ArrowRight className="ml-3 w-6 h-6" />
-            </Button>
+            <Link to="/events">
+              <Button
+                size="lg"
+                variant="outline"
+                className={`border-4 border-green-500 text-green-500 hover:bg-green-500 hover:text-black text-xl font-black uppercase px-12 py-7 rounded-xl shadow-xl hover:shadow-2xl hover:shadow-green-500/50 transition-all`}
+              >
+                View All Events
+                <ArrowRight className="ml-3 w-6 h-6" />
+              </Button>
+            </Link>
           </motion.div>
         </motion.div>
       </div>

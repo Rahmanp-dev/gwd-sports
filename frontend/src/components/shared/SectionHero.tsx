@@ -115,119 +115,259 @@ export const SectionHero: React.FC<SectionHeroProps> = ({
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="max-w-5xl mx-auto text-center">
-          {/* Icon Badge - Theme Aware */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="inline-block mb-8"
-          >
-            {logo ? (
-              // Display logo if provided
-              <div className="inline-flex items-center justify-center mb-4">
-                <img
-                  src={logo}
-                  alt={title}
-                  className="h-24 w-auto object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+        <div className="max-w-6xl mx-auto">
+          {logo ? (
+            // Cinematic Logo + Heading Layout (Side by Side)
+            <div className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-16 mb-16">
+              {/* Logo Section */}
+              <motion.div
+                initial={{ opacity: 0, x: -100, scale: 0.8 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                transition={{
+                  duration: 1,
+                  delay: 0.2,
+                  type: "spring",
+                  bounce: 0.4,
+                }}
+                className="relative group"
+              >
+                {/* Animated Glow Backdrop */}
+                <motion.div
+                  animate={{
+                    scale: [1, 1.15, 1],
+                    opacity: [0.4, 0.7, 0.4],
+                    rotate: [0, 5, -5, 0],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className={`absolute inset-0 blur-3xl rounded-full ${
+                    isAmberTheme
+                      ? "bg-gradient-to-br from-amber-400/60 via-yellow-500/50 to-amber-600/40"
+                      : isOrangeTheme
+                        ? "bg-gradient-to-br from-orange-400/60 via-red-500/50 to-orange-600/40"
+                        : "bg-gradient-to-br from-green-400/60 via-emerald-500/50 to-green-600/40"
+                  }`}
                 />
-              </div>
-            ) : (
-              // Display icon badge if no logo
-              <div
-                className={`inline-flex items-center gap-3 px-8 py-4 ${
-                  isOrangeTheme
-                    ? "bg-orange-500/20 border-orange-500/30 shadow-orange-500/30"
-                    : isAmberTheme
-                      ? "bg-amber-500/20 border-amber-500/30 shadow-amber-500/30"
-                      : "bg-green-500/20 border-green-500/30 shadow-green-500/30"
-                } backdrop-blur-md border rounded-full shadow-2xl`}
-              >
-                <span className="text-4xl">{icon}</span>
-                <span
-                  className={`${
-                    isOrangeTheme
-                      ? "text-orange-400"
-                      : isAmberTheme
-                        ? "text-amber-400"
-                        : "text-green-400"
-                  } text-sm font-black uppercase tracking-[0.3em] font-display`}
-                >
-                  {subtitle}
-                </span>
-              </div>
-            )}
-          </motion.div>
 
-          {/* Subtitle text (always shown below logo/icon) */}
-          {logo && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="mb-8"
-            >
-              <span
-                className={`${
-                  isOrangeTheme
-                    ? "text-orange-400"
-                    : isAmberTheme
-                      ? "text-amber-400"
-                      : "text-green-400"
-                } text-sm font-black uppercase tracking-[0.3em] font-display`}
+                {/* Glass Container */}
+                <motion.div
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  className={`relative w-64 h-64 sm:w-72 sm:h-72 lg:w-80 lg:h-80 p-6 lg:p-8 rounded-3xl backdrop-blur-xl border-2 ${
+                    isAmberTheme
+                      ? "bg-gradient-to-br from-amber-500/10 via-yellow-500/5 to-transparent border-amber-400/30 shadow-[0_0_60px_rgba(245,158,11,0.4)]"
+                      : isOrangeTheme
+                        ? "bg-gradient-to-br from-orange-500/10 via-red-500/5 to-transparent border-orange-400/30 shadow-[0_0_60px_rgba(249,115,22,0.4)]"
+                        : "bg-gradient-to-br from-green-500/10 via-emerald-500/5 to-transparent border-green-400/30 shadow-[0_0_60px_rgba(34,197,94,0.4)]"
+                  } transition-all duration-500 flex items-center justify-center`}
+                >
+                  {/* Logo Image */}
+                  <motion.img
+                    whileHover={{ rotate: [0, -5, 5, 0], scale: 1.05 }}
+                    transition={{ duration: 0.6 }}
+                    src={logo}
+                    alt={title}
+                    className={`max-w-[90%] max-h-[90%] w-auto h-auto object-contain relative z-10 ${
+                      isAmberTheme
+                        ? "drop-shadow-[0_0_40px_rgba(245,158,11,0.8)]"
+                        : isOrangeTheme
+                          ? "drop-shadow-[0_0_40px_rgba(249,115,22,0.8)]"
+                          : "drop-shadow-[0_0_40px_rgba(34,197,94,0.8)]"
+                    }`}
+                  />
+
+                  {/* Corner Accents */}
+                  {[
+                    "top-0 left-0",
+                    "top-0 right-0 rotate-90",
+                    "bottom-0 left-0 -rotate-90",
+                    "bottom-0 right-0 rotate-180",
+                  ].map((position, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.5 + i * 0.1, duration: 0.5 }}
+                      className={`absolute ${position} w-12 h-12 border-l-4 border-t-4 ${
+                        isAmberTheme
+                          ? "border-amber-400/70"
+                          : isOrangeTheme
+                            ? "border-orange-400/70"
+                            : "border-green-400/70"
+                      }`}
+                    />
+                  ))}
+                </motion.div>
+              </motion.div>
+
+              {/* Heading Section */}
+              <motion.div
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1, delay: 0.4 }}
+                className="text-center lg:text-left"
               >
-                {subtitle}
-              </span>
-            </motion.div>
+                {/* Subtitle */}
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                  className="mb-6"
+                >
+                  <span
+                    className={`inline-block px-6 py-2 rounded-full border-2 backdrop-blur-md ${
+                      isAmberTheme
+                        ? "text-amber-400 border-amber-400/40 bg-amber-500/10"
+                        : isOrangeTheme
+                          ? "text-orange-400 border-orange-400/40 bg-orange-500/10"
+                          : "text-green-400 border-green-400/40 bg-green-500/10"
+                    } text-sm font-black uppercase tracking-[0.3em] font-display`}
+                  >
+                    {subtitle}
+                  </span>
+                </motion.div>
+
+                {/* Main Title */}
+                <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black uppercase leading-[0.85] font-display mb-6">
+                  {title
+                    .split(" ")
+                    .slice(0, -1)
+                    .map((word, index) => (
+                      <motion.span
+                        key={index}
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          duration: 0.8,
+                          delay: 0.6 + index * 0.15,
+                        }}
+                        className="block text-white"
+                      >
+                        {word}
+                      </motion.span>
+                    ))}
+                  <motion.span
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{
+                      duration: 1,
+                      delay: 0.9,
+                      type: "spring",
+                      bounce: 0.5,
+                    }}
+                    className={`block text-transparent bg-clip-text bg-gradient-to-r ${accentColor} ${
+                      isAmberTheme
+                        ? "drop-shadow-[0_0_40px_rgba(245,158,11,0.9)]"
+                        : isOrangeTheme
+                          ? "drop-shadow-[0_0_40px_rgba(249,115,22,0.9)]"
+                          : "drop-shadow-[0_0_40px_rgba(34,197,94,0.9)]"
+                    }`}
+                  >
+                    {title.split(" ").slice(-1)[0]}
+                  </motion.span>
+                </h1>
+
+                {/* Decorative Line */}
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 1.2, delay: 1.2 }}
+                  className={`w-48 h-1.5 bg-gradient-to-r ${accentColor} mb-8 origin-left ${
+                    isAmberTheme
+                      ? "shadow-[0_0_30px_rgba(245,158,11,0.8)]"
+                      : isOrangeTheme
+                        ? "shadow-[0_0_30px_rgba(249,115,22,0.8)]"
+                        : "shadow-[0_0_30px_rgba(34,197,94,0.8)]"
+                  }`}
+                />
+              </motion.div>
+            </div>
+          ) : (
+            // Original Icon Badge Layout (when no logo)
+            <div className="text-center">
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="inline-block mb-8"
+              >
+                <div
+                  className={`inline-flex items-center gap-3 px-8 py-4 ${
+                    isOrangeTheme
+                      ? "bg-orange-500/20 border-orange-500/30 shadow-orange-500/30"
+                      : isAmberTheme
+                        ? "bg-amber-500/20 border-amber-500/30 shadow-amber-500/30"
+                        : "bg-green-500/20 border-green-500/30 shadow-green-500/30"
+                  } backdrop-blur-md border rounded-full shadow-2xl`}
+                >
+                  <span className="text-4xl">{icon}</span>
+                  <span
+                    className={`${
+                      isOrangeTheme
+                        ? "text-orange-400"
+                        : isAmberTheme
+                          ? "text-amber-400"
+                          : "text-green-400"
+                    } text-sm font-black uppercase tracking-[0.3em] font-display`}
+                  >
+                    {subtitle}
+                  </span>
+                </div>
+              </motion.div>
+
+              {/* Main Heading */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="mb-8"
+              >
+                <h1 className="text-6xl sm:text-7xl lg:text-[120px] font-black text-white mb-6 uppercase leading-[0.9] font-display">
+                  {title.split(" ").slice(0, -1).join(" ")}
+                  <motion.span
+                    initial={{ opacity: 0, x: -50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                    className={`block text-transparent bg-clip-text bg-gradient-to-r ${accentColor} ${
+                      isOrangeTheme
+                        ? "drop-shadow-[0_0_30px_rgba(249,115,22,0.8)]"
+                        : isAmberTheme
+                          ? "drop-shadow-[0_0_30px_rgba(245,158,11,0.8)]"
+                          : "drop-shadow-[0_0_30px_rgba(34,197,94,0.8)]"
+                    }`}
+                  >
+                    {title.split(" ").slice(-1)[0]}
+                  </motion.span>
+                </h1>
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 1, delay: 0.8 }}
+                  className={`w-32 h-2 bg-gradient-to-r ${accentColor} mx-auto mb-8 ${
+                    isOrangeTheme
+                      ? "shadow-[0_0_20px_rgba(249,115,22,0.6)]"
+                      : isAmberTheme
+                        ? "shadow-[0_0_20px_rgba(245,158,11,0.6)]"
+                        : "shadow-[0_0_20px_rgba(34,197,94,0.6)]"
+                  }`}
+                />
+              </motion.div>
+            </div>
           )}
 
-          {/* Main Heading */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="mb-8"
-          >
-            <h1 className="text-6xl sm:text-7xl lg:text-[120px] font-black text-white mb-6 uppercase leading-[0.9] font-display">
-              {title.split(" ").slice(0, -1).join(" ")}
-              <motion.span
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                className={`block text-transparent bg-clip-text bg-gradient-to-r ${accentColor} ${
-                  isOrangeTheme
-                    ? "drop-shadow-[0_0_30px_rgba(249,115,22,0.8)]"
-                    : isAmberTheme
-                      ? "drop-shadow-[0_0_30px_rgba(245,158,11,0.8)]"
-                      : "drop-shadow-[0_0_30px_rgba(34,197,94,0.8)]"
-                }`}
-              >
-                {title.split(" ").slice(-1)[0]}
-              </motion.span>
-            </h1>
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 1, delay: 0.8 }}
-              className={`w-32 h-2 bg-gradient-to-r ${accentColor} mx-auto mb-8 ${
-                isOrangeTheme
-                  ? "shadow-[0_0_20px_rgba(249,115,22,0.6)]"
-                  : isAmberTheme
-                    ? "shadow-[0_0_20px_rgba(245,158,11,0.6)]"
-                    : "shadow-[0_0_20px_rgba(34,197,94,0.6)]"
-              }`}
-            />
-          </motion.div>
-
           {/* Description */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.2 }}
-            className="text-xl sm:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed font-semibold"
-          >
-            {description}
-          </motion.p>
+          {description && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 1.2 }}
+              className="text-xl sm:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed font-semibold text-center"
+            >
+              {description}
+            </motion.p>
+          )}
 
           {/* CTA Buttons */}
           <motion.div
@@ -254,7 +394,7 @@ export const SectionHero: React.FC<SectionHeroProps> = ({
                 </span>
               </Button>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            {/* <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 size="lg"
                 variant="outline"
@@ -270,11 +410,11 @@ export const SectionHero: React.FC<SectionHeroProps> = ({
                 <Phone className="mr-3 w-6 h-6" />
                 {secondaryCtaText}
               </Button>
-            </motion.div>
+            </motion.div> */}
           </motion.div>
 
           {/* Stats - Theme Aware */}
-          {stats && stats.length > 0 && (
+          {/* {stats && stats.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
@@ -334,7 +474,7 @@ export const SectionHero: React.FC<SectionHeroProps> = ({
                 </motion.div>
               ))}
             </motion.div>
-          )}
+          )} */}
         </div>
       </div>
 

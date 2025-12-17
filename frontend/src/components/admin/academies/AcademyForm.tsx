@@ -54,16 +54,12 @@ const academyFormSchema = z.object({
     yearly: z.number().min(0, { message: "Yearly fee must be positive" }),
   }),
   timings: z.object({
-    opening: z
-      .string()
-      .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, {
-        message: "Valid time format HH:MM",
-      }),
-    closing: z
-      .string()
-      .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, {
-        message: "Valid time format HH:MM",
-      }),
+    opening: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, {
+      message: "Valid time format HH:MM",
+    }),
+    closing: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, {
+      message: "Valid time format HH:MM",
+    }),
     workingDays: z
       .array(z.string())
       .min(1, { message: "Select at least one working day" }),
