@@ -77,6 +77,7 @@ export const StudentManagement: React.FC = () => {
     setIsLoading(true);
     try {
       const response = await studentAdminService.getAllStudents(filters);
+      console.log(response);
       if (response?.data) {
         setStudents(response.data.students || []);
         setPagination({

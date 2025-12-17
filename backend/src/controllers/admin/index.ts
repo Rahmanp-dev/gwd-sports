@@ -334,6 +334,7 @@ export class AdminStudentController {
         academyId,
         trainerId,
         level,
+        isActive,
         search,
         sortBy = 'enrollmentDate',
         sortOrder = 'desc'
@@ -343,8 +344,9 @@ export class AdminStudentController {
       const limitNum = parseInt(limit as string);
       const skip = (pageNum - 1) * limitNum;
 
-      const filter: any = { isActive: true };
+      const filter: any = {};
       
+      if (isActive !== undefined) filter.isActive = isActive === 'true';
       if (academyId) filter.academyId = academyId;
       if (trainerId) filter.trainerId = trainerId;
       if (level) filter.level = level;

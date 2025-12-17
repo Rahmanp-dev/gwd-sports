@@ -110,6 +110,15 @@ const AppRouter: React.FC = () => {
         }
       />
 
+      <Route path="/not-found" element={<Navigate to="/" replace />} />
+      <Route path="/contact" element={<Navigate to="/" replace />} />
+      <Route path="/about" element={<Navigate to="/" replace />} />
+      <Route path="/privacy-policy" element={<Navigate to="/" replace />} />
+      <Route
+        path="/terms-and-conditions"
+        element={<Navigate to="/" replace />}
+      />
+
       {/* Fallback route */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

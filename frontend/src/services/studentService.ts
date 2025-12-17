@@ -167,7 +167,7 @@ class StudentAdminService {
 
     // Transform the response
     return {
-      success: response.success,
+      success: response,
       data: {
         students: response.data.students.map((student: any) =>
           this.transformStudent(student),

@@ -231,7 +231,7 @@ const StudentProfileSchema = new Schema<IStudentProfile>({
   },
   isActive: {
     type: Boolean,
-    default: false
+    default: true
   }
 }, {
   timestamps: true,
