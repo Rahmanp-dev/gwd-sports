@@ -47,10 +47,18 @@ export const TrainerDetails: React.FC<TrainerDetailsProps> = ({
       .substring(0, 2);
   };
 
-  const userName = trainer.userId?.name || trainer.user?.name || "Unknown";
-  const userEmail = trainer.userId?.email || trainer.user?.email || "N/A";
+  const userName =
+    (typeof trainer.userId === "object" && trainer.userId?.name) ||
+    trainer.user?.name ||
+    "Unknown";
+  const userEmail =
+    (typeof trainer.userId === "object" && trainer.userId?.email) ||
+    trainer.user?.email ||
+    "N/A";
   const userPhone =
-    trainer.userId?.phone || trainer.user?.phone || "Not provided";
+    (typeof trainer.userId === "object" && trainer.userId?.phone) ||
+    trainer.user?.phone ||
+    "Not provided";
 
   return (
     <Card className="w-full max-w-4xl mx-auto">

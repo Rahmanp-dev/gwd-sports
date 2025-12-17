@@ -157,10 +157,19 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
   const form = useForm<TrainerFormData>({
     resolver: zodResolver(trainerFormSchema),
     defaultValues: {
-      name: trainer?.userId?.name || trainer?.user?.name || "",
-      email: trainer?.userId?.email || trainer?.user?.email || "",
+      name:
+        (typeof trainer?.userId === "object" && trainer?.userId?.name) ||
+        trainer?.user?.name ||
+        "",
+      email:
+        (typeof trainer?.userId === "object" && trainer?.userId?.email) ||
+        trainer?.user?.email ||
+        "",
       password: "",
-      phone: trainer?.userId?.phone || trainer?.user?.phone || "",
+      phone:
+        (typeof trainer?.userId === "object" && trainer?.userId?.phone) ||
+        trainer?.user?.phone ||
+        "",
       sports: trainer?.sports || [],
       specializations: trainer?.specializations || [],
       hourlyRate: trainer?.hourlyRate || undefined,
@@ -428,7 +437,7 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                           render={({ field }) => {
                             const sportLower = sport.toLowerCase();
                             const isChecked = field.value?.some(
-                              (s) => s.toLowerCase() === sportLower
+                              (s) => s.toLowerCase() === sportLower,
                             );
 
                             return (
@@ -445,8 +454,9 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                                         // Remove sport (case-insensitive)
                                         field.onChange(
                                           value.filter(
-                                            (s) => s.toLowerCase() !== sportLower
-                                          )
+                                            (s) =>
+                                              s.toLowerCase() !== sportLower,
+                                          ),
                                         );
                                       }
                                     }}

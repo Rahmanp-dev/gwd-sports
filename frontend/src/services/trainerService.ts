@@ -39,33 +39,27 @@ interface TrainerProfileData {
 }
 
 interface TrainerListResponse {
-  success: boolean;
-  data: {
-    trainers: Trainer[];
-    pagination: {
-      currentPage: number;
-      totalPages: number;
-      totalTrainers: number;
-      hasNextPage: boolean;
-      hasPrevPage: boolean;
-    };
+  trainers: Trainer[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
   };
+  data: any;
 }
 
 interface TrainerResponse {
-  success: boolean;
-  data: {
-    trainer: Trainer;
-  };
+  trainer: Trainer;
   message?: string;
+  data: any;
 }
 
 interface UserResponse {
-  success: boolean;
-  data: {
-    user: User;
-  };
+  user: User;
   message?: string;
+  data: any;
 }
 
 class TrainerAdminService {
@@ -136,10 +130,11 @@ class TrainerAdminService {
   // Delete trainer (deactivate)
   async deleteTrainer(
     trainerId: string,
-  ): Promise<{ success: boolean; message: string }> {
+  ): Promise<{ success: boolean; message: string; data: any }> {
     const response = await apiService.delete<{
       success: boolean;
       message: string;
+      data: any;
     }>(`${this.baseUrl}/${trainerId}`);
     return response.data;
   }
@@ -153,10 +148,11 @@ class TrainerAdminService {
   }
 
   // Get trainer statistics
-  async getTrainerStats(): Promise<any> {
-    const response = await apiService.get(`${this.baseUrl}/stats`);
-    return response.data;
-  }
+  // async getTrainerStats(): Promise<any> {
+  //   const response = await apiService.get(`${this.baseUrl}/stats`);
+  //   console.log(response);
+  //   return response?.data;
+  // }
 }
 
 class TrainerService {

@@ -2,7 +2,10 @@ TODO:
 
 P1:
 
-- [ ] Fix Build errors in frontend after adding Trainer Management
+- [ ] In trainer create form - mark * for required fields
+- [ ] In trainer create form - show/hide password functionality
+- [ ] In trainer edit - make sure ntg is empty while editing like hourly rate as blank
+- [ ] Validation in trainer register form - unique email, phone, password strength - show the error from user APIs response 
 - [ ] Functional Student Dashboard
 - [ ] Add Edit Student Profile in F
 - [ ] Student functionalities - check what all actions are present and what needs to be added
@@ -80,3 +83,4 @@ Done ✅
 - [x] Complete Student Login , Trainer Login, and their pages
 - [x] Fix the Trainer Management page - fix filter
 - [x] Fix Edit Trainer -> multi-select sports and specializations 
+- [x] Fix Build errors in frontend after adding Trainer Management

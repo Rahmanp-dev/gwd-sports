@@ -130,11 +130,23 @@ export const TrainerTable: React.FC<TrainerTableProps> = ({
   };
 
   const getTrainerName = (trainer: Trainer) => {
-    return trainer.userId?.name || trainer.user?.name || "Unknown";
+    if (typeof trainer.userId === "object" && trainer.userId?.name) {
+      return trainer.userId.name;
+    }
+    if (trainer.user?.name) {
+      return trainer.user.name;
+    }
+    return "Unknown";
   };
 
   const getTrainerEmail = (trainer: Trainer) => {
-    return trainer.userId?.email || trainer.user?.email || "N/A";
+    if (typeof trainer.userId === "object" && trainer.userId?.email) {
+      return trainer.userId.email;
+    }
+    if (trainer.user?.email) {
+      return trainer.user.email;
+    }
+    return "N/A";
   };
 
   return (

@@ -240,10 +240,14 @@ export const TrainerManagement: React.FC = () => {
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
       console.log("its me fetch trainer for edit");
-      toast({
-        title: "Error",
+      toast.error("Failed to edit trainer details", {
         description: errorMessage,
-        variant: "destructive",
+        style: {
+          background: "#fef2f2",
+          borderColor: "#fecaca",
+          color: "#991b1b",
+        },
+        className: "border-l-4 border-l-red-500",
       });
     }
   };
@@ -283,7 +287,7 @@ export const TrainerManagement: React.FC = () => {
 
       {/* Form Dialog */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[600px] max-h-[90vh] overflow-y-auto">
           <TrainerForm
             trainer={selectedTrainer || undefined}
             onSubmit={handleTrainerSubmit}
