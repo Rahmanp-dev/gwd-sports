@@ -1,20 +1,16 @@
 TODO: 
 
 P1:
-- [ ] delete trainer / student - deactivate instead of delete -> soft delete -> deactivate their user account. So make sure that they can't login
-- [ ] Admin can reactivate trainer / student 
 
 - [ ] Functional Student Dashboard - /mgfc/student
 - [ ] Functional Trainer Dashboard - /mgfc/trainer
 - [ ] if (!studentProfile) in frontend\src\components\user\student\StudentProfile.tsx fix this
 - [ ] Create connection between user profile and their profiles - should easily navigate to student/trainer profile from user profile  -> in the profile page only have a tab to switch between dashboard and the profile 
-- [ ] Student functionalities - check what all actions are present and what needs to be added
-- [ ] show if the student is verified or not in the profile
-- [ ] Trainer functionalities - check what all actions are present and what needs to be added
 - [ ] Student, trainer interactions - check the flow
 - [ ] Student, trainer, admin interactions - check the flow
-- [ ] Centralized login and logout marker on top right corner
-- [ ] Centralized my profile and my dashboard marker on top right corner
+- [ ] Centralized login and logout marker on top right corner - Centralized my profile and my dashboard marker on top right corner
+  
+P1.5:
 
 - [ ] Revamp landing page 
 - [ ] Homepage Customization
@@ -23,9 +19,12 @@ P1:
 - [ ] Refresh token logic in frontend
 - [ ] Handle Existing Token in register pages and redirect them directly
 - [ ] Check edit student - it is misbehaving
-- [ ] Do something about the "inactive" users / trainers / students / academies 
+- [ ] show if the student is verified or not in the profile
+- [ ] Do something about the "inactive" users / trainers / students / academies -> deactivate instead of delete -> soft delete -> deactivate their user account. So make sure that they can't login
+- [ ] Admin can reactivate trainer / student 
 
 P2:
+
 - [ ] Frontend logging
 - [ ] Soft delete When leaving events
 - [ ] refresh token - what is it and how to implement
@@ -38,6 +37,7 @@ P2:
 - [ ] Take care of placeholders in forms 
 
 P3: 
+
 - [ ] Can we use MCP or some auto prompt like thing to automate prompts? like prompt engineering but automated
 - [ ] Dockerize the application
 - [ ] Do we hide the info of private (inactive) events? - http://localhost:5173/events/69409c9d306af5ffab0e1a5b
@@ -45,6 +45,7 @@ P3:
 - [ ] fix build warnings
 
 PROD:
+
 - [ ] Disable console logs in production
 - [ ] Optimize the build for production
 - [ ] Add SEO tags to the pages
@@ -96,3 +97,5 @@ Done ✅
 - [x] Contact Us Page
 - [x] About Us Page
 - [x] Integrate Academy to Admin Panel
+- [x] Student functionalities - check what all actions are present and what needs to be added
+- [x] Trainer functionalities - check what all actions are present and what needs to be added

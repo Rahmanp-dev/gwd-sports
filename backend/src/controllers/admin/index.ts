@@ -618,7 +618,6 @@ export class AdminStudentController {
   }
 }
 
-
 export class AdminTrainerController {
   // Get all trainers
   static async getAllTrainers(req: AuthRequest, res: Response) {
