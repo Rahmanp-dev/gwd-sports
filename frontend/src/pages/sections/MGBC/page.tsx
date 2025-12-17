@@ -14,7 +14,7 @@ import {
   MGBC_PROGRAMS,
   MGBC_TRAINING_FOCUS,
   MGBC_ACHIEVEMENTS,
-} from "@/data/mgbcData";
+} from "@/utils/data/mgbcData";
 
 import mgbcLogo from "/logos/mgbc.png";
 

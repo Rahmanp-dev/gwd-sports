@@ -160,6 +160,138 @@ export class StudentController {
     }
   }
 
+  // Update student profile
+  static async updateStudent(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user!._id;
+      const updates = req.body;
+
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid student ID'
+        });
+      }
+
+      const student = await StudentProfile.findOne({ userId });
+
+      if (!student) {
+        return res.status(404).json({
+          success: false,
+          message: 'Student not found'
+        });
+      }
+
+      // Validate and process sports update
+      if (updates.sports !== undefined) {
+        if (!Array.isArray(updates.sports)) {
+          return res.status(400).json({
+            success: false,
+            message: 'Sports must be an array'
+          });
+        }
+
+        // Ensure football is always included
+        if (!updates.sports.includes('football')) {
+          return res.status(400).json({
+            success: false,
+            message: 'Football is mandatory and cannot be removed'
+          });
+        }
+
+        student.sports = updates.sports;
+      }
+
+      // Validate and process level update
+      if (updates.level !== undefined) {
+        const validLevels = ['beginner', 'intermediate', 'advanced'];
+        if (!validLevels.includes(updates.level)) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid skill level. Must be beginner, intermediate, or advanced'
+          });
+        }
+        student.level = updates.level;
+      }
+
+      // Validate and process medicalInfo update
+      if (updates.medicalInfo !== undefined) {
+        // Update emergency contact
+        if (updates.medicalInfo.emergencyContact) {
+          if (!student.medicalInfo) {
+            student.medicalInfo = { 
+              emergencyContact: { name: '', phone: '', relation: '' },
+              allergies: [],
+              medications: []
+            };
+          }
+          
+          if (updates.medicalInfo.emergencyContact.name !== undefined) {
+            student.medicalInfo.emergencyContact.name = updates.medicalInfo.emergencyContact.name;
+          }
+          if (updates.medicalInfo.emergencyContact.phone !== undefined) {
+            student.medicalInfo.emergencyContact.phone = updates.medicalInfo.emergencyContact.phone;
+          }
+          if (updates.medicalInfo.emergencyContact.relation !== undefined) {
+            student.medicalInfo.emergencyContact.relation = updates.medicalInfo.emergencyContact.relation;
+          }
+        }
+
+        // Update allergies
+        if (updates.medicalInfo.allergies !== undefined) {
+          if (!Array.isArray(updates.medicalInfo.allergies)) {
+            return res.status(400).json({
+              success: false,
+              message: 'Allergies must be an array'
+            });
+          }
+          if (!student.medicalInfo) {
+            student.medicalInfo = { 
+              emergencyContact: { name: '', phone: '', relation: '' },
+              allergies: [],
+              medications: []
+            };
+          }
+          student.medicalInfo.allergies = updates.medicalInfo.allergies;
+        }
+
+        // Update medications
+        if (updates.medicalInfo.medications !== undefined) {
+          if (!Array.isArray(updates.medicalInfo.medications)) {
+            return res.status(400).json({
+              success: false,
+              message: 'Medications must be an array'
+            });
+          }
+          if (!student.medicalInfo) {
+            student.medicalInfo = { 
+              emergencyContact: { name: '', phone: '', relation: '' },
+              allergies: [],
+              medications: []
+            };
+          }
+          student.medicalInfo.medications = updates.medicalInfo.medications;
+        }
+      }
+
+      await student.save();
+
+      logger.info(`Student profile updated by student ${req.user!.email}`);
+
+      res.json({
+        success: true,
+        message: 'Student profile updated successfully',
+        data: { student }
+      });
+    } catch (error) {
+      logger.error('Update student error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
   // Get attendance
   static async getAttendance(req: AuthRequest, res: Response) {
     try {

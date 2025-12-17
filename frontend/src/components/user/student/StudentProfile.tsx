@@ -14,6 +14,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   User,
   Mail,
@@ -123,6 +126,8 @@ export default function StudentProfile() {
         toast.dismiss();
         toast.success("Profile updated successfully!");
       }
+
+      fetchStudentProfile();
     } catch (error: any) {
       console.error("Error updating profile:", error);
       toast.dismiss();
@@ -149,7 +154,7 @@ export default function StudentProfile() {
           <p className="text-gray-400 mb-4">
             You haven't created a student profile yet.
           </p>
-          <Button onClick={() => navigate("/student/create")}>
+          <Button onClick={() => navigate("/student/register/create")}>
             Create Student Profile
           </Button>
         </CardContent>
@@ -185,7 +190,7 @@ export default function StudentProfile() {
                 <Button
                   variant="outline"
                   onClick={handleCancel}
-                  className="border-gray-600 text-white hover:bg-gray-700"
+                  className="border-gray-600 text-black"
                 >
                   <X className="h-4 w-4 mr-2" />
                   Cancel
@@ -215,17 +220,64 @@ export default function StudentProfile() {
           {/* Sports */}
           <div className="space-y-2">
             <Label className="text-white">Sports</Label>
-            <div className="flex flex-wrap gap-2">
-              {studentProfile.sports.map((sport) => (
-                <Badge
-                  key={sport}
-                  variant="secondary"
-                  className="bg-blue-500/20 text-blue-300 border-blue-500/50 capitalize"
-                >
-                  {sport}
-                </Badge>
-              ))}
-            </div>
+            {isEditing ? (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {[
+                    "football",
+                    "basketball",
+                    "cricket",
+                    "tennis",
+                    "badminton",
+                    "swimming",
+                  ].map((sport) => (
+                    <div
+                      key={sport}
+                      className="flex items-center space-x-2 p-2 rounded-lg border border-gray-700"
+                    >
+                      <Checkbox
+                        id={sport}
+                        checked={editedProfile.sports?.includes(sport)}
+                        onCheckedChange={(checked) => {
+                          if (sport === "football") return; // Can't uncheck football
+                          const currentSports = editedProfile.sports || [];
+                          setEditedProfile({
+                            ...editedProfile,
+                            sports: checked
+                              ? [...currentSports, sport]
+                              : currentSports.filter((s) => s !== sport),
+                          });
+                        }}
+                        disabled={sport === "football"}
+                      />
+                      <Label
+                        htmlFor={sport}
+                        className="text-white capitalize cursor-pointer"
+                      >
+                        {sport}
+                        {sport === "football" && (
+                          <span className="text-xs text-blue-400 ml-1">
+                            (Required)
+                          </span>
+                        )}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {studentProfile.sports.map((sport) => (
+                  <Badge
+                    key={sport}
+                    variant="secondary"
+                    className="bg-blue-500/20 text-blue-300 border-blue-500/50 capitalize"
+                  >
+                    {sport}
+                  </Badge>
+                ))}
+              </div>
+            )}
           </div>
 
           <Separator className="bg-gray-700" />
@@ -233,20 +285,55 @@ export default function StudentProfile() {
           {/* Skill Level */}
           <div className="space-y-2">
             <Label className="text-white">Skill Level</Label>
-            <div>
-              <Badge
-                variant="secondary"
-                className={`capitalize ${
-                  studentProfile.level === "beginner"
-                    ? "bg-green-500/20 text-green-300 border-green-500/50"
-                    : studentProfile.level === "intermediate"
-                      ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/50"
-                      : "bg-red-500/20 text-red-300 border-red-500/50"
-                }`}
+            {isEditing ? (
+              <RadioGroup
+                value={editedProfile.level}
+                onValueChange={(value: any) =>
+                  setEditedProfile({ ...editedProfile, level: value })
+                }
+                className="grid grid-cols-3 gap-3"
               >
-                {studentProfile.level}
-              </Badge>
-            </div>
+                {(["beginner", "intermediate", "advanced"] as const).map(
+                  (level) => (
+                    <div
+                      key={level}
+                      className={`flex items-center space-x-2 p-3 rounded-lg border cursor-pointer transition-all ${
+                        editedProfile.level === level
+                          ? "bg-blue-500/20 border-blue-500"
+                          : "bg-gray-800/50 border-gray-700 hover:bg-gray-700/50"
+                      }`}
+                    >
+                      <RadioGroupItem
+                        value={level}
+                        id={level}
+                        className="border-gray-400 text-white"
+                      />
+                      <Label
+                        htmlFor={level}
+                        className="text-white cursor-pointer capitalize flex-1"
+                      >
+                        {level}
+                      </Label>
+                    </div>
+                  ),
+                )}
+              </RadioGroup>
+            ) : (
+              <div>
+                <Badge
+                  variant="secondary"
+                  className={`capitalize ${
+                    studentProfile.level === "beginner"
+                      ? "bg-green-500/20 text-green-300 border-green-500/50"
+                      : studentProfile.level === "intermediate"
+                        ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/50"
+                        : "bg-red-500/20 text-red-300 border-red-500/50"
+                  }`}
+                >
+                  {studentProfile.level}
+                </Badge>
+              </div>
+            )}
           </div>
 
           <Separator className="bg-gray-700" />
@@ -293,12 +380,33 @@ export default function StudentProfile() {
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Allergies */}
-            {studentProfile.medicalInfo.allergies &&
-              studentProfile.medicalInfo.allergies.length > 0 && (
-                <div className="space-y-2">
-                  <Label className="text-white">Allergies</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {studentProfile.medicalInfo.allergies.map(
+            <div className="space-y-2">
+              <Label className="text-white">Allergies</Label>
+              {isEditing ? (
+                <Textarea
+                  placeholder="Enter allergies separated by commas (e.g., peanuts, shellfish)"
+                  value={editedProfile.medicalInfo?.allergies?.join(", ") || ""}
+                  onChange={(e) => {
+                    const allergies = e.target.value
+                      .split(",")
+                      .map((a) => a.trim())
+                      .filter(Boolean);
+                    setEditedProfile({
+                      ...editedProfile,
+                      medicalInfo: {
+                        ...editedProfile.medicalInfo!,
+                        allergies,
+                      },
+                    });
+                  }}
+                  className="bg-gray-800 border-gray-700 text-white"
+                  rows={2}
+                />
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {studentProfile.medicalInfo.allergies &&
+                  studentProfile.medicalInfo.allergies.length > 0 ? (
+                    studentProfile.medicalInfo.allergies.map(
                       (allergy, index) => (
                         <Badge
                           key={index}
@@ -308,18 +416,44 @@ export default function StudentProfile() {
                           {allergy}
                         </Badge>
                       ),
-                    )}
-                  </div>
+                    )
+                  ) : (
+                    <p className="text-gray-400 text-sm">No allergies listed</p>
+                  )}
                 </div>
               )}
+            </div>
 
             {/* Medications */}
-            {studentProfile.medicalInfo.medications &&
-              studentProfile.medicalInfo.medications.length > 0 && (
-                <div className="space-y-2">
-                  <Label className="text-white">Current Medications</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {studentProfile.medicalInfo.medications.map(
+            <div className="space-y-2">
+              <Label className="text-white">Current Medications</Label>
+              {isEditing ? (
+                <Textarea
+                  placeholder="Enter medications separated by commas (e.g., inhaler, insulin)"
+                  value={
+                    editedProfile.medicalInfo?.medications?.join(", ") || ""
+                  }
+                  onChange={(e) => {
+                    const medications = e.target.value
+                      .split(",")
+                      .map((m) => m.trim())
+                      .filter(Boolean);
+                    setEditedProfile({
+                      ...editedProfile,
+                      medicalInfo: {
+                        ...editedProfile.medicalInfo!,
+                        medications,
+                      },
+                    });
+                  }}
+                  className="bg-gray-800 border-gray-700 text-white"
+                  rows={2}
+                />
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {studentProfile.medicalInfo.medications &&
+                  studentProfile.medicalInfo.medications.length > 0 ? (
+                    studentProfile.medicalInfo.medications.map(
                       (medication, index) => (
                         <Badge
                           key={index}
@@ -329,10 +463,15 @@ export default function StudentProfile() {
                           {medication}
                         </Badge>
                       ),
-                    )}
-                  </div>
+                    )
+                  ) : (
+                    <p className="text-gray-400 text-sm">
+                      No medications listed
+                    </p>
+                  )}
                 </div>
               )}
+            </div>
 
             <Separator className="bg-gray-700" />
 
@@ -345,26 +484,98 @@ export default function StudentProfile() {
                 </Label>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-1">
-                  <Label className="text-gray-400 text-sm">Name</Label>
-                  <p className="text-white">
-                    {studentProfile.medicalInfo.emergencyContact.name}
-                  </p>
+              {isEditing ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-gray-400 text-sm">Name</Label>
+                    <Input
+                      value={
+                        editedProfile.medicalInfo?.emergencyContact?.name || ""
+                      }
+                      onChange={(e) =>
+                        setEditedProfile({
+                          ...editedProfile,
+                          medicalInfo: {
+                            ...editedProfile.medicalInfo!,
+                            emergencyContact: {
+                              ...editedProfile.medicalInfo!.emergencyContact,
+                              name: e.target.value,
+                            },
+                          },
+                        })
+                      }
+                      className="bg-gray-800 border-gray-700 text-white"
+                      placeholder="Emergency contact name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-400 text-sm">Phone</Label>
+                    <Input
+                      value={
+                        editedProfile.medicalInfo?.emergencyContact?.phone || ""
+                      }
+                      onChange={(e) =>
+                        setEditedProfile({
+                          ...editedProfile,
+                          medicalInfo: {
+                            ...editedProfile.medicalInfo!,
+                            emergencyContact: {
+                              ...editedProfile.medicalInfo!.emergencyContact,
+                              phone: e.target.value,
+                            },
+                          },
+                        })
+                      }
+                      className="bg-gray-800 border-gray-700 text-white"
+                      placeholder="Phone number"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-400 text-sm">Relation</Label>
+                    <Input
+                      value={
+                        editedProfile.medicalInfo?.emergencyContact?.relation ||
+                        ""
+                      }
+                      onChange={(e) =>
+                        setEditedProfile({
+                          ...editedProfile,
+                          medicalInfo: {
+                            ...editedProfile.medicalInfo!,
+                            emergencyContact: {
+                              ...editedProfile.medicalInfo!.emergencyContact,
+                              relation: e.target.value,
+                            },
+                          },
+                        })
+                      }
+                      className="bg-gray-800 border-gray-700 text-white"
+                      placeholder="Relation (e.g., Mother)"
+                    />
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <Label className="text-gray-400 text-sm">Phone</Label>
-                  <p className="text-white">
-                    {studentProfile.medicalInfo.emergencyContact.phone}
-                  </p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <Label className="text-gray-400 text-sm">Name</Label>
+                    <p className="text-white">
+                      {studentProfile.medicalInfo.emergencyContact.name}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-gray-400 text-sm">Phone</Label>
+                    <p className="text-white">
+                      {studentProfile.medicalInfo.emergencyContact.phone}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-gray-400 text-sm">Relation</Label>
+                    <p className="text-white capitalize">
+                      {studentProfile.medicalInfo.emergencyContact.relation}
+                    </p>
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <Label className="text-gray-400 text-sm">Relation</Label>
-                  <p className="text-white capitalize">
-                    {studentProfile.medicalInfo.emergencyContact.relation}
-                  </p>
-                </div>
-              </div>
+              )}
             </div>
           </CardContent>
         </Card>

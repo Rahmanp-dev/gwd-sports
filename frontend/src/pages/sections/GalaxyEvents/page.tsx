@@ -15,7 +15,7 @@ import {
   GALAXY_EVENT_CATEGORIES,
   GALAXY_STATS,
   UPCOMING_HIGHLIGHTS,
-} from "@/data/galaxyEventsData";
+} from "@/utils/data/galaxyEventsData";
 
 export default function GalaxyEventsPage() {
   useEffect(() => {

@@ -18,7 +18,7 @@ import {
 import { SectionHero } from "@/components/shared/SectionHero";
 import { StatsBanner } from "@/components/shared/StatsBanner";
 import Footer from "@/components/landing/Footer";
-import { mgmunData } from "@/data/mgmunData";
+import { mgmunData } from "@/utils/data/mgmunData";
 
 export default function MgMunPage() {
   const containerVariants = {

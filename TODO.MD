@@ -2,20 +2,21 @@ TODO:
 
 P1:
 
-- [ ] Functional Student Dashboard
+- [ ] Functional Student Dashboard - /mgfc/student
+- [ ] Functional Trainer Dashboard - /mgfc/trainer
+- [ ] if (!studentProfile) in frontend\src\components\user\student\StudentProfile.tsx fix this
 - [ ] Create connecttion between user profile and their profiles - should easily navigate to student/trainer profile from user profile  
-- [ ] Add Edit Student Profile in F
+- [ ] Add Edit Trainer Profile in F 
 - [ ] Student functionalities - check what all actions are present and what needs to be added
 - [ ] show if the student is verified or not in the profile
-- [ ] Functional Trainer Dashboard
 - [ ] delete trainer - delete user too? Based on what is done with students
 - [ ] Trainer functionalities - check what all actions are present and what needs to be added
-- [ ] Add Edit Trainer Profile in F
 - [ ] Student, trainer interactions - check the flow
 - [ ] Student, trainer, admin interactions - check the flow
 - [ ] Centralized login and logout marker on top right corner
 - [ ] Centralized my profile and my dashboard marker on top right corner
 
+- [ ] Revamp landing page 
 - [ ] Homepage Customization
 - [ ] In football page - promote MGFC and link to its page
 - [ ] Fix Admin Dashboard - some errors
@@ -90,3 +91,4 @@ Done ✅
 - [x] In trainer edit - make sure ntg is empty while editing like hourly rate as blank
 - [x] Validation in trainer register form - unique email, phone, password strength - show the error from user APIs response 
 - [x] trainer profile was able to snuck into /admin -> fix that 
+- [x] Add Edit Student Profile in F

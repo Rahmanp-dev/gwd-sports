@@ -302,7 +302,6 @@ class StudentPublicService {
   }
 
   // Update Own Student Profile
-  // TODO: implement this API first and then this
   async updateOwnStudentProfile(data: {
     sports?: string[];
     level?: "beginner" | "intermediate" | "advanced";

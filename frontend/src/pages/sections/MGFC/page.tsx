@@ -9,7 +9,7 @@ import {
   MGFC_EVENTS,
   MGFC_FEATURES,
   MGFC_PROGRAMS,
-} from "@/data/mgfcData";
+} from "@/utils/data/mgfcData";
 
 export default function MGFCPage() {
   useEffect(() => {

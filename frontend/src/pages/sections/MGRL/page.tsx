@@ -12,7 +12,7 @@ import {
   MGRL_FEATURES,
   MGRL_PROGRAMS,
   MGRL_RACING_CATEGORIES,
-} from "@/data/mgrlData";
+} from "@/utils/data/mgrlData";
 import { Trophy, Users, Target, Award } from "lucide-react";
 
 export default function MGRLPage() {
