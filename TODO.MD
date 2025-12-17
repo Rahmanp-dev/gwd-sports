@@ -13,7 +13,7 @@ P1:
 
 P1.5:
 
-- [ ] Homepage Customization
+- [ ] Test Homepage Customization
 - [ ] In football page - promote MGFC and link to its page
 - [ ] Fix Admin Dashboard - some errors
 - [ ] Refresh token logic in frontend
@@ -54,6 +54,10 @@ PROD:
 - [ ] Implement code splitting and lazy loading
 - [ ] Disable admin signup in production
 - [ ] Implement security best practices
+- [ ] Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
 
 Done ✅
 
@@ -100,3 +104,4 @@ Done ✅
 - [x] Revamp landing page 
 - [x] Migrate data folder to utils/constants
 - [x] Update the landing page details
+- [x] Homepage Customization

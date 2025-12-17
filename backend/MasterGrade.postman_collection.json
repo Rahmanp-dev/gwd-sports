@@ -2323,6 +2323,64 @@
 			]
 		},
 		{
+			"name": "Homepage",
+			"item": [
+				{
+					"name": "Get Landing Page Events (Public)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/homepage/events",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"homepage",
+								"events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Admin Landing Page Events",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/homepage/admin/events",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"homepage",
+								"admin",
+								"events"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Health Check",
 			"request": {
 				"method": "GET",
