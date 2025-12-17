@@ -59,7 +59,7 @@ export class AcademyController {
       const limitNum = parseInt(limit as string);
       const skip = (pageNum - 1) * limitNum;
 
-      const filter: any = { isActive: true };
+      const filter: any = { };
       
       if (location) filter.location = { $regex: location, $options: 'i' };
       if (sport) filter.sports = { $in: [sport] };

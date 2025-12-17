@@ -16,8 +16,6 @@ P1:
 - [ ] Centralized login and logout marker on top right corner
 - [ ] Centralized my profile and my dashboard marker on top right corner
 
-- [ ] Integrate Academy to Admin Panel
-
 - [ ] Revamp landing page 
 - [ ] Homepage Customization
 - [ ] In football page - promote MGFC and link to its page
@@ -25,7 +23,7 @@ P1:
 - [ ] Refresh token logic in frontend
 - [ ] Handle Existing Token in register pages and redirect them directly
 - [ ] Check edit student - it is misbehaving
-- [ ] Do something about the "inactive" users
+- [ ] Do something about the "inactive" users / trainers / students / academies 
 
 P2:
 - [ ] Frontend logging
@@ -44,6 +42,7 @@ P3:
 - [ ] Dockerize the application
 - [ ] Do we hide the info of private (inactive) events? - http://localhost:5173/events/69409c9d306af5ffab0e1a5b
 - [ ] event re-activation needed?
+- [ ] fix build warnings
 
 PROD:
 - [ ] Disable console logs in production
@@ -96,3 +95,4 @@ Done ✅
 - [x] 404 Page
 - [x] Contact Us Page
 - [x] About Us Page
+- [x] Integrate Academy to Admin Panel
