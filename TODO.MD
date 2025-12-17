@@ -16,6 +16,8 @@ P1:
 - [ ] Centralized login and logout marker on top right corner
 - [ ] Centralized my profile and my dashboard marker on top right corner
 
+- [ ] Integrate Academy to Admin Panel
+
 - [ ] Revamp landing page 
 - [ ] Homepage Customization
 - [ ] In football page - promote MGFC and link to its page
@@ -23,10 +25,6 @@ P1:
 - [ ] Refresh token logic in frontend
 - [ ] Handle Existing Token in register pages and redirect them directly
 - [ ] Check edit student - it is misbehaving
-- [ ] Privacy Policy and Terms and Conditions pages
-- [ ] 404 Page
-- [ ] Contact Us Page
-- [ ] About Us Page
 - [ ] Do something about the "inactive" users
 
 P2:
@@ -94,3 +92,7 @@ Done ✅
 - [x] trainer profile was able to snuck into /admin -> fix that 
 - [x] Add Edit Student Profile in F
 - [x] Add Edit Trainer Profile in F 
+- [x] Privacy Policy and Terms and Conditions pages
+- [x] 404 Page
+- [x] Contact Us Page
+- [x] About Us Page

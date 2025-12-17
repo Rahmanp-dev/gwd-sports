@@ -34,6 +34,12 @@ import MGFCTrainerPage from "@/pages/sections/MGFC/trainer/TrainerPage";
 import StudentRegister from "@/pages/sections/MGFC/student/StudentAuth";
 import StudentCreate from "@/pages/sections/MGFC/student/StudentCreate";
 import StudentComplete from "@/pages/sections/MGFC/student/StudentComplete";
+// Static pages
+import NotFoundPage from "@/pages/static/NotFound";
+import ContactPage from "@/pages/static/Contact";
+import AboutPage from "@/pages/static/About";
+import PrivacyPolicyPage from "@/pages/static/PrivacyPolicy";
+import TermsAndConditionsPage from "@/pages/static/TermsAndConditions";
 
 const AppRouter: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -110,17 +116,17 @@ const AppRouter: React.FC = () => {
         }
       />
 
-      <Route path="/not-found" element={<Navigate to="/" replace />} />
-      <Route path="/contact" element={<Navigate to="/" replace />} />
-      <Route path="/about" element={<Navigate to="/" replace />} />
-      <Route path="/privacy-policy" element={<Navigate to="/" replace />} />
+      <Route path="/not-found" element={<NotFoundPage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       <Route
         path="/terms-and-conditions"
-        element={<Navigate to="/" replace />}
+        element={<TermsAndConditionsPage />}
       />
 
       {/* Fallback route */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/not-found" replace />} />
     </Routes>
   );
 };
