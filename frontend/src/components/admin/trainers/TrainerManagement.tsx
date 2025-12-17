@@ -73,8 +73,8 @@ export const TrainerManagement: React.FC = () => {
       //   console.log(response.data);
       //   console.log(response.trainers);
       //   console.log(response.pagination);
-      setTrainers(response.trainers);
-      setPagination(response.pagination);
+      setTrainers(response?.trainers);
+      setPagination(response?.pagination);
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
       console.log("its me fetch trainers");

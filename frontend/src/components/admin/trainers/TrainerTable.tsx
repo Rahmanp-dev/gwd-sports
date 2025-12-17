@@ -91,7 +91,7 @@ export const TrainerTable: React.FC<TrainerTableProps> = ({
   const handleSportFilter = (sport: string | null) => {
     onFilterChange({
       ...currentFilters,
-      sport: sport || undefined,
+      sport: sport ? sport.toLowerCase() : undefined,
       page: 1,
     });
   };
@@ -184,7 +184,7 @@ export const TrainerTable: React.FC<TrainerTableProps> = ({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <Filter className="h-4 w-4 mr-2" />
@@ -207,7 +207,7 @@ export const TrainerTable: React.FC<TrainerTableProps> = ({
                 Inactive Only
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
         </div>
       </div>
 

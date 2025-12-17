@@ -425,28 +425,39 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                           key={sport}
                           control={form.control}
                           name="sports"
-                          render={({ field }) => (
-                            <FormItem className="flex items-center space-x-2 space-y-0">
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(sport)}
-                                  onCheckedChange={(checked) => {
-                                    const value = field.value || [];
-                                    if (checked) {
-                                      field.onChange([...value, sport]);
-                                    } else {
-                                      field.onChange(
-                                        value.filter((s) => s !== sport),
-                                      );
-                                    }
-                                  }}
-                                />
-                              </FormControl>
-                              <FormLabel className="font-normal cursor-pointer">
-                                {sport}
-                              </FormLabel>
-                            </FormItem>
-                          )}
+                          render={({ field }) => {
+                            const sportLower = sport.toLowerCase();
+                            const isChecked = field.value?.some(
+                              (s) => s.toLowerCase() === sportLower
+                            );
+
+                            return (
+                              <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={isChecked}
+                                    onCheckedChange={(checked) => {
+                                      const value = field.value || [];
+                                      if (checked) {
+                                        // Add sport in lowercase
+                                        field.onChange([...value, sportLower]);
+                                      } else {
+                                        // Remove sport (case-insensitive)
+                                        field.onChange(
+                                          value.filter(
+                                            (s) => s.toLowerCase() !== sportLower
+                                          )
+                                        );
+                                      }
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="font-normal cursor-pointer">
+                                  {sport}
+                                </FormLabel>
+                              </FormItem>
+                            );
+                          }}
                         />
                       ))}
                     </div>

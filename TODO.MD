@@ -2,18 +2,16 @@ TODO:
 
 P1:
 
-- [ ] Fix the Trainer Management page - fix sort and filter options
-- [ ] Fix Edit Trainer -> multi-select sports and specializations 
 - [ ] Fix Build errors in frontend after adding Trainer Management
-- [ ] Student Dashboard
+- [ ] Functional Student Dashboard
 - [ ] Add Edit Student Profile in F
 - [ ] Student functionalities - check what all actions are present and what needs to be added
-- [ ] Student, trainer interactions - check the flow
-- [ ] Student, trainer, admin interactions - check the flow
 - [ ] show if the student is verified or not in the profile
-- [ ] Trainer Dashboard
+- [ ] Functional Trainer Dashboard
 - [ ] Trainer functionalities - check what all actions are present and what needs to be added
 - [ ] Add Edit Trainer Profile in F
+- [ ] Student, trainer interactions - check the flow
+- [ ] Student, trainer, admin interactions - check the flow
 - [ ] Centralized login and logout marker on top right corner
 
 - [ ] Homepage Customization
@@ -80,3 +78,5 @@ Done ✅
 - [x] Fix npm builds
 - [x] Add trainer register - By Admin -> Create, View, View By ID, Delete
 - [x] Complete Student Login , Trainer Login, and their pages
+- [x] Fix the Trainer Management page - fix filter
+- [x] Fix Edit Trainer -> multi-select sports and specializations 
