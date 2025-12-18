@@ -8,7 +8,7 @@ import {
   TrendingUp,
   GraduationCap,
   Trophy,
-  DollarSign,
+  IndianRupee,
 } from "lucide-react";
 
 interface StudentStatsProps {
@@ -106,7 +106,7 @@ export const StudentStats: React.FC<StudentStatsProps> = ({
               <span className="text-muted-foreground text-sm">
                 Avg. Fees Paid
               </span>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <IndianRupee className="h-4 w-4 text-muted-foreground" />
             </div>
             <span className="text-3xl font-bold">
               ${stats.studentsByLevel?.[0]?.averageFeesPaid?.toFixed(0) || 0}

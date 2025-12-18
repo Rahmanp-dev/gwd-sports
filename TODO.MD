@@ -4,11 +4,9 @@ P1:
 
 - [ ] Functional Student Dashboard - /mgfc/student
 - [ ] Functional Trainer Dashboard - /mgfc/trainer
-- [ ] if (!studentProfile) in frontend\src\components\user\student\StudentProfile.tsx fix this
+- [ ] if (!studentProfile) in frontend\src\components\user\student\StudentProfile.tsx fix / check this
 - [ ] Student, trainer interactions - check the flow
 - [ ] Student, trainer, admin interactions - check the flow
-- [ ] Specific Event to take to that event details page 
-- [ ] Confetti and top rigt section in my events page
 
 P1.5:
 
@@ -27,7 +25,7 @@ P2:
 - [ ] Soft delete When leaving events
 - [ ] refresh token - what is it and how to implement
 - [ ] improve isActive in events
-- [ ] Add events agenda - in event management compone- like explaining all options
+- [ ] Add events agenda - in event management component - like explaining all options
 - [ ] Forgot password, reset password 
 - [ ] Implement permanent delete of student / trainer by admin
 - [ ] Take care of placeholders in forms 
@@ -41,6 +39,8 @@ P3:
 - [ ] Do we hide the info of private (inactive) events? - http://localhost:5173/events/69409c9d306af5ffab0e1a5b
 - [ ] event re-activation needed?
 - [ ] fix build warnings
+- [ ] remove unused code
+- [ ] remove mock data
 
 PROD:
 
@@ -107,3 +107,6 @@ Done ✅
 - [x] Homepage Customization
 - [x] Create connection between user profile and their profiles - should easily navigate to student/trainer profile from user profile  -> in the profile page only have a tab to switch between dashboard and the profile 
 - [x] Centralized login and logout marker on top right corner - Centralized my profile and my dashboard marker on top right corner
+- [x] events page to homepage and user profile 
+- [x] Specific Event to take to that event details page 
+- [x] Confetti in my events page

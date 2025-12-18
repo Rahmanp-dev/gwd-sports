@@ -358,7 +358,7 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                             Full Name <span className="text-red-600">*</span>
                           </FormLabel>
                           <FormControl>
-                            <Input placeholder="John Doe" {...field} />
+                            <Input placeholder="Rahul Sharma" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -376,7 +376,7 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                           <FormControl>
                             <Input
                               type="email"
-                              placeholder="john@example.com"
+                              placeholder="rahul.sharma@example.com"
                               {...field}
                             />
                           </FormControl>
@@ -429,7 +429,7 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                             Phone <span className="text-red-600">*</span>
                           </FormLabel>
                           <FormControl>
-                            <Input placeholder="+1234567890" {...field} />
+                            <Input placeholder="98765 43210" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

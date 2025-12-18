@@ -344,7 +344,7 @@ export default function StudentCreate() {
                       <Input
                         id="name"
                         type="text"
-                        placeholder="John Doe"
+                        placeholder="Rahul Sharma"
                         value={userDetails.name}
                         onChange={(e) =>
                           setUserDetails({
@@ -376,7 +376,7 @@ export default function StudentCreate() {
                       <Input
                         id="email"
                         type="email"
-                        placeholder="john@example.com"
+                        placeholder="rahul.sharma@example.com"
                         value={userDetails.email}
                         onChange={(e) =>
                           setUserDetails({
@@ -408,7 +408,7 @@ export default function StudentCreate() {
                       <Input
                         id="phone"
                         type="tel"
-                        placeholder="+1234567890"
+                        placeholder="98765 43210"
                         value={userDetails.phone}
                         onChange={(e) =>
                           setUserDetails({
@@ -651,7 +651,7 @@ export default function StudentCreate() {
                       <Input
                         id="allergies"
                         type="text"
-                        placeholder="e.g., peanuts, shellfish"
+                        placeholder="e.g., dust, pollen"
                         value={studentDetails.allergies}
                         onChange={(e) =>
                           setStudentDetails({
@@ -712,7 +712,7 @@ export default function StudentCreate() {
                           <Input
                             id="emergencyName"
                             type="text"
-                            placeholder="Jane Doe"
+                            placeholder="Raj Sharma"
                             value={studentDetails.emergencyName}
                             onChange={(e) =>
                               setStudentDetails({
@@ -749,7 +749,7 @@ export default function StudentCreate() {
                           <Input
                             id="emergencyPhone"
                             type="tel"
-                            placeholder="+1987654321"
+                            placeholder="98765 43210"
                             value={studentDetails.emergencyPhone}
                             onChange={(e) =>
                               setStudentDetails({

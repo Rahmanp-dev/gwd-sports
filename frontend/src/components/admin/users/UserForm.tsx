@@ -136,7 +136,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="John Doe"
+                        placeholder="Rahul Sharma"
                         {...field}
                         disabled={isLoading}
                       />
@@ -158,7 +158,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="john@example.com"
+                        placeholder="rahul.sharma@example.com"
                         {...field}
                         disabled={isLoading || isEditMode} // Email can't be changed in edit mode
                       />
@@ -224,7 +224,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="+1 234 567 8900"
+                        placeholder="98765 43210"
                         {...field}
                         onChange={handlePhoneInput}
                         disabled={isLoading}

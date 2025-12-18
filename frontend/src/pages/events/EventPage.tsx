@@ -6,11 +6,11 @@ import {
   Calendar,
   MapPin,
   Users,
-  DollarSign,
   Search,
   Filter,
   Zap,
   X,
+  IndianRupee,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -238,6 +238,53 @@ export default function EventPage() {
           >
             Join tournaments, workshops, and competitions across all sports
           </motion.p>
+
+          <div className="flex justify-around">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Button
+                onClick={() => navigate("/")}
+                size="lg"
+                className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+              >
+                <Zap className="mr-2 h-5 w-5" />
+                Go to Homepage
+              </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Button
+                onClick={() => navigate("/events/my-events")}
+                size="lg"
+                className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+              >
+                <Calendar className="mr-2 h-5 w-5" />
+                Go to My Events
+              </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Button
+                onClick={() => navigate("/user/profile")}
+                size="lg"
+                className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+              >
+                <Users className="mr-2 h-5 w-5" />
+                Go to My Profile
+              </Button>
+            </motion.div>
+          </div>
         </div>
       </section>
 
@@ -428,14 +475,18 @@ export default function EventPage() {
                                   </Badge>
                                 )}
                                 {event.entryFee !== undefined &&
-                                  event.entryFee > 0 && (
-                                    <div className="flex items-center gap-1 text-green-400">
-                                      <DollarSign className="h-4 w-4" />
-                                      <span className="font-bold">
-                                        {event.entryFee}
-                                      </span>
-                                    </div>
-                                  )}
+                                event.entryFee > 0 ? (
+                                  <div className="flex items-center gap-1 text-green-400">
+                                    <IndianRupee className="h-4 w-4" />
+                                    <span className="font-bold">
+                                      {event.entryFee}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <span className="text-green-400 font-bold">
+                                    Free Entry
+                                  </span>
+                                )}
                               </div>
                             </div>
 

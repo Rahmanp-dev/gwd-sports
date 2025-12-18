@@ -351,7 +351,7 @@ export const EventForm: React.FC<EventFormProps> = ({
               {...register("contactInfo.name", {
                 required: "Contact name is required",
               })}
-              placeholder="John Doe"
+              placeholder="Rahul Sharma"
             />
             {errors.contactInfo?.name && (
               <p className="text-sm text-red-500">
@@ -373,7 +373,7 @@ export const EventForm: React.FC<EventFormProps> = ({
                   message: "Invalid phone number",
                 },
               })}
-              placeholder="+1234567890"
+              placeholder="98765 43210"
             />
             {errors.contactInfo?.phone && (
               <p className="text-sm text-red-500">

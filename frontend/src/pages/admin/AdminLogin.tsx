@@ -103,7 +103,7 @@ export default function AdminLogin() {
                   type="email"
                   value={email}
                   onChange={handleChange}
-                  placeholder="admin@example.com"
+                  placeholder=""
                   disabled={isLoading}
                 />
               </div>

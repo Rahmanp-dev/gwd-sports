@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
   MapPin,
@@ -45,6 +45,7 @@ function MyEventsContent() {
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState<"all" | "upcoming">("all");
   const [leaveEventId, setLeaveEventId] = useState<string | null>(null);
+  const [showConfetti] = useState(true);
 
   const { data, isLoading } = useQuery({
     queryKey: ["myEvents", page, filter],
@@ -113,6 +114,57 @@ function MyEventsContent() {
           ))}
         </div>
 
+        {/* Lightweight Continuous Confetti Effect */}
+        <AnimatePresence>
+          {showConfetti && (
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              {[...Array(25)].map((_, i) => {
+                const colors = [
+                  "bg-purple-500/40",
+                  "bg-red-500/40",
+                  "bg-white-500/40",
+                  "bg-orange-500/40",
+                  "bg-indigo-500/40",
+                  "bg-pink-500/40",
+                  "bg-blue-500/40",
+                  "bg-yellow-500/40",
+                  "bg-green-500/40",
+                ];
+                const randomColor =
+                  colors[Math.floor(Math.random() * colors.length)];
+                const randomX = Math.random() * 100;
+                const randomDelay = Math.random() * 3;
+                const randomDuration = 4 + Math.random() * 3;
+                const randomRotation = Math.random() * 360;
+
+                return (
+                  <motion.div
+                    key={i}
+                    className={`absolute w-3 h-3 ${randomColor} rounded-sm`}
+                    style={{
+                      left: `${randomX}%`,
+                      top: "-10%",
+                    }}
+                    animate={{
+                      y: ["0vh", "120vh"],
+                      x: [0, (Math.random() - 0.5) * 80],
+                      opacity: [10, 8, 6, 10],
+                      rotate: [0, randomRotation, randomRotation * 2],
+                    }}
+                    transition={{
+                      duration: randomDuration,
+                      delay: randomDelay,
+                      ease: "linear",
+                      repeat: Infinity,
+                      repeatDelay: Math.random() * 2,
+                    }}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </AnimatePresence>
+
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -146,20 +198,52 @@ function MyEventsContent() {
             Track all events you've joined and manage your participation
           </motion.p>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <Button
-              onClick={() => navigate("/events")}
-              size="lg"
-              className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+          <div className="flex justify-around">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
             >
-              <Zap className="mr-2 h-5 w-5" />
-              Discover More Events
-            </Button>
-          </motion.div>
+              <Button
+                onClick={() => navigate("/")}
+                size="lg"
+                className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+              >
+                <Zap className="mr-2 h-5 w-5" />
+                Go to Homepage
+              </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Button
+                onClick={() => navigate("/events")}
+                size="lg"
+                className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+              >
+                <Zap className="mr-2 h-5 w-5" />
+                Discover More Events
+              </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Button
+                onClick={() => navigate("/user/profile")}
+                size="lg"
+                className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+              >
+                <Zap className="mr-2 h-5 w-5" />
+                Go to My Profile
+              </Button>
+            </motion.div>
+          </div>
         </div>
       </section>
 

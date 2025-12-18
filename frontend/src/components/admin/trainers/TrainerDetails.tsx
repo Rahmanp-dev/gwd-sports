@@ -21,7 +21,7 @@ import {
   Award,
   Briefcase,
   Clock,
-  DollarSign,
+  IndianRupee,
   Users,
   Star,
 } from "lucide-react";
@@ -125,7 +125,7 @@ export const TrainerDetails: React.FC<TrainerDetailsProps> = ({
             <div className="space-y-1">
               <span className="text-sm text-muted-foreground">Hourly Rate</span>
               <p className="flex items-center">
-                <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" />$
+                <IndianRupee className="h-4 w-4 mr-2 text-muted-foreground" />$
                 {trainer.hourlyRate || "Not set"}
               </p>
             </div>

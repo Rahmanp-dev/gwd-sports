@@ -213,7 +213,7 @@ export const AcademyForm: React.FC<AcademyFormProps> = ({
                   <FormLabel>Academy Name *</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Elite Sports Academy"
+                      placeholder="Mastergrade FC Academy"
                       {...field}
                       disabled={isLoading}
                     />
@@ -251,7 +251,7 @@ export const AcademyForm: React.FC<AcademyFormProps> = ({
                     <FormLabel>Location *</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Los Angeles"
+                        placeholder="Hyderabad"
                         {...field}
                         disabled={isLoading}
                       />
@@ -293,7 +293,7 @@ export const AcademyForm: React.FC<AcademyFormProps> = ({
                   <FormLabel>Full Address *</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="123 Sports Street, LA, CA 90210"
+                      placeholder="Banjara Hills Road, Hyderabad, TS 500001"
                       rows={2}
                       {...field}
                       disabled={isLoading}
@@ -363,7 +363,7 @@ export const AcademyForm: React.FC<AcademyFormProps> = ({
                   <FormLabel>Contact Person Name *</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="John Smith"
+                      placeholder="Rahul Sharma"
                       {...field}
                       disabled={isLoading}
                     />
@@ -382,7 +382,7 @@ export const AcademyForm: React.FC<AcademyFormProps> = ({
                     <FormLabel>Phone *</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="+1234567890"
+                        placeholder="98765 43210"
                         {...field}
                         disabled={isLoading}
                       />

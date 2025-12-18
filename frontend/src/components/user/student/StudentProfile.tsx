@@ -419,7 +419,7 @@ export default function StudentProfile() {
               <Label className="text-white">Allergies</Label>
               {isEditing ? (
                 <Textarea
-                  placeholder="Enter allergies separated by commas (e.g., peanuts, shellfish)"
+                  placeholder="Enter allergies separated by commas (e.g., dust, pollen)"
                   value={editedProfile.medicalInfo?.allergies?.join(", ") || ""}
                   onChange={(e) => {
                     const allergies = e.target.value

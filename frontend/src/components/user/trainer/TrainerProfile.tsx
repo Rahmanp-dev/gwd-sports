@@ -25,7 +25,6 @@ import {
   Award,
   Briefcase,
   Clock,
-  DollarSign,
   Star,
   Users,
   CheckCircle,
@@ -845,7 +844,7 @@ export default function TrainerProfile() {
                               experience: updated,
                             });
                           }}
-                          placeholder="e.g., FC Barcelona Academy"
+                          placeholder="e.g., FC Hyderabad"
                           className="bg-gray-800 border-gray-600 text-white"
                         />
                       </div>

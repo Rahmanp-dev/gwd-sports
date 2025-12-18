@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users, DollarSign, Clock } from "lucide-react";
+import { Calendar, MapPin, Users, IndianRupee, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 
@@ -102,7 +102,7 @@ export default function EventCard({
 
           {event.entryFee !== undefined && event.entryFee > 0 && (
             <div className="flex items-center gap-2 text-muted-foreground">
-              <DollarSign className="h-4 w-4 shrink-0" />
+              <IndianRupee className="h-4 w-4 shrink-0" />
               <span>₹{event.entryFee}</span>
             </div>
           )}

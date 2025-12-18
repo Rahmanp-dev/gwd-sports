@@ -28,7 +28,7 @@ export const useCountdown = (targetDate: string | Date): TimeLeft => {
   };
 
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(calculateTimeLeft);
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Initial calculation

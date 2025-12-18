@@ -342,7 +342,7 @@ export default function UserAuth() {
                         <Input
                           id="login-email"
                           type="email"
-                          placeholder="your.email@example.com"
+                          placeholder="rahul.sharma@example.com"
                           value={loginData.email}
                           onChange={(e) =>
                             setLoginData({
@@ -436,7 +436,7 @@ export default function UserAuth() {
                         <Input
                           id="register-name"
                           type="text"
-                          placeholder="John Doe"
+                          placeholder="Rahul Sharma"
                           value={registerData.name}
                           onChange={(e) =>
                             setRegisterData({
@@ -465,7 +465,7 @@ export default function UserAuth() {
                         <Input
                           id="register-email"
                           type="email"
-                          placeholder="your.email@example.com"
+                          placeholder="rahul.sharma@example.com"
                           value={registerData.email}
                           onChange={(e) =>
                             setRegisterData({
@@ -494,7 +494,7 @@ export default function UserAuth() {
                         <Input
                           id="register-phone"
                           type="tel"
-                          placeholder="+1234567890"
+                          placeholder="98765 43210"
                           value={registerData.phone}
                           onChange={(e) =>
                             setRegisterData({

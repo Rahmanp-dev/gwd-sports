@@ -23,9 +23,9 @@ import {
   MapPin,
   User,
   Package,
-  DollarSign,
   BarChart3,
   Clock,
+  IndianRupee,
 } from "lucide-react";
 
 interface StudentDetailsProps {
@@ -222,7 +222,7 @@ export const StudentDetails: React.FC<StudentDetailsProps> = ({
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5" />
+                  <IndianRupee className="h-5 w-5" />
                   Fee Information
                 </CardTitle>
               </CardHeader>

@@ -5,7 +5,6 @@ import {
   MapPin,
   Users,
   ArrowRight,
-  DollarSign,
   IndianRupee,
   Clock,
 } from "lucide-react";
@@ -26,9 +25,16 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
 }) => {
   const navigate = useNavigate();
   const event = card.eventId;
-  const timeLeft = event.registrationDeadline
-    ? useCountdown(event.registrationDeadline)
-    : null;
+
+  // Always call the hook unconditionally (React Hooks rule)
+  const timeLeft = useCountdown(
+    event.registrationDeadline ||
+      new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(),
+  );
+
+  // Only use timeLeft if registrationDeadline exists
+  const showCountdown = event.registrationDeadline && timeLeft.total > 0;
+  const showClosed = event.registrationDeadline && timeLeft.total <= 0;
 
   const formatDateRange = () => {
     const start = new Date(event.startDate);
@@ -182,7 +188,7 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
               )}
 
               {/* Registration Countdown Timer */}
-              {event.registrationDeadline && timeLeft && timeLeft.total > 0 && (
+              {showCountdown && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -281,22 +287,20 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
               )}
 
               {/* Registration Closed */}
-              {event.registrationDeadline &&
-                timeLeft &&
-                timeLeft.total <= 0 && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="bg-red-500/10 border-2 border-red-500/30 rounded-2xl p-4"
-                  >
-                    <div className="flex items-center gap-3 justify-center">
-                      <Clock className="w-5 h-5 text-red-400" />
-                      <span className="text-red-400 font-black text-sm uppercase tracking-wider">
-                        Registration Closed
-                      </span>
-                    </div>
-                  </motion.div>
-                )}
+              {showClosed && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="bg-red-500/10 border-2 border-red-500/30 rounded-2xl p-4"
+                >
+                  <div className="flex items-center gap-3 justify-center">
+                    <Clock className="w-5 h-5 text-red-400" />
+                    <span className="text-red-400 font-black text-sm uppercase tracking-wider">
+                      Registration Closed
+                    </span>
+                  </div>
+                </motion.div>
+              )}
             </div>
 
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

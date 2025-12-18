@@ -5,7 +5,6 @@ import {
   Calendar,
   MapPin,
   Users,
-  DollarSign,
   Mail,
   Phone,
   User,
@@ -13,6 +12,7 @@ import {
   Award,
   FileText,
   Tag,
+  IndianRupee,
 } from "lucide-react";
 import { EVENT_STATUS_COLORS } from "@/utils/constants";
 import type { Event } from "@/types";
@@ -130,7 +130,7 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
       <div className="grid md:grid-cols-2 gap-4">
         {event.entryFee !== undefined && event.entryFee > 0 && (
           <div className="flex items-center gap-2 p-4 bg-muted rounded-lg">
-            <DollarSign className="h-5 w-5 text-muted-foreground" />
+            <IndianRupee className="h-5 w-5 text-muted-foreground" />
             <div>
               <p className="font-medium">Entry Fee</p>
               <p className="text-sm text-muted-foreground">₹{event.entryFee}</p>

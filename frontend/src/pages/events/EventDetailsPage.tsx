@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { motion } from "framer-motion";
 import {
   Calendar,
   MapPin,
   Users,
-  DollarSign,
   Clock,
   Phone,
   Mail,
@@ -17,6 +15,7 @@ import {
   Tag,
   ExternalLink,
   AlertCircle,
+  IndianRupee,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -521,14 +520,25 @@ export default function EventDetailsPage() {
                     </div>
                   </div>
 
-                  {event.entryFee !== undefined && event.entryFee > 0 && (
+                  {event.entryFee !== undefined && event.entryFee > 0 ? (
                     <div className="flex items-start gap-3">
-                      <DollarSign className="h-5 w-5 text-yellow-400 mt-0.5 shrink-0" />
+                      <IndianRupee className="h-5 w-5 text-yellow-400 mt-0.5 shrink-0" />
                       <div className="flex-1">
                         <p className="text-sm font-medium text-gray-400">
                           Entry Fee
                         </p>
-                        <p className="text-sm text-white">₹{event.entryFee}</p>
+                        <p className="text-md text-yellow-400">
+                          {event.entryFee}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start gap-3">
+                      <IndianRupee className="h-5 w-5 text-yellow-400 mt-0.5 shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-md font-medium text-yellow-400">
+                          Free Entry
+                        </p>
                       </div>
                     </div>
                   )}

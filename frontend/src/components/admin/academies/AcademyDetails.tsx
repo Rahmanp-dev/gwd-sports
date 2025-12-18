@@ -13,10 +13,10 @@ import {
   Calendar,
   Clock,
   Users,
-  DollarSign,
   CheckCircle2,
   XCircle,
   Dumbbell,
+  IndianRupee,
 } from "lucide-react";
 
 interface AcademyDetailsProps {
@@ -325,7 +325,7 @@ export const AcademyDetails: React.FC<AcademyDetailsProps> = ({
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5" />
+                  <IndianRupee className="h-5 w-5" />
                   Fee Structure
                 </CardTitle>
               </CardHeader>
