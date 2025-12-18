@@ -5,15 +5,13 @@ P1:
 - [ ] Functional Student Dashboard - /mgfc/student
 - [ ] Functional Trainer Dashboard - /mgfc/trainer
 - [ ] if (!studentProfile) in frontend\src\components\user\student\StudentProfile.tsx fix this
-- [ ] Create connection between user profile and their profiles - should easily navigate to student/trainer profile from user profile  -> in the profile page only have a tab to switch between dashboard and the profile 
 - [ ] Student, trainer interactions - check the flow
 - [ ] Student, trainer, admin interactions - check the flow
 - [ ] Specific Event to take to that event details page 
-- [ ] Centralized login and logout marker on top right corner - Centralized my profile and my dashboard marker on top right corner
+- [ ] Confetti and top rigt section in my events page
 
 P1.5:
 
-- [ ] Test Homepage Customization
 - [ ] In football page - promote MGFC and link to its page
 - [ ] Fix Admin Dashboard - some errors
 - [ ] Refresh token logic in frontend
@@ -33,11 +31,13 @@ P2:
 - [ ] Forgot password, reset password 
 - [ ] Implement permanent delete of student / trainer by admin
 - [ ] Take care of placeholders in forms 
+- [ ] can we make this better? const refreshToken = localStorage.getItem("mg_refresh_token");
 
 P3: 
 
 - [ ] Can we use MCP or some auto prompt like thing to automate prompts? like prompt engineering but automated
 - [ ] Dockerize the application
+- [ ] CI / CD pipeline for automatic deployment
 - [ ] Do we hide the info of private (inactive) events? - http://localhost:5173/events/69409c9d306af5ffab0e1a5b
 - [ ] event re-activation needed?
 - [ ] fix build warnings
@@ -105,3 +105,5 @@ Done ✅
 - [x] Migrate data folder to utils/constants
 - [x] Update the landing page details
 - [x] Homepage Customization
+- [x] Create connection between user profile and their profiles - should easily navigate to student/trainer profile from user profile  -> in the profile page only have a tab to switch between dashboard and the profile 
+- [x] Centralized login and logout marker on top right corner - Centralized my profile and my dashboard marker on top right corner

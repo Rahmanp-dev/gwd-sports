@@ -120,10 +120,7 @@ function MyEventsContent() {
             className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full mb-8 shadow-lg"
           >
             <Trophy className="w-5 h-5" />
-            <span
-              className="text-sm font-black uppercase tracking-[0.3em]"
-              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-            >
+            <span className="text-sm font-black uppercase tracking-[0.3em] font-display">
               My Events
             </span>
           </motion.div>
@@ -132,8 +129,7 @@ function MyEventsContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none"
-            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+            className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase leading-none font-display"
           >
             Your
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">

@@ -71,8 +71,10 @@ export default function UserAuth() {
       // Redirect based on role
       if (user.role === "admin") {
         navigate("/admin/dashboard");
-      } else {
+      } else if (user.role === "user") {
         navigate("/user/profile");
+      } else {
+        navigate(`/mgfc/${user.role}`);
       }
     }
   }, [isAuthenticated, user, navigate]);

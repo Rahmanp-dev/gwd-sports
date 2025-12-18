@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +9,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { authService } from "@/services/authService";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { logout, setUser } from "@/store/slices/authSlice";
 import {
   Calendar,
   Users,
@@ -32,20 +36,42 @@ import {
   Settings,
   Download,
   Upload,
+  LogOut,
   CheckCircle,
   AlertCircle,
   UserPlus,
   Filter,
 } from "lucide-react";
 import Footer from "@/components/landing/Footer";
+import { toast } from "sonner";
 
 export default function MGFCTrainerPage() {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { user, token } = useAppSelector((state) => state.auth);
+
   const [activeTab, setActiveTab] = useState("overview");
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      const refreshToken = localStorage.getItem("mg_refresh_token");
+      if (refreshToken) {
+        await authService.logout();
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      dispatch(logout());
+      navigate("/user/auth");
+      toast.success("Logged out successfully");
+    }
+  };
 
   // Mock trainer data
   const trainerData = {
@@ -266,20 +292,30 @@ export default function MGFCTrainerPage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
+              <Link to="/user/profile">
+                <Button
+                  variant="outline"
+                  className="border-gray-500 text-black hover:bg-gray-200"
+                >
+                  <Users className="h-4 w-4 mr-2" />
+                  My Profile
+                </Button>
+              </Link>
               <Button
                 variant="outline"
-                className="border-white text-white hover:bg-white/10"
+                className="border-gray-500 text-black hover:bg-gray-200"
+                onClick={() => navigate("/events/my-events")}
               >
-                <Bell className="h-4 w-4 mr-2" />
-                Notifications
-                <Badge className="ml-2 bg-red-500">3</Badge>
+                <Calendar className="h-4 w-4 mr-2" />
+                My Events
               </Button>
               <Button
                 variant="outline"
-                className="border-white text-white hover:bg-white/10"
+                className="border-gray-500 text-black hover:bg-gray-200"
+                onClick={handleLogout}
               >
-                <Settings className="h-4 w-4 mr-2" />
-                Settings
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
               </Button>
             </div>
           </div>

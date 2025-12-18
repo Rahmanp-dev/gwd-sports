@@ -1,9 +1,18 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { Calendar, MapPin, Users, ArrowRight, DollarSign } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Calendar,
+  MapPin,
+  Users,
+  ArrowRight,
+  DollarSign,
+  IndianRupee,
+  Clock,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import { useCountdown } from "@/hooks/useCountdown";
 import type { LandingPageEventCard } from "@/services/homepageService";
 
 interface LandingEventCardProps {
@@ -17,6 +26,9 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
 }) => {
   const navigate = useNavigate();
   const event = card.eventId;
+  const timeLeft = event.registrationDeadline
+    ? useCountdown(event.registrationDeadline)
+    : null;
 
   const formatDateRange = () => {
     const start = new Date(event.startDate);
@@ -147,7 +159,7 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
               </motion.div>
 
               {/* Entry Fee */}
-              {event.entryFee !== undefined && event.entryFee > 0 && (
+              {event.entryFee !== undefined && event.entryFee && (
                 <motion.div
                   whileHover={{ x: 10 }}
                   className="flex items-center gap-4"
@@ -155,40 +167,136 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
                   <div
                     className={`w-14 h-14 bg-gradient-to-br ${card.colorScheme} rounded-xl flex items-center justify-center shadow-lg shrink-0`}
                   >
-                    <DollarSign className="w-7 h-7 text-white" />
+                    <IndianRupee className="w-7 h-7 text-white" />
                   </div>
-                  <span className="text-white font-black text-lg uppercase font-display">
-                    ₹{event.entryFee} Entry Fee
-                  </span>
+                  {event.entryFee === 0 ? (
+                    <span className="text-white font-black text-lg uppercase font-display">
+                      Free Entry
+                    </span>
+                  ) : (
+                    <span className="text-white font-black text-lg uppercase font-display">
+                      {event.entryFee} Entry Fee
+                    </span>
+                  )}
                 </motion.div>
               )}
 
-              {/* Registration Deadline */}
-              {event.registrationDeadline && (
+              {/* Registration Countdown Timer */}
+              {event.registrationDeadline && timeLeft && timeLeft.total > 0 && (
                 <motion.div
-                  whileHover={{ x: 10 }}
-                  className="flex items-center gap-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="relative"
                 >
-                  <div
-                    className={`w-14 h-14 bg-gradient-to-br ${card.colorScheme} rounded-xl flex items-center justify-center shadow-lg shrink-0`}
-                  >
-                    <Calendar className="w-7 h-7 text-white" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-gray-400 text-sm">Register by</span>
-                    <span className="text-white font-bold text-base">
-                      {new Date(event.registrationDeadline).toLocaleDateString(
-                        "en-US",
-                        {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        },
-                      )}
-                    </span>
+                  {/* Pulsing Background */}
+                  <motion.div
+                    animate={{
+                      scale: [1, 1.05, 1],
+                      opacity: [0.3, 0.5, 0.3],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                    className={`absolute inset-0 bg-gradient-to-r ${card.colorScheme} rounded-2xl blur-xl`}
+                  />
+
+                  <div className="relative bg-black/60 backdrop-blur-md rounded-2xl p-4 border-2 border-amber-500/30">
+                    <div className="flex items-center gap-3 mb-3">
+                      <motion.div
+                        animate={{
+                          rotate: [0, 10, -10, 0],
+                          scale: [1, 1.1, 1],
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      >
+                        <Clock className="w-5 h-5 text-amber-400" />
+                      </motion.div>
+                      <span className="text-amber-400 font-black text-sm uppercase tracking-wider">
+                        ⚡ Registration Closes In
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-4 gap-2">
+                      {[
+                        { label: "Days", value: timeLeft.days },
+                        { label: "Hours", value: timeLeft.hours },
+                        { label: "Mins", value: timeLeft.minutes },
+                        { label: "Secs", value: timeLeft.seconds },
+                      ].map((unit, idx) => (
+                        <div key={unit.label} className="text-center">
+                          <AnimatePresence mode="popLayout">
+                            <motion.div
+                              key={unit.value}
+                              initial={{ y: -20, opacity: 0 }}
+                              animate={{ y: 0, opacity: 1 }}
+                              exit={{ y: 20, opacity: 0 }}
+                              transition={{
+                                type: "spring",
+                                stiffness: 500,
+                                damping: 30,
+                              }}
+                              className={`bg-gradient-to-br ${card.colorScheme} rounded-lg p-2 mb-1 shadow-lg`}
+                            >
+                              <span className="text-white font-black text-2xl font-mono">
+                                {String(unit.value).padStart(2, "0")}
+                              </span>
+                            </motion.div>
+                          </AnimatePresence>
+                          <span className="text-gray-400 text-xs font-bold uppercase">
+                            {unit.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Urgency Indicator */}
+                    {timeLeft.days === 0 && timeLeft.hours < 24 && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="mt-3 text-center"
+                      >
+                        <motion.span
+                          animate={{
+                            opacity: [1, 0.5, 1],
+                          }}
+                          transition={{
+                            duration: 1,
+                            repeat: Infinity,
+                          }}
+                          className="text-red-500 font-black text-xs uppercase tracking-wider"
+                        >
+                          🔥 Hurry! Last Chance 🔥
+                        </motion.span>
+                      </motion.div>
+                    )}
                   </div>
                 </motion.div>
               )}
+
+              {/* Registration Closed */}
+              {event.registrationDeadline &&
+                timeLeft &&
+                timeLeft.total <= 0 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="bg-red-500/10 border-2 border-red-500/30 rounded-2xl p-4"
+                  >
+                    <div className="flex items-center gap-3 justify-center">
+                      <Clock className="w-5 h-5 text-red-400" />
+                      <span className="text-red-400 font-black text-sm uppercase tracking-wider">
+                        Registration Closed
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
             </div>
 
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

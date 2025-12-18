@@ -35,6 +35,7 @@ import {
   Shield,
   Activity,
   Trophy,
+  LayoutDashboard,
 } from "lucide-react";
 import Footer from "@/components/landing/Footer";
 import { toast } from "sonner";
@@ -267,14 +268,34 @@ export default function UserProfile() {
                 </div>
               </div>
             </div>
-            <Button
-              variant="outline"
-              className="border-white"
-              onClick={handleLogout}
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
+            <div className="flex gap-4">
+              {user.role !== "admin" && user.role !== "user" && (
+                <Button
+                  variant="outline"
+                  className="border-gray-500 text-black hover:bg-gray-200"
+                  onClick={() => navigate(`/mgfc/${user.role}`)}
+                >
+                  <LayoutDashboard className="h-4 w-4 mr-2" />
+                  My Dashboard
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                className="border-gray-500 text-black hover:bg-gray-200"
+                onClick={() => navigate("/events/my-events")}
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                My Events
+              </Button>
+              <Button
+                variant="outline"
+                className="border-gray-500 text-black hover:bg-gray-200"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -360,7 +381,7 @@ export default function UserProfile() {
                     <Button
                       variant="outline"
                       onClick={() => setIsEditing(true)}
-                      className="border-gray-600"
+                      className="border-gray-500 text-black hover:bg-gray-200"
                     >
                       <Edit className="h-4 w-4 mr-2" />
                       Edit Profile
@@ -477,7 +498,7 @@ export default function UserProfile() {
                               });
                               setValidationErrors({});
                             }}
-                            className="border-gray-600"
+                            className="border-gray-500 text-black hover:bg-gray-200"
                           >
                             <X className="h-4 w-4 mr-2" />
                             Cancel

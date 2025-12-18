@@ -16,9 +16,10 @@ import { UserManagement } from "@/components/admin/users/UserManagement";
 import { StudentManagement } from "@/components/admin/students/StudentManagement";
 import { EventManagement } from "@/components/admin/events/EventManagement";
 import { TrainerManagement } from "@/components/admin/trainers/TrainerManagement";
-import { SPORTS_LIST } from "@/utils/constants";
 import { AcademyManagement } from "@/components/admin/academies/AcademyManagement";
 import { LandingPageManagement } from "@/components/admin/landing/LandingPageManagement";
+import { KitsManagement } from "@/components/admin/kits/KitsManagement";
+import { SPORTS_LIST } from "@/utils/constants";
 
 export default function AdminPage() {
   const dispatch = useAppDispatch();
@@ -95,6 +96,13 @@ export default function AdminPage() {
               >
                 <Calendar className="h-4 w-4 mr-2" />
                 Landing Page
+              </TabsTrigger>
+              <TabsTrigger
+                value="kits"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                Kits
               </TabsTrigger>
             </TabsList>
           </div>
@@ -263,6 +271,15 @@ export default function AdminPage() {
             <Card>
               <CardContent className="p-6">
                 <LandingPageManagement />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Kits Tab */}
+          <TabsContent value="kits">
+            <Card>
+              <CardContent className="p-6">
+                <KitsManagement />
               </CardContent>
             </Card>
           </TabsContent>
