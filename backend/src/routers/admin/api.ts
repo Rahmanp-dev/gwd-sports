@@ -58,6 +58,7 @@ router.get('/students', validateStudentQuery, AdminStudentController.getAllStude
 router.get('/students/stats', AdminStudentController.getStudentStats);
 router.get('/students/:id', validateStudentId, AdminStudentController.getStudentById);
 router.put('/students/:id', validateUpdateStudent, AdminStudentController.updateStudent);
+router.get('/get-kits', AdminStudentController.getAllKits);
 router.put('/students/:studentId/kits/:kitId', validateUpdateKitStatus, AdminStudentController.updateKitStatus);
 
 // ========================

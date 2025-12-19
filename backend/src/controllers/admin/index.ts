@@ -528,6 +528,46 @@ export class AdminStudentController {
     }
   }
 
+  // Get all kits
+  static async getAllKits(req: AuthRequest, res: Response) {
+    try{
+      const kits = await StudentProfile.aggregate([
+        { $unwind: '$kits' },
+        { $lookup: {
+            from: 'users',
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'studentUser'
+          }
+        },
+        { $unwind: '$studentUser' },
+        { $project: {
+            studentProfileId: '$_id',
+            studentId: '$studentUser._id',
+            studentName: '$studentUser.name',
+            studentEmail: '$studentUser.email',
+            kitId: '$kits._id',
+            kitName: '$kits.kitName',
+            kitStatus: '$kits.status',
+            kitCost: '$kits.cost',
+            requestedAt: '$kits.requestedAt',
+            deliveredAt: '$kits.deliveredAt',
+          }
+        }
+      ]);
+      res.json({
+        success: true,
+        data: { kits }
+      });
+    }catch (error) {
+      logger.error('Get all kits error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
   // Update kit status
   static async updateKitStatus(req: AuthRequest, res: Response) {
     try {
@@ -542,7 +582,7 @@ export class AdminStudentController {
       }
 
       const student = await StudentProfile.findById(studentId);
-      if (!student || !student.isActive) {
+      if (!student) {
         return res.status(404).json({
           success: false,
           message: 'Student not found'
@@ -554,6 +594,20 @@ export class AdminStudentController {
         return res.status(404).json({
           success: false,
           message: 'Kit not found'
+        });
+      }
+
+      if(kit.status === "rejected"){
+        return res.status(400).json({
+          success: false,
+          message: 'Cannot update a rejected kit'
+        });
+      }
+
+      if(kit.status === "delivered"){
+        return res.status(400).json({
+          success: false,
+          message: 'Kit already delivered'
         });
       }
 

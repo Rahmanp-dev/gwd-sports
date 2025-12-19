@@ -117,3 +117,4 @@ Done ✅
 - [x] Confetti in my events page
 - [x] user/auth to homepage button and main button in landing page to user/auth page
 - [x] Take care of placeholders in forms 
+- [x] Implement kit management 

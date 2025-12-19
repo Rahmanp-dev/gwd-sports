@@ -298,12 +298,6 @@ export const StudentDetails: React.FC<StudentDetailsProps> = ({
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                             <div>
                               <span className="text-muted-foreground">
-                                Size:{" "}
-                              </span>
-                              <span className="font-medium">{kit.size}</span>
-                            </div>
-                            <div>
-                              <span className="text-muted-foreground">
                                 Requested:{" "}
                               </span>
                               <span className="font-medium">
@@ -321,14 +315,6 @@ export const StudentDetails: React.FC<StudentDetailsProps> = ({
                               </div>
                             )}
                           </div>
-                          {kit.notes && (
-                            <div className="text-sm">
-                              <span className="text-muted-foreground">
-                                Notes:{" "}
-                              </span>
-                              <span>{kit.notes}</span>
-                            </div>
-                          )}
                         </div>
                         <Button
                           size="sm"

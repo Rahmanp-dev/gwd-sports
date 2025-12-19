@@ -9,7 +9,7 @@ export interface IAttendance {
 
 export interface IKit {
   kitName: string;
-  status: "delivered" | "requested" | "processing";
+  status: "delivered" | "requested" | "processing" | "rejected";
   requestedAt: Date;
   deliveredAt?: Date;
   cost?: number;
@@ -143,7 +143,7 @@ const StudentProfileSchema = new Schema<IStudentProfile>({
     },
     status: {
       type: String,
-      enum: ["delivered", "requested", "processing"],
+      enum: ["delivered", "requested", "processing", "rejected"],
       default: "requested"
     },
     requestedAt: {

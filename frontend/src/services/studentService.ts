@@ -206,14 +206,35 @@ class StudentAdminService {
   }
 
   async updateKitStatus(
-    studentId: string,
+    studentProfileId: string,
     kitId: string,
     kitData: KitUpdateData,
   ): Promise<{ success: boolean; message: string }> {
     return apiService.put<{ success: boolean; message: string }>(
-      `${this.baseAdminUrl}/${studentId}/kits/${kitId}`,
+      `${this.baseAdminUrl}/${studentProfileId}/kits/${kitId}`,
       kitData,
     );
+  }
+
+  async getAllKits(): Promise<{
+    success: boolean;
+    data: {
+      kits: Array<{
+        _id: string;
+        studentProfileId: string;
+        studentId: string;
+        studentName: string;
+        studentEmail: string;
+        kitId: string;
+        kitName: string;
+        kitStatus: "delivered" | "requested" | "processing" | "rejected";
+        kitCost?: number;
+        requestedAt: string;
+        deliveredAt?: string | null;
+      }>;
+    };
+  }> {
+    return apiService.get(`/admin/get-kits`);
   }
 
   async getStudentStats(): Promise<StudentStatsResponse> {
@@ -335,10 +356,31 @@ class StudentPublicService {
   async getPerformanceRecords() {}
 
   // Request Kit
-  async requestKit() {}
+  async requestKit(kitName: string) {
+    const response = await apiService.post<{
+      success: boolean;
+      message: string;
+    }>(`${this.baseStudentUrl}/request-kit`, { kitName });
+    return response;
+  }
 
   // Get Kits
-  async getKits() {}
+  async getKits() {
+    const response = await apiService.get<{
+      success: boolean;
+      data: {
+        kits: Array<{
+          _id: string;
+          kitName: string;
+          status: "delivered" | "requested" | "processing" | "rejected";
+          requestedAt: string;
+          deliveredAt?: string | null;
+          cost?: number;
+        }>;
+      };
+    }>(`${this.baseStudentUrl}/kits`);
+    return response;
+  }
 }
 
 export const studentAdminService = new StudentAdminService();

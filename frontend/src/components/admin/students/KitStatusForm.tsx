@@ -36,9 +36,9 @@ import { Package } from "lucide-react";
 // Define form validation schema
 const kitStatusFormSchema = z
   .object({
-    status: z.enum(["requested", "processing", "delivered"]),
+    status: z.enum(["requested", "processing", "delivered", "rejected"]),
     deliveredDate: z.string().optional(),
-    notes: z.string().optional(),
+    cost: z.number().optional(),
   })
   .refine(
     (data) => {
@@ -73,7 +73,7 @@ export const KitStatusForm: React.FC<KitStatusFormProps> = ({
       deliveredDate: kit.deliveredDate
         ? new Date(kit.deliveredDate).toISOString().split("T")[0]
         : "",
-      notes: kit.notes || "",
+      cost: kit.cost || 0,
     },
   });
 
@@ -127,9 +127,6 @@ export const KitStatusForm: React.FC<KitStatusFormProps> = ({
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
             <div>
-              <span className="font-medium">Size:</span> {kit.size}
-            </div>
-            <div>
               <span className="font-medium">Requested:</span>{" "}
               {formatDate(kit.requestedDate)}
             </div>
@@ -140,12 +137,6 @@ export const KitStatusForm: React.FC<KitStatusFormProps> = ({
               </div>
             )}
           </div>
-          {kit.notes && (
-            <div className="text-sm">
-              <span className="font-medium text-gray-600">Current Notes:</span>{" "}
-              {kit.notes}
-            </div>
-          )}
         </div>
 
         <Form {...form}>
@@ -217,26 +208,6 @@ export const KitStatusForm: React.FC<KitStatusFormProps> = ({
                 )}
               />
             )}
-
-            {/* Notes Field */}
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Notes (Optional)</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Add any additional notes about this kit status update..."
-                      {...field}
-                      disabled={isLoading}
-                      rows={3}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <CardFooter className="flex justify-between px-0">
               <Button

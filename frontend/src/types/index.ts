@@ -295,11 +295,10 @@ export interface Performance {
 export interface Kit {
   _id: string;
   itemName: string;
-  size: string;
   requestedDate: string;
-  status: "requested" | "processing" | "delivered";
+  status: "requested" | "processing" | "delivered" | "rejected";
+  cost?: number;
   deliveredDate?: string;
-  notes?: string;
 }
 
 export interface FeePayment {
@@ -445,9 +444,9 @@ export interface StudentUpdateData {
 }
 
 export interface KitUpdateData {
-  status: "requested" | "processing" | "delivered";
+  status: "requested" | "processing" | "delivered" | "rejected";
   deliveredDate?: string;
-  notes?: string;
+  cost?: number;
 }
 
 export interface TrainerFilters {

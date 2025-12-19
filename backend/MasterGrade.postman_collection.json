@@ -54,7 +54,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"john@example.com\",\n    \"password\": \"Password123!\"\n  }",
+							"raw": "{\n    \"email\": \"snk@aot.com\",\n    \"password\": \"Abhigadde#007\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -83,7 +83,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNDRhMjUxMDBmZjg4YzQwN2IwOTUiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc1NTI2OTEyNywiZXhwIjoxNzU1MjcwMDI3fQ.UadKGzxgoBOGYNeJaE464hHZ35VIpmwHHB6rsvnz7K8",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQyNDVkODBiOWEyMzhiZDA0ZDNhZjEiLCJlbWFpbCI6InNua0Bhb3QuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NjYxMzI5NjUsImV4cCI6MTc2NjczNzc2NX0.ei8aU_FZYV6DOGOeyPi9X0evb7K_TQVADTDLkproqCw",
 									"type": "string"
 								}
 							]
@@ -622,7 +622,7 @@
 					]
 				},
 				{
-					"name": "Student Ops ⭕🚩",
+					"name": "Student Ops",
 					"item": [
 						{
 							"name": "Get All Studs",
@@ -718,13 +718,13 @@
 							"response": []
 						},
 						{
-							"name": "Update Kit Status",
+							"name": "Update Kit Status ⭕🚩",
 							"request": {
 								"method": "PUT",
 								"header": [
 									{
 										"key": "Authorization",
-										"value": "Bearer ADMIN_TOKEN"
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTMzMjcxLCJleHAiOjE3NjY3MzgwNzF9.Oj8ugdfdI7UoDlV554bxEtMx0qhUwJGpQ-2RpbtRviQ"
 									},
 									{
 										"key": "Content-Type",
@@ -733,7 +733,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"status\": \"delivered\",\n    \"cost\": 75.00\n  }",
+									"raw": "{\n    \"status\": \"rejected\",\n    \"cost\": 75.00\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -741,7 +741,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/api/admin/students/STUDENT_ID_HERE/kits/KIT_ID_HERE",
+									"raw": "http://localhost:3000/api/admin/students/694245d90b9a238bd04d3af6/kits/69450d6bbe37c0e1021bb1e2",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -751,9 +751,9 @@
 										"api",
 										"admin",
 										"students",
-										"STUDENT_ID_HERE",
+										"694245d90b9a238bd04d3af6",
 										"kits",
-										"KIT_ID_HERE"
+										"69450d6bbe37c0e1021bb1e2"
 									]
 								}
 							},
@@ -785,11 +785,42 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Get All Kits",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTMzMjcxLCJleHAiOjE3NjY3MzgwNzF9.Oj8ugdfdI7UoDlV554bxEtMx0qhUwJGpQ-2RpbtRviQ",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/admin/get-kits",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"admin",
+										"get-kits"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},
 				{
-					"name": "Trainer Ops ⭕🚩",
+					"name": "Trainer Ops",
 					"item": [
 						{
 							"name": "Create Trainer",
@@ -1544,7 +1575,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQyNDVkODBiOWEyMzhiZDA0ZDNhZjEiLCJlbWFpbCI6InNua0Bhb3QuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NjYxMzI5NjUsImV4cCI6MTc2NjczNzc2NX0.ei8aU_FZYV6DOGOeyPi9X0evb7K_TQVADTDLkproqCw"
 							},
 							{
 								"key": "Content-Type",
@@ -1553,7 +1584,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"kitName\": \"Football Training Kit\"\n  }",
+							"raw": "{\n    \"kitName\": \"Football Trainingx\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1583,7 +1614,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQyNDVkODBiOWEyMzhiZDA0ZDNhZjEiLCJlbWFpbCI6InNua0Bhb3QuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NjYxMzI5NjUsImV4cCI6MTc2NjczNzc2NX0.ei8aU_FZYV6DOGOeyPi9X0evb7K_TQVADTDLkproqCw"
 							}
 						],
 						"url": {
@@ -2004,7 +2035,7 @@
 					"response": []
 				},
 				{
-					"name": "Get Event By ID ⭕",
+					"name": "Get Event By ID",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -2373,6 +2404,246 @@
 								"homepage",
 								"admin",
 								"events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Admin Landing Page Events Copy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"eventId\": \"6940875a7dbc86701bf4e235\",\r\n    \"colorScheme\": \"from-green-600 to-emerald-500\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/homepage/admin/events",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"homepage",
+								"admin",
+								"events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Event Card Order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"eventId\": \"6940875a7dbc86701bf4e235\",\r\n    \"colorScheme\": \"from-green-600 to-emerald-500\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/homepage/admin/events/CARD_ID_HERE",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"homepage",
+								"admin",
+								"events",
+								"CARD_ID_HERE"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Event Card Color",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"eventId\": \"6940875a7dbc86701bf4e235\",\r\n    \"colorScheme\": \"from-green-600 to-emerald-500\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/homepage/admin/events/CARD_ID_HERE",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"homepage",
+								"admin",
+								"events",
+								"CARD_ID_HERE"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Update Orders",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cards\": [\r\n        {\"id\": \"CARD_ID_1\", \r\n        \"order\": 1},\r\n        {\"id\": \"CARD_ID_2\", \"order\": 2},\r\n        {\"id\": \"CARD_ID_3\", \"order\": 3}  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/homepage/admin/events/bulk/reorder",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"homepage",
+								"admin",
+								"events",
+								"bulk",
+								"reorder"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Event Card",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"eventId\": \"6940875a7dbc86701bf4e235\",\r\n    \"colorScheme\": \"from-green-600 to-emerald-500\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/homepage/admin/events/6942fa6088fbebb76f9fab28",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"homepage",
+								"admin",
+								"events",
+								"6942fa6088fbebb76f9fab28"
 							]
 						}
 					},

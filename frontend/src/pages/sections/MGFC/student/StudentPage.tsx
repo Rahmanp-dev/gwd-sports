@@ -10,6 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { authService } from "@/services/authService";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { logout, setUser } from "@/store/slices/authSlice";
+import KitManagement from "./tabs/KitManagement";
 import {
   Calendar,
   Trophy,
@@ -622,59 +623,7 @@ export default function MGFCStudentPage() {
 
           {/* Kits Tab */}
           <TabsContent value="schedule" className="space-y-6">
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={containerVariants}
-            >
-              <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
-                <CardHeader>
-                  <CardTitle className="text-white">Full Schedule</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {[
-                      ...studentData.upcomingMatches,
-                      ...studentData.recentMatches,
-                    ].map((item, index) => (
-                      <div
-                        key={index}
-                        className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-green-500/50 transition-all"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <div className="text-center">
-                              <p className="text-xs text-gray-400">
-                                {item.date?.split(",")[0] || "Nov"}
-                              </p>
-                              <p className="text-2xl font-bold text-white">
-                                {item.date?.split(" ")[1]?.replace(",", "") ||
-                                  "15"}
-                              </p>
-                            </div>
-                            <div>
-                              <h4 className="text-white font-semibold">
-                                vs {item.opponent}
-                              </h4>
-                              <p className="text-sm text-gray-400">
-                                {"Main Ground"}
-                              </p>
-                            </div>
-                          </div>
-                          <Button
-                            size="sm"
-                            className="bg-gradient-to-r from-green-600 to-blue-600"
-                          >
-                            View Details
-                            <ChevronRight className="ml-2 h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+            <KitManagement />
           </TabsContent>
 
           {/* Fees Tab */}
