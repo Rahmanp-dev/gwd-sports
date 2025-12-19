@@ -33,12 +33,12 @@ rules:-
 0.5. Properly read all my existing files and existing code, folder structure and based on that understand my project logic and then start to give the required code 
 1. we are building the code for production, so always remember and give the best possible code so that there will never be issues
 2. always give the frontend code in responsive - it should be properly viewable in all types of devices - mobile, tablet and pc - PC and mobile most important 
-3. always use production insdustry enterprise level best practices - best modular, scalable and best ways of implementing the code and logics of frontend 
+3. always use production industry enterprise level best practices - best modular, scalable and best ways of implementing the code and logics of frontend 
 4. proper authentication, protected pages and RBAC to be implemented based on how backend is implemented 
 5. any other best and modern practices can be used to implement if I forgot anything in this 
 6. properly look into the existing backend and forntend code and then give me the perfect code to be implemented 
 7. for every file code you give make sure you give the filename and their destination - basically their relative file path 
-8. Make sure that the code you give will not break any already existing working features
+8. Make sure that the code you give will not break any already existing working features, only work on the features which I asked you to 
 
 /src/
 ├── types/

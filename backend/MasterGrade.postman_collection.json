@@ -1127,6 +1127,299 @@
 			"name": "Academy",
 			"item": [
 				{
+					"name": "Academy Management",
+					"item": [
+						{
+							"name": "Get Acad. Members",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5i{{baseURL}}J"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/academy/6942a523a80071a17297d84d/members",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"academy",
+										"6942a523a80071a17297d84d",
+										"members"
+									]
+								}
+							},
+							"response": [
+								{
+    "success": true,
+    "data": {
+        "trainers": [
+            {
+                "_id": "6942312f0e809e55c205917f",
+                "name": "fggg",
+                "email": "mx@mmm.com",
+                "phone": "9347222434",
+                "sports": [
+                    "football"
+                ]
+            }
+        ],
+        "students": [
+            {
+                "_id": "694245d80b9a238bd04d3af1",
+                "name": "snk",
+                "email": "snk@aot.com",
+                "phone": "9347222434",
+                "sports": [
+                    "football"
+                ]
+            }
+        ]
+    }
+}
+							]
+						},
+						{
+							"name": "Add stud. in Acad.",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5iJk"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"academyId\": \"6942a523a80071a17297d84d\",\n    \"studentId\": \"694245d80b9a238bd04d3af1\"\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/academy/add-student",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"academy",
+										"add-student"
+									]
+								}
+							},
+							"response": [{
+    "success": true,
+    "message": "Student added to academy successfully",
+    "data": {
+        "student": {
+            "_id": "694245d80b9a238bd04d3af1",
+            "name": "snk",
+            "email": "snk@aot.com",
+            "phone": "9347222434",
+            "role": "student",
+            "sports": [
+                "football"
+            ],
+            "isActive": true,
+            "lastLogin": "2025-12-19T09:39:31.198Z",
+            "createdAt": "2025-12-17T05:55:36.872Z",
+            "updatedAt": "2025-12-19T11:09:44.593Z"
+        },
+        "academy": {
+            "_id": "6942a523a80071a17297d84d",
+            "name": "MG football dupe"
+        }
+    }
+}]
+						},
+						{
+							"name": "Add trainer in Acad.",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5iJk"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"academyId\": \"6942a523a80071a17297d84d\",\n    \"trainerId\": \"6942312f0e809e55c205917f\"\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/academy/add-trainer",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"academy",
+										"add-trainer"
+									]
+								}
+							},
+							"response": [
+								{
+    "success": true,
+    "message": "Trainer added to academy successfully",
+    "data": {
+        "trainer": {
+            "_id": "6942312f0e809e55c205917f",
+            "name": "fggg",
+            "email": "mx@mmm.com",
+            "phone": "9347222434",
+            "role": "trainer",
+            "sports": [
+                "football"
+            ],
+            "isActive": true,
+            "lastLogin": null,
+            "createdAt": "2025-12-17T04:27:27.235Z",
+            "updatedAt": "2025-12-17T04:27:28.632Z"
+        },
+        "academy": {
+            "_id": "6942a523a80071a17297d84d",
+            "name": "MG football dupe"
+        }
+    }
+}
+							]
+						},
+						{
+							"name": "Remove stud. from Acad.",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5i{{$guid}}J"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"academyId\": \"6942a523a80071a17297d84d\",\n    \"studentId\": \"694245d80b9a238bd04d3af1\"\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/academy/remove-student",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"academy",
+										"remove-student"
+									]
+								}
+							},
+							"response": [
+								{
+    "success": true,
+    "message": "Student removed from academy successfully"
+}
+							]
+						},
+						{
+							"name": "Remove trainer from Acad.",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5iJk"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"academyId\": \"6942a523a80071a17297d84d\",\n    \"trainerId\": \"6942312f0e809e55c205917f\"\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/academy/remove-trainer",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"academy",
+										"remove-trainer"
+									]
+								}
+							},
+							"response": [
+								{
+    "success": true,
+    "message": "Trainer removed from academy successfully"
+}
+							]
+						}
+					]
+				},
+				{
 					"name": "Create Academy",
 					"request": {
 						"method": "POST",

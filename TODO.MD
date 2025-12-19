@@ -2,16 +2,21 @@ TODO:
 
 P1:
 
-- [ ] Functional Student Dashboard - /mgfc/student - on top show the academy; attendance tab, performance tab, kits request and kits tab, fees tab; also link to my events page
-- [ ] Functional Trainer Dashboard - /mgfc/trainer - on top show the academy; students tab, attendance tab, performance tab, button to add students under trainer; also link to my events page
 - [ ] only student can access student dashboard; only trainer can access trainer dashboard
-- [ ] Proper liknage of academy, trainer, student profiles 
+- [ ] Proper linkage of academy, trainer, student profiles 
 - [ ] if (!studentProfile) in frontend\src\components\user\student\StudentProfile.tsx fix / check this
 - [ ] Student, trainer interactions - check the flow
 - [ ] Student, trainer, admin interactions - check the flow
 - [ ] Check view student - it is misbehaving - failed to load student profile
 - [ ] Check edit student 
 - [ ] favicon 
+- [ ] Join Academy - Admin can make a trainer join an academy; Admin can make a student join an academy; Trainer can make a student join his academy
+- [ ] Leave Academy - Admin can make a trainer leave an academy; Admin can make a student leave an academy; Trainer can make a student leave his academy
+- [ ] Students under Trainer - Admin can view all students under a trainer; Trainer can view all students under him
+- [ ] Attendance Management - Trainer can mark attendance of students under him for an event; Trainer
+- [ ] Performance Management - Trainer can add performance details of students under him 
+- [ ] Fees Management - Admin can add fees details of students under an academy; Trainer can view fees details of students under him
+- [ ] Fix academy management - Acad members
 
 P1.5:
 
@@ -118,3 +123,5 @@ Done ✅
 - [x] user/auth to homepage button and main button in landing page to user/auth page
 - [x] Take care of placeholders in forms 
 - [x] Implement kit management 
+- [x] Functional Student Dashboard - /mgfc/student - on top show the academy; attendance tab, performance tab, kits request and kits tab, fees tab; also link to my events page
+- [x] Functional Trainer Dashboard - /mgfc/trainer - on top show the academy; students tab, attendance tab, performance tab, button to add students under trainer; also link to my events page

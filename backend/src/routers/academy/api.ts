@@ -21,4 +21,11 @@ router.post('/', validateCreateAcademy, AcademyController.createAcademy);
 router.put('/:id', validateUpdateAcademy, AcademyController.updateAcademy);
 router.delete('/:id', validateAcademyId, AcademyController.deleteAcademy);
 
+// Academy member management routes
+router.get('/:id/members', validateAcademyId, AcademyController.getAcademyMembers);
+router.post('/add-student', AcademyController.addStudentToAcademy);
+router.post('/remove-student', AcademyController.removeStudentFromAcademy);
+router.post('/add-trainer', AcademyController.addTrainerToAcademy);
+router.post('/remove-trainer', AcademyController.removeTrainerFromAcademy);
+
 export default router;

@@ -28,8 +28,10 @@ import {
   Eye,
   Trash2,
   Building,
+  Users,
 } from "lucide-react";
 import { SPORTS_LIST } from "@/utils/constants";
+import { AcademyMemberManagement } from "./AcademyMemberManagement";
 
 interface AcademyTableProps {
   academies: Academy[];
@@ -60,6 +62,13 @@ export const AcademyTable: React.FC<AcademyTableProps> = ({
   onPageChange,
 }) => {
   const [searchTerm, setSearchTerm] = useState(currentFilters.search || "");
+  const [manageMembersOpen, setManageMembersOpen] = useState(false);
+  const [selectedAcademy, setSelectedAcademy] = useState<Academy | null>(null);
+
+  const handleManageMembers = (academy: Academy) => {
+    setSelectedAcademy(academy);
+    setManageMembersOpen(true);
+  };
 
   // Debounced search effect
   useEffect(() => {
@@ -259,6 +268,12 @@ export const AcademyTable: React.FC<AcademyTableProps> = ({
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
                         </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleManageMembers(academy)}
+                        >
+                          <Users className="mr-2 h-4 w-4" />
+                          Manage Academy
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           onClick={() => onDeleteAcademy(academy._id)}
@@ -302,6 +317,19 @@ export const AcademyTable: React.FC<AcademyTableProps> = ({
             </Button>
           </div>
         </div>
+      )}
+
+      {/* Member Management Dialog */}
+      {selectedAcademy && (
+        <AcademyMemberManagement
+          academyId={selectedAcademy._id}
+          academyName={selectedAcademy.name}
+          isOpen={manageMembersOpen}
+          onClose={() => {
+            setManageMembersOpen(false);
+            setSelectedAcademy(null);
+          }}
+        />
       )}
     </div>
   );

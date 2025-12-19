@@ -65,7 +65,7 @@ const AcademySchema = new Schema<IAcademy>({
   trainers: [{
     type: Schema.Types.ObjectId,
     ref: "User"
-  }],
+  }], 
   students: [{
     type: Schema.Types.ObjectId,
     ref: "User"

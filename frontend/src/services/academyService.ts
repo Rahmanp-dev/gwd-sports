@@ -135,6 +135,62 @@ class AcademyService {
       `${this.baseUrl}/${id}`,
     );
   }
+
+  async getAcademyMembers(id: string): Promise<{
+    success: boolean;
+    data: {
+      trainers: any[];
+      students: any[];
+    };
+  }> {
+    return apiService.get(`${this.baseUrl}/${id}/members`);
+  }
+
+  async addStudentToAcademy(academyId: string, studentId: string): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    return apiService.post(`${this.baseUrl}/add-student`, {
+      academyId,
+      studentId,
+    });
+  }
+
+  async removeStudentFromAcademy(
+    academyId: string,
+    studentId: string,
+  ): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    return apiService.post(`${this.baseUrl}/remove-student`, {
+      academyId,
+      studentId,
+    });
+  }
+
+  async addTrainerToAcademy(academyId: string, trainerId: string): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    return apiService.post(`${this.baseUrl}/add-trainer`, {
+      academyId,
+      trainerId,
+    });
+  }
+
+  async removeTrainerFromAcademy(
+    academyId: string,
+    trainerId: string,
+  ): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    return apiService.post(`${this.baseUrl}/remove-trainer`, {
+      academyId,
+      trainerId,
+    });
+  }
 }
 
 export const academyService = new AcademyService();
