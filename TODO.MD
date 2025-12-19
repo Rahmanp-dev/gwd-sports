@@ -7,17 +7,20 @@ P1:
 - [ ] if (!studentProfile) in frontend\src\components\user\student\StudentProfile.tsx fix / check this
 - [ ] Student, trainer interactions - check the flow
 - [ ] Student, trainer, admin interactions - check the flow
+- [ ] Check view student - it is misbehaving - failed to load student profile
+- [ ] Check edit student 
 
 P1.5:
 
 - [ ] In football page - promote MGFC and link to its page
-- [ ] Fix Admin Dashboard - some errors
+- [ ] Fix Admin Dashboard - some errors -> check users section and students section
 - [ ] Refresh token logic in frontend
 - [ ] Handle Existing Token in register pages and redirect them directly
-- [ ] Check edit student - it is misbehaving
 - [ ] show if the student is verified or not in the profile
 - [ ] Do something about the "inactive" users / trainers / students / academies -> deactivate instead of delete -> soft delete -> deactivate their user account. So make sure that they can't login
 - [ ] Admin can reactivate trainer / student 
+- [ ] check responsive UI for all pages in mobile, tablet
+- [ ] remove change password from edit user
 
 P2:
 
@@ -110,3 +113,4 @@ Done ✅
 - [x] events page to homepage and user profile 
 - [x] Specific Event to take to that event details page 
 - [x] Confetti in my events page
+- [x] user/auth to homepage button and main button in landing page to user/auth page

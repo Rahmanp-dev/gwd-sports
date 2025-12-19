@@ -209,6 +209,13 @@ export default function UserAuth() {
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-green-500/10 rounded-full blur-3xl" />
       </div>
 
+      <Button
+        className="absolute top-15 left-40 bg-gray-800 text-sm text-blue-400 hover:text-blue-300 cursor-pointer"
+        onClick={() => navigate("/")}
+      >
+        ← Back to Home
+      </Button>
+
       <motion.div
         initial="hidden"
         animate="visible"
@@ -623,15 +630,6 @@ export default function UserAuth() {
                   </form>
                 </TabsContent>
               </Tabs>
-
-              <div className="mt-6 text-center">
-                <Link
-                  to="/"
-                  className="text-sm text-blue-400 hover:text-blue-300"
-                >
-                  ← Back to Home
-                </Link>
-              </div>
 
               <div className="mt-6 relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-green-500/20 to-blue-500/20 rounded-lg blur-xl" />

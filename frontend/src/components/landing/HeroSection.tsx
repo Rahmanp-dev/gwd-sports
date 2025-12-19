@@ -158,6 +158,9 @@ export default function HeroSection() {
                 <Button
                   size="lg"
                   className="relative bg-gradient-to-r from-amber-500 to-yellow-500 text-black hover:from-amber-600 hover:to-yellow-600 text-xl font-black uppercase tracking-widest px-12 py-8 rounded-none shadow-[0_0_40px_rgba(251,191,36,0.6)] hover:shadow-[0_0_60px_rgba(251,191,36,0.8)] transition-all duration-300 group overflow-hidden font-display"
+                  onClick={() => {
+                    window.location.href = "/user/auth";
+                  }}
                 >
                   <span className="relative z-10 flex items-center gap-3">
                     Start Your Journey
