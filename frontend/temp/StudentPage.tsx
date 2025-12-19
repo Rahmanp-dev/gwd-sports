@@ -247,34 +247,40 @@ export default function MGFCStudentPage() {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-gray-800 border border-gray-700">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 bg-gray-800 border border-gray-700">
             <TabsTrigger
               value="overview"
               className="data-[state=active]:bg-green-600"
             >
-              Attendance
+              Overview
             </TabsTrigger>
             <TabsTrigger
               value="stats"
               className="data-[state=active]:bg-green-600"
             >
-              Performance
+              Statistics
             </TabsTrigger>
             <TabsTrigger
               value="schedule"
               className="data-[state=active]:bg-green-600"
             >
-              Kits
+              Schedule
             </TabsTrigger>
             <TabsTrigger
               value="achievements"
               className="data-[state=active]:bg-green-600"
             >
-              Fees
+              Achievements
+            </TabsTrigger>
+            <TabsTrigger
+              value="profile"
+              className="data-[state=active]:bg-green-600"
+            >
+              Profile
             </TabsTrigger>
           </TabsList>
 
-          {/* Attendance Tab */}
+          {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
             <motion.div
               initial="hidden"
@@ -508,7 +514,7 @@ export default function MGFCStudentPage() {
             </motion.div>
           </TabsContent>
 
-          {/* Performance Tab */}
+          {/* Statistics Tab */}
           <TabsContent value="stats" className="space-y-6">
             <motion.div
               initial="hidden"
@@ -620,7 +626,7 @@ export default function MGFCStudentPage() {
             </motion.div>
           </TabsContent>
 
-          {/* Kits Tab */}
+          {/* Schedule Tab */}
           <TabsContent value="schedule" className="space-y-6">
             <motion.div
               initial="hidden"
@@ -677,7 +683,7 @@ export default function MGFCStudentPage() {
             </motion.div>
           </TabsContent>
 
-          {/* Fees Tab */}
+          {/* Achievements Tab */}
           <TabsContent value="achievements" className="space-y-6">
             <motion.div
               initial="hidden"
@@ -707,6 +713,144 @@ export default function MGFCStudentPage() {
                   </Card>
                 </motion.div>
               ))}
+            </motion.div>
+          </TabsContent>
+
+          {/* Profile Tab */}
+          <TabsContent value="profile" className="space-y-6">
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={containerVariants}
+              className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+            >
+              <motion.div variants={itemVariants}>
+                <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+                  <CardHeader>
+                    <CardTitle className="text-white">
+                      Personal Information
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex justify-center mb-4">
+                      <Avatar className="h-24 w-24 border-4 border-green-500">
+                        <AvatarImage src={studentData.avatar} />
+                        <AvatarFallback className="bg-gradient-to-br from-green-600 to-blue-600 text-white text-2xl font-bold">
+                          {studentData.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-gray-400 text-sm">Full Name</p>
+                        <p className="text-white font-semibold">
+                          {studentData.name}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400 text-sm">Roll Number</p>
+                        <p className="text-white font-semibold">
+                          {studentData.rollNumber}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400 text-sm">Class</p>
+                        <p className="text-white font-semibold">
+                          {studentData.class}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400 text-sm">Position</p>
+                        <p className="text-white font-semibold">
+                          {studentData.position}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400 text-sm">Jersey Number</p>
+                        <p className="text-white font-semibold">
+                          #{studentData.jerseyNumber}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400 text-sm">Team</p>
+                        <p className="text-white font-semibold">
+                          {studentData.teamName}
+                        </p>
+                      </div>
+                    </div>
+                    <Button className="w-full bg-gradient-to-r from-green-600 to-blue-600 mt-4">
+                      Edit Profile
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              <motion.div variants={itemVariants} className="lg:col-span-2">
+                <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+                  <CardHeader>
+                    <CardTitle className="text-white">Quick Actions</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-4">
+                      <Button
+                        variant="outline"
+                        className="h-20 flex-col gap-2 border-gray-700 hover:border-green-500"
+                      >
+                        <Download className="h-6 w-6" />
+                        <span>Download ID Card</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="h-20 flex-col gap-2 border-gray-700 hover:border-blue-500"
+                      >
+                        <Upload className="h-6 w-6" />
+                        <span>Submit Medical Form</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="h-20 flex-col gap-2 border-gray-700 hover:border-purple-500"
+                      >
+                        <Bell className="h-6 w-6" />
+                        <span>Notifications</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="h-20 flex-col gap-2 border-gray-700 hover:border-orange-500"
+                      >
+                        <Settings className="h-6 w-6" />
+                        <span>Settings</span>
+                      </Button>
+                    </div>
+
+                    <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className="h-5 w-5 text-blue-400 flex-shrink-0 mt-1" />
+                        <div>
+                          <h4 className="text-white font-semibold mb-1">
+                            Important Notice
+                          </h4>
+                          <p className="text-gray-400 text-sm">
+                            Please submit your medical fitness certificate
+                            before the next match. Contact the sports
+                            coordinator for more details.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      className="w-full mt-6 border-red-500/50 text-red-400 hover:bg-red-500/10"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
             </motion.div>
           </TabsContent>
         </Tabs>

@@ -2,13 +2,16 @@ TODO:
 
 P1:
 
-- [ ] Functional Student Dashboard - /mgfc/student
-- [ ] Functional Trainer Dashboard - /mgfc/trainer
+- [ ] Functional Student Dashboard - /mgfc/student - on top show the academy; attendance tab, performance tab, kits request and kits tab, fees tab; also link to my events page
+- [ ] Functional Trainer Dashboard - /mgfc/trainer - on top show the academy; students tab, attendance tab, performance tab, button to add students under trainer; also link to my events page
+- [ ] only student can access student dashboard; only trainer can access trainer dashboard
+- [ ] Proper liknage of academy, trainer, student profiles 
 - [ ] if (!studentProfile) in frontend\src\components\user\student\StudentProfile.tsx fix / check this
 - [ ] Student, trainer interactions - check the flow
 - [ ] Student, trainer, admin interactions - check the flow
 - [ ] Check view student - it is misbehaving - failed to load student profile
 - [ ] Check edit student 
+- [ ] favicon 
 
 P1.5:
 
@@ -31,7 +34,6 @@ P2:
 - [ ] Add events agenda - in event management component - like explaining all options
 - [ ] Forgot password, reset password 
 - [ ] Implement permanent delete of student / trainer by admin
-- [ ] Take care of placeholders in forms 
 - [ ] can we make this better? const refreshToken = localStorage.getItem("mg_refresh_token");
 
 P3: 
@@ -114,3 +116,4 @@ Done ✅
 - [x] Specific Event to take to that event details page 
 - [x] Confetti in my events page
 - [x] user/auth to homepage button and main button in landing page to user/auth page
+- [x] Take care of placeholders in forms 
