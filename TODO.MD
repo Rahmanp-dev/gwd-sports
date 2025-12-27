@@ -3,6 +3,7 @@ TODO:
 P1:
 
 - [ ] only student can access student dashboard; only trainer can access trainer dashboard
+- [ ] add a new /gallery
 - [ ] Proper linkage of academy, trainer, student profiles 
 - [ ] if (!studentProfile) in frontend\src\components\user\student\StudentProfile.tsx fix / check this
 - [ ] Student, trainer interactions - check the flow
