@@ -146,7 +146,10 @@ class AcademyService {
     return apiService.get(`${this.baseUrl}/${id}/members`);
   }
 
-  async addStudentToAcademy(academyId: string, studentId: string): Promise<{
+  async addStudentToAcademy(
+    academyId: string,
+    studentId: string,
+  ): Promise<{
     success: boolean;
     message: string;
   }> {
@@ -169,7 +172,10 @@ class AcademyService {
     });
   }
 
-  async addTrainerToAcademy(academyId: string, trainerId: string): Promise<{
+  async addTrainerToAcademy(
+    academyId: string,
+    trainerId: string,
+  ): Promise<{
     success: boolean;
     message: string;
   }> {

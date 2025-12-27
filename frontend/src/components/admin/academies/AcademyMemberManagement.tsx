@@ -17,12 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -64,14 +59,20 @@ export const AcademyMemberManagement: React.FC<
   const [students, setStudents] = useState<Member[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [memberType, setMemberType] = useState<"student" | "trainer">("student");
+  const [memberType, setMemberType] = useState<"student" | "trainer">(
+    "student",
+  );
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [availableMembers, setAvailableMembers] = useState<any[]>([]);
   const [selectedMemberId, setSelectedMemberId] = useState("");
   const [isAddingMember, setIsAddingMember] = useState(false);
   const [addSearchTerm, setAddSearchTerm] = useState("");
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
-  const [memberToRemove, setMemberToRemove] = useState<{ id: string; type: "student" | "trainer"; name: string } | null>(null);
+  const [memberToRemove, setMemberToRemove] = useState<{
+    id: string;
+    type: "student" | "trainer";
+    name: string;
+  } | null>(null);
 
   const fetchMembers = useCallback(async () => {
     try {
@@ -100,11 +101,11 @@ export const AcademyMemberManagement: React.FC<
         const response = await studentAdminService.getAllStudents({
           limit: 100,
         });
+        const studentsList = response?.data?.students || [];
         // Filter out students already in this academy
         // The API returns students with userId field containing the user's ObjectId
-        const filtered = response.data.students.filter(
-          (s: any) =>
-            !students.some((existing) => existing._id === s.userId)
+        const filtered = studentsList.filter(
+          (s: any) => !students.some((existing) => existing._id === s.userId),
         );
         setAvailableMembers(filtered);
       } else {
@@ -114,8 +115,7 @@ export const AcademyMemberManagement: React.FC<
         // Filter out trainers already in this academy
         // The API returns trainers with userId field containing the user's ObjectId
         const filtered = response.data.trainers.filter(
-          (t: any) =>
-            !trainers.some((existing) => existing._id === t.userId)
+          (t: any) => !trainers.some((existing) => existing._id === t.userId),
         );
         setAvailableMembers(filtered);
       }
@@ -155,14 +155,18 @@ export const AcademyMemberManagement: React.FC<
     } catch (error: any) {
       toast.error(
         error.response?.data?.message ||
-          `Failed to add ${memberType} to academy`
+          `Failed to add ${memberType} to academy`,
       );
     } finally {
       setIsAddingMember(false);
     }
   };
 
-  const handleRemoveMember = (memberId: string, type: "student" | "trainer", name: string) => {
+  const handleRemoveMember = (
+    memberId: string,
+    type: "student" | "trainer",
+    name: string,
+  ) => {
     setMemberToRemove({ id: memberId, type, name });
     setRemoveDialogOpen(true);
   };
@@ -172,17 +176,23 @@ export const AcademyMemberManagement: React.FC<
 
     try {
       if (memberToRemove.type === "student") {
-        await academyService.removeStudentFromAcademy(academyId, memberToRemove.id);
+        await academyService.removeStudentFromAcademy(
+          academyId,
+          memberToRemove.id,
+        );
         toast.success("Student removed from academy");
       } else {
-        await academyService.removeTrainerFromAcademy(academyId, memberToRemove.id);
+        await academyService.removeTrainerFromAcademy(
+          academyId,
+          memberToRemove.id,
+        );
         toast.success("Trainer removed from academy");
       }
       await fetchMembers();
     } catch (error: any) {
       toast.error(
         error.response?.data?.message ||
-          `Failed to remove ${memberToRemove.type} from academy`
+          `Failed to remove ${memberToRemove.type} from academy`,
       );
     } finally {
       setRemoveDialogOpen(false);
@@ -195,7 +205,7 @@ export const AcademyMemberManagement: React.FC<
     return members.filter(
       (m) =>
         m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        m.email.toLowerCase().includes(searchTerm.toLowerCase())
+        m.email.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   };
 
@@ -294,25 +304,30 @@ export const AcademyMemberManagement: React.FC<
                                     {trainer.phone}
                                   </p>
                                 )}
-                                {trainer.sports && trainer.sports.length > 0 && (
-                                  <div className="flex flex-wrap gap-1 mt-2">
-                                    {trainer.sports.map((sport) => (
-                                      <Badge
-                                        key={sport}
-                                        variant="secondary"
-                                        className="text-xs"
-                                      >
-                                        {sport}
-                                      </Badge>
-                                    ))}
-                                  </div>
-                                )}
+                                {trainer.sports &&
+                                  trainer.sports.length > 0 && (
+                                    <div className="flex flex-wrap gap-1 mt-2">
+                                      {trainer.sports.map((sport) => (
+                                        <Badge
+                                          key={sport}
+                                          variant="secondary"
+                                          className="text-xs"
+                                        >
+                                          {sport}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  )}
                               </div>
                               <Button
                                 size="sm"
                                 variant="ghost"
                                 onClick={() =>
-                                  handleRemoveMember(trainer._id, "trainer", trainer.name)
+                                  handleRemoveMember(
+                                    trainer._id,
+                                    "trainer",
+                                    trainer.name,
+                                  )
                                 }
                                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
                               >
@@ -378,25 +393,30 @@ export const AcademyMemberManagement: React.FC<
                                     {student.phone}
                                   </p>
                                 )}
-                                {student.sports && student.sports.length > 0 && (
-                                  <div className="flex flex-wrap gap-1 mt-2">
-                                    {student.sports.map((sport) => (
-                                      <Badge
-                                        key={sport}
-                                        variant="secondary"
-                                        className="text-xs"
-                                      >
-                                        {sport}
-                                      </Badge>
-                                    ))}
-                                  </div>
-                                )}
+                                {student.sports &&
+                                  student.sports.length > 0 && (
+                                    <div className="flex flex-wrap gap-1 mt-2">
+                                      {student.sports.map((sport) => (
+                                        <Badge
+                                          key={sport}
+                                          variant="secondary"
+                                          className="text-xs"
+                                        >
+                                          {sport}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  )}
                               </div>
                               <Button
                                 size="sm"
                                 variant="ghost"
                                 onClick={() =>
-                                  handleRemoveMember(student._id, "student", student.name)
+                                  handleRemoveMember(
+                                    student._id,
+                                    "student",
+                                    student.name,
+                                  )
                                 }
                                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
                               >
@@ -448,9 +468,10 @@ export const AcademyMemberManagement: React.FC<
             {/* Available Members List */}
             <div className="space-y-2">
               <Label className="text-gray-900 text-sm font-medium">
-                Available {memberType === "student" ? "Students" : "Trainers"} ({filteredAvailableMembers.length})
+                Available {memberType === "student" ? "Students" : "Trainers"} (
+                {filteredAvailableMembers.length})
               </Label>
-              
+
               {isLoading ? (
                 <div className="flex items-center justify-center py-12">
                   <Loader className="h-8 w-8 animate-spin text-green-500" />
@@ -477,7 +498,7 @@ export const AcademyMemberManagement: React.FC<
                     const userEmail = member.user?.email || "";
                     const userPhone = member.user?.phone || "";
                     const sports = member.sports || [];
-                    
+
                     return (
                       <motion.div
                         key={member._id}
@@ -497,7 +518,9 @@ export const AcademyMemberManagement: React.FC<
                             </h4>
                             <p className="text-sm text-gray-600">{userEmail}</p>
                             {userPhone && (
-                              <p className="text-sm text-gray-500">{userPhone}</p>
+                              <p className="text-sm text-gray-500">
+                                {userPhone}
+                              </p>
                             )}
                             {sports.length > 0 && (
                               <div className="flex flex-wrap gap-1 mt-2">
@@ -575,22 +598,27 @@ export const AcademyMemberManagement: React.FC<
                 <AlertTriangle className="h-6 w-6 text-red-600" />
               </div>
               <AlertDialogTitle className="text-gray-900">
-                Remove {memberToRemove?.type === "student" ? "Student" : "Trainer"}?
+                Remove{" "}
+                {memberToRemove?.type === "student" ? "Student" : "Trainer"}?
               </AlertDialogTitle>
             </div>
             <AlertDialogDescription className="text-gray-600 pt-2">
-              Are you sure you want to remove <span className="font-semibold">{memberToRemove?.name}</span> from{" "}
-              <span className="font-semibold">{academyName}</span>? This will also clear their academy
-              association from their profile.
+              Are you sure you want to remove{" "}
+              <span className="font-semibold">{memberToRemove?.name}</span> from{" "}
+              <span className="font-semibold">{academyName}</span>? This will
+              also clear their academy association from their profile.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-gray-300">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="border-gray-300">
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmRemoveMember}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              Remove {memberToRemove?.type === "student" ? "Student" : "Trainer"}
+              Remove{" "}
+              {memberToRemove?.type === "student" ? "Student" : "Trainer"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
