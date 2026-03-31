@@ -1,0 +1,38 @@
+Attendance Management - Trainer can mark attendance of students under him for an event - like an attendance marker sheet?
+
+Performance Management - Trainer can add performance details of students under him - what are the performance metrics? 
+
+Fees Management - Admin can add fees details of students under an academy; Trainer can view fees details of students under him 
+
+Join Academy - Admin can make a trainer join an academy; Admin can make a student join an academy; Trainer can make a student join his academy
+
+Leave Academy - Admin can make a trainer leave an academy; Admin can make a student leave an academy; Trainer can make a student leave his academy
+
+do u need verify thing? like inactive users cant login? yes
+
+Forgot password, reset password
+
+give me some real data instead of mock data
+
+S3
+
+Performance 
+
+Attacking - 9 / 10 - keep up 
+Defending - - 
+Goal
+
+> USe a calendar thing
+Session 1/2
+
+Attendance 
+
+Present / Late / Abs
+
+Fees 
+manual fees - upload the transaction id, date and screenshot 
+
+Trainer can also add students in the academy 
+
+mg logo animation
+

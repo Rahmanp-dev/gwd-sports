@@ -95,7 +95,7 @@ export default function HeroSection() {
             transition={{ duration: 1.2, delay: 1.8 }}
             className="flex justify-center"
           >
-            <h1 className="text-7xl sm:text-8xl lg:text-[140px] font-black text-white uppercase leading-[0.9] tracking-tighter font-display flex items-center gap-4">
+            <h1 className="text-7xl sm:text-8xl lg:text-[140px] font-black text-white uppercase leading-[0.9] tracking-tighter font-display flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
               MASTER
               <motion.span
                 initial={{ opacity: 0, x: -50 }}

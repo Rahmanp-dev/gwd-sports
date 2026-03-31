@@ -17,6 +17,7 @@ P1:
 - [ ] Performance Management - Trainer can add performance details of students under him 
 - [ ] Fees Management - Admin can add fees details of students under an academy; Trainer can view fees details of students under him
 - [ ] Fix academy management - Acad members
+- [ ] back to home isnt trigering the animation
 
 P1.5:
 
