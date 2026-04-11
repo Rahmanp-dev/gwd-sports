@@ -19,6 +19,11 @@ P1:
 - [ ] Fees Management - Admin can add fees details of students under an academy; Trainer can view fees details of students under him
 - [ ] Fix academy management - Acad members
 - [ ] back to home isnt trigering the animation
+- [ ] Razorpay integration 
+Performance Metrics: tactical, technical, SSG (Small Sided Games), and match play
+Grading and Feedback: Trainers provide numerical ratings and written comments (e.g., "very good" or "keep up") for specific skills such as attacking, defending, or goalkeeping
+Academy Expansion: The system must support five new branches starting in February (locations mentioned include Mumbai, Punjab, Chennai, and Bangalore).
+Centralized Domain: All branches should be managed under one domain rather than separate websites
 
 P1.5:
 

@@ -6,6 +6,7 @@ import studentRoutes from './student/api';
 import trainerRoutes from './trainer/api';
 import academyRoutes from './academy/api';
 import homepageRouter from "./homepage/api";
+import paymentRoutes from "./payment/api";
 import { generalLimiter, authLimiter, adminLimiter } from '../middleware/rateLimiter';
 
 export const setupRoutes = (app: Express) => {
@@ -23,7 +24,8 @@ export const setupRoutes = (app: Express) => {
   apiRouter.use('/trainer', trainerRoutes);
   apiRouter.use('/academy', academyRoutes);
   apiRouter.use("/homepage", homepageRouter);
-  
+  apiRouter.use("/payments", paymentRoutes);
+
   // Mount the API router
   app.use('/api', apiRouter);
   
