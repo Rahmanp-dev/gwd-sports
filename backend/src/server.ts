@@ -34,10 +34,6 @@ app.use(helmet({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from frontend build
-const path = require('path');
-app.use(express.static(path.join(__dirname, '../../frontend/dist')));
-
 // Connect to the database and start server
 const startServer = async () => {
     try {
@@ -46,11 +42,6 @@ const startServer = async () => {
         // Setup routes
         setupRoutes(app);
 
-        // Serve index.html for all non-API routes (SPA fallback)
-        app.get('*', (req, res) => {
-          res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
-        });
-        
         // Error handling middleware
         app.use(errorHandler);
         
