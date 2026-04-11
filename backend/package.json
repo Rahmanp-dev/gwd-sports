@@ -6,8 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon --exec tsx src/server.ts",
-    "build": "npm install && npm run build:frontend && tsup src --format esm --out-dir dist --clean --no-watch",
-    "build:frontend": "cd ../../frontend && npm install && npm run build",
+    "build": "tsup src --format esm --out-dir dist --clean --no-watch",
     "build:watch": "tsup src --format esm --out-dir dist --clean --watch",
     "start": "node dist/server.js",
     "lint": "eslint . --ext .ts",
