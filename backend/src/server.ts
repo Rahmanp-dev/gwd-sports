@@ -12,7 +12,9 @@ const PORT = config.PORT || 3000;
 
 // CORS Configuration
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Allow both localhost and 127.0.0.1
+  origin: config.NODE_ENV === 'production'
+    ? ['https://mastergrade-production.up.railway.app']
+    : ['http://localhost:5173', 'http://127.0.0.1:5173'],
   credentials: true, // Allow credentials (cookies, authorization headers)
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
@@ -39,7 +41,7 @@ const startServer = async () => {
         
         // Setup routes
         setupRoutes(app);
-        
+
         // Error handling middleware
         app.use(errorHandler);
         
