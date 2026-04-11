@@ -12,7 +12,9 @@ const PORT = config.PORT || 3000;
 
 // CORS Configuration
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Allow both localhost and 127.0.0.1
+  origin: config.NODE_ENV === 'production'
+    ? ['https://mastergrade-production.up.railway.app']
+    : ['http://localhost:5173', 'http://127.0.0.1:5173'],
   credentials: true, // Allow credentials (cookies, authorization headers)
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
@@ -32,6 +34,10 @@ app.use(helmet({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files from frontend build
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../../frontend/dist')));
+
 // Connect to the database and start server
 const startServer = async () => {
     try {
@@ -39,6 +45,11 @@ const startServer = async () => {
         
         // Setup routes
         setupRoutes(app);
+
+        // Serve index.html for all non-API routes (SPA fallback)
+        app.get('*', (req, res) => {
+          res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
+        });
         
         // Error handling middleware
         app.use(errorHandler);
