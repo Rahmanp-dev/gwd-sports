@@ -53,6 +53,7 @@ for the user
 - register for events 
 
 create these backend controllers + middlewares + routers - APIs
+all APIs to provide powerful filters, sort options and pagination 
 
 basicallly these above ones are the ones I want explicitly and then I want 
 1. CRUD operations for all - get _ by id, get all, create, update, delete, 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,17 +35,25 @@ import {
 } from "lucide-react";
 import Footer from "@/components/landing/Footer";
 import { toast } from "sonner";
+import FeesManagement from "./tabs/FeesManagement";
 
 export default function MGFCStudentPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
   const { user, token } = useAppSelector((state) => state.auth);
 
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "attendance");
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Sync tab state with URL
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    setSearchParams({ tab: value }, { replace: true });
+  };
 
   // Handle logout
   const handleLogout = async () => {
@@ -245,38 +253,44 @@ export default function MGFCStudentPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs
           value={activeTab}
-          onValueChange={setActiveTab}
+          onValueChange={handleTabChange}
           className="space-y-6"
         >
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-gray-800 border border-gray-700">
             <TabsTrigger
-              value="overview"
+              value="attendance"
               className="data-[state=active]:bg-green-600"
             >
               Attendance
             </TabsTrigger>
             <TabsTrigger
-              value="stats"
+              value="performance"
               className="data-[state=active]:bg-green-600"
             >
               Performance
             </TabsTrigger>
             <TabsTrigger
-              value="schedule"
+              value="kits"
               className="data-[state=active]:bg-green-600"
             >
               Kits
             </TabsTrigger>
             <TabsTrigger
-              value="achievements"
+              value="fees"
               className="data-[state=active]:bg-green-600"
             >
               Fees
             </TabsTrigger>
+            {/* <TabsTrigger
+              value="achievements"
+              className="data-[state=active]:bg-green-600"
+            >
+              Achievements
+            </TabsTrigger> */}
           </TabsList>
 
           {/* Attendance Tab */}
-          <TabsContent value="overview" className="space-y-6">
+          <TabsContent value="attendance" className="space-y-6">
             <motion.div
               initial="hidden"
               animate="visible"
@@ -510,7 +524,7 @@ export default function MGFCStudentPage() {
           </TabsContent>
 
           {/* Performance Tab */}
-          <TabsContent value="stats" className="space-y-6">
+          <TabsContent value="performance" className="space-y-6">
             <motion.div
               initial="hidden"
               animate="visible"
@@ -622,11 +636,16 @@ export default function MGFCStudentPage() {
           </TabsContent>
 
           {/* Kits Tab */}
-          <TabsContent value="schedule" className="space-y-6">
+          <TabsContent value="kits" className="space-y-6">
             <KitManagement />
           </TabsContent>
 
           {/* Fees Tab */}
+          <TabsContent value="fees" className="space-y-6">
+            <FeesManagement />
+          </TabsContent>
+
+          {/* Achievements Tab */}
           <TabsContent value="achievements" className="space-y-6">
             <motion.div
               initial="hidden"

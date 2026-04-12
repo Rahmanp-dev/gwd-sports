@@ -34,6 +34,7 @@ import MGFCTrainerPage from "@/pages/sections/MGFC/trainer/TrainerPage";
 import StudentRegister from "@/pages/sections/MGFC/student/StudentAuth";
 import StudentCreate from "@/pages/sections/MGFC/student/StudentCreate";
 import StudentComplete from "@/pages/sections/MGFC/student/StudentComplete";
+import PayFeesPage from "@/pages/sections/MGFC/student/PayFeesPage";
 // Static pages
 import NotFoundPage from "@/pages/static/NotFound";
 import ContactPage from "@/pages/static/Contact";
@@ -70,6 +71,7 @@ const AppRouter: React.FC = () => {
       {/* MGFC Section */}
       <Route path="/mgfc">
         <Route path="student" element={<MGFCStudentPage />} />
+        <Route path="student/pay-fees" element={<PayFeesPage />} />
         <Route path="student/register" element={<StudentRegister />} />
         <Route path="student/register/create" element={<StudentCreate />} />
         <Route path="student/register/complete" element={<StudentComplete />} />

@@ -1,0 +1,11 @@
+Student: 
+snk@aot.com
+Abhigadde#007
+
+Trainer:
+jane@example.com
+Password123!
+
+Admin:
+admin@example.com
+AdminPass123!

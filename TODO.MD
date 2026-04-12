@@ -47,6 +47,7 @@ P2:
 - [ ] Forgot password, reset password 
 - [ ] Implement permanent delete of student / trainer by admin
 - [ ] can we make this better? const refreshToken = localStorage.getItem("mg_refresh_token");
+- [ ] Payment invoice 
 
 P3: 
 
