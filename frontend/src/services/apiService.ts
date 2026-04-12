@@ -1,3 +1,4 @@
+import { logger } from "@/utils/logger";
 import axios from "axios";
 import type { AxiosInstance, AxiosRequestConfig } from "axios";
 import { authService } from "./authService";
@@ -28,10 +29,8 @@ class ApiService {
         if (!config.headers.Authorization) {
           const token = localStorage.getItem(this.tokenKey);
           if (token) {
-            console.log(
-              "Adding token to request:",
-              token.substring(0, 15) + "...",
-            );
+            // Token addition debugging is muted here or info level
+            // logger.info("Adding token to request");
             config.headers.Authorization = `Bearer ${token}`;
           }
         }
@@ -65,7 +64,7 @@ class ApiService {
               return this.api(originalRequest);
             }
           } catch (refreshError) {
-            console.error("Token refresh failed:", refreshError);
+            logger.warn("Token refresh failed", { error: refreshError });
           }
 
           // If refresh failed or no token, redirect to login
@@ -88,6 +87,14 @@ class ApiService {
           error.response?.data?.error ||
           error.message ||
           "An error occurred";
+
+        logger.error("API Request Failed", {
+          endpoint: originalRequest?.url,
+          method: originalRequest?.method,
+          statusCode: error.response?.status,
+          errorMessage,
+          rawError: error.response?.data,
+        });
 
         // Handle Mongoose validation errors
         if (error.response?.data?.errors) {

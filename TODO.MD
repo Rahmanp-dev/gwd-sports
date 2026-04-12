@@ -19,11 +19,10 @@ P1:
 - [ ] Fees Management - Admin can add fees details of students under an academy; Trainer can view fees details of students under him
 - [ ] Fix academy management - Acad members
 - [ ] back to home isnt trigering the animation
-- [ ] Razorpay integration 
-Performance Metrics: tactical, technical, SSG (Small Sided Games), and match play
-Grading and Feedback: Trainers provide numerical ratings and written comments (e.g., "very good" or "keep up") for specific skills such as attacking, defending, or goalkeeping
-Academy Expansion: The system must support five new branches starting in February (locations mentioned include Mumbai, Punjab, Chennai, and Bangalore).
-Centralized Domain: All branches should be managed under one domain rather than separate websites
+- [ ] Performance Metrics: tactical, technical, SSG (Small Sided Games), and match play
+- [ ] Grading and Feedback: Trainers provide numerical ratings and written comments (e.g., "very good" or "keep up") for specific skills such as attacking, defending, or goalkeeping
+- [ ] Academy Expansion: The system must support five new branches starting in February (locations mentioned include Mumbai, Punjab, Chennai, and Bangalore).
+- [ ] Centralized Domain: All branches should be managed under one domain rather than separate websites
 
 P1.5:
 
@@ -39,7 +38,6 @@ P1.5:
 
 P2:
 
-- [ ] Frontend logging
 - [ ] Soft delete When leaving events
 - [ ] refresh token - what is it and how to implement
 - [ ] improve isActive in events
@@ -47,7 +45,8 @@ P2:
 - [ ] Forgot password, reset password 
 - [ ] Implement permanent delete of student / trainer by admin
 - [ ] can we make this better? const refreshToken = localStorage.getItem("mg_refresh_token");
-- [ ] Payment invoice 
+- [ ] Event Payment invoice 
+- [ ] Fee Payment invoice 
 
 P3: 
 
@@ -133,3 +132,5 @@ Done ✅
 - [x] Implement kit management 
 - [x] Functional Student Dashboard - /mgfc/student - on top show the academy; attendance tab, performance tab, kits request and kits tab, fees tab; also link to my events page
 - [x] Functional Trainer Dashboard - /mgfc/trainer - on top show the academy; students tab, attendance tab, performance tab, button to add students under trainer; also link to my events page
+- [x] Razorpay integration 
+- [x] Frontend logging
