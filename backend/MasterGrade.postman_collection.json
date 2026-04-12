@@ -1,2974 +1,3083 @@
 {
-	"info": {
-		"_postman_id": "64219a09-a184-4f26-80b4-fc02ae90806d",
-		"name": "MasterGrade",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "27809297"
-	},
-	"item": [
-		{
-			"name": "User",
-			"item": [
-				{
-					"name": "Register",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"Password123!\",\n    \"phone\": \"+1234567890\",\n    \"role\": \"user\",\n    \"sports\": [\"football\", \"basketball\"]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/api/user/register",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"api",
-								"user",
-								"register"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Login",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"snk@aot.com\",\n    \"password\": \"Abhigadde#007\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/api/user/login",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"api",
-								"user",
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Profile",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQyNDVkODBiOWEyMzhiZDA0ZDNhZjEiLCJlbWFpbCI6InNua0Bhb3QuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NjYxMzI5NjUsImV4cCI6MTc2NjczNzc2NX0.ei8aU_FZYV6DOGOeyPi9X0evb7K_TQVADTDLkproqCw",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer TOKEN"
-							}
-						],
-						"url": {
-							"raw": "{{baseURL}}/api/user/profile",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"api",
-								"user",
-								"profile"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Profile",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNDRhMjUxMDBmZjg4YzQwN2IwOTUiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc1NTI2ODMxOSwiZXhwIjoxNzU1MjY5MjE5fQ.fXNbHSHs5aCVJcZPIpGUwqm296-Dq4kRj7owEkJSWlI",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer TOKEN"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"John Smith\",\n    \"phone\": \"+1234567891\",\n    \"sports\": [\"football\", \"tennis\"]\n  }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/api/user/profile",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"api",
-								"user",
-								"profile"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Change Password",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNDRhMjUxMDBmZjg4YzQwN2IwOTUiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc1NTI2ODMxOSwiZXhwIjoxNzU1MjY5MjE5fQ.fXNbHSHs5aCVJcZPIpGUwqm296-Dq4kRj7owEkJSWlI",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer TOKEN"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"currentPassword\": \"Password123!\",\n    \"newPassword\": \"NewPassword123!\"\n  }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/api/user/change-password",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"api",
-								"user",
-								"change-password"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Refresh Token",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNDRhMjUxMDBmZjg4YzQwN2IwOTUiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc1NTI2ODMxOSwiZXhwIjoxNzU1MjY5MjE5fQ.fXNbHSHs5aCVJcZPIpGUwqm296-Dq4kRj7owEkJSWlI",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNDRhMjUxMDBmZjg4YzQwN2IwOTUiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc1NTI2OTA2NywiZXhwIjoxNzU1ODczODY3fQ.zEp-95TJ5WE-VrMAAHwbQtCSdl38KD_F4WGM--A-Nuw\"\n  }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/api/user/refresh-token",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"api",
-								"user",
-								"refresh-token"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Logout ⭕",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer TOKEN"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNDRhMjUxMDBmZjg4YzQwN2IwOTUiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc1NTI2OTI3OCwiZXhwIjoxNzU1MjcwMTc4fQ.Xqyjng3Mg1-nS_5MzEPjhKokyvxHumUjnLCccth33KE\"\n  }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/api/user/logout",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"api",
-								"user",
-								"logout"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Deactivate account ⭕",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer TOKEN"
-							}
-						],
-						"url": {
-							"raw": "{{baseURL}}/api/user/deactivate",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"api",
-								"user",
-								"deactivate"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Check if user exist",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"gg@gg.com\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/user/check-email",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"user",
-								"check-email"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Admin",
-			"item": [
-				{
-					"name": "User Ops",
-					"item": [
-						{
-							"name": "Get All Users - Pagination + Filter",
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/admin/users?page=1&limit=10&role=user&isActive=true&search=john",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"users"
-									],
-									"query": [
-										{
-											"key": "page",
-											"value": "1"
-										},
-										{
-											"key": "limit",
-											"value": "10"
-										},
-										{
-											"key": "role",
-											"value": "user"
-										},
-										{
-											"key": "isActive",
-											"value": "true"
-										},
-										{
-											"key": "search",
-											"value": "john"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get All Users",
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/admin/users",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"users"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get User By ID",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwNzM0LCJleHAiOjE3NTUyNzE2MzR9.nvppGnJ5HGOGN_m-Iq37W8RL9NvKuByw6W-6mLWgsdA"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/admin/users/689f44a25100ff88c407b095",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"users",
-										"689f44a25100ff88c407b095"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Create User By Admin",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"name\": \"Jane Doe\",\n    \"email\": \"jane@example.com\",\n    \"password\": \"Password123!\",\n    \"phone\": \"+1234567892\",\n    \"role\": \"user\",\n    \"sports\": [\"football\"]\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:3000/api/admin/users",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"users"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Delete User By Admin",
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "DELETE",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/admin/users/689f4f0ed92f8c5fc2cff547",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"users",
-										"689f4f0ed92f8c5fc2cff547"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Toggle User Status",
-							"request": {
-								"method": "PATCH",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/admin/users/689f44a25100ff88c407b095/toggle-status",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"users",
-										"689f44a25100ff88c407b095",
-										"toggle-status"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "User Statistics",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/admin/users/stats",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"users",
-										"stats"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Update User By Admin",
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"name\": \"Jane Smith\",\n    \"role\": \"student\",\n    \"isActive\": true\n  }",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:3000/api/admin/users/689f4f0ed92f8c5fc2cff547",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"users",
-										"689f4f0ed92f8c5fc2cff547"
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "Student Ops",
-					"item": [
-						{
-							"name": "Get All Studs",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU2NTkzODk3LCJleHAiOjE3NTcxOTg2OTd9.07ixSPLLBUzgvYK_o-GFOnkso5iD_aQgtGj96GEpkCA"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/admin/students",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"students"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Stud By ID",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU2NTkzODk3LCJleHAiOjE3NTcxOTg2OTd9.07ixSPLLBUzgvYK_o-GFOnkso5iD_aQgtGj96GEpkCA"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/admin/students/68a3376874f386a3a7ea126a",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"students",
-										"68a3376874f386a3a7ea126a"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Update Stud",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU2NTkzODk3LCJleHAiOjE3NTcxOTg2OTd9.07ixSPLLBUzgvYK_o-GFOnkso5iD_aQgtGj96GEpkCA"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"level\": \"intermediate\",\n    \"sports\": [\"football\", \"basketball\", \"tennis\"]\n  }",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:3000/api/admin/students/68a3376874f386a3a7ea126a",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"students",
-										"68a3376874f386a3a7ea126a"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Update Kit Status ⭕🚩",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTMzMjcxLCJleHAiOjE3NjY3MzgwNzF9.Oj8ugdfdI7UoDlV554bxEtMx0qhUwJGpQ-2RpbtRviQ"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"status\": \"rejected\",\n    \"cost\": 75.00\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:3000/api/admin/students/694245d90b9a238bd04d3af6/kits/69450d6bbe37c0e1021bb1e2",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"students",
-										"694245d90b9a238bd04d3af6",
-										"kits",
-										"69450d6bbe37c0e1021bb1e2"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Stud Stats",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU2NTkzODk3LCJleHAiOjE3NTcxOTg2OTd9.07ixSPLLBUzgvYK_o-GFOnkso5iD_aQgtGj96GEpkCA"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/admin/students/stats",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"students",
-										"stats"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get All Kits",
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTMzMjcxLCJleHAiOjE3NjY3MzgwNzF9.Oj8ugdfdI7UoDlV554bxEtMx0qhUwJGpQ-2RpbtRviQ",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:3000/api/admin/get-kits",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"get-kits"
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "Trainer Ops",
-					"item": [
-						{
-							"name": "Create Trainer",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"userId\": \"69415fa1a5735556f3eae840\",\n    \"sports\": [\"football\"],\n    \"specializations\": [\"Youth Training\", \"Fitness Coaching\"],\n    \"qualifications\": [{\n      \"certification\": \"FIFA Level 1 Coaching\",\n      \"issuedBy\": \"FIFA\",\n      \"issuedDate\": \"2023-01-15T00:00:00Z\",\n      \"expiryDate\": \"2026-01-15T00:00:00Z\"\n    }],\n    \"experience\": [{\n      \"organization\": \"Local Sports Club\",\n      \"position\": \"Youth Coach\",\n      \"startDate\": \"2022-01-01T00:00:00Z\",\n      \"endDate\": \"2023-12-31T00:00:00Z\",\n      \"description\": \"Coached youth football teams aged 12-16\"\n    }],\n    \"hourlyRate\": 50.00,\n    \"availability\": {\n      \"days\": [\"monday\", \"tuesday\", \"wednesday\", \"thursday\", \"friday\"],\n      \"timeSlots\": [{\n        \"start\": \"09:00\",\n        \"end\": \"17:00\"\n      }]\n    }\n  }",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:3000/api/admin/trainers",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"trainers"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get All Trainers",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/admin/trainers?page=1&limit=10&sport=football",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"trainers"
-									],
-									"query": [
-										{
-											"key": "page",
-											"value": "1"
-										},
-										{
-											"key": "limit",
-											"value": "10"
-										},
-										{
-											"key": "sport",
-											"value": "football"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Trainer Stat",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer ADMIN_TOKEN"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/admin/trainers/stats",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"trainers",
-										"stats"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Trainer by ID",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/admin/trainers/69415fdaa5735556f3eae844",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"trainers",
-										"69415fdaa5735556f3eae844"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Update Trainer",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"sports\": [\"football\"],\n    \"hourlyRate\": 60.00,\n    \"specializations\": [\"Youth Training\", \"Advanced Techniques\"]\n  }",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:3000/api/admin/trainers/69415fdaa5735556f3eae844",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"trainers",
-										"69415fdaa5735556f3eae844"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Del Trainer",
-							"request": {
-								"method": "DELETE",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer ADMIN_TOKEN"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/admin/trainers/TRAINER_ID_HERE",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"admin",
-										"trainers",
-										"TRAINER_ID_HERE"
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "Admin Register",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Admin User\",\n    \"email\": \"admin@example.com\",\n    \"password\": \"AdminPass123!\",\n    \"phone\": \"+1234567899\",\n    \"role\": \"admin\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/api/user/register",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"api",
-								"user",
-								"register"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Admin Login",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"AdminPass123!\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/user/login",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"user",
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Admin Profile",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjY5ODAwLCJleHAiOjE3NTUyNzA3MDB9.KWKV72wT50USg6ZfMYmHFQX6zV8rmAOTv3jAIk6nnpI"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/user/profile",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"user",
-								"profile"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Academy",
-			"item": [
-				{
-					"name": "Academy Management",
-					"item": [
-						{
-							"name": "Get Acad. Members",
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5i{{baseURL}}J"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "http://localhost:3000/api/academy/6942a523a80071a17297d84d/members",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"academy",
-										"6942a523a80071a17297d84d",
-										"members"
-									]
-								}
-							},
-							"response": [
-								{
-    "success": true,
-    "data": {
-        "trainers": [
-            {
-                "_id": "6942312f0e809e55c205917f",
-                "name": "fggg",
-                "email": "mx@mmm.com",
-                "phone": "9347222434",
-                "sports": [
-                    "football"
-                ]
-            }
-        ],
-        "students": [
-            {
-                "_id": "694245d80b9a238bd04d3af1",
-                "name": "snk",
-                "email": "snk@aot.com",
-                "phone": "9347222434",
-                "sports": [
-                    "football"
-                ]
-            }
-        ]
-    }
-}
-							]
-						},
-						{
-							"name": "Add stud. in Acad.",
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5iJk"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"academyId\": \"6942a523a80071a17297d84d\",\n    \"studentId\": \"694245d80b9a238bd04d3af1\"\n  }",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:3000/api/academy/add-student",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"academy",
-										"add-student"
-									]
-								}
-							},
-							"response": [{
-    "success": true,
-    "message": "Student added to academy successfully",
-    "data": {
-        "student": {
-            "_id": "694245d80b9a238bd04d3af1",
-            "name": "snk",
-            "email": "snk@aot.com",
-            "phone": "9347222434",
-            "role": "student",
-            "sports": [
-                "football"
+  "info": {
+    "_postman_id": "64219a09-a184-4f26-80b4-fc02ae90806d",
+    "name": "MasterGrade",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "27809297"
+  },
+  "item": [
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "isActive": true,
-            "lastLogin": "2025-12-19T09:39:31.198Z",
-            "createdAt": "2025-12-17T05:55:36.872Z",
-            "updatedAt": "2025-12-19T11:09:44.593Z"
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"Password123!\",\n    \"phone\": \"+1234567890\",\n    \"role\": \"user\",\n    \"sports\": [\"football\", \"basketball\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/user/register",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "register"
+              ]
+            }
+          },
+          "response": []
         },
-        "academy": {
-            "_id": "6942a523a80071a17297d84d",
-            "name": "MG football dupe"
-        }
-    }
-}]
-						},
-						{
-							"name": "Add trainer in Acad.",
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5iJk"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"academyId\": \"6942a523a80071a17297d84d\",\n    \"trainerId\": \"6942312f0e809e55c205917f\"\n  }",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:3000/api/academy/add-trainer",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"academy",
-										"add-trainer"
-									]
-								}
-							},
-							"response": [
-								{
-    "success": true,
-    "message": "Trainer added to academy successfully",
-    "data": {
-        "trainer": {
-            "_id": "6942312f0e809e55c205917f",
-            "name": "fggg",
-            "email": "mx@mmm.com",
-            "phone": "9347222434",
-            "role": "trainer",
-            "sports": [
-                "football"
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "isActive": true,
-            "lastLogin": null,
-            "createdAt": "2025-12-17T04:27:27.235Z",
-            "updatedAt": "2025-12-17T04:27:28.632Z"
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"snk@aot.com\",\n    \"password\": \"Abhigadde#007\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/user/login",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "login"
+              ]
+            }
+          },
+          "response": []
         },
-        "academy": {
-            "_id": "6942a523a80071a17297d84d",
-            "name": "MG football dupe"
+        {
+          "name": "Get Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQyNDVkODBiOWEyMzhiZDA0ZDNhZjEiLCJlbWFpbCI6InNua0Bhb3QuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NjYxMzI5NjUsImV4cCI6MTc2NjczNzc2NX0.ei8aU_FZYV6DOGOeyPi9X0evb7K_TQVADTDLkproqCw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer TOKEN"
+              }
+            ],
+            "url": {
+              "raw": "{{baseURL}}/api/user/profile",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNDRhMjUxMDBmZjg4YzQwN2IwOTUiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc1NTI2ODMxOSwiZXhwIjoxNzU1MjY5MjE5fQ.fXNbHSHs5aCVJcZPIpGUwqm296-Dq4kRj7owEkJSWlI",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer TOKEN"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"John Smith\",\n    \"phone\": \"+1234567891\",\n    \"sports\": [\"football\", \"tennis\"]\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/user/profile",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNDRhMjUxMDBmZjg4YzQwN2IwOTUiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc1NTI2ODMxOSwiZXhwIjoxNzU1MjY5MjE5fQ.fXNbHSHs5aCVJcZPIpGUwqm296-Dq4kRj7owEkJSWlI",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer TOKEN"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"currentPassword\": \"Password123!\",\n    \"newPassword\": \"NewPassword123!\"\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/user/change-password",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "change-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNDRhMjUxMDBmZjg4YzQwN2IwOTUiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc1NTI2ODMxOSwiZXhwIjoxNzU1MjY5MjE5fQ.fXNbHSHs5aCVJcZPIpGUwqm296-Dq4kRj7owEkJSWlI",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNDRhMjUxMDBmZjg4YzQwN2IwOTUiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc1NTI2OTA2NywiZXhwIjoxNzU1ODczODY3fQ.zEp-95TJ5WE-VrMAAHwbQtCSdl38KD_F4WGM--A-Nuw\"\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/user/refresh-token",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "refresh-token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout ⭕",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer TOKEN"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNDRhMjUxMDBmZjg4YzQwN2IwOTUiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc1NTI2OTI3OCwiZXhwIjoxNzU1MjcwMTc4fQ.Xqyjng3Mg1-nS_5MzEPjhKokyvxHumUjnLCccth33KE\"\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/user/logout",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate account ⭕",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer TOKEN"
+              }
+            ],
+            "url": {
+              "raw": "{{baseURL}}/api/user/deactivate",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "deactivate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Check if user exist",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"gg@gg.com\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/user/check-email",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "user",
+                "check-email"
+              ]
+            }
+          },
+          "response": []
         }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "User Ops",
+          "item": [
+            {
+              "name": "Get All Users - Pagination + Filter",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/users?page=1&limit=10&role=user&isActive=true&search=john",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "users"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "role",
+                      "value": "user"
+                    },
+                    {
+                      "key": "isActive",
+                      "value": "true"
+                    },
+                    {
+                      "key": "search",
+                      "value": "john"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Users",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/users",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "users"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get User By ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwNzM0LCJleHAiOjE3NTUyNzE2MzR9.nvppGnJ5HGOGN_m-Iq37W8RL9NvKuByw6W-6mLWgsdA"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/users/689f44a25100ff88c407b095",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "users",
+                    "689f44a25100ff88c407b095"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create User By Admin",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Jane Doe\",\n    \"email\": \"jane@example.com\",\n    \"password\": \"Password123!\",\n    \"phone\": \"+1234567892\",\n    \"role\": \"user\",\n    \"sports\": [\"football\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/users",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "users"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete User By Admin",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/users/689f4f0ed92f8c5fc2cff547",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "users",
+                    "689f4f0ed92f8c5fc2cff547"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Toggle User Status",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/users/689f44a25100ff88c407b095/toggle-status",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "users",
+                    "689f44a25100ff88c407b095",
+                    "toggle-status"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User Statistics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/users/stats",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "users",
+                    "stats"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update User By Admin",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjcwOTEzLCJleHAiOjE3NTUyNzE4MTN9.cp6B7Tg67tbe1nTA6OcMzvAQExaI4eDXI-gyMixkpNE"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Jane Smith\",\n    \"role\": \"student\",\n    \"isActive\": true\n  }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/users/689f4f0ed92f8c5fc2cff547",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "users",
+                    "689f4f0ed92f8c5fc2cff547"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Student Ops",
+          "item": [
+            {
+              "name": "Get All Studs",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU2NTkzODk3LCJleHAiOjE3NTcxOTg2OTd9.07ixSPLLBUzgvYK_o-GFOnkso5iD_aQgtGj96GEpkCA"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/students",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "students"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Stud By ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU2NTkzODk3LCJleHAiOjE3NTcxOTg2OTd9.07ixSPLLBUzgvYK_o-GFOnkso5iD_aQgtGj96GEpkCA"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/students/68a3376874f386a3a7ea126a",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "students",
+                    "68a3376874f386a3a7ea126a"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Stud",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU2NTkzODk3LCJleHAiOjE3NTcxOTg2OTd9.07ixSPLLBUzgvYK_o-GFOnkso5iD_aQgtGj96GEpkCA"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"level\": \"intermediate\",\n    \"sports\": [\"football\", \"basketball\", \"tennis\"]\n  }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/students/68a3376874f386a3a7ea126a",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "students",
+                    "68a3376874f386a3a7ea126a"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Kit Status ⭕🚩",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTMzMjcxLCJleHAiOjE3NjY3MzgwNzF9.Oj8ugdfdI7UoDlV554bxEtMx0qhUwJGpQ-2RpbtRviQ"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"status\": \"rejected\",\n    \"cost\": 75.00\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/students/694245d90b9a238bd04d3af6/kits/69450d6bbe37c0e1021bb1e2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "students",
+                    "694245d90b9a238bd04d3af6",
+                    "kits",
+                    "69450d6bbe37c0e1021bb1e2"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Stud Stats",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU2NTkzODk3LCJleHAiOjE3NTcxOTg2OTd9.07ixSPLLBUzgvYK_o-GFOnkso5iD_aQgtGj96GEpkCA"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/students/stats",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "students",
+                    "stats"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Kits",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTMzMjcxLCJleHAiOjE3NjY3MzgwNzF9.Oj8ugdfdI7UoDlV554bxEtMx0qhUwJGpQ-2RpbtRviQ",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/get-kits",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "get-kits"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Trainer Ops",
+          "item": [
+            {
+              "name": "Create Trainer",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"userId\": \"69415fa1a5735556f3eae840\",\n    \"sports\": [\"football\"],\n    \"specializations\": [\"Youth Training\", \"Fitness Coaching\"],\n    \"qualifications\": [{\n      \"certification\": \"FIFA Level 1 Coaching\",\n      \"issuedBy\": \"FIFA\",\n      \"issuedDate\": \"2023-01-15T00:00:00Z\",\n      \"expiryDate\": \"2026-01-15T00:00:00Z\"\n    }],\n    \"experience\": [{\n      \"organization\": \"Local Sports Club\",\n      \"position\": \"Youth Coach\",\n      \"startDate\": \"2022-01-01T00:00:00Z\",\n      \"endDate\": \"2023-12-31T00:00:00Z\",\n      \"description\": \"Coached youth football teams aged 12-16\"\n    }],\n    \"hourlyRate\": 50.00,\n    \"availability\": {\n      \"days\": [\"monday\", \"tuesday\", \"wednesday\", \"thursday\", \"friday\"],\n      \"timeSlots\": [{\n        \"start\": \"09:00\",\n        \"end\": \"17:00\"\n      }]\n    }\n  }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/trainers",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "trainers"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Trainers",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/trainers?page=1&limit=10&sport=football",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "trainers"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "sport",
+                      "value": "football"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Trainer Stat",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer ADMIN_TOKEN"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/trainers/stats",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "trainers",
+                    "stats"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Trainer by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/trainers/69415fdaa5735556f3eae844",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "trainers",
+                    "69415fdaa5735556f3eae844"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Trainer",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"sports\": [\"football\"],\n    \"hourlyRate\": 60.00,\n    \"specializations\": [\"Youth Training\", \"Advanced Techniques\"]\n  }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/trainers/69415fdaa5735556f3eae844",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "trainers",
+                    "69415fdaa5735556f3eae844"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Del Trainer",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer ADMIN_TOKEN"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/trainers/TRAINER_ID_HERE",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "trainers",
+                    "TRAINER_ID_HERE"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Fees Ops",
+          "item": [
+            {
+              "name": "Get All Fee Payments (With complex filters & sorting)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer <ADMIN_TOKEN>"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/payments/admin/all?status=success&minAmount=100&sortBy=amount&order=desc",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "payments",
+                    "admin",
+                    "all"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "success"
+                    },
+                    {
+                      "key": "minAmount",
+                      "value": "100"
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "amount"
+                    },
+                    {
+                      "key": "order",
+                      "value": "desc"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Defaulters (Students owing money)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer <ADMIN_TOKEN>"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/payments/admin/defaulters?page=1&limit=20",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "payments",
+                    "admin",
+                    "defaulters"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Override/Fix a Student's Balances (Manual Admin Check)",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer <ADMIN_TOKEN>"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"outstandingFees\": 0, \"totalFeesPaid\": 5000}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/payments/admin/override/<STUDENT_PROFILE_ID>",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "payments",
+                    "admin",
+                    "override",
+                    "<STUDENT_PROFILE_ID>"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Admin Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Admin User\",\n    \"email\": \"admin@example.com\",\n    \"password\": \"AdminPass123!\",\n    \"phone\": \"+1234567899\",\n    \"role\": \"admin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/user/register",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"AdminPass123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/user/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "user",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Profile",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODlmNGEyNGQ5MmY4YzVmYzJjZmY1MzIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU1MjY5ODAwLCJleHAiOjE3NTUyNzA3MDB9.KWKV72wT50USg6ZfMYmHFQX6zV8rmAOTv3jAIk6nnpI"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/user/profile",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "user",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Academy",
+      "item": [
+        {
+          "name": "Academy Management",
+          "item": [
+            {
+              "name": "Get Acad. Members",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5iJk"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/academy/6942a523a80071a17297d84d/members",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "academy",
+                    "6942a523a80071a17297d84d",
+                    "members"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Add stud. in Acad.",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5iJk"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"academyId\": \"6942a523a80071a17297d84d\",\n    \"studentId\": \"694245d80b9a238bd04d3af1\"\n  }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/academy/add-student",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "academy",
+                    "add-student"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Add trainer in Acad.",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5iJk"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"academyId\": \"6942a523a80071a17297d84d\",\n    \"trainerId\": \"6942312f0e809e55c205917f\"\n  }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/academy/add-trainer",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "academy",
+                    "add-trainer"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Remove stud. from Acad.",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5i{{$guid}}J"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"academyId\": \"6942a523a80071a17297d84d\",\n    \"studentId\": \"694245d80b9a238bd04d3af1\"\n  }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/academy/remove-student",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "academy",
+                    "remove-student"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Remove trainer from Acad.",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5iJk"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"academyId\": \"6942a523a80071a17297d84d\",\n    \"trainerId\": \"6942312f0e809e55c205917f\"\n  }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/academy/remove-trainer",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "academy",
+                    "remove-trainer"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Create Academy",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTY5ODIxLCJleHAiOjE3NjY1NzQ2MjF9.6R6dRVV7V42hFU4mGaL__XTG922ThmUQFg4I2muvm_Y"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"MG football Club\",\n    \"description\": \"Premier sports training facility offering world-class coaching\",\n    \"location\": \"Hyderabad\",\n    \"address\": \"123 Sports Street, LA, CA 90210\",\n    \"sports\": [\"football\", \"basketball\", \"tennis\"],\n    \"fees\": {\n      \"monthly\": 150.00,\n      \"quarterly\": 400.00,\n      \"yearly\": 1500.00\n    },\n    \"contactInfo\": {\n      \"name\": \"John Smith\",\n      \"phone\": \"+1234567890\",\n      \"email\": \"contact@elitesports.com\"\n    },\n    \"facilities\": [\"Swimming Pool\", \"Gym\", \"Basketball Court\", \"Tennis Courts\"],\n    \"timings\": {\n      \"opening\": \"06:00\",\n      \"closing\": \"22:00\",\n      \"workingDays\": [\"monday\", \"tuesday\", \"wednesday\", \"thursday\", \"friday\", \"saturday\"]\n    },\n    \"capacity\": 200,\n    \"images\": [\"https://example.com/academy1.jpg\", \"https://example.com/academy2.jpg\"]\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/academy",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "academy"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All acads",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/academy?page=1&limit=10",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "academy"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get acad By Location",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/academy?location=Los Angeles&sport=football",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "academy"
+              ],
+              "query": [
+                {
+                  "key": "location",
+                  "value": "Los Angeles"
+                },
+                {
+                  "key": "sport",
+                  "value": "football"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Academy",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/academy?search=mg&page=1&limit=5",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "academy"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "mg"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Acad by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/academy/69429ee8a80071a17297d811",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "academy",
+                "69429ee8a80071a17297d811"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Acad",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTY5ODIxLCJleHAiOjE3NjY1NzQ2MjF9.6R6dRVV7V42hFU4mGaL__XTG922ThmUQFg4I2muvm_Y"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"MGFC\",\n    \"capacity\": 250,\n    \"fees\": {\n      \"monthly\": 160.00,\n      \"quarterly\": 450.00,\n      \"yearly\": 1600.00\n    }\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/academy/69429ee8a80071a17297d811",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "academy",
+                "69429ee8a80071a17297d811"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Del Acad",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTY5ODIxLCJleHAiOjE3NjY1NzQ2MjF9.6R6dRVV7V42hFU4mGaL__XTG922ThmUQFg4I2muvm_Y"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/academy/69429ee8a80071a17297d811",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "academy",
+                "69429ee8a80071a17297d811"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Student",
+      "item": [
+        {
+          "name": "Fees",
+          "item": [
+            {
+              "name": "View Outstanding Fees",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer <STUDENT_TOKEN>"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/payments/outstanding",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "payments",
+                    "outstanding"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Pay Outstanding Fees",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer <STUDENT_TOKEN>"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"amount\": 500, \"transactionId\": \"PAY-RZPY-12345\"}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/payments/pay",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "payments",
+                    "pay"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "View Fee History",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer <STUDENT_TOKEN>"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/payments/history?page=1&limit=5",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "payments",
+                    "history"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "5"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Create Stud Prof",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sports\": [\"football\", \"basketball\"],\n    \"level\": \"beginner\",\n    \"medicalInfo\": {\n      \"allergies\": [\"peanuts\"],\n      \"medications\": [\"inhaler\"],\n      \"emergencyContact\": {\n        \"name\": \"Jane Doe\",\n        \"phone\": \"+1987654321\",\n        \"relation\": \"mother\"\n      }\n    }\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/student/profile",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "student",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Stud Prof",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/student/profile",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "student",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Stud Prof",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQyNDVkODBiOWEyMzhiZDA0ZDNhZjEiLCJlbWFpbCI6InNua0Bhb3QuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NjU5NjA2NTMsImV4cCI6MTc2NjU2NTQ1M30.nfwPBCAPGig0lo8O3l7vhEseLGe2mrLt3aEZM9OK6Pk"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"sports\": [\"football\", \"basketball\", \"cricket\"],\r\n    \"level\": \"intermediate\",\r\n    \"medicalInfo\": {\r\n      \"allergies\": [],\r\n      \"medications\": [],\r\n      \"emergencyContact\": {\r\n        \"name\": \"Jane Doe Updated\",\r\n        \"phone\": \"9999999999\",\r\n        \"relation\": \"mother\"\r\n      }\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/student/profile",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "student",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Join Acad",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"academyId\": \"68a337d874f386a3a7ea1273\"\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/student/join-academy",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "student",
+                "join-academy"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Stud Attendance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/student/attendance?page=1&limit=10&fromDate=2024-01-01&toDate=2024-12-31",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "student",
+                "attendance"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "fromDate",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "toDate",
+                  "value": "2024-12-31"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Stud Performance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/student/performance?sport=football&category=fitness",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "student",
+                "performance"
+              ],
+              "query": [
+                {
+                  "key": "sport",
+                  "value": "football"
+                },
+                {
+                  "key": "category",
+                  "value": "fitness"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Request Kits",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQyNDVkODBiOWEyMzhiZDA0ZDNhZjEiLCJlbWFpbCI6InNua0Bhb3QuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NjYxMzI5NjUsImV4cCI6MTc2NjczNzc2NX0.ei8aU_FZYV6DOGOeyPi9X0evb7K_TQVADTDLkproqCw"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"kitName\": \"Football Trainingx\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/student/request-kit",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "student",
+                "request-kit"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Stud Kit Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQyNDVkODBiOWEyMzhiZDA0ZDNhZjEiLCJlbWFpbCI6InNua0Bhb3QuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NjYxMzI5NjUsImV4cCI6MTc2NjczNzc2NX0.ei8aU_FZYV6DOGOeyPi9X0evb7K_TQVADTDLkproqCw"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/student/kits",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "student",
+                "kits"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Trainer",
+      "item": [
+        {
+          "name": "Get Trainer Prof",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQxNWZhMWE1NzM1NTU2ZjNlYWU4NDAiLCJlbWFpbCI6ImphbmVAZXhhbXBsZS5jb20iLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTc2NTk2NDk3NywiZXhwIjoxNzY2NTY5Nzc3fQ.WSZ4PvmgXrI-dY9OHRFLkVluBtnsZ2caZ9bImGvCnSA"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/trainer/profile",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "trainer",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Trainer Prof Copy",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQxNWZhMWE1NzM1NTU2ZjNlYWU4NDAiLCJlbWFpbCI6ImphbmVAZXhhbXBsZS5jb20iLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTc2NTk2NDk3NywiZXhwIjoxNzY2NTY5Nzc3fQ.WSZ4PvmgXrI-dY9OHRFLkVluBtnsZ2caZ9bImGvCnSA"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"sports\": [\"football\", \"basketball\", \"cricket\"],\r\n  \"specializations\": [\"Youth Training\", \"Advanced Tactics\", \"Fitness Coaching\"],\r\n  \"qualifications\": [\r\n    {\r\n      \"certification\": \"UEFA B License\",\r\n      \"issuedBy\": \"UEFA\",\r\n      \"issuedDate\": \"2023-01-15\",\r\n      \"expiryDate\": \"2028-01-15\",\r\n      \"certificateUrl\": \"https://example.com/certificate1.pdf\"\r\n    },\r\n    {\r\n      \"certification\": \"Sports Science Diploma\",\r\n      \"issuedBy\": \"Sports Institute\",\r\n      \"issuedDate\": \"2022-06-10\",\r\n      \"certificateUrl\": \"https://example.com/certificate2.pdf\"\r\n    }\r\n  ],\r\n  \"experience\": [\r\n    {\r\n      \"organization\": \"City Football Academy\",\r\n      \"position\": \"Head Coach\",\r\n      \"startDate\": \"2020-03-01\",\r\n      \"endDate\": \"2023-12-31\",\r\n      \"description\": \"Led youth training programs and managed a team of 30+ students\"\r\n    },\r\n    {\r\n      \"organization\": \"National Sports Club\",\r\n      \"position\": \"Assistant Coach\",\r\n      \"startDate\": \"2018-01-15\",\r\n      \"endDate\": \"2020-02-28\",\r\n      \"description\": \"Assisted in training sessions and player development\"\r\n    }\r\n  ],\r\n  \"availability\": {\r\n    \"days\": [\"monday\", \"wednesday\", \"friday\", \"saturday\"],\r\n    \"timeSlots\": [\r\n      {\r\n        \"start\": \"09:00\",\r\n        \"end\": \"12:00\"\r\n      },\r\n      {\r\n        \"start\": \"16:00\",\r\n        \"end\": \"19:00\"\r\n      }\r\n    ]\r\n  }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/trainer/profile",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "trainer",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Trainer With Filters",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzM2MxMTcxZjViN2UwM2U5ZTcwYmUiLCJlbWFpbCI6InRyYWluZXJAbWcuY29tIiwicm9sZSI6InRyYWluZXIiLCJpYXQiOjE3NTU1Mjg1ODYsImV4cCI6MTc1NjEzMzM4Nn0.kb-pB0m3r8qpXV4UQcIi_xosQIxZREKhNLWrNKf-ob8"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/trainer/students?page=1&limit=10&level=beginner&search=john",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "trainer",
+                "students"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "level",
+                  "value": "beginner"
+                },
+                {
+                  "key": "search",
+                  "value": "john"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add stud to trai",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzM2MxMTcxZjViN2UwM2U5ZTcwYmUiLCJlbWFpbCI6InRyYWluZXJAbWcuY29tIiwicm9sZSI6InRyYWluZXIiLCJpYXQiOjE3NTU1Mjg1ODYsImV4cCI6MTc1NjEzMzM4Nn0.kb-pB0m3r8qpXV4UQcIi_xosQIxZREKhNLWrNKf-ob8"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"studentId\": \"68a3375174f386a3a7ea1265\"\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/trainer/add-student",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "trainer",
+                "add-student"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark stud attendance ⭕🚩",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer TRAINER_TOKEN"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"studentId\": \"\",\n    \"date\": \"2024-11-20T00:00:00Z\",\n    \"present\": true,\n    \"remarks\": \"Excellent participation in training\"\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/trainer/mark-attendance",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "trainer",
+                "mark-attendance"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Stud Attendance ⭕🚩",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer TRAINER_TOKEN"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/trainer/student/STUDENT_USER_ID_HERE/attendance?fromDate=2024-11-01&toDate=2024-11-30",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "trainer",
+                "student",
+                "STUDENT_USER_ID_HERE",
+                "attendance"
+              ],
+              "query": [
+                {
+                  "key": "fromDate",
+                  "value": "2024-11-01"
+                },
+                {
+                  "key": "toDate",
+                  "value": "2024-11-30"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add performance ⭕🚩",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer TRAINER_TOKEN"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"studentId\": \"STUDENT_USER_ID_HERE\",\n    \"sport\": \"football\",\n    \"score\": 85,\n    \"maxScore\": 100,\n    \"remarks\": \"Great improvement in ball control and passing accuracy\",\n    \"category\": \"technique\"\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/trainer/add-performance",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "trainer",
+                "add-performance"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "Get All Events",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/events?page=1&limit=10&sport=basketball&status=published",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "sport",
+                  "value": "basketball"
+                },
+                {
+                  "key": "status",
+                  "value": "published"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Events With Filters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/events?page=1&limit=5&sport=football&isPublic=true&registrationOpen=true&search=championship&sortBy=startDate&sortOrder=asc",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                },
+                {
+                  "key": "sport",
+                  "value": "football"
+                },
+                {
+                  "key": "isPublic",
+                  "value": "true"
+                },
+                {
+                  "key": "registrationOpen",
+                  "value": "true"
+                },
+                {
+                  "key": "search",
+                  "value": "championship"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "startDate"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Event By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/events/692c22c30159a67d8de0fd7c",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "events",
+                "692c22c30159a67d8de0fd7c"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY0NDk5OTE2LCJleHAiOjE3NjUxMDQ3MTZ9.aMCRK6Mrt9skd0WQfRpOhPDLWg6DCeGJkhKr17-5a5Y"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Summer Basketball Championship 2025\",\n  \"description\": \"Annual basketball tournament for all skill levels\",\n  \"sport\": \"basketball\",\n  \"startDate\": \"2025-12-15T10:00:00Z\",\n  \"endDate\": \"2025-12-15T18:00:00Z\",\n  \"location\": \"Los Angeles\",\n  \"venue\": \"Staples Center\",\n  \"maxParticipants\": 100,\n  \"registrationDeadline\": \"2025-12-10T23:59:59Z\",\n  \"entryFee\": 25.00,\n  \"contactInfo\": {\n    \"name\": \"John Smith\",\n    \"phone\": \"+1234567890\",\n    \"email\": \"events@mastergrade.com\"\n  },\n  \"status\": \"published\",\n  \"isPublic\": true,\n  \"registrationOpen\": true,\n  \"tags\": [\"basketball\", \"championship\", \"summer\"],\n  \"requirements\": \"Players must bring their own basketball shoes\",\n  \"prizes\": [\"1st Place: $1000\", \"2nd Place: $500\", \"3rd Place: $250\"],\n  \"links\": [\"https://example.com/rules\", \"https://example.com/schedule\"],\n  \"images\": [\"https://example.com/event1.jpg\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/events",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Event",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY0NDk5OTE2LCJleHAiOjE3NjUxMDQ3MTZ9.aMCRK6Mrt9skd0WQfRpOhPDLWg6DCeGJkhKr17-5a5Y"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maxParticipants\": 150,\n  \"entryFee\": 30.00,\n  \"status\": \"ongoing\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/events/692c22c30159a67d8de0fd7c",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "events",
+                "692c22c30159a67d8de0fd7c"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Event",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY0NDk5OTE2LCJleHAiOjE3NjUxMDQ3MTZ9.aMCRK6Mrt9skd0WQfRpOhPDLWg6DCeGJkhKr17-5a5Y"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/events/692c22130159a67d8de0fd62",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "events",
+                "692c22130159a67d8de0fd62"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Event Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY0NDk5OTE2LCJleHAiOjE3NjUxMDQ3MTZ9.aMCRK6Mrt9skd0WQfRpOhPDLWg6DCeGJkhKr17-5a5Y"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/events/admin/stats",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "events",
+                "admin",
+                "stats"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "All Historic Events",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY0NDk5OTE2LCJleHAiOjE3NjUxMDQ3MTZ9.aMCRK6Mrt9skd0WQfRpOhPDLWg6DCeGJkhKr17-5a5Y"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/events/admin/all-events/?page=1&limit=10",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "events",
+                "admin",
+                "all-events",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Join Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2RmYjFmNTY1OGU0Y2Y4ZDY2MjIiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDUwMDQzMiwiZXhwIjoxNzY1MTA1MjMyfQ.eOPGWrg2hOh_JIG7CLtUl1Q53LWBf0cknR7RD8GgrGk"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/events/692c22c30159a67d8de0fd7c/join",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "events",
+                "692c22c30159a67d8de0fd7c",
+                "join"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Leave Event",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2RmYjFmNTY1OGU0Y2Y4ZDY2MjIiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDUwMDQzMiwiZXhwIjoxNzY1MTA1MjMyfQ.eOPGWrg2hOh_JIG7CLtUl1Q53LWBf0cknR7RD8GgrGk"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/events/692c22c30159a67d8de0fd7c/leave",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "events",
+                "692c22c30159a67d8de0fd7c",
+                "leave"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User's Events",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2RmYjFmNTY1OGU0Y2Y4ZDY2MjIiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDUwMDQzMiwiZXhwIjoxNzY1MTA1MjMyfQ.eOPGWrg2hOh_JIG7CLtUl1Q53LWBf0cknR7RD8GgrGk"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/events/user/my-events?page=1&limit=10&upcoming=true",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "events",
+                "user",
+                "my-events"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "upcoming",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Event",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/events?search=championship&limit=5",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "championship"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Homepage",
+      "item": [
+        {
+          "name": "Get Landing Page Events (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/homepage/events",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "homepage",
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Admin Landing Page Events",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/homepage/admin/events",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "homepage",
+                "admin",
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Admin Landing Page Events Copy",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"eventId\": \"6940875a7dbc86701bf4e235\",\r\n    \"colorScheme\": \"from-green-600 to-emerald-500\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/homepage/admin/events",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "homepage",
+                "admin",
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Event Card Order",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"eventId\": \"6940875a7dbc86701bf4e235\",\r\n    \"colorScheme\": \"from-green-600 to-emerald-500\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/homepage/admin/events/CARD_ID_HERE",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "homepage",
+                "admin",
+                "events",
+                "CARD_ID_HERE"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Event Card Color",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"eventId\": \"6940875a7dbc86701bf4e235\",\r\n    \"colorScheme\": \"from-green-600 to-emerald-500\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/homepage/admin/events/CARD_ID_HERE",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "homepage",
+                "admin",
+                "events",
+                "CARD_ID_HERE"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Bulk Update Orders",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"cards\": [\r\n        {\"id\": \"CARD_ID_1\", \r\n        \"order\": 1},\r\n        {\"id\": \"CARD_ID_2\", \"order\": 2},\r\n        {\"id\": \"CARD_ID_3\", \"order\": 3}  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/homepage/admin/events/bulk/reorder",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "homepage",
+                "admin",
+                "events",
+                "bulk",
+                "reorder"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Event Card",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"eventId\": \"6940875a7dbc86701bf4e235\",\r\n    \"colorScheme\": \"from-green-600 to-emerald-500\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/homepage/admin/events/6942fa6088fbebb76f9fab28",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "homepage",
+                "admin",
+                "events",
+                "6942fa6088fbebb76f9fab28"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/health",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
     }
-}
-							]
-						},
-						{
-							"name": "Remove stud. from Acad.",
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5i{{$guid}}J"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"academyId\": \"6942a523a80071a17297d84d\",\n    \"studentId\": \"694245d80b9a238bd04d3af1\"\n  }",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:3000/api/academy/remove-student",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"academy",
-										"remove-student"
-									]
-								}
-							},
-							"response": [
-								{
-    "success": true,
-    "message": "Student removed from academy successfully"
-}
-							]
-						},
-						{
-							"name": "Remove trainer from Acad.",
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5iJk"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"academyId\": \"6942a523a80071a17297d84d\",\n    \"trainerId\": \"6942312f0e809e55c205917f\"\n  }",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:3000/api/academy/remove-trainer",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"api",
-										"academy",
-										"remove-trainer"
-									]
-								}
-							},
-							"response": [
-								{
-    "success": true,
-    "message": "Trainer removed from academy successfully"
-}
-							]
-						}
-					]
-				},
-				{
-					"name": "Create Academy",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTY5ODIxLCJleHAiOjE3NjY1NzQ2MjF9.6R6dRVV7V42hFU4mGaL__XTG922ThmUQFg4I2muvm_Y"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"MG football Club\",\n    \"description\": \"Premier sports training facility offering world-class coaching\",\n    \"location\": \"Hyderabad\",\n    \"address\": \"123 Sports Street, LA, CA 90210\",\n    \"sports\": [\"football\", \"basketball\", \"tennis\"],\n    \"fees\": {\n      \"monthly\": 150.00,\n      \"quarterly\": 400.00,\n      \"yearly\": 1500.00\n    },\n    \"contactInfo\": {\n      \"name\": \"John Smith\",\n      \"phone\": \"+1234567890\",\n      \"email\": \"contact@elitesports.com\"\n    },\n    \"facilities\": [\"Swimming Pool\", \"Gym\", \"Basketball Court\", \"Tennis Courts\"],\n    \"timings\": {\n      \"opening\": \"06:00\",\n      \"closing\": \"22:00\",\n      \"workingDays\": [\"monday\", \"tuesday\", \"wednesday\", \"thursday\", \"friday\", \"saturday\"]\n    },\n    \"capacity\": 200,\n    \"images\": [\"https://example.com/academy1.jpg\", \"https://example.com/academy2.jpg\"]\n  }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/academy",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"academy"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All acads",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/api/academy?page=1&limit=10",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"academy"
-							],
-							"query": [
-								{
-									"key": "page",
-									"value": "1"
-								},
-								{
-									"key": "limit",
-									"value": "10"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get acad By Location",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/api/academy?location=Los Angeles&sport=football",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"academy"
-							],
-							"query": [
-								{
-									"key": "location",
-									"value": "Los Angeles"
-								},
-								{
-									"key": "sport",
-									"value": "football"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Search Academy",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/api/academy?search=mg&page=1&limit=5",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"academy"
-							],
-							"query": [
-								{
-									"key": "search",
-									"value": "mg"
-								},
-								{
-									"key": "page",
-									"value": "1"
-								},
-								{
-									"key": "limit",
-									"value": "5"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Acad by ID",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/api/academy/69429ee8a80071a17297d811",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"academy",
-								"69429ee8a80071a17297d811"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Acad",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTY5ODIxLCJleHAiOjE3NjY1NzQ2MjF9.6R6dRVV7V42hFU4mGaL__XTG922ThmUQFg4I2muvm_Y"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"MGFC\",\n    \"capacity\": 250,\n    \"fees\": {\n      \"monthly\": 160.00,\n      \"quarterly\": 450.00,\n      \"yearly\": 1600.00\n    }\n  }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/academy/69429ee8a80071a17297d811",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"academy",
-								"69429ee8a80071a17297d811"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Del Acad",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTY5ODIxLCJleHAiOjE3NjY1NzQ2MjF9.6R6dRVV7V42hFU4mGaL__XTG922ThmUQFg4I2muvm_Y"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/academy/69429ee8a80071a17297d811",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"academy",
-								"69429ee8a80071a17297d811"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Student",
-			"item": [
-				{
-					"name": "Create Stud Prof",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"sports\": [\"football\", \"basketball\"],\n    \"level\": \"beginner\",\n    \"medicalInfo\": {\n      \"allergies\": [\"peanuts\"],\n      \"medications\": [\"inhaler\"],\n      \"emergencyContact\": {\n        \"name\": \"Jane Doe\",\n        \"phone\": \"+1987654321\",\n        \"relation\": \"mother\"\n      }\n    }\n  }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/student/profile",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"student",
-								"profile"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Stud Prof",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/student/profile",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"student",
-								"profile"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Stud Prof",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQyNDVkODBiOWEyMzhiZDA0ZDNhZjEiLCJlbWFpbCI6InNua0Bhb3QuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NjU5NjA2NTMsImV4cCI6MTc2NjU2NTQ1M30.nfwPBCAPGig0lo8O3l7vhEseLGe2mrLt3aEZM9OK6Pk"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"sports\": [\"football\", \"basketball\", \"cricket\"],\r\n    \"level\": \"intermediate\",\r\n    \"medicalInfo\": {\r\n      \"allergies\": [],\r\n      \"medications\": [],\r\n      \"emergencyContact\": {\r\n        \"name\": \"Jane Doe Updated\",\r\n        \"phone\": \"9999999999\",\r\n        \"relation\": \"mother\"\r\n      }\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/student/profile",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"student",
-								"profile"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Join Acad",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"academyId\": \"68a337d874f386a3a7ea1273\"\n  }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/student/join-academy",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"student",
-								"join-academy"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Stud Attendance",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/student/attendance?page=1&limit=10&fromDate=2024-01-01&toDate=2024-12-31",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"student",
-								"attendance"
-							],
-							"query": [
-								{
-									"key": "page",
-									"value": "1"
-								},
-								{
-									"key": "limit",
-									"value": "10"
-								},
-								{
-									"key": "fromDate",
-									"value": "2024-01-01"
-								},
-								{
-									"key": "toDate",
-									"value": "2024-12-31"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Stud Performance",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/student/performance?sport=football&category=fitness",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"student",
-								"performance"
-							],
-							"query": [
-								{
-									"key": "sport",
-									"value": "football"
-								},
-								{
-									"key": "category",
-									"value": "fitness"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Request Kits",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQyNDVkODBiOWEyMzhiZDA0ZDNhZjEiLCJlbWFpbCI6InNua0Bhb3QuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NjYxMzI5NjUsImV4cCI6MTc2NjczNzc2NX0.ei8aU_FZYV6DOGOeyPi9X0evb7K_TQVADTDLkproqCw"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"kitName\": \"Football Trainingx\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/student/request-kit",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"student",
-								"request-kit"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Stud Kit Status",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQyNDVkODBiOWEyMzhiZDA0ZDNhZjEiLCJlbWFpbCI6InNua0Bhb3QuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NjYxMzI5NjUsImV4cCI6MTc2NjczNzc2NX0.ei8aU_FZYV6DOGOeyPi9X0evb7K_TQVADTDLkproqCw"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/student/kits",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"student",
-								"kits"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Pay Fees",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"amount\": 150.00,\n    \"period\": \"monthly\",\n    \"transactionId\": \"TXN123456789\"\n  }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/student/pay-fees",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"student",
-								"pay-fees"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Trainer",
-			"item": [
-				{
-					"name": "Get Trainer Prof",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQxNWZhMWE1NzM1NTU2ZjNlYWU4NDAiLCJlbWFpbCI6ImphbmVAZXhhbXBsZS5jb20iLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTc2NTk2NDk3NywiZXhwIjoxNzY2NTY5Nzc3fQ.WSZ4PvmgXrI-dY9OHRFLkVluBtnsZ2caZ9bImGvCnSA"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/trainer/profile",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"trainer",
-								"profile"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Trainer Prof Copy",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQxNWZhMWE1NzM1NTU2ZjNlYWU4NDAiLCJlbWFpbCI6ImphbmVAZXhhbXBsZS5jb20iLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTc2NTk2NDk3NywiZXhwIjoxNzY2NTY5Nzc3fQ.WSZ4PvmgXrI-dY9OHRFLkVluBtnsZ2caZ9bImGvCnSA"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"sports\": [\"football\", \"basketball\", \"cricket\"],\r\n  \"specializations\": [\"Youth Training\", \"Advanced Tactics\", \"Fitness Coaching\"],\r\n  \"qualifications\": [\r\n    {\r\n      \"certification\": \"UEFA B License\",\r\n      \"issuedBy\": \"UEFA\",\r\n      \"issuedDate\": \"2023-01-15\",\r\n      \"expiryDate\": \"2028-01-15\",\r\n      \"certificateUrl\": \"https://example.com/certificate1.pdf\"\r\n    },\r\n    {\r\n      \"certification\": \"Sports Science Diploma\",\r\n      \"issuedBy\": \"Sports Institute\",\r\n      \"issuedDate\": \"2022-06-10\",\r\n      \"certificateUrl\": \"https://example.com/certificate2.pdf\"\r\n    }\r\n  ],\r\n  \"experience\": [\r\n    {\r\n      \"organization\": \"City Football Academy\",\r\n      \"position\": \"Head Coach\",\r\n      \"startDate\": \"2020-03-01\",\r\n      \"endDate\": \"2023-12-31\",\r\n      \"description\": \"Led youth training programs and managed a team of 30+ students\"\r\n    },\r\n    {\r\n      \"organization\": \"National Sports Club\",\r\n      \"position\": \"Assistant Coach\",\r\n      \"startDate\": \"2018-01-15\",\r\n      \"endDate\": \"2020-02-28\",\r\n      \"description\": \"Assisted in training sessions and player development\"\r\n    }\r\n  ],\r\n  \"availability\": {\r\n    \"days\": [\"monday\", \"wednesday\", \"friday\", \"saturday\"],\r\n    \"timeSlots\": [\r\n      {\r\n        \"start\": \"09:00\",\r\n        \"end\": \"12:00\"\r\n      },\r\n      {\r\n        \"start\": \"16:00\",\r\n        \"end\": \"19:00\"\r\n      }\r\n    ]\r\n  }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/trainer/profile",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"trainer",
-								"profile"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Trainer With Filters",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzM2MxMTcxZjViN2UwM2U5ZTcwYmUiLCJlbWFpbCI6InRyYWluZXJAbWcuY29tIiwicm9sZSI6InRyYWluZXIiLCJpYXQiOjE3NTU1Mjg1ODYsImV4cCI6MTc1NjEzMzM4Nn0.kb-pB0m3r8qpXV4UQcIi_xosQIxZREKhNLWrNKf-ob8"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/trainer/students?page=1&limit=10&level=beginner&search=john",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"trainer",
-								"students"
-							],
-							"query": [
-								{
-									"key": "page",
-									"value": "1"
-								},
-								{
-									"key": "limit",
-									"value": "10"
-								},
-								{
-									"key": "level",
-									"value": "beginner"
-								},
-								{
-									"key": "search",
-									"value": "john"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add stud to trai",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzM2MxMTcxZjViN2UwM2U5ZTcwYmUiLCJlbWFpbCI6InRyYWluZXJAbWcuY29tIiwicm9sZSI6InRyYWluZXIiLCJpYXQiOjE3NTU1Mjg1ODYsImV4cCI6MTc1NjEzMzM4Nn0.kb-pB0m3r8qpXV4UQcIi_xosQIxZREKhNLWrNKf-ob8"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"studentId\": \"68a3375174f386a3a7ea1265\"\n  }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/trainer/add-student",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"trainer",
-								"add-student"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Mark stud attendance ⭕🚩",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer TRAINER_TOKEN"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"studentId\": \"\",\n    \"date\": \"2024-11-20T00:00:00Z\",\n    \"present\": true,\n    \"remarks\": \"Excellent participation in training\"\n  }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/trainer/mark-attendance",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"trainer",
-								"mark-attendance"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Stud Attendance ⭕🚩",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer TRAINER_TOKEN"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/trainer/student/STUDENT_USER_ID_HERE/attendance?fromDate=2024-11-01&toDate=2024-11-30",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"trainer",
-								"student",
-								"STUDENT_USER_ID_HERE",
-								"attendance"
-							],
-							"query": [
-								{
-									"key": "fromDate",
-									"value": "2024-11-01"
-								},
-								{
-									"key": "toDate",
-									"value": "2024-11-30"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add performance ⭕🚩",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer TRAINER_TOKEN"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"studentId\": \"STUDENT_USER_ID_HERE\",\n    \"sport\": \"football\",\n    \"score\": 85,\n    \"maxScore\": 100,\n    \"remarks\": \"Great improvement in ball control and passing accuracy\",\n    \"category\": \"technique\"\n  }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/trainer/add-performance",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"trainer",
-								"add-performance"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Events",
-			"item": [
-				{
-					"name": "Get All Events",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/api/events?page=1&limit=10&sport=basketball&status=published",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"events"
-							],
-							"query": [
-								{
-									"key": "page",
-									"value": "1"
-								},
-								{
-									"key": "limit",
-									"value": "10"
-								},
-								{
-									"key": "sport",
-									"value": "basketball"
-								},
-								{
-									"key": "status",
-									"value": "published"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Events With Filters",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/api/events?page=1&limit=5&sport=football&isPublic=true&registrationOpen=true&search=championship&sortBy=startDate&sortOrder=asc",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"events"
-							],
-							"query": [
-								{
-									"key": "page",
-									"value": "1"
-								},
-								{
-									"key": "limit",
-									"value": "5"
-								},
-								{
-									"key": "sport",
-									"value": "football"
-								},
-								{
-									"key": "isPublic",
-									"value": "true"
-								},
-								{
-									"key": "registrationOpen",
-									"value": "true"
-								},
-								{
-									"key": "search",
-									"value": "championship"
-								},
-								{
-									"key": "sortBy",
-									"value": "startDate"
-								},
-								{
-									"key": "sortOrder",
-									"value": "asc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Event By ID",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/api/events/692c22c30159a67d8de0fd7c",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"events",
-								"692c22c30159a67d8de0fd7c"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Event",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY0NDk5OTE2LCJleHAiOjE3NjUxMDQ3MTZ9.aMCRK6Mrt9skd0WQfRpOhPDLWg6DCeGJkhKr17-5a5Y"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"Summer Basketball Championship 2025\",\n  \"description\": \"Annual basketball tournament for all skill levels\",\n  \"sport\": \"basketball\",\n  \"startDate\": \"2025-12-15T10:00:00Z\",\n  \"endDate\": \"2025-12-15T18:00:00Z\",\n  \"location\": \"Los Angeles\",\n  \"venue\": \"Staples Center\",\n  \"maxParticipants\": 100,\n  \"registrationDeadline\": \"2025-12-10T23:59:59Z\",\n  \"entryFee\": 25.00,\n  \"contactInfo\": {\n    \"name\": \"John Smith\",\n    \"phone\": \"+1234567890\",\n    \"email\": \"events@mastergrade.com\"\n  },\n  \"status\": \"published\",\n  \"isPublic\": true,\n  \"registrationOpen\": true,\n  \"tags\": [\"basketball\", \"championship\", \"summer\"],\n  \"requirements\": \"Players must bring their own basketball shoes\",\n  \"prizes\": [\"1st Place: $1000\", \"2nd Place: $500\", \"3rd Place: $250\"],\n  \"links\": [\"https://example.com/rules\", \"https://example.com/schedule\"],\n  \"images\": [\"https://example.com/event1.jpg\"]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/events",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"events"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Event",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY0NDk5OTE2LCJleHAiOjE3NjUxMDQ3MTZ9.aMCRK6Mrt9skd0WQfRpOhPDLWg6DCeGJkhKr17-5a5Y"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"maxParticipants\": 150,\n  \"entryFee\": 30.00,\n  \"status\": \"ongoing\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/events/692c22c30159a67d8de0fd7c",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"events",
-								"692c22c30159a67d8de0fd7c"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Event",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY0NDk5OTE2LCJleHAiOjE3NjUxMDQ3MTZ9.aMCRK6Mrt9skd0WQfRpOhPDLWg6DCeGJkhKr17-5a5Y"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/events/692c22130159a67d8de0fd62",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"events",
-								"692c22130159a67d8de0fd62"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Event Statistics",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY0NDk5OTE2LCJleHAiOjE3NjUxMDQ3MTZ9.aMCRK6Mrt9skd0WQfRpOhPDLWg6DCeGJkhKr17-5a5Y"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/events/admin/stats",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"events",
-								"admin",
-								"stats"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "All Historic Events",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY0NDk5OTE2LCJleHAiOjE3NjUxMDQ3MTZ9.aMCRK6Mrt9skd0WQfRpOhPDLWg6DCeGJkhKr17-5a5Y"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/events/admin/all-events/?page=1&limit=10",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"events",
-								"admin",
-								"all-events",
-								""
-							],
-							"query": [
-								{
-									"key": "page",
-									"value": "1"
-								},
-								{
-									"key": "limit",
-									"value": "10"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Join Event",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2RmYjFmNTY1OGU0Y2Y4ZDY2MjIiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDUwMDQzMiwiZXhwIjoxNzY1MTA1MjMyfQ.eOPGWrg2hOh_JIG7CLtUl1Q53LWBf0cknR7RD8GgrGk"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/events/692c22c30159a67d8de0fd7c/join",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"events",
-								"692c22c30159a67d8de0fd7c",
-								"join"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Leave Event",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2RmYjFmNTY1OGU0Y2Y4ZDY2MjIiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDUwMDQzMiwiZXhwIjoxNzY1MTA1MjMyfQ.eOPGWrg2hOh_JIG7CLtUl1Q53LWBf0cknR7RD8GgrGk"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/events/692c22c30159a67d8de0fd7c/leave",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"events",
-								"692c22c30159a67d8de0fd7c",
-								"leave"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get User's Events",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2RmYjFmNTY1OGU0Y2Y4ZDY2MjIiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDUwMDQzMiwiZXhwIjoxNzY1MTA1MjMyfQ.eOPGWrg2hOh_JIG7CLtUl1Q53LWBf0cknR7RD8GgrGk"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/api/events/user/my-events?page=1&limit=10&upcoming=true",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"events",
-								"user",
-								"my-events"
-							],
-							"query": [
-								{
-									"key": "page",
-									"value": "1"
-								},
-								{
-									"key": "limit",
-									"value": "10"
-								},
-								{
-									"key": "upcoming",
-									"value": "true"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Search Event",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/api/events?search=championship&limit=5",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"events"
-							],
-							"query": [
-								{
-									"key": "search",
-									"value": "championship"
-								},
-								{
-									"key": "limit",
-									"value": "5"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Homepage",
-			"item": [
-				{
-					"name": "Get Landing Page Events (Public)",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/api/homepage/events",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"homepage",
-								"events"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Admin Landing Page Events",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/api/homepage/admin/events",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"homepage",
-								"admin",
-								"events"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Admin Landing Page Events Copy",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"eventId\": \"6940875a7dbc86701bf4e235\",\r\n    \"colorScheme\": \"from-green-600 to-emerald-500\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/homepage/admin/events",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"homepage",
-								"admin",
-								"events"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Event Card Order",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"eventId\": \"6940875a7dbc86701bf4e235\",\r\n    \"colorScheme\": \"from-green-600 to-emerald-500\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/homepage/admin/events/CARD_ID_HERE",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"homepage",
-								"admin",
-								"events",
-								"CARD_ID_HERE"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Event Card Color",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"eventId\": \"6940875a7dbc86701bf4e235\",\r\n    \"colorScheme\": \"from-green-600 to-emerald-500\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/homepage/admin/events/CARD_ID_HERE",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"homepage",
-								"admin",
-								"events",
-								"CARD_ID_HERE"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Bulk Update Orders",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"cards\": [\r\n        {\"id\": \"CARD_ID_1\", \r\n        \"order\": 1},\r\n        {\"id\": \"CARD_ID_2\", \"order\": 2},\r\n        {\"id\": \"CARD_ID_3\", \"order\": 3}  ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/homepage/admin/events/bulk/reorder",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"homepage",
-								"admin",
-								"events",
-								"bulk",
-								"reorder"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Event Card",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1OTk2ODQzLCJleHAiOjE3NjY2MDE2NDN9.4fIaM5UMdEpMSxdxLEGw4DdUGmnozx3lWFmQDJvnALw",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"eventId\": \"6940875a7dbc86701bf4e235\",\r\n    \"colorScheme\": \"from-green-600 to-emerald-500\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/homepage/admin/events/6942fa6088fbebb76f9fab28",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"homepage",
-								"admin",
-								"events",
-								"6942fa6088fbebb76f9fab28"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Health Check",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:3000/health",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"health"
-					]
-				}
-			},
-			"response": []
-		}
-	],
-	"variable": [
-		{
-			"key": "baseURL",
-			"value": "http://localhost:3000",
-			"type": "default"
-		}
-	]
+  ],
+  "variable": [
+    {
+      "key": "baseURL",
+      "value": "http://localhost:3000",
+      "type": "default"
+    }
+  ]
 }
