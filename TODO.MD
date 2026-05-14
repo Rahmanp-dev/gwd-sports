@@ -1,26 +1,31 @@
 TODO: 
 
-P1:
+P0: 
 
-- [ ] only student can access student dashboard; only trainer can access trainer dashboard
-- [ ] add a new /gallery
-- [ ] Proper linkage of academy, trainer, student profiles 
-- [ ] if (!studentProfile) in frontend\src\components\user\student\StudentProfile.tsx fix / check this
+- [ ] Performance Management - Trainer can add performance details of students under him 
+- [ ] Performance Metrics: tactical, technical, SSG (Small Sided Games), and match play
+- [ ] Make the metrics editable in Admin Panel 
+- [ ] Make the academies names dynamic 
 - [ ] Student, trainer interactions - check the flow
 - [ ] Student, trainer, admin interactions - check the flow
-- [ ] Check view student - it is misbehaving - failed to load student profile
-- [ ] Check edit student 
-- [ ] favicon 
+- [ ] Grading and Feedback: Trainers provide numerical ratings and written comments (e.g., "very good" or "keep up") for specific skills such as attacking, defending, or goalkeeping
 - [ ] Join Academy - Admin can make a trainer join an academy; Admin can make a student join an academy; Trainer can make a student join his academy
 - [ ] Leave Academy - Admin can make a trainer leave an academy; Admin can make a student leave an academy; Trainer can make a student leave his academy
 - [ ] Students under Trainer - Admin can view all students under a trainer; Trainer can view all students under him
 - [ ] Attendance Management - Trainer can mark attendance of students under him for an event; Trainer
-- [ ] Performance Management - Trainer can add performance details of students under him 
 - [ ] Fees Management - Admin can add fees details of students under an academy; Trainer can view fees details of students under him
+- [ ] Event Payment invoice 
+- [ ] Fee Payment invoice 
+
+P1:
+
+- [ ] only student can access student dashboard; only trainer can access trainer dashboard
+- [ ] Proper linkage of academy, trainer, student profiles 
+- [ ] if (!studentProfile) in frontend\src\components\user\student\StudentProfile.tsx fix / check this
+- [ ] Check view student - it is misbehaving - failed to load student profile
+- [ ] Check edit student 
 - [ ] Fix academy management - Acad members
 - [ ] back to home isnt trigering the animation
-- [ ] Performance Metrics: tactical, technical, SSG (Small Sided Games), and match play
-- [ ] Grading and Feedback: Trainers provide numerical ratings and written comments (e.g., "very good" or "keep up") for specific skills such as attacking, defending, or goalkeeping
 - [ ] Academy Expansion: The system must support five new branches starting in February (locations mentioned include Mumbai, Punjab, Chennai, and Bangalore).
 - [ ] Centralized Domain: All branches should be managed under one domain rather than separate websites
 
@@ -45,11 +50,10 @@ P2:
 - [ ] Forgot password, reset password 
 - [ ] Implement permanent delete of student / trainer by admin
 - [ ] can we make this better? const refreshToken = localStorage.getItem("mg_refresh_token");
-- [ ] Event Payment invoice 
-- [ ] Fee Payment invoice 
 
 P3: 
 
+- [ ] favicon 
 - [ ] Can we use MCP or some auto prompt like thing to automate prompts? like prompt engineering but automated
 - [ ] Dockerize the application
 - [ ] CI / CD pipeline for automatic deployment
@@ -134,3 +138,4 @@ Done ✅
 - [x] Functional Trainer Dashboard - /mgfc/trainer - on top show the academy; students tab, attendance tab, performance tab, button to add students under trainer; also link to my events page
 - [x] Razorpay integration 
 - [x] Frontend logging
+- [x] add a new /gallery

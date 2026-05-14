@@ -37,6 +37,7 @@ import StudentComplete from "@/pages/sections/MGFC/student/StudentComplete";
 import PayFeesPage from "@/pages/sections/MGFC/student/PayFeesPage";
 // Static pages
 import NotFoundPage from "@/pages/static/NotFound";
+import GalleryPage from "@/pages/static/Gallery";
 import ContactPage from "@/pages/static/Contact";
 import AboutPage from "@/pages/static/About";
 import PrivacyPolicyPage from "@/pages/static/PrivacyPolicy";
@@ -119,13 +120,11 @@ const AppRouter: React.FC = () => {
       />
 
       <Route path="/not-found" element={<NotFoundPage />} />
+      <Route path="/gallery" element={<GalleryPage />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-      <Route
-        path="/terms-and-conditions"
-        element={<TermsAndConditionsPage />}
-      />
+      <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
 
       {/* Fallback route */}
       <Route path="*" element={<Navigate to="/not-found" replace />} />
