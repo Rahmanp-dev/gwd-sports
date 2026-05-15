@@ -53,6 +53,32 @@ export const getPaymentHistory = async (page: number = 1, limit: number = 10): P
   return (response as any);
 };
 
+export interface AdminFeePaymentsParams {
+  page?: number;
+  limit?: number;
+  status?: string;
+  minAmount?: string;
+  maxAmount?: string;
+  sortBy?: string;
+  order?: string;
+  search?: string;
+}
+
+export const getAllFeePayments = async (params: AdminFeePaymentsParams): Promise<PaymentHistoryResponse> => {
+  const query = new URLSearchParams();
+  if (params.page) query.append("page", params.page.toString());
+  if (params.limit) query.append("limit", params.limit.toString());
+  if (params.status && params.status !== "all") query.append("status", params.status);
+  if (params.minAmount) query.append("minAmount", params.minAmount);
+  if (params.maxAmount) query.append("maxAmount", params.maxAmount);
+  if (params.sortBy) query.append("sortBy", params.sortBy);
+  if (params.order) query.append("order", params.order);
+  if (params.search) query.append("search", params.search);
+
+  const response = await apiService.get(`/payments/admin/all?${query.toString()}`);
+  return (response as any);
+};
+
 export const loadRazorpayScript = (): Promise<boolean> => {
   return new Promise((resolve) => {
     if (document.getElementById("razorpay-sdk")) {

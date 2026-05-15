@@ -151,7 +151,7 @@ export class FeeController {
   // 1. View all fee payments with powerful filters
   static async getAllFeePayments(req: AuthRequest, res: Response) {
     try {
-      const { status, minAmount, maxAmount, sortBy = "createdAt", order = "desc" } = req.query;
+      const { status, minAmount, maxAmount, sortBy = "createdAt", order = "desc", search } = req.query;
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
 
@@ -161,6 +161,13 @@ export class FeeController {
         query.amount = {};
         if (minAmount) query.amount.$gte = Number(minAmount);
         if (maxAmount) query.amount.$lte = Number(maxAmount);
+      }
+      if (search) {
+        query.$or = [
+          { paymentId: { $regex: search as string, $options: "i" } },
+          { orderId: { $regex: search as string, $options: "i" } },
+          { receipt: { $regex: search as string, $options: "i" } }
+        ];
       }
 
       const sortOptions: any = { [sortBy as string]: order === "asc" ? 1 : -1 };

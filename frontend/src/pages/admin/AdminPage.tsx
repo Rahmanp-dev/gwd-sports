@@ -6,8 +6,11 @@ import {
   Users,
   GraduationCap,
   BookOpen,
-  Building,
-  Calendar,
+  Building2,
+  CalendarDays,
+  MonitorSmartphone,
+  CreditCard,
+  Package,
   LogOut,
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store";
@@ -18,6 +21,7 @@ import { EventManagement } from "@/components/admin/events/EventManagement";
 import { TrainerManagement } from "@/components/admin/trainers/TrainerManagement";
 import { AcademyManagement } from "@/components/admin/academies/AcademyManagement";
 import { LandingPageManagement } from "@/components/admin/landing/LandingPageManagement";
+import { FeesManagement } from "@/components/admin/fees/FeesManagement";
 import { KitsManagement } from "@/components/admin/kits/KitsManagement";
 import { SPORTS_LIST } from "@/utils/constants";
 
@@ -62,6 +66,7 @@ export default function AdminPage() {
                 <Users className="h-4 w-4 mr-2" />
                 Users
               </TabsTrigger>
+
               <TabsTrigger
                 value="students"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -69,6 +74,7 @@ export default function AdminPage() {
                 <GraduationCap className="h-4 w-4 mr-2" />
                 Students
               </TabsTrigger>
+
               <TabsTrigger
                 value="trainers"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -76,32 +82,44 @@ export default function AdminPage() {
                 <BookOpen className="h-4 w-4 mr-2" />
                 Trainers
               </TabsTrigger>
+
               <TabsTrigger
                 value="academies"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
-                <Building className="h-4 w-4 mr-2" />
+                <Building2 className="h-4 w-4 mr-2" />
                 Academies
               </TabsTrigger>
+
               <TabsTrigger
                 value="events"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
-                <Calendar className="h-4 w-4 mr-2" />
+                <CalendarDays className="h-4 w-4 mr-2" />
                 Events
               </TabsTrigger>
+
               <TabsTrigger
                 value="landingPage"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
-                <Calendar className="h-4 w-4 mr-2" />
+                <MonitorSmartphone className="h-4 w-4 mr-2" />
                 Landing Page
               </TabsTrigger>
+
+              <TabsTrigger
+                value="fees"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <CreditCard className="h-4 w-4 mr-2" />
+                Fees
+              </TabsTrigger>
+
               <TabsTrigger
                 value="kits"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
-                <Calendar className="h-4 w-4 mr-2" />
+                <Package className="h-4 w-4 mr-2" />
                 Kits
               </TabsTrigger>
             </TabsList>
@@ -271,6 +289,15 @@ export default function AdminPage() {
             <Card>
               <CardContent className="p-6">
                 <LandingPageManagement />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Fees Tab */}
+          <TabsContent value="fees">
+            <Card>
+              <CardContent className="p-6">
+                <FeesManagement />
               </CardContent>
             </Card>
           </TabsContent>
