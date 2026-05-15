@@ -23,6 +23,7 @@ import { AcademyManagement } from "@/components/admin/academies/AcademyManagemen
 import { LandingPageManagement } from "@/components/admin/landing/LandingPageManagement";
 import { FeesManagement } from "@/components/admin/fees/FeesManagement";
 import { KitsManagement } from "@/components/admin/kits/KitsManagement";
+import { SettingsManagement } from "@/components/admin/settings/SettingsManagement";
 import { SPORTS_LIST } from "@/utils/constants";
 
 export default function AdminPage() {
@@ -121,6 +122,14 @@ export default function AdminPage() {
               >
                 <Package className="h-4 w-4 mr-2" />
                 Kits
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="settings"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <LayoutDashboard className="h-4 w-4 mr-2" />
+                Settings
               </TabsTrigger>
             </TabsList>
           </div>
@@ -307,6 +316,15 @@ export default function AdminPage() {
             <Card>
               <CardContent className="p-6">
                 <KitsManagement />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Settings Tab */}
+          <TabsContent value="settings">
+            <Card>
+              <CardContent className="p-6">
+                <SettingsManagement />
               </CardContent>
             </Card>
           </TabsContent>

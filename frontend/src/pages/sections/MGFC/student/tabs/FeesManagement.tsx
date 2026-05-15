@@ -1,10 +1,24 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CreditCard, CheckCircle, Clock, XCircle, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  CreditCard,
+  CheckCircle,
+  Clock,
+  XCircle,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useAppSelector } from "@/store";
 import { getPaymentHistory } from "@/services/paymentService";
 import type { FeePaymentRecord } from "@/services/paymentService";
@@ -60,28 +74,27 @@ export default function FeesManagement() {
           icon: <CheckCircle className="w-4 h-4 mr-1" />,
           badgeClass: "bg-green-500/10 text-green-400 border-green-500/20",
           textClass: "text-green-400",
-          label: "Paid"
+          label: "Paid",
         };
       case "failed":
         return {
           icon: <XCircle className="w-4 h-4 mr-1" />,
           badgeClass: "bg-red-500/10 text-red-400 border-red-500/20",
           textClass: "text-red-400",
-          label: "Failed"
+          label: "Failed",
         };
       default:
         return {
           icon: <Clock className="w-4 h-4 mr-1" />,
           badgeClass: "bg-orange-500/10 text-orange-400 border-orange-500/20",
           textClass: "text-orange-400",
-          label: "Pending"
+          label: "Pending",
         };
     }
   };
 
   return (
     <div className="space-y-6">
-
       <motion.div
         initial="hidden"
         animate="visible"
@@ -93,9 +106,7 @@ export default function FeesManagement() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-green-200 text-sm">Matches Played</p>
-                  <h3 className="text-3xl font-bold text-white mt-1">
-                    1
-                  </h3>
+                  <h3 className="text-3xl font-bold text-white mt-1">1</h3>
                 </div>
               </div>
             </CardContent>
@@ -108,9 +119,7 @@ export default function FeesManagement() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-blue-200 text-sm">Goals Scored</p>
-                  <h3 className="text-3xl font-bold text-white mt-1">
-                    1
-                  </h3>
+                  <h3 className="text-3xl font-bold text-white mt-1">1</h3>
                 </div>
               </div>
             </CardContent>
@@ -123,9 +132,7 @@ export default function FeesManagement() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-purple-200 text-sm">Assists</p>
-                  <h3 className="text-3xl font-bold text-white mt-1">
-                    1
-                  </h3>
+                  <h3 className="text-3xl font-bold text-white mt-1">1</h3>
                 </div>
               </div>
             </CardContent>
@@ -138,9 +145,7 @@ export default function FeesManagement() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-orange-200 text-sm">Attendance</p>
-                  <h3 className="text-3xl font-bold text-white mt-1">
-                    100%
-                  </h3>
+                  <h3 className="text-3xl font-bold text-white mt-1">100%</h3>
                 </div>
               </div>
             </CardContent>
@@ -153,7 +158,7 @@ export default function FeesManagement() {
           <h2 className="text-2xl font-bold text-white">Fees Management</h2>
           <p className="text-gray-400">View and pay your academy fees</p>
         </div>
-        <Button 
+        <Button
           className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto shadow-lg shadow-green-600/20"
           onClick={() => navigate("/mgfc/student/pay-fees")}
         >
@@ -170,8 +175,12 @@ export default function FeesManagement() {
         <Card className="bg-gray-800/50 border-gray-700/50 text-center py-12">
           <CardContent>
             <CreditCard className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">No Payment History</h3>
-            <p className="text-gray-400">You haven't made any fee payments yet.</p>
+            <h3 className="text-xl font-semibold text-white mb-2">
+              No Payment History
+            </h3>
+            <p className="text-gray-400">
+              You haven't made any fee payments yet.
+            </p>
           </CardContent>
         </Card>
       ) : (
@@ -180,8 +189,15 @@ export default function FeesManagement() {
             {payments.map((fee) => {
               const statusInfo = getStatusDetails(fee.status);
               const dateObj = new Date(fee.createdAt);
-              const formattedMonth = dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-              const formattedDate = dateObj.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+              const formattedMonth = dateObj.toLocaleDateString("en-US", {
+                month: "long",
+                year: "numeric",
+              });
+              const formattedDate = dateObj.toLocaleDateString("en-US", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              });
 
               return (
                 <motion.div
@@ -196,7 +212,9 @@ export default function FeesManagement() {
                       <div className="flex justify-between items-start">
                         <div className="pr-2 text-left">
                           <CardTitle className="text-white text-md truncate">
-                            {fee.paymentId ? `Payment ID:  ${fee.paymentId}` : `OrderId: ${fee.orderId.slice(0, 15)}...`}
+                            {fee.paymentId
+                              ? `Payment ID:  ${fee.paymentId}`
+                              : `OrderId: ${fee.orderId.slice(0, 15)}...`}
                           </CardTitle>
                           <CardDescription className="text-gray-400 mt-1">
                             {formattedMonth}
@@ -212,9 +230,13 @@ export default function FeesManagement() {
                         <div className="text-2xl font-bold text-white">
                           ₹{fee.amount}
                         </div>
-                        <div className={`flex items-center text-sm ${statusInfo.textClass}`}>
+                        <div
+                          className={`flex items-center text-sm ${statusInfo.textClass}`}
+                        >
                           {statusInfo.icon}
-                          {fee.status === 'success' ? `Paid on ${formattedDate}` : formattedDate}
+                          {fee.status === "success"
+                            ? `Paid on ${formattedDate}`
+                            : formattedDate}
                         </div>
                       </div>
                     </CardContent>
@@ -237,7 +259,8 @@ export default function FeesManagement() {
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <span className="text-sm text-gray-400">
-                Page <strong className="text-white">{pagination.page}</strong> of <strong className="text-white">{pagination.pages}</strong>
+                Page <strong className="text-white">{pagination.page}</strong>{" "}
+                of <strong className="text-white">{pagination.pages}</strong>
               </span>
               <Button
                 variant="outline"

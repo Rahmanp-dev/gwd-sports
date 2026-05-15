@@ -1,12 +1,23 @@
-
 import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { CheckCircle, XCircle, Clock, Loader2, ChevronLeft, ChevronRight, Search, FileText } from "lucide-react";
+import {
+  CheckCircle,
+  XCircle,
+  Clock,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  FileText,
+} from "lucide-react";
 import { getAllFeePayments } from "@/services/paymentService";
-import type { FeePaymentRecord, AdminFeePaymentsParams } from "@/services/paymentService";
+import type {
+  FeePaymentRecord,
+  AdminFeePaymentsParams,
+} from "@/services/paymentService";
 import { toast } from "sonner";
 
 export const FeesManagement: React.FC = () => {
@@ -21,39 +32,42 @@ export const FeesManagement: React.FC = () => {
   const [sortBy, setSortBy] = useState("createdAt");
   const [order, setOrder] = useState("desc");
 
-  const fetchPayments = useCallback(async (page: number) => {
-    try {
-      setIsLoading(true);
-      const params: AdminFeePaymentsParams = {
-        page,
-        limit: 10,
-        status: statusFilter,
-        minAmount,
-        sortBy,
-        order,
-        search,
-      };
+  const fetchPayments = useCallback(
+    async (page: number) => {
+      try {
+        setIsLoading(true);
+        const params: AdminFeePaymentsParams = {
+          page,
+          limit: 10,
+          status: statusFilter,
+          minAmount,
+          sortBy,
+          order,
+          search,
+        };
 
-      const res = await getAllFeePayments(params);
+        const res = await getAllFeePayments(params);
 
-      // Depending on API response wrapper struct:
-      if (res && res.data) {
-        setPayments(res.data.payments || []);
-        setPagination({
-          page: res.data.pagination?.page || 1,
-          pages: res.data.pagination?.pages || 1,
-          total: res.data.pagination?.total || 0,
-        });
-      } else {
-        toast.error("Failed to load global payment history");
+        // Depending on API response wrapper struct:
+        if (res && res.data) {
+          setPayments(res.data.payments || []);
+          setPagination({
+            page: res.data.pagination?.page || 1,
+            pages: res.data.pagination?.pages || 1,
+            total: res.data.pagination?.total || 0,
+          });
+        } else {
+          toast.error("Failed to load global payment history");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Error fetching admin payments");
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Error fetching admin payments");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [statusFilter, minAmount, sortBy, order, search]);
+    },
+    [statusFilter, minAmount, sortBy, order, search],
+  );
 
   useEffect(() => {
     fetchPayments(1);
@@ -86,11 +100,23 @@ export const FeesManagement: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "success":
-        return <Badge className="bg-green-100 text-green-700 border-green-200"><CheckCircle className="w-3 h-3 mr-1" /> Success</Badge>;
+        return (
+          <Badge className="bg-green-100 text-green-700 border-green-200">
+            <CheckCircle className="w-3 h-3 mr-1" /> Success
+          </Badge>
+        );
       case "failed":
-        return <Badge className="bg-red-100 text-red-700 border-red-200"><XCircle className="w-3 h-3 mr-1" /> Failed</Badge>;
+        return (
+          <Badge className="bg-red-100 text-red-700 border-red-200">
+            <XCircle className="w-3 h-3 mr-1" /> Failed
+          </Badge>
+        );
       default:
-        return <Badge className="bg-orange-100 text-orange-700 border-orange-200"><Clock className="w-3 h-3 mr-1" /> Pending</Badge>;
+        return (
+          <Badge className="bg-orange-100 text-orange-700 border-orange-200">
+            <Clock className="w-3 h-3 mr-1" /> Pending
+          </Badge>
+        );
     }
   };
 
@@ -99,7 +125,9 @@ export const FeesManagement: React.FC = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Fees Management</h2>
-          <p className="text-gray-500">Monitor all transactions and overrides</p>
+          <p className="text-gray-500">
+            Monitor all transactions and overrides
+          </p>
         </div>
         <div className="flex items-center gap-2 text-sm font-medium text-gray-600 bg-white px-3 py-1.5 rounded-md border shadow-sm">
           Total Transactions: {pagination.total}
@@ -136,7 +164,9 @@ export const FeesManagement: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Min Amount (₹)</label>
+            <label className="text-sm font-medium text-gray-700">
+              Min Amount (₹)
+            </label>
             <Input
               type="number"
               placeholder="e.g. 1"
@@ -171,10 +201,17 @@ export const FeesManagement: React.FC = () => {
           </div>
 
           <div className="flex gap-2">
-            <Button onClick={handleApplyFilters} className="w-full bg-primary hover:bg-primary/90 h-10">
+            <Button
+              onClick={handleApplyFilters}
+              className="w-full bg-primary hover:bg-primary/90 h-10"
+            >
               <Search className="w-4 h-4 mr-2" /> Apply
             </Button>
-            <Button onClick={clearFilters} variant="outline" className="w-full h-10">
+            <Button
+              onClick={clearFilters}
+              variant="outline"
+              className="w-full h-10"
+            >
               Clear
             </Button>
           </div>
@@ -197,29 +234,46 @@ export const FeesManagement: React.FC = () => {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                  <td
+                    colSpan={5}
+                    className="px-6 py-12 text-center text-gray-500"
+                  >
                     <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
                     Loading transactions...
                   </td>
                 </tr>
               ) : payments.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                  <td
+                    colSpan={5}
+                    className="px-6 py-12 text-center text-gray-500"
+                  >
                     <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                     No transactions found matching the current criteria.
                   </td>
                 </tr>
               ) : (
                 payments.map((fee) => (
-                  <tr key={fee._id} className="bg-white border-b hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={fee._id}
+                    className="bg-white border-b hover:bg-gray-50 transition-colors"
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-semibold text-gray-900">{fee.receipt || "No Receipt ID"}</div>
-                      <div className="text-xs text-gray-400 mt-1 font-mono">{fee.paymentId || fee.orderId}</div>
+                      <div className="font-semibold text-gray-900">
+                        {fee.receipt || "No Receipt ID"}
+                      </div>
+                      <div className="text-xs text-gray-400 mt-1 font-mono">
+                        {fee.paymentId || fee.orderId}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       {/* Depending on if studentId was fully populated by backend, show it here safely */}
                       <div className="text-xs font-mono text-gray-500">
-                        {fee.studentId ? (typeof fee.studentId === "object" ? (fee.studentId as any)._id : fee.studentId) : "Anonymous/Direct"}
+                        {fee.studentId
+                          ? typeof fee.studentId === "object"
+                            ? (fee.studentId as any)._id
+                            : fee.studentId
+                          : "Anonymous/Direct"}
                       </div>
                     </td>
                     <td className="px-6 py-4 text-center">
@@ -232,10 +286,17 @@ export const FeesManagement: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-gray-900">
-                        {new Date(fee.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+                        {new Date(fee.createdAt).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
                       </div>
                       <div className="text-xs text-gray-400">
-                        {new Date(fee.createdAt).toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' })}
+                        {new Date(fee.createdAt).toLocaleTimeString("en-US", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </div>
                     </td>
                   </tr>
@@ -249,8 +310,14 @@ export const FeesManagement: React.FC = () => {
         {!isLoading && pagination.pages > 1 && (
           <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50">
             <span className="text-sm text-gray-600">
-              Showing Page <span className="font-semibold text-gray-900">{pagination.page}</span> of{" "}
-              <span className="font-semibold text-gray-900">{pagination.pages}</span>
+              Showing Page{" "}
+              <span className="font-semibold text-gray-900">
+                {pagination.page}
+              </span>{" "}
+              of{" "}
+              <span className="font-semibold text-gray-900">
+                {pagination.pages}
+              </span>
             </span>
             <div className="flex gap-2">
               <Button

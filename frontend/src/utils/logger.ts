@@ -17,7 +17,12 @@ class FrontendLogger {
   private getUserId(): string | undefined {
     try {
       const state = store.getState();
-      return state.auth.user?.id || state.auth.user?._id || state.auth.user?.email || undefined;
+      return (
+        state.auth.user?.id ||
+        state.auth.user?._id ||
+        state.auth.user?.email ||
+        undefined
+      );
     } catch {
       return undefined;
     }
@@ -59,7 +64,11 @@ class FrontendLogger {
     }
   }
 
-  private log(level: LogLevel, message: string, metadata?: Record<string, any>) {
+  private log(
+    level: LogLevel,
+    message: string,
+    metadata?: Record<string, any>,
+  ) {
     const payload: LogPayload = {
       level,
       message,

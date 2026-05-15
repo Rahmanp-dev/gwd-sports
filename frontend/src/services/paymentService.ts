@@ -47,10 +47,15 @@ export const verifyRazorpayPayment = async (data: VerifyPaymentParams) => {
   return (response as any).data;
 };
 
-export const getPaymentHistory = async (page: number = 1, limit: number = 10): Promise<PaymentHistoryResponse> => {
-  const response = await apiService.get(`/payments/history?page=${page}&limit=${limit}`);
+export const getPaymentHistory = async (
+  page: number = 1,
+  limit: number = 10,
+): Promise<PaymentHistoryResponse> => {
+  const response = await apiService.get(
+    `/payments/history?page=${page}&limit=${limit}`,
+  );
   console.log("Payment history response:", response);
-  return (response as any);
+  return response as any;
 };
 
 export interface AdminFeePaymentsParams {
@@ -64,19 +69,24 @@ export interface AdminFeePaymentsParams {
   search?: string;
 }
 
-export const getAllFeePayments = async (params: AdminFeePaymentsParams): Promise<PaymentHistoryResponse> => {
+export const getAllFeePayments = async (
+  params: AdminFeePaymentsParams,
+): Promise<PaymentHistoryResponse> => {
   const query = new URLSearchParams();
   if (params.page) query.append("page", params.page.toString());
   if (params.limit) query.append("limit", params.limit.toString());
-  if (params.status && params.status !== "all") query.append("status", params.status);
+  if (params.status && params.status !== "all")
+    query.append("status", params.status);
   if (params.minAmount) query.append("minAmount", params.minAmount);
   if (params.maxAmount) query.append("maxAmount", params.maxAmount);
   if (params.sortBy) query.append("sortBy", params.sortBy);
   if (params.order) query.append("order", params.order);
   if (params.search) query.append("search", params.search);
 
-  const response = await apiService.get(`/payments/admin/all?${query.toString()}`);
-  return (response as any);
+  const response = await apiService.get(
+    `/payments/admin/all?${query.toString()}`,
+  );
+  return response as any;
 };
 
 export const loadRazorpayScript = (): Promise<boolean> => {

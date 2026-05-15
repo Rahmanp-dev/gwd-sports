@@ -39,15 +39,24 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-4">
-          <h1 className="text-4xl font-bold text-red-500 mb-4">Oops! Something went wrong</h1>
+          <h1 className="text-4xl font-bold text-red-500 mb-4">
+            Oops! Something went wrong
+          </h1>
           <p className="text-xl text-gray-400 mb-8 max-w-2xl text-center">
-            {this.state.error?.message || "An unexpected error occurred while rendering the page."}
+            {this.state.error?.message ||
+              "An unexpected error occurred while rendering the page."}
           </p>
           <div className="flex gap-4">
-            <Button onClick={this.handleReload} className="bg-green-600 hover:bg-green-700">
+            <Button
+              onClick={this.handleReload}
+              className="bg-green-600 hover:bg-green-700"
+            >
               Reload Page
             </Button>
-            <Button variant="outline" onClick={() => window.location.href = '/'}>
+            <Button
+              variant="outline"
+              onClick={() => (window.location.href = "/")}
+            >
               Go to Home
             </Button>
           </div>

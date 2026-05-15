@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { AdminUserController, AdminStudentController, AdminTrainerController } from '../../controllers/admin';
 import { EventController } from '../../controllers/event';
 import { TrainerController } from '../../controllers/trainer';
+import { getSettings, updateSettings } from '../../controllers/admin/settingsController';
 import { authMiddleware, adminMiddleware } from '../../middleware/auth';
 import { 
   validateCreateUser, 
@@ -34,6 +35,12 @@ const router = Router();
 
 // All admin routes require authentication and admin role
 router.use(authMiddleware, adminMiddleware);
+
+// ========================
+// SETTINGS ROUTES
+// ========================
+router.get('/settings', getSettings);
+router.put('/settings', updateSettings);
 
 // ========================
 // EVENT MANAGEMENT ROUTES

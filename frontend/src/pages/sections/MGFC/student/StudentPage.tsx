@@ -43,7 +43,9 @@ export default function MGFCStudentPage() {
   const dispatch = useAppDispatch();
   const { user, token } = useAppSelector((state) => state.auth);
 
-  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "attendance");
+  const [activeTab, setActiveTab] = useState(
+    searchParams.get("tab") || "attendance",
+  );
 
   useEffect(() => {
     window.scrollTo(0, 0);

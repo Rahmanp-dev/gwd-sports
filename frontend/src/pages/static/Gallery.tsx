@@ -19,7 +19,6 @@ export default function GalleryPage() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black flex flex-col">
-      
       {/* Back Button */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -39,7 +38,6 @@ export default function GalleryPage() {
 
       {/* Main Content */}
       <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 z-10">
-        
         {/* Heading */}
         <section className="text-center mb-16">
           <motion.h1

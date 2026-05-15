@@ -124,7 +124,10 @@ const AppRouter: React.FC = () => {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-      <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
+      <Route
+        path="/terms-and-conditions"
+        element={<TermsAndConditionsPage />}
+      />
 
       {/* Fallback route */}
       <Route path="*" element={<Navigate to="/not-found" replace />} />
