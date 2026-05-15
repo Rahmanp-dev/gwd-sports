@@ -13,6 +13,12 @@ const razorpay = new Razorpay({
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
   try {
     const { amount, currency = "INR", receipt, studentId } = req.body;
+    const user = (req as any).user;
+
+    console.log("=== BACKEND DEBUG: CREATE ORDER ===");
+    console.log("Req Body:", req.body);
+    console.log("Authenticated User from Token:", user ? { _id: user._id, role: user.role } : "No User");
+    console.log("Student ID extracted from body:", studentId);
 
     if (!amount) {
       res.status(400).json({ success: false, message: "Amount is required" });
@@ -23,6 +29,12 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       amount: amount * 100, // Razorpay expects amount in paise
       currency,
       receipt: receipt || `rcpt_${Date.now()}`,
+      notes: {
+        app_name: env.APP_NAME || "MasterGrade",
+        app_id: env.APP_ID || "MG_1",
+        student_id: studentId ? studentId.toString() : "",
+        description: "Academy Fees Payment",
+      }
     };
 
     const order = await razorpay.orders.create(options);
@@ -32,14 +44,19 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
+    console.log("Creating FeePayment with studentId (Which might actually be a plain User_id):", studentId);
+
     const newPayment = await FeePayment.create({
       orderId: order.id,
       amount: Number(order.amount) / 100, // Save back as rupees
       currency: order.currency,
       status: "pending",
       receipt: options.receipt,
-      studentId, // Optional reference
+      // ! for now this function is only for students paying fees, so we can assume the studentId is the user ID of the authenticated user. In future, we need to refactor this to be more flexible. 
+      studentId: user && user.role === 'student' ? user._id : studentId, // Map the user's ID
     });
+    
+    console.log("Newly Saved FeePayment DB Record:", newPayment);
 
     res.status(201).json({
       success: true,

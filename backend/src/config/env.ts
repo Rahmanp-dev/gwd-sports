@@ -4,6 +4,9 @@ import { z } from "zod";
 dotenv.config();
 
 const envSchema = z.object({
+  APP_NAME: z.string().default("MasterGrade"),
+  APP_ID: z.string().default("MG_1"),
+
   NODE_ENV: z.string().default("development"),
 
   PORT: z.coerce.number().default(3000),

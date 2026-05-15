@@ -112,15 +112,13 @@ export class FeeController {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       
-      const profile = await StudentProfile.findOne({ userId: req.user!._id });
-      if (!profile) return res.status(404).json({ success: false, message: "Profile not found" });
-
-      const payments = await FeePayment.find({ studentId: profile._id })
+      // Look up payments using req.user._id since that is what we are storing in FeePayment
+      const payments = await FeePayment.find({ studentId: req.user!._id })
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit);
 
-      const total = await FeePayment.countDocuments({ studentId: profile._id });
+      const total = await FeePayment.countDocuments({ studentId: req.user!._id });
 
       res.status(200).json({
         success: true,
@@ -130,6 +128,7 @@ export class FeeController {
         }
       });
     } catch (error) {
+      logger.error(`Error fetching fee history: ${error}`);
       res.status(500).json({ success: false, message: "Server Error" });
     }
   }

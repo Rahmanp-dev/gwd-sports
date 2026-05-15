@@ -40,6 +40,7 @@ export const RazorpayButton: React.FC<RazorpayButtonProps> = ({
       }
 
       const orderData: CreateOrderParams = { amount, studentId };
+      console.log("Creating order with data:", orderData);
       const res = await createRazorpayOrder(orderData);
 
       if (!res.success) {

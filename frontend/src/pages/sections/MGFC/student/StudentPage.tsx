@@ -256,7 +256,13 @@ export default function MGFCStudentPage() {
           onValueChange={handleTabChange}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-gray-800 border border-gray-700">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 bg-gray-800 border border-gray-700">
+            <TabsTrigger
+              value="dashboard"
+              className="data-[state=active]:bg-green-600"
+            >
+              Dashboard
+            </TabsTrigger>
             <TabsTrigger
               value="attendance"
               className="data-[state=active]:bg-green-600"
@@ -289,8 +295,8 @@ export default function MGFCStudentPage() {
             </TabsTrigger> */}
           </TabsList>
 
-          {/* Attendance Tab */}
-          <TabsContent value="attendance" className="space-y-6">
+          {/* Dashboard Tab */}
+          <TabsContent value="dashboard" className="space-y-6">
             <motion.div
               initial="hidden"
               animate="visible"
@@ -521,6 +527,11 @@ export default function MGFCStudentPage() {
                 </CardContent>
               </Card>
             </motion.div>
+          </TabsContent>
+
+          {/* Attendance Tab */}
+          <TabsContent value="attendance" className="space-y-6">
+            gg
           </TabsContent>
 
           {/* Performance Tab */}

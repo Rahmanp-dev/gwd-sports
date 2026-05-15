@@ -26,7 +26,7 @@ const feePaymentSchema = new Schema<IFeePayment>(
       default: "pending",
     },
     receipt: { type: String },
-    studentId: { type: Schema.Types.ObjectId, ref: "Student" },
+    studentId: { type: Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, ArrowLeft, CreditCard, ShieldCheck } from "lucide-react";
+import { Loader2, ArrowLeft, CreditCard, ShieldCheck, CheckCircle } from "lucide-react";
 import { useAppSelector } from "@/store";
 import { toast } from "sonner";
 import { createRazorpayOrder, verifyRazorpayPayment, loadRazorpayScript } from "@/services/paymentService";
@@ -30,17 +30,32 @@ export default function PayFeesPage() {
       setIsLoading(true);
       setPaymentStatus("idle");
 
+      console.log("=== FRONTEND DEBUG ===");
+      console.log("Current User Object:", user);
+
+      const orderPayload = { 
+        amount: feeAmount, 
+        studentId: user?._id // Passing user ID to backend to see if it reaches
+      };
+      console.log("Payload sending to createRazorpayOrder:", orderPayload);
+
       // 1. Create order
-      const order = await createRazorpayOrder({ amount: feeAmount });
+      const order = await createRazorpayOrder(orderPayload);
+      console.log("Response from createRazorpayOrder:", order);
 
       // 2. Initialize Razorpay
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_SS49Ahe904DIC8",
         amount: order.amount,
         currency: order.currency || "INR",
-        name: "MasterGrade FC",
-        description: "Academy Fees Payment",
+        name: import.meta.env.VITE_APP_NAME || "MasterGrade FC",
+        description: `Academy Fees Payment - ${user.name} (${user.email})`,
         order_id: order.id,
+        notes: {
+          invoice_id: order.receipt || order.id,
+          student_name: user.name,
+          student_email: user.email,
+        },
         handler: async function (response: any) {
           try {
             await verifyRazorpayPayment({

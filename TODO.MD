@@ -2,6 +2,7 @@ TODO:
 
 P0: 
 
+- [ ] Improve payment transaction schema
 - [ ] Performance Management - Trainer can add performance details of students under him 
 - [ ] Performance Metrics: tactical, technical, SSG (Small Sided Games), and match play
 - [ ] Make the metrics editable in Admin Panel 
@@ -16,6 +17,7 @@ P0:
 - [ ] Fees Management - Admin can add fees details of students under an academy; Trainer can view fees details of students under him
 - [ ] Event Payment invoice 
 - [ ] Fee Payment invoice 
+- [ ] Too many authentication attempts, please try again later - comes up on 1st time only 
 
 P1:
 
