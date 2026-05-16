@@ -26,44 +26,58 @@ import { toast } from "sonner";
 
 export default function FeesManagement() {
   const navigate = useNavigate();
-  const { user } = useAppSelector((state) => state.auth);
+  const { user, token } = useAppSelector((state) => state.auth);
 
   const [payments, setPayments] = useState<FeePaymentRecord[]>([]);
+  const [outstandingFees, setOutstandingFees] = useState<number>(0);
+  const [profileLoading, setProfileLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
 
-  const fetchHistory = useCallback(async (page: number) => {
+  const fetchProfileAndHistory = useCallback(async (page: number) => {
     try {
       setIsLoading(true);
-      const res = await getPaymentHistory(page, 6);
-      console.log(res);
-      if (res.success) {
-        setPayments(res.data.payments);
-        setPagination(res.data.pagination);
+      setProfileLoading(true);
+      
+      const [historyRes, profileRes] = await Promise.all([
+        getPaymentHistory(page, 6),
+        fetch("http://localhost:3000/api/student/profile", {
+          headers: { Authorization: `Bearer ${token}` }
+        }).then(res => res.json())
+      ]);
+
+      if (historyRes.success) {
+        setPayments(historyRes.data.payments);
+        setPagination(historyRes.data.pagination);
       } else {
         toast.error("Failed to load payment history");
       }
+
+      if (profileRes.success && profileRes.data?.studentProfile) {
+        setOutstandingFees(profileRes.data.studentProfile.outstandingFees);
+      }
     } catch (error) {
       console.error(error);
-      toast.error("Error fetching payment history");
+      toast.error("Error fetching fees data");
     } finally {
       setIsLoading(false);
+      setProfileLoading(false);
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => {
-    fetchHistory(1);
-  }, [fetchHistory]);
+    if (token) fetchProfileAndHistory(1);
+  }, [fetchProfileAndHistory, token]);
 
   const handleNextPage = () => {
     if (pagination.page < pagination.pages) {
-      fetchHistory(pagination.page + 1);
+      fetchProfileAndHistory(pagination.page + 1);
     }
   };
 
   const handlePrevPage = () => {
     if (pagination.page > 1) {
-      fetchHistory(pagination.page - 1);
+      fetchProfileAndHistory(pagination.page - 1);
     }
   };
 
@@ -105,34 +119,16 @@ export default function FeesManagement() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-green-200 text-sm">Matches Played</p>
-                  <h3 className="text-3xl font-bold text-white mt-1">1</h3>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div>
-          <Card className="bg-gradient-to-br from-blue-600 to-blue-800 border-blue-500/50">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-200 text-sm">Goals Scored</p>
-                  <h3 className="text-3xl font-bold text-white mt-1">1</h3>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div>
-          <Card className="bg-gradient-to-br from-purple-600 to-purple-800 border-purple-500/50">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-purple-200 text-sm">Assists</p>
-                  <h3 className="text-3xl font-bold text-white mt-1">1</h3>
+                  <p className="text-green-200 text-sm">Status</p>
+                  <h3 className="text-2xl font-bold text-white mt-1">
+                    {profileLoading ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : outstandingFees === 0 ? (
+                      "Paid this month"
+                    ) : (
+                      "Pending"
+                    )}
+                  </h3>
                 </div>
               </div>
             </CardContent>
@@ -144,8 +140,10 @@ export default function FeesManagement() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-orange-200 text-sm">Attendance</p>
-                  <h3 className="text-3xl font-bold text-white mt-1">100%</h3>
+                  <p className="text-orange-200 text-sm">Outstanding Fees</p>
+                  <h3 className="text-3xl font-bold text-white mt-1">
+                    ₹{outstandingFees}
+                  </h3>
                 </div>
               </div>
             </CardContent>
@@ -158,13 +156,23 @@ export default function FeesManagement() {
           <h2 className="text-2xl font-bold text-white">Fees Management</h2>
           <p className="text-gray-400">View and pay your academy fees</p>
         </div>
-        <Button
-          className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto shadow-lg shadow-green-600/20"
-          onClick={() => navigate("/mgfc/student/pay-fees")}
-        >
-          <CreditCard className="w-4 h-4 mr-2" />
-          Pay Fees Now
-        </Button>
+        {outstandingFees > 0 ? (
+          <Button
+            className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto shadow-lg shadow-green-600/20"
+            onClick={() => navigate("/mgfc/student/pay-fees", { state: { amount: outstandingFees } })}
+          >
+            <CreditCard className="w-4 h-4 mr-2" />
+            Pay ₹{outstandingFees} Now
+          </Button>
+        ) : (
+          <Button
+            className="bg-gray-600 text-white w-full sm:w-auto cursor-not-allowed"
+            disabled
+          >
+            <CheckCircle className="w-4 h-4 mr-2" />
+            No Pending Dues
+          </Button>
+        )}
       </div>
 
       {isLoading ? (

@@ -7,6 +7,8 @@ import { logger } from '../../utils/logger';
 import { validationResult } from 'express-validator';
 import mongoose from 'mongoose';
 
+import { GlobalSettings } from '../../schemas/settingsSchema';
+
 export class StudentController {
   // Create student profile (when user registers as student)
   static async createStudentProfile(req: AuthRequest, res: Response) {
@@ -150,6 +152,40 @@ export class StudentController {
           message: 'Student profile not found'
         });
       }
+
+      // Sync outstandingFees based on current month and global settings
+      let settings = await GlobalSettings.findOne();
+      if (!settings) {
+        settings = await GlobalSettings.create({
+          performanceMetrics: ["dribble", "running", "defending", "strike", "stamina"],
+          defaultFeeAmount: 1000,
+        });
+      }
+
+      const defaultFee = settings.defaultFeeAmount || 1000;
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
+
+      // Check if there is a 'monthly' fee payment for the current month that is 'paid' or 'success'
+      const hasPaidThisMonth = studentProfile.feePayments.some(payment => {
+        const paymentDate = new Date(payment.paymentDate);
+        return (
+          payment.period === 'monthly' &&
+          (payment.status === 'paid') && // Balanced checking boundary condition fix
+          paymentDate.getMonth() === currentMonth &&
+          paymentDate.getFullYear() === currentYear &&
+          payment.amount >= defaultFee
+        );
+      });
+
+      // Update the outstandingFees field
+      if (hasPaidThisMonth) {
+        studentProfile.outstandingFees = 0;
+      } else {
+        studentProfile.outstandingFees = defaultFee;
+      }
+
+      await studentProfile.save();
 
       res.json({
         success: true,

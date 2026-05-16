@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -27,6 +27,7 @@ import { motion } from "framer-motion";
 
 export default function PayFeesPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAuthenticated, token } = useAppSelector(
     (state) => state.auth,
   );
@@ -35,11 +36,28 @@ export default function PayFeesPage() {
     "idle" | "success" | "failed"
   >("idle");
 
-  const feeAmount = 5;
+  const [feeAmount, setFeeAmount] = useState<number>(location.state?.amount || 0);
 
   useEffect(() => {
     loadRazorpayScript();
-  }, []);
+
+    if (!location.state?.amount && token) {
+      const fetchProfile = async () => {
+        try {
+          const res = await fetch("http://localhost:3000/api/student/profile", {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const data = await res.json();
+          if (data.success && data.data?.studentProfile) {
+            setFeeAmount(data.data.studentProfile.outstandingFees);
+          }
+        } catch (err) {
+          console.error("Failed to fetch profile fees:", err);
+        }
+      };
+      fetchProfile();
+    }
+  }, [token, location.state?.amount]);
 
   if (!isAuthenticated || !user) {
     toast.error("Please login to pay fees");
@@ -57,6 +75,7 @@ export default function PayFeesPage() {
       const orderPayload = {
         amount: feeAmount,
         studentId: user?._id, // Passing user ID to backend to see if it reaches
+        period: 'monthly' // Add standard period mapping
       };
       console.log("Payload sending to createRazorpayOrder:", orderPayload);
 
@@ -79,10 +98,25 @@ export default function PayFeesPage() {
         },
         handler: async function (response: any) {
           try {
+            // 1. Verify gateway cryptographic signatures on backend
             await verifyRazorpayPayment({
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
+            });
+
+            // 2. Commit transaction metadata into StudentProfile fee tracking ledger arrays
+            await fetch("http://localhost:3000/api/student/pay-fees", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                amount: feeAmount,
+                period: 'monthly',
+                transactionId: response.razorpay_payment_id
+              })
             });
 
             setPaymentStatus("success");
