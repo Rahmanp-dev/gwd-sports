@@ -394,7 +394,127 @@ export default function MGFCStudentPage() {
 
           {/* Attendance Tab */}
           <TabsContent value="attendance" className="space-y-6">
-            gg
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={containerVariants}
+              className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+            >
+              {/* Summary Stats Panel */}
+              <motion.div variants={itemVariants} className="lg:col-span-1 space-y-4">
+                <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center gap-2">
+                      <BarChart3 className="h-5 w-5 text-green-400" />
+                      Attendance Metrics
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Big Percentage Radial / Counter alternative */}
+                    <div className="p-5 bg-gray-950/40 rounded-xl border border-gray-800 text-center space-y-1">
+                      <p className="text-gray-400 text-xs uppercase tracking-wider font-bold">Overall Attendance Rate</p>
+                      <h4 className="text-4xl font-extrabold text-white">
+                        {studentProfile?.attendance?.length 
+                          ? `${((studentProfile.attendance.filter((a: any) => a.present).length / studentProfile.attendance.length) * 100).toFixed(0)}%` 
+                          : "N/A"}
+                      </h4>
+                      <Progress 
+                        value={studentProfile?.attendance?.length ? (studentProfile.attendance.filter((a: any) => a.present).length / studentProfile.attendance.length) * 100 : 0} 
+                        className="h-2 mt-3 bg-gray-800 text-green-500"
+                      />
+                    </div>
+
+                    {/* Multi-counter Breakdown Grid */}
+                    <div className="grid grid-cols-3 gap-2 pt-2">
+                      <div className="p-3 bg-gray-900/60 border border-gray-800 rounded-xl text-center">
+                        <span className="text-xs text-gray-500 font-bold block mb-0.5">Total</span>
+                        <span className="text-xl font-bold text-white">{studentProfile?.attendance?.length || 0}</span>
+                      </div>
+                      <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-xl text-center">
+                        <span className="text-xs text-green-500 font-bold block mb-0.5">Present</span>
+                        <span className="text-xl font-bold text-green-400">
+                          {studentProfile?.attendance?.filter((a: any) => a.present).length || 0}
+                        </span>
+                      </div>
+                      <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-center">
+                        <span className="text-xs text-red-500 font-bold block mb-0.5">Absent</span>
+                        <span className="text-xl font-bold text-red-400">
+                          {studentProfile?.attendance?.filter((a: any) => !a.present).length || 0}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              {/* Roster Logs Timeline Panel */}
+              <motion.div variants={itemVariants} className="lg:col-span-2">
+                <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50 h-full">
+                  <CardHeader className="flex flex-row items-center justify-between pb-3">
+                    <CardTitle className="text-white flex items-center gap-2">
+                      <Calendar className="h-5 w-5 text-blue-400" />
+                      Session History Tracking Logs
+                    </CardTitle>
+                    <Badge variant="outline" className="text-gray-400 border-gray-700 text-xs font-semibold">
+                      Chronological Order
+                    </Badge>
+                  </CardHeader>
+                  <CardContent className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+                    {!studentProfile?.attendance || studentProfile.attendance.length === 0 ? (
+                      <div className="text-center py-16 text-gray-500 border-2 border-dashed border-gray-800 rounded-xl">
+                        <CheckCircle className="h-12 w-12 mx-auto mb-3 text-gray-700" />
+                        <p className="font-semibold text-gray-400">No active attendance logs generated</p>
+                        <p className="text-xs text-gray-500 mt-1">Schedules and tracking parameters will show here upon instructor submission</p>
+                      </div>
+                    ) : (
+                      // Sort dynamically to guarantee top visibility for the latest logs
+                      [...studentProfile.attendance]
+                        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                        .map((log: any) => (
+                          <div 
+                            key={log._id}
+                            className="p-4 bg-gray-900/40 rounded-xl border border-gray-800 hover:border-gray-700/80 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                          >
+                            <div className="flex items-center gap-3.5 min-w-0">
+                              {/* Present / Absent Visual Anchor Marker status block */}
+                              <div className={`h-10 w-10 rounded-xl flex items-center justify-center border flex-shrink-0 ${
+                                log.present 
+                                  ? "bg-green-500/10 text-green-400 border-green-500/20" 
+                                  : "bg-red-500/10 text-red-400 border-red-500/20"
+                              }`}>
+                                {log.present ? <CheckCircle className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
+                              </div>
+
+                              <div className="min-w-0 space-y-0.5">
+                                <p className="text-white font-bold text-base">
+                                  {new Date(log.date).toLocaleDateString("en-IN", {
+                                    weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+                                  })}
+                                </p>
+                                <div className="flex items-center gap-1 text-xs text-gray-500">
+                                  <span className="font-medium">Marked By:</span>
+                                  <span className="text-gray-400 font-semibold">{log.markedBy?.name || "Instructor"}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Remarks Context Bubble block layout */}
+                            <div className="flex-1 md:max-w-xs text-left md:text-right">
+                              {log.remarks ? (
+                                <span className="inline-block bg-gray-950/40 border border-gray-800/80 text-gray-400 text-xs px-3 py-1.5 rounded-lg italic truncate max-w-full">
+                                  "{log.remarks}"
+                                </span>
+                              ) : (
+                                <span className="text-gray-600 text-xs italic">No additional system comments entry</span>
+                              )}
+                            </div>
+                          </div>
+                        ))
+                    )}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </motion.div>
           </TabsContent>
 
           {/* Performance Tab */}

@@ -145,6 +145,16 @@ export default function MGFCTrainerPage() {
   });
   const [submittingPerformance, setSubmittingPerformance] = useState(false);
 
+  // Attendance functionality
+  const [isAddAttendanceOpen, setIsAddAttendanceOpen] = useState(false);
+  const [selectedStudentForAttendance, setSelectedStudentForAttendance] = useState<DetailedStudent | null>(null);
+  const [addAttendanceForm, setAddAttendanceForm] = useState({
+    date: new Date().toISOString().split("T")[0],
+    present: true,
+    remarks: "",
+  });
+  const [submittingAttendance, setSubmittingAttendance] = useState(false);
+
   useEffect(() => {
     // Fetch settings for dynamic metrics
     const fetchSettings = async () => {
@@ -287,6 +297,50 @@ export default function MGFCTrainerPage() {
       toast.error("Network error adding performance");
     } finally {
       setSubmittingPerformance(false);
+    }
+  };
+
+  const handleOpenAddAttendance = (student: DetailedStudent) => {
+    setSelectedStudentForAttendance(student);
+    setAddAttendanceForm({
+      date: new Date().toISOString().split("T")[0],
+      present: true,
+      remarks: "",
+    });
+    setIsAddAttendanceOpen(true);
+  };
+
+  const handleAddAttendanceSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedStudentForAttendance) return;
+    
+    try {
+      setSubmittingAttendance(true);
+      const res = await fetch("http://localhost:3000/api/trainer/mark-attendance", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          studentId: selectedStudentForAttendance.userId,
+          date: addAttendanceForm.date,
+          present: addAttendanceForm.present,
+          remarks: addAttendanceForm.remarks
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Attendance marked successfully!");
+        setIsAddAttendanceOpen(false);
+      } else {
+        toast.error(data.message || "Failed to mark attendance");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Network error marking attendance");
+    } finally {
+      setSubmittingAttendance(false);
     }
   };
 
@@ -715,7 +769,10 @@ export default function MGFCTrainerPage() {
                                 <FileText className="mr-2 h-4 w-4 text-gray-400" />
                                 View Profile
                               </DropdownMenuItem>
-                              <DropdownMenuItem className="hover:bg-gray-700 cursor-pointer py-2 text-green-400 focus:text-green-300 focus:bg-gray-700">
+                              <DropdownMenuItem 
+                                className="hover:bg-gray-700 cursor-pointer py-2 text-green-400 focus:text-green-300 focus:bg-gray-700"
+                                onClick={() => handleOpenAddAttendance(student)}
+                              >
                                 <CheckCircle className="mr-2 h-4 w-4" />
                                 Add Attendance
                               </DropdownMenuItem>
@@ -909,6 +966,84 @@ export default function MGFCTrainerPage() {
               >
                 {submittingPerformance ? <Activity className="h-4 w-4 mr-2 animate-spin" /> : null}
                 Save Record
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Attendance Dialog */}
+      <Dialog open={isAddAttendanceOpen} onOpenChange={setIsAddAttendanceOpen}>
+        <DialogContent className="bg-gray-900 border border-gray-700 text-white sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Mark Attendance</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Record attendance for {selectedStudentForAttendance?.user?.name || 'this student'}.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleAddAttendanceSubmit} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="attendanceDate" className="text-gray-300">Date</Label>
+              <Input 
+                id="attendanceDate" 
+                type="date"
+                required
+                value={addAttendanceForm.date}
+                onChange={(e) => setAddAttendanceForm(prev => ({ ...prev, date: e.target.value }))}
+                className="bg-gray-800 border-gray-700 text-white focus-visible:ring-blue-500" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-gray-300">Status</Label>
+              <div className="flex items-center gap-4 mt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setAddAttendanceForm(prev => ({ ...prev, present: true }))}
+                  className={`flex-1 border-gray-700 ${addAttendanceForm.present ? 'bg-green-600/20 text-green-400 border-green-500/50 hover:bg-green-600/30' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}
+                >
+                  <CheckCircle className={`h-4 w-4 mr-2 ${addAttendanceForm.present ? 'text-green-400' : ''}`} />
+                  Present
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setAddAttendanceForm(prev => ({ ...prev, present: false }))}
+                  className={`flex-1 border-gray-700 ${!addAttendanceForm.present ? 'bg-red-600/20 text-red-400 border-red-500/50 hover:bg-red-600/30' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}
+                >
+                  <AlertCircle className={`h-4 w-4 mr-2 ${!addAttendanceForm.present ? 'text-red-400' : ''}`} />
+                  Absent
+                </Button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="attendanceRemarks" className="text-gray-300">Remarks (Optional)</Label>
+              <textarea
+                id="attendanceRemarks"
+                maxLength={500}
+                value={addAttendanceForm.remarks}
+                onChange={(e) => setAddAttendanceForm(prev => ({ ...prev, remarks: e.target.value }))}
+                className="flex min-h-[80px] w-full rounded-md border border-gray-700 bg-gray-800 px-3 py-2 text-sm ring-offset-background placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-white resize-none"
+                placeholder="Any notes..."
+              />
+            </div>
+            
+            <DialogFooter className="pt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setIsAddAttendanceOpen(false)}
+                className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={submittingAttendance}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {submittingAttendance ? <Activity className="h-4 w-4 mr-2 animate-spin" /> : null}
+                Save Attendance
               </Button>
             </DialogFooter>
           </form>
