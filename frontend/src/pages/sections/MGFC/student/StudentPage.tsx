@@ -143,38 +143,42 @@ export default function MGFCStudentPage() {
       {/* Header */}
       <div className="bg-gradient-to-r from-green-600 to-blue-600 py-6 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16 border-4 border-white">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <Avatar className="h-20 w-20 border-4 border-white shadow-xl">
                 <AvatarImage src={avatarSafe} />
-                <AvatarFallback className="bg-gradient-to-br from-green-600 to-blue-600 text-white text-xl font-bold">
+                <AvatarFallback className="bg-gradient-to-br from-green-600 to-blue-600 text-white text-2xl font-bold">
                   {realName
                     .split(" ")
                     .map((n: string) => n[0])
                     .join("")}
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-white">
+              <div className="space-y-1.5">
+                <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white">
                   {realName}
                 </h1>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  <Badge className="bg-white/20 text-white border-white/30">
-                    ID: {rollNumber}
-                  </Badge>
-                  <Badge className="bg-white/20 text-white border-white/30">
-                    Academy: {academyName}
-                  </Badge>
-                  <Badge className="bg-white/20 text-white border-white/30">
-                    Level: {position}
-                  </Badge>
-                  <Badge className="bg-white/20 text-white border-white/30">
-                    Sports: {sports}
-                  </Badge>
+                {/* Clean inline meta text block layout directly replacing old badge row */}
+                <div className="text-sm md:text-base text-gray-100/90 font-medium flex flex-wrap items-center gap-x-4 gap-y-1">
+                  <span>
+                    <strong className="text-white font-bold">ID:</strong> {rollNumber}
+                  </span>
+                  <span className="text-white/40 hidden sm:inline select-none">•</span>
+                  <span>
+                    <strong className="text-white font-bold">Academy:</strong> {academyName}
+                  </span>
+                  <span className="text-white/40 hidden sm:inline select-none">•</span>
+                  <span>
+                    <strong className="text-white font-bold">Level:</strong> <span className="capitalize">{position}</span>
+                  </span>
+                  <span className="text-white/40 hidden sm:inline select-none">•</span>
+                  <span>
+                    <strong className="text-white font-bold">Sports:</strong> <span className="capitalize">{sports}</span>
+                  </span>
                 </div>
               </div>
             </div>
-            <div className="flex md:flex gap-2">
+            <div className="flex gap-2 self-start sm:self-auto">
               <Link to="/user/profile">
                 <Button
                   variant="outline"
@@ -243,12 +247,6 @@ export default function MGFCStudentPage() {
             >
               Fees
             </TabsTrigger>
-            {/* <TabsTrigger
-              value="achievements"
-              className="data-[state=active]:bg-green-600"
-            >
-              Achievements
-            </TabsTrigger> */}
           </TabsList>
 
           {/* Dashboard Tab */}
@@ -368,25 +366,23 @@ export default function MGFCStudentPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between p-3 bg-green-500/10 rounded-lg border border-green-500/20">
-                      <div className="flex items-center gap-3">
-                        <Trophy className="h-8 w-8 text-green-400" />
-                        <div>
-                          <p className="text-white font-semibold">Trainer</p>
-                        </div>
+                    <div className="flex items-center gap-3">
+                      <Trophy className="h-8 w-8 text-green-400" />
+                      <div>
+                        <p className="text-white font-semibold">Trainer</p>
                       </div>
-                      <span className="text-2xl font-bold text-white">{assignedTrainer}</span>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
-                      <div className="flex items-center gap-3">
-                        <Shield className="h-8 w-8 text-blue-400" />
-                        <div>
-                          <p className="text-white font-semibold">
-                            Clean Sheets
-                          </p>
-                        </div>
+                    <span className="text-2xl font-bold text-white">{assignedTrainer}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                    <div className="flex items-center gap-3">
+                      <Shield className="h-8 w-8 text-blue-400" />
+                      <div>
+                        <p className="text-white font-semibold">Contact Phone</p>
                       </div>
-                      <span className="text-2xl font-bold text-white">{assignedTrainerPhone}</span>
                     </div>
+                    <span className="text-2xl font-bold text-white">{assignedTrainerPhone}</span>
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -410,7 +406,6 @@ export default function MGFCStudentPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {/* Big Percentage Radial / Counter alternative */}
                     <div className="p-5 bg-gray-950/40 rounded-xl border border-gray-800 text-center space-y-1">
                       <p className="text-gray-400 text-xs uppercase tracking-wider font-bold">Overall Attendance Rate</p>
                       <h4 className="text-4xl font-extrabold text-white">
@@ -424,7 +419,6 @@ export default function MGFCStudentPage() {
                       />
                     </div>
 
-                    {/* Multi-counter Breakdown Grid */}
                     <div className="grid grid-cols-3 gap-2 pt-2">
                       <div className="p-3 bg-gray-900/60 border border-gray-800 rounded-xl text-center">
                         <span className="text-xs text-gray-500 font-bold block mb-0.5">Total</span>
@@ -467,7 +461,6 @@ export default function MGFCStudentPage() {
                         <p className="text-xs text-gray-500 mt-1">Schedules and tracking parameters will show here upon instructor submission</p>
                       </div>
                     ) : (
-                      // Sort dynamically to guarantee top visibility for the latest logs
                       [...studentProfile.attendance]
                         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                         .map((log: any) => (
@@ -476,7 +469,6 @@ export default function MGFCStudentPage() {
                             className="p-4 bg-gray-900/40 rounded-xl border border-gray-800 hover:border-gray-700/80 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
                           >
                             <div className="flex items-center gap-3.5 min-w-0">
-                              {/* Present / Absent Visual Anchor Marker status block */}
                               <div className={`h-10 w-10 rounded-xl flex items-center justify-center border flex-shrink-0 ${
                                 log.present 
                                   ? "bg-green-500/10 text-green-400 border-green-500/20" 
@@ -498,7 +490,6 @@ export default function MGFCStudentPage() {
                               </div>
                             </div>
 
-                            {/* Remarks Context Bubble block layout */}
                             <div className="flex-1 md:max-w-xs text-left md:text-right">
                               {log.remarks ? (
                                 <span className="inline-block bg-gray-950/40 border border-gray-800/80 text-gray-400 text-xs px-3 py-1.5 rounded-lg italic truncate max-w-full">
