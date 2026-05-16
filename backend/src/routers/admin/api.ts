@@ -33,13 +33,14 @@ import {
 
 const router = Router();
 
+router.get('/settings', getSettings);
+
 // All admin routes require authentication and admin role
 router.use(authMiddleware, adminMiddleware);
 
 // ========================
 // SETTINGS ROUTES
 // ========================
-router.get('/settings', getSettings);
 router.put('/settings', updateSettings);
 
 // ========================

@@ -32,6 +32,8 @@ import {
   LogOut,
   Download,
   Upload,
+  BarChart3,
+  Award,
 } from "lucide-react";
 import Footer from "@/components/landing/Footer";
 import { toast } from "sonner";
@@ -401,99 +403,130 @@ export default function MGFCStudentPage() {
               initial="hidden"
               animate="visible"
               variants={containerVariants}
-              className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+              className="grid grid-cols-1 lg:grid-cols-3 gap-6"
             >
-              <motion.div variants={itemVariants}>
-                <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+              {/* Summary Stats Card */}
+              <motion.div variants={itemVariants} className="lg:col-span-1">
+                <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50 h-full">
                   <CardHeader>
-                    <CardTitle className="text-white">
-                      Performance Metrics
+                    <CardTitle className="text-white flex items-center gap-2">
+                      <BarChart3 className="h-5 w-5 text-purple-400" />
+                      Evaluation Overview
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div>
-                      <div className="flex justify-between mb-2">
-                        <span className="text-gray-400">Goals Scored</span>
-                        <span className="text-white font-semibold">
-                          {/* {studentData.stats.goalsScored} */}
-                        </span>
-                      </div>
-                      <Progress value={53} className="h-2" />
+                    <div className="p-4 bg-purple-500/10 rounded-xl border border-purple-500/20 text-center">
+                      <p className="text-gray-400 text-xs uppercase tracking-wider font-bold">Total Evaluations</p>
+                      <h4 className="text-4xl font-extrabold text-white mt-1">
+                        {studentProfile?.performance?.length || 0}
+                      </h4>
                     </div>
-                    <div>
-                      <div className="flex justify-between mb-2">
-                        <span className="text-gray-400">Assists</span>
-                        <span className="text-white font-semibold">
-                          {/* {studentData.stats.assists} */}
-                        </span>
-                      </div>
-                      <Progress value={80} className="h-2" />
-                    </div>
-                    <div>
-                      <div className="flex justify-between mb-2">
-                        <span className="text-gray-400">Attendance Rate</span>
-                        <span className="text-white font-semibold">
-                          {/* {studentData.stats.attendance}% */}
-                        </span>
+
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold text-gray-400">Latest Performance Tier</p>
+                      <div className="flex items-center justify-between p-3 bg-gray-900/40 rounded-lg border border-gray-800">
+                        <span className="text-white text-sm font-medium capitalize">Current Level</span>
+                        <Badge className="bg-green-500/20 text-green-400 border-green-500/30 capitalize">
+                          {studentProfile?.level || "Beginner"}
+                        </Badge>
                       </div>
                     </div>
-                    <div>
-                      <div className="flex justify-between mb-2">
-                        <span className="text-gray-400">Skill Rating</span>
-                        <span className="text-white font-semibold flex items-center gap-1">
-                          {/* {studentData.stats.skillRating} */}
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        </span>
+
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold text-gray-400">Primary Discipline Focus</p>
+                      <div className="flex flex-wrap gap-1.5 p-3 bg-gray-900/40 rounded-lg border border-gray-800">
+                        {studentProfile?.sports?.map((sport: string, idx: number) => (
+                          <Badge key={idx} variant="secondary" className="bg-gray-800 text-gray-300 border-transparent capitalize text-xs">
+                            {sport}
+                          </Badge>
+                        )) || <span className="text-gray-500 text-xs">No active tracks</span>}
                       </div>
-                      <Progress value={90} className="h-2" />
                     </div>
                   </CardContent>
                 </Card>
               </motion.div>
 
-              <motion.div variants={itemVariants}>
-                <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
-                  <CardHeader>
-                    <CardTitle className="text-white">
-                      Season Highlights
+              {/* Dynamic Evaluation History Logs Timeline */}
+              <motion.div variants={itemVariants} className="lg:col-span-2">
+                <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50 h-full">
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-white flex items-center gap-2">
+                      <Target className="h-5 w-5 text-blue-400" />
+                      Performance Logs History
                     </CardTitle>
+                    <Badge variant="outline" className="text-gray-400 border-gray-700 text-xs font-semibold">
+                      {studentProfile?.performance?.length || 0} Records
+                    </Badge>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-green-500/10 rounded-lg border border-green-500/20">
-                      <div className="flex items-center gap-3">
-                        <Trophy className="h-8 w-8 text-green-400" />
-                        <div>
-                          <p className="text-white font-semibold">Total Wins</p>
-                          <p className="text-sm text-gray-400">This Season</p>
-                        </div>
+                  <CardContent className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+                    {!studentProfile?.performance || studentProfile.performance.length === 0 ? (
+                      <div className="text-center py-16 text-gray-500 border-2 border-dashed border-gray-800 rounded-xl">
+                        <Activity className="h-12 w-12 mx-auto mb-3 text-gray-700" />
+                        <p className="font-semibold text-gray-400">No performance records logged yet</p>
+                        <p className="text-xs text-gray-500 mt-1">Evaluations appear here once submitted by your assigned instructor</p>
                       </div>
-                      <span className="text-3xl font-bold text-white">12</span>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
-                      <div className="flex items-center gap-3">
-                        <Shield className="h-8 w-8 text-blue-400" />
-                        <div>
-                          <p className="text-white font-semibold">
-                            Clean Sheets
-                          </p>
-                          <p className="text-sm text-gray-400">
-                            Defensive Record
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
-                      <div className="flex items-center gap-3">
-                        <TrendingUp className="h-8 w-8 text-purple-400" />
-                        <div>
-                          <p className="text-white font-semibold">Win Rate</p>
-                          <p className="text-sm text-gray-400">
-                            Success Percentage
-                          </p>
-                        </div>
-                      </div>
-                      <span className="text-3xl font-bold text-white">80%</span>
-                    </div>
+                    ) : (
+                      studentProfile.performance.map((record: any) => {
+                        const calculatedPercentage = Math.min(
+                          Math.max(Math.round((record.score / record.maxScore) * 100), 0), 
+                          100
+                        );
+                        
+                        return (
+                          <div 
+                            key={record._id}
+                            className="p-4 bg-gray-900/40 rounded-xl border border-gray-800 hover:border-gray-700 transition-all space-y-3"
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="text-white font-bold text-base capitalize">{record.sport}</span>
+                                  <Badge className="bg-purple-500/10 text-purple-400 border-purple-500/20 text-[10px] uppercase font-bold tracking-wider px-1.5">
+                                    {record.category || "General"}
+                                  </Badge>
+                                </div>
+                                <p className="text-gray-500 text-xs flex items-center gap-1">
+                                  <Clock className="h-3 w-3" />
+                                  Evaluated on {new Date(record.evaluatedAt).toLocaleDateString("en-IN", {
+                                    day: "numeric", month: "short", year: "numeric"
+                                  })}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <span className="text-white font-extrabold text-lg">{record.score}</span>
+                                <span className="text-gray-500 text-xs font-bold"> / {record.maxScore}</span>
+                              </div>
+                            </div>
+
+                            {/* Score Completion Bar */}
+                            <div className="space-y-1">
+                              <Progress value={calculatedPercentage} className="h-2 bg-gray-800" />
+                              <div className="flex justify-end text-[10px] text-gray-500 font-bold">
+                                {calculatedPercentage}% Efficiency Rating
+                              </div>
+                            </div>
+
+                            {/* Remarks Box */}
+                            {record.remarks && (
+                              <div className="bg-gray-950/50 rounded-lg p-3 border border-gray-800/60">
+                                <p className="text-gray-400 text-xs italic leading-relaxed">
+                                  "{record.remarks}"
+                                </p>
+                              </div>
+                            )}
+
+                            {/* Evaluator Footer */}
+                            <div className="pt-2 border-t border-gray-800/40 flex items-center justify-between text-xs">
+                              <span className="text-gray-500 font-medium">Evaluated By:</span>
+                              <span className="text-blue-400 font-semibold flex items-center gap-1">
+                                <Award className="h-3.5 w-3.5" />
+                                {record.evaluatedBy?.name || "System Instructor"}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>

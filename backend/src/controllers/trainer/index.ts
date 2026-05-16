@@ -498,8 +498,6 @@ export class TrainerController {
 
       const student = await StudentProfile.findOne({ 
         userId: studentId, 
-        trainerId, 
-        isActive: true 
       });
 
       if (!student) {

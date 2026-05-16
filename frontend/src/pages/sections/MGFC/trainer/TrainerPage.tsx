@@ -43,6 +43,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import Footer from "@/components/landing/Footer";
 import { toast } from "sonner";
 
@@ -122,6 +132,45 @@ export default function MGFCTrainerPage() {
   const [detailedStudents, setDetailedStudents] = useState<DetailedStudent[]>([]);
   const [fetchingStudents, setFetchingStudents] = useState(false);
 
+  // Performance metrics fetched from Admin Settings
+  const [performanceMetrics, setPerformanceMetrics] = useState<string[]>([]);
+  const [isAddPerformanceOpen, setIsAddPerformanceOpen] = useState(false);
+  const [selectedStudentForPerformance, setSelectedStudentForPerformance] = useState<DetailedStudent | null>(null);
+  const [addPerformanceForm, setAddPerformanceForm] = useState({
+    sport: "",
+    category: "",
+    score: "",
+    maxScore: "100",
+    remarks: "",
+  });
+  const [submittingPerformance, setSubmittingPerformance] = useState(false);
+
+  useEffect(() => {
+    // Fetch settings for dynamic metrics
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/api/admin/settings", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        console.log("Fetched settings:", data);
+        console.log("Fetched settings:", data.data);
+        if (data.success && data.data?.performanceMetrics) {
+          setPerformanceMetrics(data.data.settings.performanceMetrics);
+          if (data.data.settings.performanceMetrics.length > 0) {
+            setAddPerformanceForm(prev => ({
+              ...prev,
+              category: data.data.settings.performanceMetrics[0]
+            }));
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load settings:", err);
+      }
+    };
+    if (token) fetchSettings();
+  }, [token]);
+
   useEffect(() => {
     if (activeTab === "students" && trainerProfile?.userId && detailedStudents.length === 0) {
       const fetchStudents = async () => {
@@ -190,6 +239,54 @@ export default function MGFCTrainerPage() {
       dispatch(logout());
       navigate("/user/auth");
       toast.success("Logged out successfully");
+    }
+  };
+
+  const handleOpenAddPerformance = (student: DetailedStudent) => {
+    setSelectedStudentForPerformance(student);
+    setAddPerformanceForm({
+      sport: student.sports?.[0] || trainerSports?.[0] || "",
+      category: performanceMetrics[0] || "general",
+      score: "",
+      maxScore: "100",
+      remarks: "",
+    });
+    setIsAddPerformanceOpen(true);
+  };
+
+  const handleAddPerformanceSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedStudentForPerformance) return;
+    
+    try {
+      setSubmittingPerformance(true);
+      const res = await fetch("http://localhost:3000/api/trainer/add-performance", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          studentId: selectedStudentForPerformance.userId,
+          sport: addPerformanceForm.sport,
+          category: addPerformanceForm.category,
+          score: Number(addPerformanceForm.score),
+          maxScore: Number(addPerformanceForm.maxScore),
+          remarks: addPerformanceForm.remarks
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Performance record added successfully!");
+        setIsAddPerformanceOpen(false);
+      } else {
+        toast.error(data.message || "Failed to add performance");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Network error adding performance");
+    } finally {
+      setSubmittingPerformance(false);
     }
   };
 
@@ -622,7 +719,10 @@ export default function MGFCTrainerPage() {
                                 <CheckCircle className="mr-2 h-4 w-4" />
                                 Add Attendance
                               </DropdownMenuItem>
-                              <DropdownMenuItem className="hover:bg-gray-700 cursor-pointer py-2 text-blue-400 focus:text-blue-300 focus:bg-gray-700">
+                              <DropdownMenuItem 
+                                className="hover:bg-gray-700 cursor-pointer py-2 text-blue-400 focus:text-blue-300 focus:bg-gray-700"
+                                onClick={() => handleOpenAddPerformance(student)}
+                              >
                                 <TrendingUp className="mr-2 h-4 w-4" />
                                 Add Performance
                               </DropdownMenuItem>
@@ -709,6 +809,111 @@ export default function MGFCTrainerPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Add Performance Dialog */}
+      <Dialog open={isAddPerformanceOpen} onOpenChange={setIsAddPerformanceOpen}>
+        <DialogContent className="bg-gray-900 border border-gray-700 text-white sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Add Performance Record</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Evaluate and add metrics for {selectedStudentForPerformance?.user?.name || 'this student'}.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleAddPerformanceSubmit} className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="sport" className="text-gray-300">Sport</Label>
+                <Input 
+                  id="sport" 
+                  required
+                  value={addPerformanceForm.sport}
+                  onChange={(e) => setAddPerformanceForm(prev => ({ ...prev, sport: e.target.value }))}
+                  className="bg-gray-800 border-gray-700 text-white focus-visible:ring-blue-500" 
+                  placeholder="e.g. Football"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="category" className="text-gray-300">Metric / Category</Label>
+                <select
+                  id="category"
+                  required
+                  value={addPerformanceForm.category}
+                  onChange={(e) => setAddPerformanceForm(prev => ({ ...prev, category: e.target.value }))}
+                  className="flex h-10 w-full items-center justify-between rounded-md border border-gray-700 bg-gray-800 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-white"
+                >
+                  {performanceMetrics.map((opt) => (
+                    <option key={opt} value={opt} className="bg-gray-800 text-white capitalize">{opt}</option>
+                  ))}
+                  {performanceMetrics.length === 0 && <option value="general" className="bg-gray-800">General</option>}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="score" className="text-gray-300">Score</Label>
+                <Input 
+                  id="score" 
+                  type="number" 
+                  required
+                  min="0"
+                  step="0.1"
+                  value={addPerformanceForm.score}
+                  onChange={(e) => setAddPerformanceForm(prev => ({ ...prev, score: e.target.value }))}
+                  className="bg-gray-800 border-gray-700 text-white focus-visible:ring-blue-500" 
+                  placeholder="0"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="maxScore" className="text-gray-300">Max Score</Label>
+                <Input 
+                  id="maxScore" 
+                  type="number" 
+                  required
+                  min="1"
+                  step="0.1"
+                  value={addPerformanceForm.maxScore}
+                  onChange={(e) => setAddPerformanceForm(prev => ({ ...prev, maxScore: e.target.value }))}
+                  className="bg-gray-800 border-gray-700 text-white focus-visible:ring-blue-500" 
+                  placeholder="100"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="remarks" className="text-gray-300">Remarks / Feedback</Label>
+              <textarea
+                id="remarks"
+                required
+                minLength={5}
+                value={addPerformanceForm.remarks}
+                onChange={(e) => setAddPerformanceForm(prev => ({ ...prev, remarks: e.target.value }))}
+                className="flex min-h-[80px] w-full rounded-md border border-gray-700 bg-gray-800 px-3 py-2 text-sm ring-offset-background placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-white resize-none"
+                placeholder="Needs improvement in..."
+              />
+            </div>
+            
+            <DialogFooter className="pt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setIsAddPerformanceOpen(false)}
+                className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={submittingPerformance}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {submittingPerformance ? <Activity className="h-4 w-4 mr-2 animate-spin" /> : null}
+                Save Record
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
