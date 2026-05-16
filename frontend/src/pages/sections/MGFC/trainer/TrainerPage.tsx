@@ -35,9 +35,29 @@ import {
   Briefcase,
   DollarSign,
   Shield,
+  MoreVertical
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import Footer from "@/components/landing/Footer";
 import { toast } from "sonner";
+
+interface DetailedStudent {
+  _id: string;
+  userId: string;
+  level: string;
+  sports: string[];
+  isActive: boolean;
+  user?: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+}
 
 interface TrainerProfile {
   _id: string;
@@ -98,6 +118,32 @@ export default function MGFCTrainerPage() {
   const [trainerProfile, setTrainerProfile] = useState<TrainerProfile | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
+
+  const [detailedStudents, setDetailedStudents] = useState<DetailedStudent[]>([]);
+  const [fetchingStudents, setFetchingStudents] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === "students" && trainerProfile?.userId && detailedStudents.length === 0) {
+      const fetchStudents = async () => {
+        try {
+          setFetchingStudents(true);
+          const res = await fetch(`http://localhost:3000/api/trainer/students?trainerId=${trainerProfile.userId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          if (data.success) {
+            setDetailedStudents(data.data.students || []);
+          }
+        } catch (err) {
+          console.error(err);
+          toast.error("Failed to load students");
+        } finally {
+          setFetchingStudents(false);
+        }
+      };
+      fetchStudents();
+    }
+  }, [activeTab, trainerProfile?.userId, token, detailedStudents.length]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -522,30 +568,66 @@ export default function MGFCTrainerPage() {
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <Users className="h-5 w-5 text-green-400" />
-                    My Students ({students.length})
+                    My Students ({detailedStudents.length || students.length})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {students.length === 0 ? (
+                  {fetchingStudents ? (
+                    <div className="flex flex-col justify-center items-center py-8 gap-2">
+                      <Activity className="h-6 w-6 text-green-500 animate-spin" />
+                      <p className="text-gray-400 text-xs">Loading students...</p>
+                    </div>
+                  ) : detailedStudents.length === 0 ? (
                     <p className="text-gray-400 text-sm">No students assigned yet.</p>
                   ) : (
                     <div className="space-y-3">
-                      {students.map((studentId, index) => (
+                      {detailedStudents.map((student, index) => (
                         <div
-                          key={index}
+                          key={student._id || index}
                           className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 flex items-center justify-between"
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-4">
                             <Avatar className="h-10 w-10">
                               <AvatarFallback className="bg-gradient-to-br from-blue-600 to-green-600 text-white text-sm font-bold">
-                                S{index + 1}
+                                {(student.user?.name || "S").charAt(0).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="text-white font-medium">Student #{index + 1}</p>
-                              <p className="text-gray-400 text-xs">{String(studentId).substring(0, 12)}...</p>
+                              <p className="text-white font-medium text-base mb-0.5">
+                                {student.user?.name || `Student #${index + 1}`}
+                              </p>
+                              <div className="flex items-center gap-2">
+                                <p className="text-gray-400 text-xs">{student.user?.email}</p>
+                                {student.level && (
+                                  <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-[10px] px-1.5 py-0 h-4 uppercase">
+                                    {student.level}
+                                  </Badge>
+                                )}
+                              </div>
                             </div>
                           </div>
+                          
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-full">
+                                <MoreVertical className="h-5 w-5" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700 text-white min-w-[160px]">
+                              <DropdownMenuItem className="hover:bg-gray-700 cursor-pointer py-2">
+                                <FileText className="mr-2 h-4 w-4 text-gray-400" />
+                                View Profile
+                              </DropdownMenuItem>
+                              <DropdownMenuItem className="hover:bg-gray-700 cursor-pointer py-2 text-green-400 focus:text-green-300 focus:bg-gray-700">
+                                <CheckCircle className="mr-2 h-4 w-4" />
+                                Add Attendance
+                              </DropdownMenuItem>
+                              <DropdownMenuItem className="hover:bg-gray-700 cursor-pointer py-2 text-blue-400 focus:text-blue-300 focus:bg-gray-700">
+                                <TrendingUp className="mr-2 h-4 w-4" />
+                                Add Performance
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       ))}
                     </div>

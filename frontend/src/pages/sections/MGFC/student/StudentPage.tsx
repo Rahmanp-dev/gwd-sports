@@ -50,6 +50,9 @@ export default function MGFCStudentPage() {
   const [studentProfile, setStudentProfile] = useState<any>(null);
   const [profileLoading, setProfileLoading] = useState(true);
 
+  const assignedTrainer = studentProfile?.trainers?.[0]?.name || "Not Assigned";
+  const assignedTrainerPhone = studentProfile?.trainers?.[0]?.phone || "Not Assigned";
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -358,11 +361,30 @@ export default function MGFCStudentPage() {
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <Activity className="h-5 w-5 text-purple-400" />
-                    Weekly Training Schedule
+                    Trainer
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-gray-400 text-sm">No training schedule available.</p>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                      <div className="flex items-center gap-3">
+                        <Trophy className="h-8 w-8 text-green-400" />
+                        <div>
+                          <p className="text-white font-semibold">Trainer</p>
+                        </div>
+                      </div>
+                      <span className="text-2xl font-bold text-white">{assignedTrainer}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                      <div className="flex items-center gap-3">
+                        <Shield className="h-8 w-8 text-blue-400" />
+                        <div>
+                          <p className="text-white font-semibold">
+                            Clean Sheets
+                          </p>
+                        </div>
+                      </div>
+                      <span className="text-2xl font-bold text-white">{assignedTrainerPhone}</span>
+                    </div>
                 </CardContent>
               </Card>
             </motion.div>
