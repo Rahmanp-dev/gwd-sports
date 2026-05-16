@@ -2,19 +2,16 @@ TODO:
 
 P0: 
 
-- [ ] Improve payment transaction schema
-- [ ] Performance Management - Trainer can add performance details of students under him 
 - [ ] Performance Metrics: tactical, technical, SSG (Small Sided Games), and match play
-- [ ] Make the metrics editable in Admin Panel 
-- [ ] Make the academies names dynamic 
-- [ ] Student, trainer interactions - check the flow
+- [ ] The metrics not showing up in Trainer Page during the performance add to the student
+- [ ] Add View Student Performance in Trainer Page 
+- [ ] Add View Student Fees in Trainer Page 
+- [ ] Add View Student Kits in Trainer Page 
+- [ ] Add View Student Attendance in Trainer Page 
+- [ ] Make the academies names dynamic - like applying the name across the application  
 - [ ] Student, trainer, admin interactions - check the flow
-- [ ] Grading and Feedback: Trainers provide numerical ratings and written comments (e.g., "very good" or "keep up") for specific skills such as attacking, defending, or goalkeeping
-- [ ] Join Academy - Admin can make a trainer join an academy; Admin can make a student join an academy; Trainer can make a student join his academy
-- [ ] Leave Academy - Admin can make a trainer leave an academy; Admin can make a student leave an academy; Trainer can make a student leave his academy
-- [ ] Students under Trainer - Admin can view all students under a trainer; Trainer can view all students under him
-- [ ] Attendance Management - Trainer can mark attendance of students under him for an event; Trainer
-- [ ] Fees Management - Admin can add fees details of students under an academy; Trainer can view fees details of students under him
+- [ ] Attendance Management - Trainer can mark attendance of students under him for an event; 
+- [ ] Fees Management - Admin can add fees details of students under an academy
 - [ ] Event Payment invoice 
 - [ ] Fee Payment invoice 
 - [ ] Too many authentication attempts, please try again later - comes up on 1st time only 
@@ -22,11 +19,9 @@ P0:
 P1:
 
 - [ ] only student can access student dashboard; only trainer can access trainer dashboard
-- [ ] Proper linkage of academy, trainer, student profiles 
 - [ ] if (!studentProfile) in frontend\src\components\user\student\StudentProfile.tsx fix / check this
-- [ ] Check view student - it is misbehaving - failed to load student profile
-- [ ] Check edit student 
-- [ ] Fix academy management - Acad members
+- [ ] Check view student - it is misbehaving - failed to load student profile in admin panel
+- [ ] Check edit student in admin panel
 - [ ] back to home isnt trigering the animation
 - [ ] Academy Expansion: The system must support five new branches starting in February (locations mentioned include Mumbai, Punjab, Chennai, and Bangalore).
 - [ ] Centralized Domain: All branches should be managed under one domain rather than separate websites
@@ -143,3 +138,14 @@ Done ✅
 - [x] add a new /gallery
 - [x] Show real data of student in student page
 - [x] Show real data of student in trainer page
+- [x] Improve payment transaction schema
+- [x] Performance Management - Trainer can add performance details of students under him 
+- [x] Make the metrics editable in Admin Panel 
+- [x] Student, trainer interactions - check the flow
+- [x] Grading and Feedback: Trainers provide numerical ratings and written comments (e.g., "very good" or "keep up") for specific skills such as attacking, defending, or goalkeeping
+- [x] Join Academy - Admin can make a trainer join an academy; Admin can make a student join an academy; Trainer can make a student join his academy
+- [x] Leave Academy - Admin can make a trainer leave an academy; Admin can make a student leave an academy; Trainer can make a student leave his academy
+- [x] Students under Trainer - Admin can view all students under a trainer; Trainer can view all students under him
+- [x] Proper linkage of academy, trainer, student profiles 
+- [x] Fix academy management - Acad members
+- [x] remove mock data
