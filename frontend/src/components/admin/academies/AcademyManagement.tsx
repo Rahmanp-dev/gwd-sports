@@ -17,6 +17,7 @@ import type {
 import { academyService } from "@/services/academyService";
 import { Plus } from "lucide-react";
 import { toastUtils } from "@/utils/toast";
+import { TrainerStudentRelations } from "./TrainerStudentRelations";
 
 export const AcademyManagement: React.FC = () => {
   const [academies, setAcademies] = useState<Academy[]>([]);
@@ -37,30 +38,23 @@ export const AcademyManagement: React.FC = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
-  // Extract specific error message from API error response
+  // Trainer–Student Relations dialog
+  const [showRelations, setShowRelations] = useState(false);
+  const [relationsAcademy, setRelationsAcademy] = useState<{ id: string; name: string } | null>(null);
+
   const extractErrorMessage = (error: any): string => {
     const response = error?.response || error;
     const data = response?.data || response;
 
     if (data?.errors && Array.isArray(data.errors) && data.errors.length > 0) {
       const firstError = data.errors[0];
-      if (firstError?.message) {
-        return firstError.message;
-      }
+      if (firstError?.message) return firstError.message;
     }
-
-    if (data?.message && data.message !== "Invalid request data") {
-      return data.message;
-    }
-
-    if (error?.message && error.message !== "Invalid request data") {
-      return error.message;
-    }
-
+    if (data?.message && data.message !== "Invalid request data") return data.message;
+    if (error?.message && error.message !== "Invalid request data") return error.message;
     return "An unexpected error occurred. Please check your input and try again.";
   };
 
-  // Fetch academies based on filters
   const fetchAcademies = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -76,63 +70,47 @@ export const AcademyManagement: React.FC = () => {
         });
       }
     } catch (error: any) {
-      const errorMessage = extractErrorMessage(error);
-      toastUtils.error("Failed to fetch academies", errorMessage);
+      toastUtils.error("Failed to fetch academies", extractErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
   }, [filters]);
 
-  // Initial data fetch
   useEffect(() => {
     fetchAcademies();
   }, [fetchAcademies]);
 
-  // Handle create academy
   const handleCreateAcademy = async (data: AcademyFormData) => {
     setIsLoading(true);
     try {
       await academyService.createAcademy(data);
-      toastUtils.success(
-        "Academy created successfully",
-        "The academy has been created.",
-      );
-
+      toastUtils.success("Academy created successfully", "The academy has been created.");
       setShowForm(false);
-      fetchAcademies(); // Refresh academy list
+      fetchAcademies();
     } catch (error: any) {
-      const errorMessage = extractErrorMessage(error);
-      toastUtils.error("Failed to create academy", errorMessage);
+      toastUtils.error("Failed to create academy", extractErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle update academy
   const handleUpdateAcademy = async (data: AcademyFormData) => {
     if (!selectedAcademy) return;
-
     setIsLoading(true);
     try {
       await academyService.updateAcademy(selectedAcademy._id, data);
-      toastUtils.success(
-        "Academy updated successfully",
-        "The academy information has been updated.",
-      );
-
+      toastUtils.success("Academy updated successfully", "The academy information has been updated.");
       setShowForm(false);
       setSelectedAcademy(null);
       setIsEditMode(false);
-      fetchAcademies(); // Refresh academy list
+      fetchAcademies();
     } catch (error: any) {
-      const errorMessage = extractErrorMessage(error);
-      toastUtils.error("Failed to update academy", errorMessage);
+      toastUtils.error("Failed to update academy", extractErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle view academy details
   const handleViewAcademy = async (academyId: string) => {
     try {
       const response = await academyService.getAcademyById(academyId);
@@ -141,12 +119,10 @@ export const AcademyManagement: React.FC = () => {
         setShowDetails(true);
       }
     } catch (error: any) {
-      const errorMessage = extractErrorMessage(error);
-      toastUtils.error("Failed to fetch academy details", errorMessage);
+      toastUtils.error("Failed to fetch academy details", extractErrorMessage(error));
     }
   };
 
-  // Handle edit academy
   const handleEditAcademy = async (academyId: string) => {
     try {
       const response = await academyService.getAcademyById(academyId);
@@ -157,40 +133,35 @@ export const AcademyManagement: React.FC = () => {
         setShowDetails(false);
       }
     } catch (error: any) {
-      const errorMessage = extractErrorMessage(error);
-      toastUtils.error("Failed to fetch academy details", errorMessage);
+      toastUtils.error("Failed to fetch academy details", extractErrorMessage(error));
     }
   };
 
-  // Handle delete academy
   const handleDeleteAcademy = async (academyId: string) => {
-    if (!confirm("Are you sure you want to delete this academy?")) {
-      return;
-    }
-
+    if (!confirm("Are you sure you want to delete this academy?")) return;
     setIsLoading(true);
     try {
       await academyService.deleteAcademy(academyId);
-      toastUtils.success(
-        "Academy deleted successfully",
-        "The academy has been removed.",
-      );
-
-      fetchAcademies(); // Refresh academy list
+      toastUtils.success("Academy deleted successfully", "The academy has been removed.");
+      fetchAcademies();
     } catch (error: any) {
-      const errorMessage = extractErrorMessage(error);
-      toastUtils.error("Failed to delete academy", errorMessage);
+      toastUtils.error("Failed to delete academy", extractErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Open trainer–student relations for a specific academy
+  const handleManageRelations = (academy: Academy) => {
+    setRelationsAcademy({ id: academy._id, name: academy.name });
+    setShowRelations(true);
+  };
+
   return (
     <div className="space-y-6">
-      {/* Header with actions */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between gap-3">
         <h2 className="text-2xl font-bold">Academy Management</h2>
-
         <div className="flex gap-2">
           <Button
             onClick={() => {
@@ -206,13 +177,14 @@ export const AcademyManagement: React.FC = () => {
         </div>
       </div>
 
-      {/* Academy Table */}
+      {/* Academy Table — pass the new handler down */}
       <AcademyTable
         academies={academies}
         isLoading={isLoading}
         onViewAcademy={handleViewAcademy}
         onEditAcademy={handleEditAcademy}
         onDeleteAcademy={handleDeleteAcademy}
+        onManageRelations={handleManageRelations}
         onFilterChange={setFilters}
         currentFilters={filters}
         pagination={pagination}
@@ -273,6 +245,19 @@ export const AcademyManagement: React.FC = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Trainer–Student Relations Dialog */}
+      {relationsAcademy && (
+        <TrainerStudentRelations
+          academyId={relationsAcademy.id}
+          academyName={relationsAcademy.name}
+          isOpen={showRelations}
+          onClose={() => {
+            setShowRelations(false);
+            setRelationsAcademy(null);
+          }}
+        />
+      )}
     </div>
   );
 };

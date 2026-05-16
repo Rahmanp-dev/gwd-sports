@@ -788,12 +788,12 @@ export class AdminTrainerController {
         });
       }
 
-      const trainer = await TrainerProfile.findById(id)
+      const trainer = await TrainerProfile.findOne({ userId: id })
         .populate('userId', 'name email phone')
         .populate('academyId', 'name location')
         .populate('students', 'name email phone');
 
-      if (!trainer || !trainer.isActive) {
+      if (!trainer) {
         return res.status(404).json({
           success: false,
           message: 'Trainer not found'

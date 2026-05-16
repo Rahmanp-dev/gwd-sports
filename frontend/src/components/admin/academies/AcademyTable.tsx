@@ -20,7 +20,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Academy, AcademyFilters } from "@/services/academyService";
-import { formatDate } from "@/utils/helpers";
 import {
   Edit,
   MoreHorizontal,
@@ -29,6 +28,7 @@ import {
   Trash2,
   Building,
   Users,
+  Network,
 } from "lucide-react";
 import { SPORTS_LIST } from "@/utils/constants";
 import { AcademyMemberManagement } from "./AcademyMemberManagement";
@@ -39,6 +39,7 @@ interface AcademyTableProps {
   onViewAcademy: (academyId: string) => void;
   onEditAcademy: (academyId: string) => void;
   onDeleteAcademy: (academyId: string) => void;
+  onManageRelations: (academy: Academy) => void; // FIX: Changed type signature from string to Academy
   onFilterChange: (filters: AcademyFilters) => void;
   currentFilters: AcademyFilters;
   pagination: {
@@ -56,6 +57,7 @@ export const AcademyTable: React.FC<AcademyTableProps> = ({
   onViewAcademy,
   onEditAcademy,
   onDeleteAcademy,
+  onManageRelations,
   onFilterChange,
   currentFilters,
   pagination,
@@ -273,6 +275,12 @@ export const AcademyTable: React.FC<AcademyTableProps> = ({
                         >
                           <Users className="mr-2 h-4 w-4" />
                           Manage Academy
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => onManageRelations(academy)}
+                        >
+                          <Network className="mr-2 h-4 w-4" />
+                          Manage Relations
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem

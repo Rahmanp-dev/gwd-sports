@@ -226,7 +226,7 @@ export class TrainerController {
   // Get trainer students
   static async getTrainerStudents(req: AuthRequest, res: Response) {
     try {
-      const trainerId = req.user!._id;
+      const trainerId = req.query.trainerId || req.body.trainerId;
       const {
         page = 1,
         limit = 10,
@@ -238,32 +238,105 @@ export class TrainerController {
       const limitNum = parseInt(limit as string);
       const skip = (pageNum - 1) * limitNum;
 
-      const filter: any = { trainers: trainerId, isActive: true };
-      if (level) filter.level = level;
+      // Step 1: Find the raw trainer profile to read the mapped student user IDs
+      const trainerProfile = await TrainerProfile.findOne({ userId: trainerId });
 
-      let aggregatePipeline: any[] = [
-        { $match: filter },
-        {
-          $lookup: {
-            from: 'users',
-            localField: 'userId',
-            foreignField: '_id',
-            as: 'user'
-          }
-        },
-        { $unwind: '$user' }
-      ];
+      if (!trainerProfile) {
+        return res.status(404).json({
+          success: false,
+          message: 'Trainer profile not found'
+        });
+      }
 
-      if (search) {
-        aggregatePipeline.push({
-          $match: {
-            $or: [
-              { 'user.name': { $regex: search, $options: 'i' } },
-              { 'user.email': { $regex: search, $options: 'i' } }
-            ]
+      // Safe deep parsing to extract structural BSON ObjectIds from the array
+      const studentUserIds = (trainerProfile.students || []).map((id: any) => {
+        try {
+          return new mongoose.Types.ObjectId(id._id ? id._id.toString() : id.toString());
+        } catch (e) {
+          return null;
+        }
+      }).filter(Boolean);
+
+      if (studentUserIds.length === 0) {
+        return res.json({
+          success: true,
+          data: {
+            students: [],
+            pagination: {
+              currentPage: pageNum,
+              totalPages: 0,
+              totalStudents: 0,
+              hasNextPage: false,
+              hasPrevPage: false
+            }
           }
         });
       }
+
+      // Step 2: Build the query targeting the core User directory first
+      const matchStage: any = {
+        _id: { $in: studentUserIds }
+      };
+
+      if (search) {
+        matchStage.$or = [
+          { name: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } }
+        ];
+      }
+
+      // Step 3: Chain Left-Joins using dynamic database collection mapping references
+      const aggregatePipeline: any[] = [
+        { $match: matchStage },
+        {
+          $lookup: {
+            from: StudentProfile.collection.name,
+            localField: '_id',
+            foreignField: 'userId',
+            as: 'profile'
+          }
+        },
+        {
+          $unwind: {
+            path: '$profile',
+            preserveNullAndEmptyArrays: true
+          }
+        }
+      ];
+
+      if (level) {
+        aggregatePipeline.push({
+          $match: { 'profile.level': level }
+        });
+      }
+
+      // Project stage updated to include deep arrays (attendance, performance)
+      aggregatePipeline.push({
+        $project: {
+          _id: { $ifNull: ['$profile._id', '$_id'] },
+          userId: '$_id',
+          level: { $ifNull: ['$profile.level', 'unassigned'] },
+          sports: { $ifNull: ['$profile.sports', '$sports'] },
+          enrollmentDate: { $ifNull: ['$profile.enrollmentDate', '$createdAt'] },
+          totalFeesPaid: { $ifNull: ['$profile.totalFeesPaid', 0] },
+          outstandingFees: { $ifNull: ['$profile.outstandingFees', 0] },
+          isActive: { $ifNull: ['$profile.isActive', true] },
+          academyId: { $ifNull: ['$profile.academyId', null] },
+          
+          // Deep Array Hydration
+          attendance: { $ifNull: ['$profile.attendance', []] },
+          performance: { $ifNull: ['$profile.performance', []] },
+          
+          user: {
+            _id: '$_id',
+            name: '$name',
+            email: '$email',
+            phone: '$phone',
+            sports: '$sports',
+            isActive: '$isActive'
+          }
+        }
+      });
 
       aggregatePipeline.push(
         { $sort: { enrollmentDate: -1 } },
@@ -271,11 +344,39 @@ export class TrainerController {
         { $limit: limitNum }
       );
 
-      const [students, total] = await Promise.all([
-        StudentProfile.aggregate(aggregatePipeline),
-        StudentProfile.countDocuments(filter)
+      // Construct a mirroring count pipeline matching filtering criteria
+      const countPipeline: any[] = [
+        { $match: matchStage },
+        {
+          $lookup: {
+            from: StudentProfile.collection.name,
+            localField: '_id',
+            foreignField: 'userId',
+            as: 'profile'
+          }
+        },
+        {
+          $unwind: {
+            path: '$profile',
+            preserveNullAndEmptyArrays: true
+          }
+        }
+      ];
+
+      if (level) {
+        countPipeline.push({
+          $match: { 'profile.level': level }
+        });
+      }
+      countPipeline.push({ $count: 'total' });
+
+      // Run database operations concurrently
+      const [students, countResult] = await Promise.all([
+        User.aggregate(aggregatePipeline),
+        User.aggregate(countPipeline)
       ]);
 
+      const total = countResult[0]?.total ?? 0;
       const totalPages = Math.ceil(total / limitNum);
 
       res.json({
@@ -509,13 +610,20 @@ export class TrainerController {
   // Add student to trainer
   static async addStudentToTrainer(req: AuthRequest, res: Response) {
     try {
-      const trainerId = req.user!._id as mongoose.Types.ObjectId;
-      const { studentId } = req.body;
+      // const trainerId = req.user!._id as mongoose.Types.ObjectId;
+      const { studentId, trainerId } = req.body;
 
       if (!mongoose.Types.ObjectId.isValid(studentId)) {
         return res.status(400).json({
           success: false,
           message: 'Invalid student ID'
+        });
+      }
+
+      if (!mongoose.Types.ObjectId.isValid(trainerId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid trainer ID'
         });
       }
 
@@ -530,7 +638,7 @@ export class TrainerController {
 
       // Get student profile
       const studentProfile = await StudentProfile.findOne({ userId: studentId });
-      if (!studentProfile || !studentProfile.isActive) {
+      if (!studentProfile) {
         return res.status(404).json({
           success: false,
           message: 'Student not found'
@@ -564,6 +672,83 @@ export class TrainerController {
       });
     } catch (error) {
       logger.error('Add student to trainer error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
+  // Remove student from trainer 
+  static async removeStudentFromTrainer(req: AuthRequest, res: Response) {
+    try {
+      const { studentId, trainerId } = req.body;
+
+      if (!mongoose.Types.ObjectId.isValid(studentId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid student ID'
+        });
+      }
+
+      if (!mongoose.Types.ObjectId.isValid(trainerId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid trainer ID'
+        });
+      }
+
+      // Get trainer profile
+      const trainerProfile = await TrainerProfile.findOne({ userId: trainerId });
+      if (!trainerProfile) {
+        return res.status(404).json({
+          success: false,
+          message: 'Trainer profile not found'
+        });
+      }
+
+      // Get student profile
+      const studentProfile = await StudentProfile.findOne({ userId: studentId });
+      if (!studentProfile) {
+        return res.status(404).json({
+          success: false,
+          message: 'Student not found'
+        });
+      }
+
+      // Check if student is actually assigned to this trainer
+      const isAssigned = studentProfile.trainers?.some(t => t.toString() === trainerId.toString());
+      if (!isAssigned) {
+        return res.status(400).json({
+          success: false,
+          message: 'Student is not assigned to this trainer'
+        });
+      }
+
+      // Remove trainer from student's trainers array
+      if (studentProfile.trainers) {
+        studentProfile.trainers = studentProfile.trainers.filter(
+          t => t.toString() !== trainerId.toString()
+        );
+        await studentProfile.save();
+      }
+
+      // Remove student from trainer's students array
+      if (trainerProfile.students.includes(studentId)) {
+        trainerProfile.students = trainerProfile.students.filter(
+          s => s.toString() !== studentId.toString()
+        );
+        await trainerProfile.save();
+      }
+
+      logger.info(`Student unassigned from trainer by admin/system: ${req.user!.email}`);
+
+      res.json({
+        success: true,
+        message: 'Student removed from trainer successfully'
+      });
+    } catch (error) {
+      logger.error('Remove student from trainer error:', error);
       res.status(500).json({
         success: false,
         message: 'Internal server error'

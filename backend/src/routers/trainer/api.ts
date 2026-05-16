@@ -22,6 +22,7 @@ router.put('/profile', roleMiddleware(['trainer', 'admin']), TrainerController.u
 // Student management
 router.get('/students', roleMiddleware(['trainer', 'admin']), validateTrainerStudentsQuery, TrainerController.getTrainerStudents);
 router.post('/add-student', roleMiddleware(['trainer', 'admin']), validateAddStudentToTrainer, TrainerController.addStudentToTrainer);
+router.post('/remove-student', roleMiddleware(['trainer', 'admin']), validateAddStudentToTrainer, TrainerController.removeStudentFromTrainer);
 
 // Attendance management
 router.post('/mark-attendance', roleMiddleware(['trainer', 'admin']), validateMarkAttendance, TrainerController.markAttendance);
