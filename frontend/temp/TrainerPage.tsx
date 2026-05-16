@@ -329,46 +329,28 @@ export default function MGFCTrainerPage() {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 bg-gray-800 border border-gray-700">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 bg-gray-800 border border-gray-700">
             <TabsTrigger
               value="overview"
               className="data-[state=active]:bg-blue-600"
             >
-              Overview
-            </TabsTrigger>
-            <TabsTrigger
-              value="players"
-              className="data-[state=active]:bg-blue-600"
-            >
-              Players
+              Students
             </TabsTrigger>
             <TabsTrigger
               value="teams"
               className="data-[state=active]:bg-blue-600"
             >
-              Teams
+              Attendance
             </TabsTrigger>
             <TabsTrigger
               value="training"
               className="data-[state=active]:bg-blue-600"
             >
-              Training
-            </TabsTrigger>
-            <TabsTrigger
-              value="matches"
-              className="data-[state=active]:bg-blue-600"
-            >
-              Matches
-            </TabsTrigger>
-            <TabsTrigger
-              value="reports"
-              className="data-[state=active]:bg-blue-600"
-            >
-              Reports
+              Performance
             </TabsTrigger>
           </TabsList>
 
-          {/* Overview Tab */}
+          {/* Students Tab */}
           <TabsContent value="overview" className="space-y-6">
             {/* Stats Cards */}
             <motion.div
@@ -743,148 +725,6 @@ export default function MGFCTrainerPage() {
             </motion.div>
           </TabsContent>
 
-          {/* Players Tab */}
-          <TabsContent value="players" className="space-y-6">
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={containerVariants}
-            >
-              <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
-                <CardHeader>
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <CardTitle className="text-white">All Players</CardTitle>
-                    <div className="flex gap-2">
-                      <div className="relative flex-1 md:w-64">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                          placeholder="Search players..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="pl-10 bg-gray-800 border-gray-700"
-                        />
-                      </div>
-                      <Button variant="outline" className="border-gray-700">
-                        <Filter className="h-4 w-4 mr-2" />
-                        Filter
-                      </Button>
-                      <Button className="bg-gradient-to-r from-blue-600 to-green-600">
-                        <UserPlus className="h-4 w-4 mr-2" />
-                        Add Player
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-gray-700">
-                          <th className="text-left p-4 text-gray-400 font-semibold">
-                            Player
-                          </th>
-                          <th className="text-left p-4 text-gray-400 font-semibold">
-                            Roll No
-                          </th>
-                          <th className="text-left p-4 text-gray-400 font-semibold">
-                            Position
-                          </th>
-                          <th className="text-left p-4 text-gray-400 font-semibold">
-                            Attendance
-                          </th>
-                          <th className="text-left p-4 text-gray-400 font-semibold">
-                            Performance
-                          </th>
-                          <th className="text-left p-4 text-gray-400 font-semibold">
-                            Progress
-                          </th>
-                          <th className="text-left p-4 text-gray-400 font-semibold">
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {trainerData.recentPlayers.map((player, index) => (
-                          <tr
-                            key={index}
-                            className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors"
-                          >
-                            <td className="p-4">
-                              <div className="flex items-center gap-3">
-                                <Avatar className="h-10 w-10">
-                                  <AvatarFallback className="bg-gradient-to-br from-blue-600 to-green-600 text-white">
-                                    {player.name
-                                      .split(" ")
-                                      .map((n) => n[0])
-                                      .join("")}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <span className="text-white font-medium">
-                                  {player.name}
-                                </span>
-                              </div>
-                            </td>
-                            <td className="p-4 text-gray-400">
-                              {player.rollNo}
-                            </td>
-                            <td className="p-4">
-                              <Badge
-                                variant="outline"
-                                className="border-gray-600"
-                              >
-                                {player.position}
-                              </Badge>
-                            </td>
-                            <td className="p-4">
-                              <div className="flex items-center gap-2">
-                                <Progress
-                                  value={player.attendance}
-                                  className="h-2 w-16"
-                                />
-                                <span className="text-white text-sm">
-                                  {player.attendance}%
-                                </span>
-                              </div>
-                            </td>
-                            <td className="p-4">
-                              <Badge
-                                className={`${
-                                  player.performance === "Excellent"
-                                    ? "bg-green-500/10 text-green-400 border-green-500/20"
-                                    : player.performance === "Very Good"
-                                      ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
-                                      : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
-                                }`}
-                              >
-                                {player.performance}
-                              </Badge>
-                            </td>
-                            <td className="p-4">
-                              <span className="text-green-400 font-semibold flex items-center gap-1">
-                                <TrendingUp className="h-4 w-4" />
-                                {player.recentProgress}
-                              </span>
-                            </td>
-                            <td className="p-4">
-                              <div className="flex gap-2">
-                                <Button size="sm" variant="ghost">
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button size="sm" variant="ghost">
-                                  <FileText className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </TabsContent>
-
           {/* Teams Tab */}
           <TabsContent value="teams" className="space-y-6">
             <motion.div
@@ -1161,130 +1001,6 @@ export default function MGFCTrainerPage() {
                   ))}
                 </CardContent>
               </Card>
-            </motion.div>
-          </TabsContent>
-
-          {/* Reports Tab */}
-          <TabsContent value="reports" className="space-y-6">
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={containerVariants}
-              className="grid grid-cols-1 md:grid-cols-2 gap-6"
-            >
-              <motion.div variants={itemVariants}>
-                <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
-                  <CardHeader>
-                    <CardTitle className="text-white">
-                      Generate Report
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <label className="text-sm text-gray-400">
-                        Report Type
-                      </label>
-                      <select className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white">
-                        <option>Player Performance Report</option>
-                        <option>Team Statistics Report</option>
-                        <option>Attendance Report</option>
-                        <option>Training Progress Report</option>
-                        <option>Match Analysis Report</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-sm text-gray-400">
-                        Time Period
-                      </label>
-                      <select className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white">
-                        <option>Last Week</option>
-                        <option>Last Month</option>
-                        <option>Last Quarter</option>
-                        <option>Custom Range</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-sm text-gray-400">
-                        Select Team
-                      </label>
-                      <select className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white">
-                        <option>All Teams</option>
-                        <option>Blue Dragons</option>
-                        <option>Red Eagles</option>
-                        <option>Green Strikers</option>
-                      </select>
-                    </div>
-
-                    <Button className="w-full bg-gradient-to-r from-blue-600 to-green-600">
-                      <Download className="mr-2 h-4 w-4" />
-                      Generate Report
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-
-              <motion.div variants={itemVariants}>
-                <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
-                  <CardHeader>
-                    <CardTitle className="text-white">Recent Reports</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {[
-                      {
-                        title: "Monthly Performance Report",
-                        date: "Nov 1, 2024",
-                        type: "Performance",
-                      },
-                      {
-                        title: "Blue Dragons Team Stats",
-                        date: "Oct 28, 2024",
-                        type: "Statistics",
-                      },
-                      {
-                        title: "October Attendance Summary",
-                        date: "Oct 31, 2024",
-                        type: "Attendance",
-                      },
-                    ].map((report, index) => (
-                      <div
-                        key={index}
-                        className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-blue-500/50 transition-all cursor-pointer"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="text-white font-semibold mb-1">
-                              {report.title}
-                            </h4>
-                            <div className="flex items-center gap-2">
-                              <Badge
-                                variant="outline"
-                                className="text-xs border-gray-600"
-                              >
-                                {report.type}
-                              </Badge>
-                              <span className="text-xs text-gray-400">
-                                {report.date}
-                              </span>
-                            </div>
-                          </div>
-                          <Button size="sm" variant="ghost">
-                            <Download className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-
-                    <Button
-                      variant="outline"
-                      className="w-full border-gray-700"
-                    >
-                      View All Reports
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
             </motion.div>
           </TabsContent>
         </Tabs>

@@ -98,6 +98,103 @@ export default function MGFCStudentPage() {
     }
   };
 
+  // Mock student data
+  const studentData = {
+    name: "Rahul Sharma",
+    rollNumber: "MG2024001",
+    class: "Class 10-A",
+    position: "Midfielder",
+    jerseyNumber: "10",
+    avatar: "/api/placeholder/150/150",
+    teamName: "Blue Dragons",
+    stats: {
+      matchesPlayed: 15,
+      goalsScored: 8,
+      assists: 12,
+      cleanSheets: 5,
+      attendance: 95,
+      skillRating: 4.5,
+    },
+    achievements: [
+      { title: "Best Player of the Month", date: "October 2024", icon: "≡ƒÅå" },
+      { title: "Hat-trick Hero", date: "September 2024", icon: "ΓÜ╜" },
+      { title: "Perfect Attendance", date: "August 2024", icon: "Γ£ô" },
+      { title: "Team Captain", date: "July 2024", icon: "≡ƒææ" },
+    ],
+    upcomingMatches: [
+      {
+        opponent: "Red Eagles",
+        date: "Nov 15, 2024",
+        time: "4:00 PM",
+        venue: "Main Ground",
+        type: "League Match",
+      },
+      {
+        opponent: "Green Strikers",
+        date: "Nov 22, 2024",
+        time: "3:30 PM",
+        venue: "City Stadium",
+        type: "Cup Quarter-Final",
+      },
+      {
+        opponent: "Yellow Thunders",
+        date: "Nov 29, 2024",
+        time: "4:00 PM",
+        venue: "Main Ground",
+        type: "League Match",
+      },
+    ],
+    trainingSchedule: [
+      {
+        day: "Monday",
+        time: "4:00 PM - 6:00 PM",
+        focus: "Technical Skills",
+        coach: "Coach Patel",
+      },
+      {
+        day: "Wednesday",
+        time: "4:00 PM - 6:00 PM",
+        focus: "Tactical Training",
+        coach: "Coach Kumar",
+      },
+      {
+        day: "Friday",
+        time: "4:00 PM - 6:00 PM",
+        focus: "Physical Fitness",
+        coach: "Coach Singh",
+      },
+      {
+        day: "Saturday",
+        time: "9:00 AM - 11:00 AM",
+        focus: "Match Practice",
+        coach: "Head Coach",
+      },
+    ],
+    recentMatches: [
+      {
+        opponent: "White Knights",
+        result: "Won",
+        score: "3-1",
+        date: "Nov 8, 2024",
+        playerPerformance: "Excellent",
+      },
+      {
+        opponent: "Purple Panthers",
+        result: "Won",
+        score: "2-0",
+        date: "Nov 1, 2024",
+        playerPerformance: "Good",
+      },
+      {
+        opponent: "Orange Tigers",
+        result: "Draw",
+        score: "1-1",
+        date: "Oct 25, 2024",
+        playerPerformance: "Average",
+      },
+    ],
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -118,17 +215,16 @@ export default function MGFCStudentPage() {
   if (profileLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center text-white">
-        <div className="flex flex-col items-center">
-          <Activity className="h-10 w-10 text-green-500 animate-spin mb-4" />
-          <p>Loading Profile...</p>
-        </div>
+        Loading...
       </div>
     );
   }
 
   const realName = user?.name || "Student";
-  const rollNumber = studentProfile?._id?.substring(0, 8).toUpperCase() || "N/A";
-  const academyName = studentProfile?.academyId?.name || "Not in any academy";
+  const rollNumber =
+    studentProfile?._id?.substring(0, 8).toUpperCase() || "N/A";
+  const academyName =
+    studentProfile?.academyId?.name || "Not assigned to any academy";
   const position = studentProfile?.level || "beginner";
   const sports = studentProfile?.sports?.join(", ") || "None";
   const avatarSafe = "/api/placeholder/150/150";
@@ -261,7 +357,7 @@ export default function MGFCStudentPage() {
                       <div>
                         <p className="text-green-200 text-sm">Matches Played</p>
                         <h3 className="text-3xl font-bold text-white mt-1">
-                          N/A
+                          {studentData.stats.matchesPlayed}
                         </h3>
                       </div>
                       <Trophy className="h-10 w-10 text-green-200" />
@@ -277,7 +373,7 @@ export default function MGFCStudentPage() {
                       <div>
                         <p className="text-blue-200 text-sm">Goals Scored</p>
                         <h3 className="text-3xl font-bold text-white mt-1">
-                          N/A
+                          {studentData.stats.goalsScored}
                         </h3>
                       </div>
                       <Target className="h-10 w-10 text-blue-200" />
@@ -293,7 +389,7 @@ export default function MGFCStudentPage() {
                       <div>
                         <p className="text-purple-200 text-sm">Assists</p>
                         <h3 className="text-3xl font-bold text-white mt-1">
-                          N/A
+                          {studentData.stats.assists}
                         </h3>
                       </div>
                       <Zap className="h-10 w-10 text-purple-200" />
@@ -309,7 +405,7 @@ export default function MGFCStudentPage() {
                       <div>
                         <p className="text-orange-200 text-sm">Attendance</p>
                         <h3 className="text-3xl font-bold text-white mt-1">
-                          {studentProfile?.attendance?.length ? `${(studentProfile.attendance.filter((a: any) => a.present).length / studentProfile.attendance.length * 100).toFixed(0)}%` : "N/A"}
+                          {studentData.stats.attendance}%
                         </h3>
                       </div>
                       <Activity className="h-10 w-10 text-orange-200" />
@@ -331,7 +427,43 @@ export default function MGFCStudentPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <p className="text-gray-400 text-sm">No upcoming matches scheduled.</p>
+                    {studentData.upcomingMatches.map((match, index) => (
+                      <div
+                        key={index}
+                        className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-green-500/50 transition-all"
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h4 className="text-white font-semibold">
+                              vs {match.opponent}
+                            </h4>
+                            <Badge className="mt-1 bg-green-500/10 text-green-400 border-green-500/20">
+                              {match.type}
+                            </Badge>
+                          </div>
+                          <Badge
+                            variant="outline"
+                            className="text-orange-400 border-orange-500/50"
+                          >
+                            Upcoming
+                          </Badge>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 mt-3 text-sm">
+                          <div className="flex items-center gap-2 text-gray-400">
+                            <Calendar className="h-4 w-4" />
+                            {match.date}
+                          </div>
+                          <div className="flex items-center gap-2 text-gray-400">
+                            <Clock className="h-4 w-4" />
+                            {match.time}
+                          </div>
+                          <div className="flex items-center gap-2 text-gray-400 col-span-2">
+                            <MapPin className="h-4 w-4" />
+                            {match.venue}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </CardContent>
                 </Card>
               </motion.div>
@@ -346,7 +478,58 @@ export default function MGFCStudentPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <p className="text-gray-400 text-sm">No recent matches.</p>
+                    {studentData.recentMatches.map((match, index) => (
+                      <div
+                        key={index}
+                        className="p-4 bg-gray-800/50 rounded-lg border border-gray-700"
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h4 className="text-white font-semibold">
+                              vs {match.opponent}
+                            </h4>
+                            <Badge
+                              className={`mt-1 ${
+                                match.result === "Won"
+                                  ? "bg-green-500/10 text-green-400 border-green-500/20"
+                                  : match.result === "Draw"
+                                    ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
+                                    : "bg-red-500/10 text-red-400 border-red-500/20"
+                              }`}
+                            >
+                              {match.result}
+                            </Badge>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-2xl font-bold text-white">
+                              {match.score}
+                            </p>
+                            <p className="text-xs text-gray-400">
+                              {match.date}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="mt-3 pt-3 border-t border-gray-700">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-400">
+                              Your Performance:
+                            </span>
+                            <Badge
+                              variant="outline"
+                              className={`${
+                                match.playerPerformance === "Excellent"
+                                  ? "text-green-400 border-green-500/50"
+                                  : match.playerPerformance === "Good"
+                                    ? "text-blue-400 border-blue-500/50"
+                                    : "text-yellow-400 border-yellow-500/50"
+                              }`}
+                            >
+                              {match.playerPerformance}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </CardContent>
                 </Card>
               </motion.div>
@@ -362,7 +545,32 @@ export default function MGFCStudentPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-400 text-sm">No training schedule available.</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {studentData.trainingSchedule.map((session, index) => (
+                      <div
+                        key={index}
+                        className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all"
+                      >
+                        <h4 className="text-white font-semibold mb-2">
+                          {session.day}
+                        </h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-sm text-gray-400">
+                            <Clock className="h-4 w-4" />
+                            {session.time}
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-400">
+                            <Target className="h-4 w-4" />
+                            {session.focus}
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-400">
+                            <Users className="h-4 w-4" />
+                            {session.coach}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -393,7 +601,7 @@ export default function MGFCStudentPage() {
                       <div className="flex justify-between mb-2">
                         <span className="text-gray-400">Goals Scored</span>
                         <span className="text-white font-semibold">
-                          {/* {studentData.stats.goalsScored} */}
+                          {studentData.stats.goalsScored}
                         </span>
                       </div>
                       <Progress value={53} className="h-2" />
@@ -402,7 +610,7 @@ export default function MGFCStudentPage() {
                       <div className="flex justify-between mb-2">
                         <span className="text-gray-400">Assists</span>
                         <span className="text-white font-semibold">
-                          {/* {studentData.stats.assists} */}
+                          {studentData.stats.assists}
                         </span>
                       </div>
                       <Progress value={80} className="h-2" />
@@ -411,15 +619,19 @@ export default function MGFCStudentPage() {
                       <div className="flex justify-between mb-2">
                         <span className="text-gray-400">Attendance Rate</span>
                         <span className="text-white font-semibold">
-                          {/* {studentData.stats.attendance}% */}
+                          {studentData.stats.attendance}%
                         </span>
                       </div>
+                      <Progress
+                        value={studentData.stats.attendance}
+                        className="h-2"
+                      />
                     </div>
                     <div>
                       <div className="flex justify-between mb-2">
                         <span className="text-gray-400">Skill Rating</span>
                         <span className="text-white font-semibold flex items-center gap-1">
-                          {/* {studentData.stats.skillRating} */}
+                          {studentData.stats.skillRating}
                           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                         </span>
                       </div>
@@ -459,6 +671,9 @@ export default function MGFCStudentPage() {
                           </p>
                         </div>
                       </div>
+                      <span className="text-3xl font-bold text-white">
+                        {studentData.stats.cleanSheets}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
                       <div className="flex items-center gap-3">
@@ -488,6 +703,38 @@ export default function MGFCStudentPage() {
             <FeesManagement />
           </TabsContent>
 
+          {/* Achievements Tab */}
+          <TabsContent value="achievements" className="space-y-6">
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={containerVariants}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            >
+              {studentData.achievements.map((achievement, index) => (
+                <motion.div key={index} variants={itemVariants}>
+                  <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50 hover:border-yellow-500/50 transition-all">
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="text-5xl">{achievement.icon}</div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-white mb-1">
+                            {achievement.title}
+                          </h3>
+                          <p className="text-gray-400 text-sm mb-3">
+                            {achievement.date}
+                          </p>
+                          <Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/20">
+                            Achievement Unlocked
+                          </Badge>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </motion.div>
+          </TabsContent>
         </Tabs>
       </div>
 

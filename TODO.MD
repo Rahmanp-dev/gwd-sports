@@ -141,3 +141,5 @@ Done ✅
 - [x] Razorpay integration 
 - [x] Frontend logging
 - [x] add a new /gallery
+- [x] Show real data of student in student page
+- [x] Show real data of student in trainer page

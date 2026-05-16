@@ -136,7 +136,11 @@ export class StudentController {
 
       const studentProfile = await StudentProfile.findOne({ userId })
         .populate('academyId', 'name location sports')
-        .populate('trainerId', 'name email')
+        .populate({
+            path: 'trainers',
+            model: 'User',
+            select: 'name email phone profileImage' 
+        })
         .populate('attendance.markedBy', 'name')
         .populate('performance.evaluatedBy', 'name');
 

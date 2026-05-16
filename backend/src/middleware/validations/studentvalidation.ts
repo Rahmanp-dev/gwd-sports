@@ -123,10 +123,10 @@ export const validateUpdateStudent = [
     .trim()
     .isLength({ min: 2, max: 50 })
     .withMessage('Each sport must be between 2 and 50 characters'),
-  body('trainerId')
+  body('trainers')
     .optional()
-    .isMongoId()
-    .withMessage('Invalid trainer ID'),
+    .isArray()
+    .withMessage('trainers must be an array of ObjectIds'),
   body('academyId')
     .optional()
     .isMongoId()

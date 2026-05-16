@@ -348,7 +348,7 @@ export class AdminStudentController {
       
       if (isActive !== undefined) filter.isActive = isActive === 'true';
       if (academyId) filter.academyId = academyId;
-      if (trainerId) filter.trainerId = trainerId;
+      if (trainerId) filter.trainers = trainerId;
       if (level) filter.level = level;
 
       const sort: any = {};
@@ -376,7 +376,7 @@ export class AdminStudentController {
         {
           $lookup: {
             from: 'users',
-            localField: 'trainerId',
+            localField: 'trainers',
             foreignField: '_id',
             as: 'trainer'
           }
@@ -447,7 +447,7 @@ export class AdminStudentController {
       const student = await StudentProfile.findById(id)
         .populate('userId', 'name email phone')
         .populate('academyId', 'name location')
-        .populate('trainerId', 'name email')
+        .populate('trainers', 'name email')
         .populate('attendance.markedBy', 'name')
         .populate('performance.evaluatedBy', 'name');
 
@@ -895,8 +895,8 @@ export class AdminTrainerController {
 
       // Remove trainer from students
       await StudentProfile.updateMany(
-        { trainerId: trainer.userId },
-        { $unset: { trainerId: 1 } }
+        { trainers: trainer.userId },
+        { $pull: { trainers: trainer.userId } }
       );
 
       // Remove trainer from academy

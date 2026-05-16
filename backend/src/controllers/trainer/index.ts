@@ -238,7 +238,7 @@ export class TrainerController {
       const limitNum = parseInt(limit as string);
       const skip = (pageNum - 1) * limitNum;
 
-      const filter: any = { trainerId, isActive: true };
+      const filter: any = { trainers: trainerId, isActive: true };
       if (level) filter.level = level;
 
       let aggregatePipeline: any[] = [
@@ -538,7 +538,7 @@ export class TrainerController {
       }
 
       // Check if student is already assigned to this trainer
-      if (studentProfile.trainerId?.toString() === trainerId.toString()) {
+      if (studentProfile.trainers?.some(t => t.toString() === trainerId.toString())) {
         return res.status(400).json({
           success: false,
           message: 'Student is already assigned to you'
@@ -546,7 +546,8 @@ export class TrainerController {
       }
 
       // Update student's trainer
-      studentProfile.trainerId = trainerId;
+      if (!studentProfile.trainers) studentProfile.trainers = [];
+      studentProfile.trainers.push(trainerId);
       await studentProfile.save();
 
       // Add student to trainer's student list

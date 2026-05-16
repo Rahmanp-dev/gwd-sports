@@ -1034,11 +1034,11 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer <ADMIN_TOKEN>"
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzc4ODA5MzIyLCJleHAiOjE3Nzk0MTQxMjJ9.5PlUO_TNZn_Gr3M3EQeEO_n3lYYerPBhPLZjrbqZPI0"
                   }
                 ],
                 "url": {
-                  "raw": "http://localhost:3000/api/payments/admin/all?status=success&minAmount=100&sortBy=amount&order=desc",
+                  "raw": "http://localhost:3000/api/payments/admin/all?status=success&minAmount=1&sortBy=amount&order=desc",
                   "protocol": "http",
                   "host": [
                     "localhost"
@@ -1057,7 +1057,7 @@
                     },
                     {
                       "key": "minAmount",
-                      "value": "100"
+                      "value": "1"
                     },
                     {
                       "key": "sortBy",
@@ -1079,7 +1079,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer <ADMIN_TOKEN>"
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzc4ODA5MzIyLCJleHAiOjE3Nzk0MTQxMjJ9.5PlUO_TNZn_Gr3M3EQeEO_n3lYYerPBhPLZjrbqZPI0"
                   }
                 ],
                 "url": {
@@ -1145,6 +1145,80 @@
                     "admin",
                     "override",
                     "<STUDENT_PROFILE_ID>"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Settings",
+          "item": [
+            {
+              "name": "Get Settings",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer YOUR_ADMIN_TOKEN_HERE"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/settings",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "settings"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Settings",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer YOUR_ADMIN_TOKEN_HERE"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"performanceMetrics\": [\n        \"dribble\",\n        \"running\",\n        \"defending\",\n        \"strike\",\n        \"stamina\"\n    ],\n    \"defaultFeeAmount\": 1500,\n    \"currency\": \"INR\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/admin/settings",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "admin",
+                    "settings"
                   ]
                 }
               },
@@ -1694,7 +1768,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer <STUDENT_TOKEN>"
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQyNDVkODBiOWEyMzhiZDA0ZDNhZjEiLCJlbWFpbCI6InNua0Bhb3QuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3Nzg4MDkwOTAsImV4cCI6MTc3OTQxMzg5MH0.zBdUaPOeWrE7b6ohLVTgXgzMjAVtQO8ypK2eAoezT8g"
                   }
                 ],
                 "url": {
@@ -1759,7 +1833,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer <STUDENT_TOKEN>"
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQyNDVkODBiOWEyMzhiZDA0ZDNhZjEiLCJlbWFpbCI6InNua0Bhb3QuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3Nzg4MDkwOTAsImV4cCI6MTc3OTQxMzg5MH0.zBdUaPOeWrE7b6ohLVTgXgzMjAVtQO8ypK2eAoezT8g"
                   }
                 ],
                 "url": {

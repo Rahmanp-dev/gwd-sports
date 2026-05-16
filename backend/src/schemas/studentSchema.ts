@@ -36,7 +36,7 @@ export interface IFeePayment {
 export interface IStudentProfile extends Document {
   userId: mongoose.Types.ObjectId;
   academyId?: mongoose.Types.ObjectId;
-  trainerId?: mongoose.Types.ObjectId;
+  trainers: mongoose.Types.ObjectId[];
   enrollmentDate?: Date;
   feePayments: IFeePayment[];
   totalFeesPaid: number;
@@ -72,11 +72,10 @@ const StudentProfileSchema = new Schema<IStudentProfile>({
     ref: "Academy",
     default: null
   },
-  trainerId: {
+  trainers: [{
     type: Schema.Types.ObjectId,
-    ref: "User",
-    default: null
-  },
+    ref: "User"
+  }],
   enrollmentDate: {
     type: Date,
     default: null
@@ -246,7 +245,7 @@ const StudentProfileSchema = new Schema<IStudentProfile>({
 // Indexes
 StudentProfileSchema.index({ userId: 1 });
 StudentProfileSchema.index({ academyId: 1 });
-StudentProfileSchema.index({ trainerId: 1 });
+StudentProfileSchema.index({ trainers: 1 });
 StudentProfileSchema.index({ isActive: 1 });
 
 export default mongoose.model<IStudentProfile>("StudentProfile", StudentProfileSchema);
