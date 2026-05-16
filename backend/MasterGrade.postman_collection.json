@@ -83,7 +83,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQyNDVkODBiOWEyMzhiZDA0ZDNhZjEiLCJlbWFpbCI6InNua0Bhb3QuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NjYxMzI5NjUsImV4cCI6MTc2NjczNzc2NX0.ei8aU_FZYV6DOGOeyPi9X0evb7K_TQVADTDLkproqCw",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQxNWZhMWE1NzM1NTU2ZjNlYWU4NDAiLCJlbWFpbCI6ImphbmVAZXhhbXBsZS5jb20iLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTc3ODg5Nzg1MSwiZXhwIjoxNzc5NTAyNjUxfQ.16dEdSI0j_5UOBDHjZ-g_rY9YhNutb619q-nOaw6DrU",
                   "type": "string"
                 }
               ]
@@ -868,7 +868,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzc4ODA5MzIyLCJleHAiOjE3Nzk0MTQxMjJ9.5PlUO_TNZn_Gr3M3EQeEO_n3lYYerPBhPLZjrbqZPI0"
                   }
                 ],
                 "url": {
@@ -935,11 +935,11 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY1ODg5Mzk4LCJleHAiOjE3NjY0OTQxOTh9.9y0ITfBDt1I1wwHA2ZjLhgI9T-3KXk7aE8vbpovvDeY"
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzc4ODA5MzIyLCJleHAiOjE3Nzk0MTQxMjJ9.5PlUO_TNZn_Gr3M3EQeEO_n3lYYerPBhPLZjrbqZPI0"
                   }
                 ],
                 "url": {
-                  "raw": "http://localhost:3000/api/admin/trainers/69415fdaa5735556f3eae844",
+                  "raw": "http://localhost:3000/api/admin/trainers/69415fa1a5735556f3eae840",
                   "protocol": "http",
                   "host": [
                     "localhost"
@@ -949,7 +949,7 @@
                     "api",
                     "admin",
                     "trainers",
-                    "69415fdaa5735556f3eae844"
+                    "69415fa1a5735556f3eae840"
                   ]
                 }
               },
@@ -1162,7 +1162,8 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer YOUR_ADMIN_TOKEN_HERE"
+                    "value": "Bearer YOUR_ADMIN_TOKEN_HERE",
+                    "disabled": true
                   },
                   {
                     "key": "Content-Type",
@@ -1341,7 +1342,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5iJk"
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzc4ODA5MzIyLCJleHAiOjE3Nzk0MTQxMjJ9.5PlUO_TNZn_Gr3M3EQeEO_n3lYYerPBhPLZjrbqZPI0"
                   },
                   {
                     "key": "Content-Type",
@@ -1417,7 +1418,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5iJk"
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzc4ODA5MzIyLCJleHAiOjE3Nzk0MTQxMjJ9.5PlUO_TNZn_Gr3M3EQeEO_n3lYYerPBhPLZjrbqZPI0"
                   },
                   {
                     "key": "Content-Type",
@@ -1501,7 +1502,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzY2MTQyOTYyLCJleHAiOjE3NjY3NDc3NjJ9.4JaoZONCnwoOoJcSHmywxMN37ytcqOxZtHbSwTL5iJk"
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzc4ODA5MzIyLCJleHAiOjE3Nzk0MTQxMjJ9.5PlUO_TNZn_Gr3M3EQeEO_n3lYYerPBhPLZjrbqZPI0"
                   },
                   {
                     "key": "Content-Type",
@@ -1673,7 +1674,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:3000/api/academy/69429ee8a80071a17297d811",
+              "raw": "http://localhost:3000/api/academy/6942a523a80071a17297d84d",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -1682,7 +1683,7 @@
               "path": [
                 "api",
                 "academy",
-                "69429ee8a80071a17297d811"
+                "6942a523a80071a17297d84d"
               ]
             }
           },
@@ -1910,7 +1911,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzMzc1MTc0ZjM4NmEzYTdlYTEyNjUiLCJlbWFpbCI6InN0dUBzdHUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NTU1MjY5OTQsImV4cCI6MTc1NjEzMTc5NH0.f1Aimv7itzkGG4ZKhmXWFjqFRJWoNp14lUu5p4felE0"
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQyNDVkODBiOWEyMzhiZDA0ZDNhZjEiLCJlbWFpbCI6InNua0Bhb3QuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3Nzg4MDkwOTAsImV4cCI6MTc3OTQxMzg5MH0.zBdUaPOeWrE7b6ohLVTgXgzMjAVtQO8ypK2eAoezT8g"
               }
             ],
             "url": {
@@ -2160,7 +2161,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQxNWZhMWE1NzM1NTU2ZjNlYWU4NDAiLCJlbWFpbCI6ImphbmVAZXhhbXBsZS5jb20iLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTc2NTk2NDk3NywiZXhwIjoxNzY2NTY5Nzc3fQ.WSZ4PvmgXrI-dY9OHRFLkVluBtnsZ2caZ9bImGvCnSA"
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQxNWZhMWE1NzM1NTU2ZjNlYWU4NDAiLCJlbWFpbCI6ImphbmVAZXhhbXBsZS5jb20iLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTc3ODg5Nzg1MSwiZXhwIjoxNzc5NTAyNjUxfQ.16dEdSI0j_5UOBDHjZ-g_rY9YhNutb619q-nOaw6DrU"
               }
             ],
             "url": {
@@ -2265,7 +2266,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGEzM2MxMTcxZjViN2UwM2U5ZTcwYmUiLCJlbWFpbCI6InRyYWluZXJAbWcuY29tIiwicm9sZSI6InRyYWluZXIiLCJpYXQiOjE3NTU1Mjg1ODYsImV4cCI6MTc1NjEzMzM4Nn0.kb-pB0m3r8qpXV4UQcIi_xosQIxZREKhNLWrNKf-ob8"
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzc4ODA5MzIyLCJleHAiOjE3Nzk0MTQxMjJ9.5PlUO_TNZn_Gr3M3EQeEO_n3lYYerPBhPLZjrbqZPI0"
               },
               {
                 "key": "Content-Type",
@@ -2274,7 +2275,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"studentId\": \"68a3375174f386a3a7ea1265\"\n  }",
+              "raw": "{\n    \"studentId\": \"694245d80b9a238bd04d3af1\",\n    \"trainerId\": \"69415fa1a5735556f3eae840\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2292,6 +2293,45 @@
                 "api",
                 "trainer",
                 "add-student"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove stud from trai",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTJhN2MwNzFmNTY1OGU0Y2Y4ZDY2MTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzc4ODA5MzIyLCJleHAiOjE3Nzk0MTQxMjJ9.5PlUO_TNZn_Gr3M3EQeEO_n3lYYerPBhPLZjrbqZPI0"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"studentId\": \"694245d80b9a238bd04d3af1\",\n    \"trainerId\": \"69415fa1a5735556f3eae840\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/trainer/remove-student",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "trainer",
+                "remove-student"
               ]
             }
           },
@@ -2408,6 +2448,44 @@
                 "api",
                 "trainer",
                 "add-performance"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Trainer Students",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQxNWZhMWE1NzM1NTU2ZjNlYWU4NDAiLCJlbWFpbCI6ImphbmVAZXhhbXBsZS5jb20iLCJyb2xlIjoidHJhaW5lciIsImlhdCI6MTc3ODg5Nzg1MSwiZXhwIjoxNzc5NTAyNjUxfQ.16dEdSI0j_5UOBDHjZ-g_rY9YhNutb619q-nOaw6DrU"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"trainerId\": \"69415fa1a5735556f3eae840\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/trainer/students",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "trainer",
+                "students"
               ]
             }
           },
