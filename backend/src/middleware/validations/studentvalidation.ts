@@ -13,8 +13,8 @@ export const validateCreateStudentProfile = [
     .withMessage('Each sport must be between 2 and 50 characters'),
   body('level')
     .optional()
-    .isIn(['beginner', 'intermediate', 'advanced'])
-    .withMessage('Level must be beginner, intermediate, or advanced'),
+    .isIn(['beginner', 'intermediate', 'advanced', 'U12', 'U14', 'U16', 'U19', 'U23'])
+    .withMessage('Level must be beginner, intermediate, advanced, or U12-U23'),
   body('medicalInfo.allergies')
     .optional()
     .isArray()
@@ -111,8 +111,8 @@ export const validateUpdateStudent = [
     .withMessage('Invalid student ID'),
   body('level')
     .optional()
-    .isIn(['beginner', 'intermediate', 'advanced'])
-    .withMessage('Level must be beginner, intermediate, or advanced'),
+    .isIn(['beginner', 'intermediate', 'advanced', 'U12', 'U14', 'U16', 'U19', 'U23'])
+    .withMessage('Level must be beginner, intermediate, advanced, or U12-U23'),
   body('sports')
     .optional()
     .isArray()
@@ -190,8 +190,8 @@ export const validateStudentQuery = [
     .withMessage('Invalid trainer ID'),
   query('level')
     .optional()
-    .isIn(['beginner', 'intermediate', 'advanced'])
-    .withMessage('Level must be beginner, intermediate, or advanced'),
+    .isIn(['beginner', 'intermediate', 'advanced', 'U12', 'U14', 'U16', 'U19', 'U23'])
+    .withMessage('Level must be beginner, intermediate, advanced, or U12-U23'),
   query('search')
     .optional()
     .trim()

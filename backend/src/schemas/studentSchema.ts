@@ -45,7 +45,7 @@ export interface IStudentProfile extends Document {
   kits: Types.DocumentArray<IKit>;
   performance: IPerformance[];
   sports: string[];
-  level: "beginner" | "intermediate" | "advanced";
+  level: "beginner" | "intermediate" | "advanced" | "U12" | "U14" | "U16" | "U19" | "U23";
   medicalInfo?: {
     allergies?: string[];
     medications?: string[];
@@ -201,7 +201,7 @@ const StudentProfileSchema = new Schema<IStudentProfile>({
   }],
   level: {
     type: String,
-    enum: ["beginner", "intermediate", "advanced"],
+    enum: ["beginner", "intermediate", "advanced", "U12", "U14", "U16", "U19", "U23"],
     default: "beginner"
   },
   medicalInfo: {

@@ -258,7 +258,7 @@ class StudentPublicService {
     data: {
       userId: string;
       sports: string[];
-      level: "beginner" | "intermediate" | "advanced";
+      level: "beginner" | "intermediate" | "advanced" | "U12" | "U14" | "U16" | "U19" | "U23";
       medicalInfo: {
         allergies: string[];
         medications: string[];
@@ -299,7 +299,7 @@ class StudentPublicService {
           totalFeesPaid: number;
           outstandingFees: number;
           sports: string[];
-          level: "beginner" | "intermediate" | "advanced";
+          level: "beginner" | "intermediate" | "advanced" | "U12" | "U14" | "U16" | "U19" | "U23";
           isActive: boolean;
           medicalInfo?: {
             allergies?: string[];
@@ -325,7 +325,7 @@ class StudentPublicService {
   // Update Own Student Profile
   async updateOwnStudentProfile(data: {
     sports?: string[];
-    level?: "beginner" | "intermediate" | "advanced";
+    level?: "beginner" | "intermediate" | "advanced" | "U12" | "U14" | "U16" | "U19" | "U23";
     medicalInfo?: {
       allergies?: string[];
       medications?: string[];

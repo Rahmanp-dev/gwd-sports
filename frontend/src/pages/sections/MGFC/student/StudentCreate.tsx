@@ -62,7 +62,7 @@ export default function StudentCreate() {
   // Student Details State
   const [studentDetails, setStudentDetails] = useState({
     sports: ["football"] as string[],
-    level: "beginner" as "beginner" | "intermediate" | "advanced",
+    level: "beginner" as "beginner" | "intermediate" | "advanced" | "U12" | "U14" | "U16" | "U19" | "U23",
     allergies: "",
     medications: "",
     emergencyName: "",
@@ -607,7 +607,7 @@ export default function StudentCreate() {
                       disabled={isSubmitting}
                       className="grid grid-cols-3 gap-3"
                     >
-                      {(["beginner", "intermediate", "advanced"] as const).map(
+                      {(studentDetails.sports.includes("cricket") ? ["U12", "U14", "U16", "U19", "U23"] : ["beginner", "intermediate", "advanced"]).map(
                         (level) => (
                           <div
                             key={level}

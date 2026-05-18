@@ -244,11 +244,11 @@ export class StudentController {
 
       // Validate and process level update
       if (updates.level !== undefined) {
-        const validLevels = ['beginner', 'intermediate', 'advanced'];
+        const validLevels = ['beginner', 'intermediate', 'advanced', 'U12', 'U14', 'U16', 'U19', 'U23'];
         if (!validLevels.includes(updates.level)) {
           return res.status(400).json({
             success: false,
-            message: 'Invalid skill level. Must be beginner, intermediate, or advanced'
+            message: 'Invalid skill level. Must be beginner, intermediate, advanced, or U12-U23'
           });
         }
         student.level = updates.level;

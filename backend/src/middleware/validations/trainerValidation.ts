@@ -159,8 +159,8 @@ export const validateTrainerStudentsQuery = [
     .withMessage('Limit must be between 1 and 100'),
   query('level')
     .optional()
-    .isIn(['beginner', 'intermediate', 'advanced'])
-    .withMessage('Level must be beginner, intermediate, or advanced'),
+    .isIn(['beginner', 'intermediate', 'advanced', 'U12', 'U14', 'U16', 'U19', 'U23'])
+    .withMessage('Level must be beginner, intermediate, advanced, or U12-U23'),
   query('search')
     .optional()
     .trim()

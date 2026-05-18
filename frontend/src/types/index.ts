@@ -141,7 +141,7 @@ export interface Student {
     sports: string[];
   };
   sport: string;
-  level: "beginner" | "intermediate" | "advanced";
+  level: "beginner" | "intermediate" | "advanced" | "U12" | "U14" | "U16" | "U19" | "U23";
   enrollmentDate: string;
   fees: {
     amount: number;
@@ -409,7 +409,7 @@ export interface StudentFilters {
   academyId?: string;
   trainerId?: string;
   sport?: string;
-  level?: "beginner" | "intermediate" | "advanced";
+  level?: "beginner" | "intermediate" | "advanced" | "U12" | "U14" | "U16" | "U19" | "U23";
   isActive?: boolean;
   search?: string;
   sortBy?: string;
@@ -422,7 +422,7 @@ export interface StudentFormData {
   academyId: string;
   trainerId?: string;
   sport: string;
-  level: "beginner" | "intermediate" | "advanced";
+  level: "beginner" | "intermediate" | "advanced" | "U12" | "U14" | "U16" | "U19" | "U23";
   fees: {
     amount: number;
     period: "monthly" | "quarterly" | "yearly";
@@ -434,7 +434,7 @@ export interface StudentUpdateData {
   academyId?: string;
   trainerId?: string | undefined;
   sport?: string;
-  level?: "beginner" | "intermediate" | "advanced";
+  level?: "beginner" | "intermediate" | "advanced" | "U12" | "U14" | "U16" | "U19" | "U23";
   fees?: {
     amount: number;
     period: "monthly" | "quarterly" | "yearly";

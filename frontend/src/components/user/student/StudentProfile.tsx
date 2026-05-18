@@ -47,7 +47,7 @@ interface StudentProfileData {
   totalFeesPaid: number;
   outstandingFees: number;
   sports: string[];
-  level: "beginner" | "intermediate" | "advanced";
+  level: "beginner" | "intermediate" | "advanced" | "U12" | "U14" | "U16" | "U19" | "U23";
   isActive: boolean;
   medicalInfo?: {
     allergies?: string[];
@@ -328,7 +328,7 @@ export default function StudentProfile() {
                 }
                 className="grid grid-cols-3 gap-3"
               >
-                {(["beginner", "intermediate", "advanced"] as const).map(
+                {(editedProfile.sports?.includes("cricket") ? ["U12", "U14", "U16", "U19", "U23"] : ["beginner", "intermediate", "advanced"]).map(
                   (level) => (
                     <div
                       key={level}

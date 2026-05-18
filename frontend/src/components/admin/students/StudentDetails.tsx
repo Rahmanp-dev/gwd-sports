@@ -58,6 +58,12 @@ export const StudentDetails: React.FC<StudentDetailsProps> = ({
         return "bg-yellow-500 hover:bg-yellow-600";
       case "advanced":
         return "bg-red-500 hover:bg-red-600";
+      case "U12":
+      case "U14":
+      case "U16":
+      case "U19":
+      case "U23":
+        return "bg-blue-500 hover:bg-blue-600";
       default:
         return "bg-gray-500 hover:bg-gray-600";
     }

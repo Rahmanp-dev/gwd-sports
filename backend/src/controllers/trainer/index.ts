@@ -751,4 +751,63 @@ export class TrainerController {
       });
     }
   }
+
+  // Edit performance record
+  static async editPerformanceRecord(req: AuthRequest, res: Response) {
+    try {
+      const { studentId, performanceId } = req.params;
+      const { sport, category, score, maxScore, remarks } = req.body;
+
+      const student = await StudentProfile.findOne({ userId: studentId });
+      if (!student) {
+        return res.status(404).json({ success: false, message: 'Student not found' });
+      }
+
+      const performanceRecord = student.performance.id(performanceId);
+      if (!performanceRecord) {
+        return res.status(404).json({ success: false, message: 'Performance record not found' });
+      }
+
+      // Ensure trainer is authorized to edit it (either they created it or they are assigned)
+      if (sport) performanceRecord.sport = sport;
+      if (category) performanceRecord.category = category;
+      if (score !== undefined) performanceRecord.score = score;
+      if (maxScore !== undefined) performanceRecord.maxScore = maxScore;
+      if (remarks !== undefined) performanceRecord.remarks = remarks;
+
+      await student.save();
+
+      res.json({
+        success: true,
+        message: 'Performance record updated successfully',
+        data: { performance: performanceRecord }
+      });
+    } catch (error) {
+      logger.error('Edit performance record error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  }
+
+  // Delete performance record
+  static async deletePerformanceRecord(req: AuthRequest, res: Response) {
+    try {
+      const { studentId, performanceId } = req.params;
+
+      const student = await StudentProfile.findOne({ userId: studentId });
+      if (!student) {
+        return res.status(404).json({ success: false, message: 'Student not found' });
+      }
+
+      student.performance.pull(performanceId);
+      await student.save();
+
+      res.json({
+        success: true,
+        message: 'Performance record deleted successfully'
+      });
+    } catch (error) {
+      logger.error('Delete performance record error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  }
 }

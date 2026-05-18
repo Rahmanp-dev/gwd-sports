@@ -63,6 +63,7 @@ router.patch('/users/:id/toggle-status', validateUserId, AdminUserController.tog
 // STUDENT MANAGEMENT ROUTES
 // ========================
 router.get('/students', validateStudentQuery, AdminStudentController.getAllStudents);
+router.get('/students/leaderboard', AdminStudentController.getLeaderboard);
 router.get('/students/stats', AdminStudentController.getStudentStats);
 router.get('/students/:id', validateStudentId, AdminStudentController.getStudentById);
 router.put('/students/:id', validateUpdateStudent, AdminStudentController.updateStudent);

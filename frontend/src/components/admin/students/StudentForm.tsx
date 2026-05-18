@@ -35,7 +35,7 @@ const studentFormSchema = z.object({
   academyId: z.string().min(1, { message: "Academy is required" }),
   trainerId: z.string().optional(),
   sport: z.string().min(1, { message: "Sport is required" }),
-  level: z.enum(["beginner", "intermediate", "advanced"]),
+  level: z.enum(["beginner", "intermediate", "advanced", "U12", "U14", "U16", "U19", "U23"]),
   fees: z.object({
     amount: z.number().min(0, { message: "Amount must be positive" }),
     period: z.enum(["monthly", "quarterly", "yearly"]),
@@ -293,11 +293,21 @@ export const StudentForm: React.FC<StudentFormProps> = ({
                           <SelectValue placeholder="Select level" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="beginner">Beginner</SelectItem>
-                          <SelectItem value="intermediate">
-                            Intermediate
-                          </SelectItem>
-                          <SelectItem value="advanced">Advanced</SelectItem>
+                          {selectedSport === "cricket" ? (
+                            <>
+                              <SelectItem value="U12">U12</SelectItem>
+                              <SelectItem value="U14">U14</SelectItem>
+                              <SelectItem value="U16">U16</SelectItem>
+                              <SelectItem value="U19">U19</SelectItem>
+                              <SelectItem value="U23">U23</SelectItem>
+                            </>
+                          ) : (
+                            <>
+                              <SelectItem value="beginner">Beginner</SelectItem>
+                              <SelectItem value="intermediate">Intermediate</SelectItem>
+                              <SelectItem value="advanced">Advanced</SelectItem>
+                            </>
+                          )}
                         </SelectContent>
                       </Select>
                     </FormControl>

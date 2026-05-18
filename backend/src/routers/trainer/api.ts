@@ -30,5 +30,7 @@ router.get('/student/:studentId/attendance', roleMiddleware(['trainer', 'admin']
 
 // Performance management
 router.post('/add-performance', roleMiddleware(['trainer', 'admin']), validateAddPerformance, TrainerController.addPerformanceRecord);
+router.put('/performance/:studentId/:performanceId', roleMiddleware(['trainer', 'admin']), TrainerController.editPerformanceRecord);
+router.delete('/performance/:studentId/:performanceId', roleMiddleware(['trainer', 'admin']), TrainerController.deletePerformanceRecord);
 
 export default router;

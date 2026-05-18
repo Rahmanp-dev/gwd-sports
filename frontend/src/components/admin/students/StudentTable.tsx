@@ -133,6 +133,12 @@ export const StudentTable: React.FC<StudentTableProps> = ({
         return "bg-yellow-500 hover:bg-yellow-600";
       case "advanced":
         return "bg-red-500 hover:bg-red-600";
+      case "U12":
+      case "U14":
+      case "U16":
+      case "U19":
+      case "U23":
+        return "bg-blue-500 hover:bg-blue-600";
       default:
         return "bg-gray-500 hover:bg-gray-600";
     }
@@ -208,13 +214,26 @@ export const StudentTable: React.FC<StudentTableProps> = ({
               <DropdownMenuItem onClick={() => handleLevelFilter("beginner")}>
                 Beginner
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleLevelFilter("intermediate")}
-              >
+              <DropdownMenuItem onClick={() => handleLevelFilter("intermediate")}>
                 Intermediate
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleLevelFilter("advanced")}>
                 Advanced
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleLevelFilter("U12")}>
+                U12
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleLevelFilter("U14")}>
+                U14
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleLevelFilter("U16")}>
+                U16
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleLevelFilter("U19")}>
+                U19
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleLevelFilter("U23")}>
+                U23
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

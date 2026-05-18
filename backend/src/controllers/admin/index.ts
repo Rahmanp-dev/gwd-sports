@@ -670,6 +670,53 @@ export class AdminStudentController {
       });
     }
   }
+
+  // Get performance leaderboard
+  static async getLeaderboard(req: AuthRequest, res: Response) {
+    try {
+      const topPerformers = await StudentProfile.aggregate([
+        { $match: { isActive: true } },
+        { $unwind: '$performance' },
+        { $group: { 
+            _id: '$_id', 
+            userId: { $first: '$userId' },
+            academyId: { $first: '$academyId' },
+            level: { $first: '$level' },
+            sports: { $first: '$sports' },
+            avgScore: { $avg: '$performance.score' },
+            totalEvals: { $sum: 1 }
+          }
+        },
+        { $sort: { avgScore: -1 } },
+        { $limit: 10 },
+        { $lookup: { from: 'users', localField: 'userId', foreignField: '_id', as: 'user' } },
+        { $unwind: '$user' },
+        { $lookup: { from: 'academies', localField: 'academyId', foreignField: '_id', as: 'academy' } },
+        {
+          $project: {
+            _id: 1,
+            studentName: '$user.name',
+            academyName: { $arrayElemAt: ['$academy.name', 0] },
+            level: 1,
+            sports: 1,
+            avgScore: { $round: ['$avgScore', 1] },
+            totalEvals: 1
+          }
+        }
+      ]);
+
+      res.json({
+        success: true,
+        data: { topPerformers }
+      });
+    } catch (error) {
+      logger.error('Get leaderboard error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
 }
 
 export class AdminTrainerController {

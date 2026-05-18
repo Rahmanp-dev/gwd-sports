@@ -35,7 +35,9 @@ import {
   Briefcase,
   DollarSign,
   Shield,
-  MoreVertical
+  MoreVertical,
+  Edit2,
+  Trash2
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -144,6 +146,8 @@ export default function MGFCTrainerPage() {
     remarks: "",
   });
   const [submittingPerformance, setSubmittingPerformance] = useState(false);
+  const [isViewPerformanceOpen, setIsViewPerformanceOpen] = useState(false);
+  const [editingPerformance, setEditingPerformance] = useState<any>(null);
 
   // Attendance functionality
   const [isAddAttendanceOpen, setIsAddAttendanceOpen] = useState(false);
@@ -344,6 +348,77 @@ export default function MGFCTrainerPage() {
     }
   };
 
+  const handleDeletePerformance = async (studentId: string, performanceId: string) => {
+    if (!window.confirm("Are you sure you want to delete this performance record?")) return;
+    try {
+      const res = await fetch(`http://localhost:3000/api/trainer/performance/${studentId}/${performanceId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Performance record deleted");
+        setDetailedStudents(prev => prev.map(s => {
+          if (s.user._id === studentId) {
+            return { ...s, performance: s.performance.filter((p: any) => p._id !== performanceId) };
+          }
+          return s;
+        }));
+        if (selectedStudentForPerformance && selectedStudentForPerformance.user._id === studentId) {
+          setSelectedStudentForPerformance({
+            ...selectedStudentForPerformance,
+            performance: selectedStudentForPerformance.performance.filter((p: any) => p._id !== performanceId)
+          });
+        }
+      } else {
+        toast.error(data.message || "Failed to delete");
+      }
+    } catch (err) {
+      toast.error("An error occurred");
+    }
+  };
+
+  const handleEditPerformanceSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingPerformance || !selectedStudentForPerformance) return;
+    try {
+      const res = await fetch(`http://localhost:3000/api/trainer/performance/${selectedStudentForPerformance.user._id}/${editingPerformance._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          category: editingPerformance.category,
+          score: Number(editingPerformance.score),
+          remarks: editingPerformance.remarks
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Performance record updated");
+        setEditingPerformance(null);
+        setDetailedStudents(prev => prev.map(s => {
+          if (s.user._id === selectedStudentForPerformance.user._id) {
+            return {
+              ...s,
+              performance: s.performance.map((p: any) => p._id === editingPerformance._id ? data.data.performance : p)
+            };
+          }
+          return s;
+        }));
+        setSelectedStudentForPerformance(prev => prev ? {
+          ...prev,
+          performance: prev.performance.map((p: any) => p._id === editingPerformance._id ? data.data.performance : p)
+        } : null);
+      } else {
+        toast.error(data.message || "Failed to update");
+      }
+    } catch (err) {
+      toast.error("An error occurred");
+    }
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
@@ -398,7 +473,6 @@ export default function MGFCTrainerPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16 border-4 border-white">
-                <AvatarImage src="/api/placeholder/150/150" />
                 <AvatarFallback className="bg-gradient-to-br from-blue-600 to-green-600 text-white text-xl font-bold">
                   {realName.split(" ").map((n: string) => n[0]).join("")}
                 </AvatarFallback>
@@ -783,6 +857,16 @@ export default function MGFCTrainerPage() {
                                 <TrendingUp className="mr-2 h-4 w-4" />
                                 Add Performance
                               </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                className="hover:bg-gray-700 cursor-pointer py-2 text-purple-400 focus:text-purple-300 focus:bg-gray-700"
+                                onClick={() => {
+                                  setSelectedStudentForPerformance(student);
+                                  setIsViewPerformanceOpen(true);
+                                }}
+                              >
+                                <Activity className="mr-2 h-4 w-4" />
+                                View/Edit Performances
+                              </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
@@ -969,6 +1053,91 @@ export default function MGFCTrainerPage() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* View/Edit Performances Dialog */}
+      <Dialog open={isViewPerformanceOpen} onOpenChange={setIsViewPerformanceOpen}>
+        <DialogContent className="bg-gray-900 border border-gray-700 text-white sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Performances - {selectedStudentForPerformance?.user?.name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+            {!selectedStudentForPerformance?.performance || selectedStudentForPerformance.performance.length === 0 ? (
+              <p className="text-gray-400 text-sm">No performance records found.</p>
+            ) : (
+              selectedStudentForPerformance.performance.map((perf: any) => (
+                <div key={perf._id} className="p-3 bg-gray-800 rounded-lg border border-gray-700 text-sm relative">
+                  {editingPerformance?._id === perf._id ? (
+                    <form onSubmit={handleEditPerformanceSubmit} className="space-y-3">
+                      <div>
+                        <Label className="text-xs text-gray-400">Category</Label>
+                        <select
+                          className="w-full p-2 border border-gray-600 bg-gray-700 rounded-md text-white mt-1"
+                          value={editingPerformance.category}
+                          onChange={(e) => setEditingPerformance({...editingPerformance, category: e.target.value})}
+                        >
+                          {performanceMetrics.map((m) => (
+                            <option key={m} value={m}>{m}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <Label className="text-xs text-gray-400">Score</Label>
+                        <Input
+                          type="number"
+                          className="bg-gray-700 border-gray-600 text-white mt-1"
+                          value={editingPerformance.score}
+                          onChange={(e) => setEditingPerformance({...editingPerformance, score: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-gray-400">Remarks</Label>
+                        <Input
+                          className="bg-gray-700 border-gray-600 text-white mt-1"
+                          value={editingPerformance.remarks}
+                          onChange={(e) => setEditingPerformance({...editingPerformance, remarks: e.target.value})}
+                        />
+                      </div>
+                      <div className="flex justify-end gap-2 mt-3">
+                        <Button size="sm" variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700" onClick={() => setEditingPerformance(null)}>Cancel</Button>
+                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700" type="submit">Save</Button>
+                      </div>
+                    </form>
+                  ) : (
+                    <>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-semibold text-white capitalize">{perf.category}</p>
+                          <p className="text-xs text-gray-400">{new Date(perf.evaluatedAt).toLocaleDateString()}</p>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0 hover:bg-gray-700" onClick={() => setEditingPerformance(perf)}>
+                            <Edit2 className="h-3.5 w-3.5 text-blue-400" />
+                          </Button>
+                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0 hover:bg-gray-700" onClick={() => handleDeletePerformance(selectedStudentForPerformance.user._id, perf._id)}>
+                            <Trash2 className="h-3.5 w-3.5 text-red-400" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="mt-3">
+                        <div className="flex justify-between text-xs mb-1 text-gray-300">
+                          <span>Score: {perf.score} / {perf.maxScore}</span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-1.5">
+                          <div
+                            className="bg-blue-500 h-1.5 rounded-full"
+                            style={{ width: `${(perf.score / perf.maxScore) * 100}%` }}
+                          ></div>
+                        </div>
+                        {perf.remarks && <p className="mt-2 text-gray-400 italic font-light text-xs">"{perf.remarks}"</p>}
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 
