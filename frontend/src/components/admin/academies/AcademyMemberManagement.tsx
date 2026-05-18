@@ -396,7 +396,7 @@ export const AcademyMemberManagement: React.FC<
                         </CardTitle>
                       </div>
                       <Button
-                        size="md"
+                        size="default"
                         onClick={() => handleOpenAddDialog("student")}
                         className="bg-green-600 hover:bg-green-700 text-white shadow-sm font-semibold px-4 py-2 rounded-xl"
                       >

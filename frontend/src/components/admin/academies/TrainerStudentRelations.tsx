@@ -46,6 +46,7 @@ interface TrainerStudent {
   isActive: boolean;
   attendance: any[];
   performance: any[];
+  academyId?: string;
   user: {
     _id: string; // Represents Student User ID
     name: string;

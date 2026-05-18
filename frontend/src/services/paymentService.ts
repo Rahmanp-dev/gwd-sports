@@ -16,6 +16,7 @@ export interface VerifyPaymentParams {
 export interface FeePaymentRecord {
   _id: string;
   orderId: string;
+  studentId?: string | any;
   paymentId?: string;
   amount: number;
   currency: string;

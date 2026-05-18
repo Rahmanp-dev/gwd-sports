@@ -126,7 +126,7 @@ export default function StudentRegister() {
       y: 0,
       transition: {
         duration: 0.6,
-        ease: "easeOut",
+        ease: "easeOut" as any,
       },
     },
   };

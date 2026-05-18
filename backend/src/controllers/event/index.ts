@@ -295,7 +295,7 @@ export class EventController {
   // Get event by ID
   static async getEventById(req: AuthRequest, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({
@@ -340,7 +340,7 @@ export class EventController {
         });
       }
 
-      const { id } = req.params;
+      const id = req.params.id as string;
       const updates = req.body;
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -422,7 +422,7 @@ export class EventController {
   // Delete event (Admin only)
   static async deleteEvent(req: AuthRequest, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({
@@ -461,7 +461,7 @@ export class EventController {
   // Join event (Any authenticated user)
   static async joinEvent(req: AuthRequest, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user!._id as Types.ObjectId;
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -551,7 +551,7 @@ export class EventController {
   // Leave event (Any authenticated user)
   static async leaveEvent(req: AuthRequest, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user!._id as Types.ObjectId;
 
       if (!mongoose.Types.ObjectId.isValid(id)) {

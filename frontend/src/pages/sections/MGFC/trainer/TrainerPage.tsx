@@ -65,10 +65,13 @@ interface DetailedStudent {
   sports: string[];
   isActive: boolean;
   user?: {
+    _id?: string;
     name: string;
     email: string;
     phone: string;
   };
+  performance?: any[];
+  attendance?: any[];
 }
 
 interface TrainerProfile {
@@ -359,15 +362,15 @@ export default function MGFCTrainerPage() {
       if (data.success) {
         toast.success("Performance record deleted");
         setDetailedStudents(prev => prev.map(s => {
-          if (s.user._id === studentId) {
-            return { ...s, performance: s.performance.filter((p: any) => p._id !== performanceId) };
+          if (s.user?._id === studentId) {
+            return { ...s, performance: s.performance?.filter((p: any) => p._id !== performanceId) };
           }
           return s;
         }));
-        if (selectedStudentForPerformance && selectedStudentForPerformance.user._id === studentId) {
+        if (selectedStudentForPerformance && selectedStudentForPerformance.user?._id === studentId) {
           setSelectedStudentForPerformance({
             ...selectedStudentForPerformance,
-            performance: selectedStudentForPerformance.performance.filter((p: any) => p._id !== performanceId)
+            performance: selectedStudentForPerformance.performance?.filter((p: any) => p._id !== performanceId)
           });
         }
       } else {
@@ -382,7 +385,7 @@ export default function MGFCTrainerPage() {
     e.preventDefault();
     if (!editingPerformance || !selectedStudentForPerformance) return;
     try {
-      const res = await fetch(`http://localhost:3000/api/trainer/performance/${selectedStudentForPerformance.user._id}/${editingPerformance._id}`, {
+      const res = await fetch(`http://localhost:3000/api/trainer/performance/${selectedStudentForPerformance.user?._id}/${editingPerformance._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -399,17 +402,17 @@ export default function MGFCTrainerPage() {
         toast.success("Performance record updated");
         setEditingPerformance(null);
         setDetailedStudents(prev => prev.map(s => {
-          if (s.user._id === selectedStudentForPerformance.user._id) {
+          if (s.user?._id === selectedStudentForPerformance.user?._id) {
             return {
               ...s,
-              performance: s.performance.map((p: any) => p._id === editingPerformance._id ? data.data.performance : p)
+              performance: s.performance?.map((p: any) => p._id === editingPerformance._id ? data.data.performance : p)
             };
           }
           return s;
         }));
         setSelectedStudentForPerformance(prev => prev ? {
           ...prev,
-          performance: prev.performance.map((p: any) => p._id === editingPerformance._id ? data.data.performance : p)
+          performance: prev.performance?.map((p: any) => p._id === editingPerformance._id ? data.data.performance : p)
         } : null);
       } else {
         toast.error(data.message || "Failed to update");
@@ -1115,7 +1118,7 @@ export default function MGFCTrainerPage() {
                           <Button size="sm" variant="ghost" className="h-7 w-7 p-0 hover:bg-gray-700" onClick={() => setEditingPerformance(perf)}>
                             <Edit2 className="h-3.5 w-3.5 text-blue-400" />
                           </Button>
-                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0 hover:bg-gray-700" onClick={() => handleDeletePerformance(selectedStudentForPerformance.user._id, perf._id)}>
+                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0 hover:bg-gray-700" onClick={() => handleDeletePerformance(selectedStudentForPerformance.user?._id || '', perf._id)}>
                             <Trash2 className="h-3.5 w-3.5 text-red-400" />
                           </Button>
                         </div>

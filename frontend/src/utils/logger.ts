@@ -18,7 +18,7 @@ class FrontendLogger {
     try {
       const state = store.getState();
       return (
-        state.auth.user?.id ||
+        (state.auth.user as any)?.id ||
         state.auth.user?._id ||
         state.auth.user?.email ||
         undefined
