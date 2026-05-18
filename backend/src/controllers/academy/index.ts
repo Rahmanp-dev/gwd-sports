@@ -113,7 +113,7 @@ export class AcademyController {
   // Get academy by ID
   static async getAcademyById(req: AuthRequest, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({
@@ -159,7 +159,7 @@ export class AcademyController {
         });
       }
 
-      const { id } = req.params;
+      const id = req.params.id as string;
       const updates = req.body;
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -203,7 +203,7 @@ export class AcademyController {
   // Delete academy (Admin only)
   static async deleteAcademy(req: AuthRequest, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({
@@ -242,7 +242,7 @@ export class AcademyController {
   // Get academy members (students and trainers)
   static async getAcademyMembers(req: AuthRequest, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({

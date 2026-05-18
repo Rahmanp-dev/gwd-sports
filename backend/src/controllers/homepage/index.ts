@@ -121,7 +121,7 @@ export class HomepageController {
   // Update event card (Admin)
   static async updateEventCard(req: AuthRequest, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { order, colorScheme, isActive } = req.body;
 
       const eventCard = await LandingPageEventCard.findById(id);
@@ -205,7 +205,7 @@ export class HomepageController {
   // Delete event card (Admin)
   static async deleteEventCard(req: AuthRequest, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       const eventCard = await LandingPageEventCard.findById(id);
       if (!eventCard) {

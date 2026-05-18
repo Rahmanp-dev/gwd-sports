@@ -136,7 +136,7 @@ export class FeeController {
   // 4. Get payment by ID
   static async getFeePaymentById(req: AuthRequest, res: Response) {
     try {
-        const { id } = req.params;
+        const id = req.params.id as string;
         const payment = await FeePayment.findById(id).populate("studentId", "user academyId level");
         
         if (!payment) return res.status(404).json({ success: false, message: "Payment not found" });
@@ -221,7 +221,7 @@ export class FeeController {
   // 3. Admin fee override
   static async overrideStudentFees(req: AuthRequest, res: Response) {
     try {
-      const { studentId } = req.params;
+      const studentId = req.params.studentId as string;
       const { outstandingFees, totalFeesPaid } = req.body;
 
       const student = await StudentProfile.findById(studentId);

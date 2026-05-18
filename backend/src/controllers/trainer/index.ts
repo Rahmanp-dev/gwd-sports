@@ -536,7 +536,7 @@ export class TrainerController {
   static async getStudentAttendance(req: AuthRequest, res: Response) {
     try {
       const trainerId = req.user!._id;
-      const { studentId } = req.params;
+      const studentId = req.params.studentId as string;
       const { fromDate, toDate } = req.query;
 
       if (!mongoose.Types.ObjectId.isValid(studentId)) {
@@ -755,7 +755,8 @@ export class TrainerController {
   // Edit performance record
   static async editPerformanceRecord(req: AuthRequest, res: Response) {
     try {
-      const { studentId, performanceId } = req.params;
+      const studentId = req.params.studentId as string;
+      const performanceId = req.params.performanceId as string;
       const { sport, category, score, maxScore, remarks } = req.body;
 
       const student = await StudentProfile.findOne({ userId: studentId });
@@ -763,7 +764,7 @@ export class TrainerController {
         return res.status(404).json({ success: false, message: 'Student not found' });
       }
 
-      const performanceRecord = student.performance.id(performanceId);
+      const performanceRecord = (student.performance as any).id(performanceId);
       if (!performanceRecord) {
         return res.status(404).json({ success: false, message: 'Performance record not found' });
       }
@@ -791,14 +792,15 @@ export class TrainerController {
   // Delete performance record
   static async deletePerformanceRecord(req: AuthRequest, res: Response) {
     try {
-      const { studentId, performanceId } = req.params;
+      const studentId = req.params.studentId as string;
+      const performanceId = req.params.performanceId as string;
 
       const student = await StudentProfile.findOne({ userId: studentId });
       if (!student) {
         return res.status(404).json({ success: false, message: 'Student not found' });
       }
 
-      student.performance.pull(performanceId);
+      (student.performance as any).pull(performanceId);
       await student.save();
 
       res.json({

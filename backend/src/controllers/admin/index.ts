@@ -80,7 +80,7 @@ export class AdminUserController {
   // Get user by ID
   static async getUserById(req: AuthRequest, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       const user = await User.findById(id);
       if (!user) {
@@ -166,7 +166,7 @@ export class AdminUserController {
         });
       }
 
-      const { id } = req.params;
+      const id = req.params.id as string;
       const updates = req.body;
 
       // Remove sensitive fields from updates
@@ -205,7 +205,7 @@ export class AdminUserController {
   // Delete user (admin only)
   static async deleteUser(req: AuthRequest, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       // Prevent admin from deleting themselves
       // @ts-ignore
@@ -242,7 +242,7 @@ export class AdminUserController {
   // Toggle user active status
   static async toggleUserStatus(req: AuthRequest, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       const user = await User.findById(id);
       if (!user) {
@@ -435,7 +435,7 @@ export class AdminStudentController {
   // Get student by ID
   static async getStudentById(req: AuthRequest, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({
@@ -483,7 +483,7 @@ export class AdminStudentController {
         });
       }
 
-      const { id } = req.params;
+      const id = req.params.id as string;
       const updates = req.body;
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -571,7 +571,8 @@ export class AdminStudentController {
   // Update kit status
   static async updateKitStatus(req: AuthRequest, res: Response) {
     try {
-      const { studentId, kitId } = req.params;
+      const studentId = req.params.studentId as string;
+      const kitId = req.params.kitId as string;
       const { status, cost } = req.body;
 
       if (!mongoose.Types.ObjectId.isValid(studentId)) {
@@ -826,7 +827,7 @@ export class AdminTrainerController {
   // Get trainer by ID
   static async getTrainerById(req: AuthRequest, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({
@@ -872,7 +873,7 @@ export class AdminTrainerController {
         });
       }
 
-      const { id } = req.params;
+      const id = req.params.id as string;
       const updates = req.body;
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -919,7 +920,7 @@ export class AdminTrainerController {
   // Delete trainer (soft delete)
   static async deleteTrainer(req: AuthRequest, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({
