@@ -10,6 +10,9 @@ import { logger } from './utils/logger';
 const app = express();
 const PORT = config.PORT || 3000;
 
+// Trust the reverse proxy (required for Railway load balancer so rate limiter tracks real client IPs)
+app.set('trust proxy', 1);
+
 // CORS Configuration
 const getAllowedOrigins = () => {
   if (config.NODE_ENV === 'production') {
