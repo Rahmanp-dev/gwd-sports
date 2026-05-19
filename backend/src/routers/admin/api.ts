@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { AdminUserController, AdminStudentController, AdminTrainerController } from '../../controllers/admin';
+import { AdminUserController, AdminStudentController, AdminTrainerController, AdminDashboardController } from '../../controllers/admin';
 import { EventController } from '../../controllers/event';
 import { TrainerController } from '../../controllers/trainer';
 import { getSettings, updateSettings } from '../../controllers/admin/settingsController';
@@ -37,6 +37,11 @@ router.get('/settings', getSettings);
 
 // All admin routes require authentication and admin role
 router.use(authMiddleware, adminMiddleware);
+
+// ========================
+// DASHBOARD ROUTE
+// ========================
+router.get('/dashboard', AdminDashboardController.getDashboardStats);
 
 // ========================
 // SETTINGS ROUTES

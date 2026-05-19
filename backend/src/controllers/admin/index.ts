@@ -6,6 +6,7 @@ import { logger } from '../../utils/logger';
 import StudentProfile from '../../schemas/studentSchema';
 import TrainerProfile from '../../schemas/trainerSchema';
 import Academy from '../../schemas/academySchema';
+import { FeePayment } from '../../schemas/feePaymentSchema';
 import { validationResult } from 'express-validator';
 
 export class AdminUserController {
@@ -1042,6 +1043,287 @@ export class AdminTrainerController {
       res.status(500).json({
         success: false,
         message: 'Internal server error'
+      });
+    }
+  }
+}
+
+export class AdminDashboardController {
+  static async getDashboardStats(req: AuthRequest, res: Response) {
+    try {
+      const now = new Date();
+      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+      // ── 1. Student Counts ──
+      const [totalStudents, activeStudents, enrolledStudents] = await Promise.all([
+        StudentProfile.countDocuments(),
+        StudentProfile.countDocuments({ isActive: true }),
+        StudentProfile.countDocuments({ isActive: true, academyId: { $ne: null } }),
+      ]);
+
+      const lastMonthStudents = await StudentProfile.countDocuments({
+        createdAt: { $lte: endOfLastMonth },
+        isActive: true,
+      });
+      const studentGrowth = lastMonthStudents > 0
+        ? Math.round(((activeStudents - lastMonthStudents) / lastMonthStudents) * 100)
+        : 0;
+
+      // ── 2. Attendance Rate (Last 30 Days) ──
+      const attendanceAgg = await StudentProfile.aggregate([
+        { $match: { isActive: true } },
+        { $unwind: '$attendance' },
+        { $match: { 'attendance.date': { $gte: thirtyDaysAgo } } },
+        {
+          $group: {
+            _id: null,
+            totalRecords: { $sum: 1 },
+            presentCount: {
+              $sum: { $cond: [{ $eq: ['$attendance.present', true] }, 1, 0] },
+            },
+          },
+        },
+      ]);
+      const attendanceRate = attendanceAgg.length > 0 && attendanceAgg[0].totalRecords > 0
+        ? Math.round((attendanceAgg[0].presentCount / attendanceAgg[0].totalRecords) * 100)
+        : 0;
+
+      // ── 3. Financial Snapshot ──
+      const revenueThisMonth = await FeePayment.aggregate([
+        { $match: { status: 'success', createdAt: { $gte: startOfMonth } } },
+        { $group: { _id: null, total: { $sum: '$amount' } } },
+      ]);
+      const revenueLastMonth = await FeePayment.aggregate([
+        { $match: { status: 'success', createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth } } },
+        { $group: { _id: null, total: { $sum: '$amount' } } },
+      ]);
+      const monthlyRevenue = revenueThisMonth[0]?.total || 0;
+      const lastMonthRevenue = revenueLastMonth[0]?.total || 0;
+      const revenueGrowth = lastMonthRevenue > 0
+        ? Math.round(((monthlyRevenue - lastMonthRevenue) / lastMonthRevenue) * 100)
+        : 0;
+
+      const totalRevenue = await FeePayment.aggregate([
+        { $match: { status: 'success' } },
+        { $group: { _id: null, total: { $sum: '$amount' } } },
+      ]);
+
+      const pendingFees = await FeePayment.aggregate([
+        { $match: { status: 'pending' } },
+        { $group: { _id: null, total: { $sum: '$amount' }, count: { $sum: 1 } } },
+      ]);
+
+      const feeOverdueCount = await StudentProfile.countDocuments({
+        isActive: true,
+        outstandingFees: { $gt: 0 },
+      });
+
+      const totalOutstanding = await StudentProfile.aggregate([
+        { $match: { isActive: true, outstandingFees: { $gt: 0 } } },
+        { $group: { _id: null, total: { $sum: '$outstandingFees' } } },
+      ]);
+
+      // ── 4. Trainer Overview ──
+      const [totalTrainers, activeTrainers] = await Promise.all([
+        TrainerProfile.countDocuments(),
+        TrainerProfile.countDocuments({ isActive: true }),
+      ]);
+
+      const trainerLoadAgg = await TrainerProfile.aggregate([
+        { $match: { isActive: true } },
+        {
+          $project: {
+            userId: 1,
+            studentCount: { $size: '$students' },
+            sports: 1,
+            academyId: 1,
+          },
+        },
+        { $lookup: { from: 'users', localField: 'userId', foreignField: '_id', as: 'user' } },
+        { $unwind: '$user' },
+        { $lookup: { from: 'academies', localField: 'academyId', foreignField: '_id', as: 'academy' } },
+        {
+          $project: {
+            name: '$user.name',
+            email: '$user.email',
+            studentCount: 1,
+            sports: 1,
+            academyName: { $arrayElemAt: ['$academy.name', 0] },
+          },
+        },
+        { $sort: { studentCount: -1 } },
+        { $limit: 10 },
+      ]);
+
+      const trainerSportDist = await TrainerProfile.aggregate([
+        { $match: { isActive: true } },
+        { $unwind: '$sports' },
+        { $group: { _id: '$sports', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+      ]);
+
+      // ── 5. Academy Overview ──
+      const [totalAcademies, activeAcademies] = await Promise.all([
+        Academy.countDocuments(),
+        Academy.countDocuments({ isActive: true }),
+      ]);
+
+      // ── 6. Drop-off Detection (absent 7+ days) ──
+      const dropOffStudents = await StudentProfile.aggregate([
+        { $match: { isActive: true } },
+        {
+          $addFields: {
+            lastAttendance: { $max: '$attendance.date' },
+          },
+        },
+        {
+          $match: {
+            $or: [
+              { lastAttendance: { $lt: sevenDaysAgo } },
+              { lastAttendance: null },
+              { attendance: { $size: 0 } },
+            ],
+          },
+        },
+        { $lookup: { from: 'users', localField: 'userId', foreignField: '_id', as: 'user' } },
+        { $unwind: '$user' },
+        { $lookup: { from: 'academies', localField: 'academyId', foreignField: '_id', as: 'academy' } },
+        {
+          $project: {
+            studentName: '$user.name',
+            email: '$user.email',
+            phone: '$user.phone',
+            academyName: { $arrayElemAt: ['$academy.name', 0] },
+            lastAttendance: 1,
+            level: 1,
+            daysSinceLastAttendance: {
+              $cond: {
+                if: { $eq: ['$lastAttendance', null] },
+                then: 999,
+                else: {
+                  $divide: [
+                    { $subtract: [now, '$lastAttendance'] },
+                    86400000,
+                  ],
+                },
+              },
+            },
+          },
+        },
+        { $sort: { daysSinceLastAttendance: -1 } },
+        { $limit: 15 },
+      ]);
+
+      // ── 7. Recent Activity ──
+      const recentStudents = await StudentProfile.find({ isActive: true })
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .populate('userId', 'name email')
+        .lean();
+
+      const recentPayments = await FeePayment.find({ status: 'success' })
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .lean();
+
+      // ── 8. Students by Level ──
+      const studentsByLevel = await StudentProfile.aggregate([
+        { $match: { isActive: true } },
+        { $group: { _id: '$level', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+      ]);
+
+      // ── 9. Monthly Attendance Trend (last 6 months) ──
+      const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+      const attendanceTrend = await StudentProfile.aggregate([
+        { $unwind: '$attendance' },
+        { $match: { 'attendance.date': { $gte: sixMonthsAgo } } },
+        {
+          $group: {
+            _id: {
+              year: { $year: '$attendance.date' },
+              month: { $month: '$attendance.date' },
+            },
+            totalRecords: { $sum: 1 },
+            presentCount: {
+              $sum: { $cond: [{ $eq: ['$attendance.present', true] }, 1, 0] },
+            },
+          },
+        },
+        { $sort: { '_id.year': 1, '_id.month': 1 } },
+      ]);
+
+      res.json({
+        success: true,
+        data: {
+          students: {
+            total: totalStudents,
+            active: activeStudents,
+            enrolled: enrolledStudents,
+            unenrolled: activeStudents - enrolledStudents,
+            growth: studentGrowth,
+            byLevel: studentsByLevel,
+          },
+          attendance: {
+            rate: attendanceRate,
+            trend: attendanceTrend.map((t: any) => ({
+              month: `${t._id.year}-${String(t._id.month).padStart(2, '0')}`,
+              rate: t.totalRecords > 0 ? Math.round((t.presentCount / t.totalRecords) * 100) : 0,
+              totalRecords: t.totalRecords,
+              presentCount: t.presentCount,
+            })),
+          },
+          finance: {
+            monthlyRevenue,
+            lastMonthRevenue,
+            revenueGrowth,
+            totalRevenue: totalRevenue[0]?.total || 0,
+            pendingAmount: pendingFees[0]?.total || 0,
+            pendingCount: pendingFees[0]?.count || 0,
+            feeOverdueCount,
+            totalOutstanding: totalOutstanding[0]?.total || 0,
+          },
+          trainers: {
+            total: totalTrainers,
+            active: activeTrainers,
+            topTrainers: trainerLoadAgg,
+            sportDistribution: trainerSportDist,
+          },
+          academies: {
+            total: totalAcademies,
+            active: activeAcademies,
+          },
+          dropOff: {
+            count: dropOffStudents.length,
+            students: dropOffStudents,
+          },
+          recentActivity: {
+            newStudents: recentStudents.map((s: any) => ({
+              id: s._id,
+              name: s.userId?.name,
+              email: s.userId?.email,
+              level: s.level,
+              joinedAt: s.createdAt,
+            })),
+            recentPayments: recentPayments.map((p: any) => ({
+              id: p._id,
+              amount: p.amount,
+              status: p.status,
+              date: p.createdAt,
+              receipt: p.receipt,
+            })),
+          },
+        },
+      });
+    } catch (error) {
+      logger.error('Dashboard stats error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error',
       });
     }
   }
