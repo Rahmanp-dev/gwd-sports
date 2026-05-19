@@ -11,11 +11,33 @@ const app = express();
 const PORT = config.PORT || 3000;
 
 // CORS Configuration
+const getAllowedOrigins = () => {
+  if (config.NODE_ENV === 'production') {
+    const origins = [
+      'https://mastergrade-production.up.railway.app',
+      'https://gwd-spm-production.up.railway.app',
+    ];
+    // Allow custom CORS_ORIGIN from env
+    if (process.env.CORS_ORIGIN) {
+      origins.push(...process.env.CORS_ORIGIN.split(',').map(o => o.trim()));
+    }
+    return origins;
+  }
+  return ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'];
+};
+
 const corsOptions = {
-  origin: config.NODE_ENV === 'production'
-    ? ['https://mastergrade-production.up.railway.app']
-    : ['http://localhost:5173', 'http://127.0.0.1:5173'],
-  credentials: true, // Allow credentials (cookies, authorization headers)
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    const allowed = getAllowedOrigins();
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    // Check exact match or any *.railway.app subdomain in production
+    if (allowed.includes(origin) || /\.railway\.app$/.test(origin)) {
+      return callback(null, true);
+    }
+    callback(null, false);
+  },
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposedHeaders: ['Set-Cookie'],
