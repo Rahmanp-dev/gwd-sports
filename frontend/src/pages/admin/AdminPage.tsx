@@ -145,6 +145,7 @@ export default function AdminPage() {
           {/* Dashboard Tab - Command Center */}
           <TabsContent value="dashboard" className="space-y-6">
             <CommandCenter />
+          </TabsContent>
 
           {/* Users Tab */}
           <TabsContent value="users">
