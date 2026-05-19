@@ -42,12 +42,14 @@ The frontend should now be running at `http://localhost:5173` and the backend at
 - **Animations:** Framer Motion
 - **State Management & Fetching:** React Query, Redux Toolkit
 - **Icons:** Lucide React
+- **Charts:** Custom SVG-based charting (no external chart library dependency)
 
 ### Backend
 - **Core Framework:** Node.js, Express.js, TypeScript
 - **Database:** MongoDB, Mongoose ODM
 - **Validation:** Zod, express-validator
 - **Authentication:** JWT (JSON Web Tokens), bcryptjs
+- **Payments:** Razorpay Integration
 
 ---
 
@@ -76,3 +78,106 @@ The frontend should now be running at `http://localhost:5173` and the backend at
 - **Strict Input Validation:** Data constraints and payload formats validated robustly via Zod and `express-validator` *before* hitting the controller logic.
 - **Role-Based Access Control (RBAC):** Middleware-enforced strict route shielding based on token claims and role hierarchies.
 
+---
+
+## Deployment
+
+### Railway (Production)
+The application is deployed on [Railway](https://railway.app/) with separate services for the backend API and frontend static build.
+
+| Service | URL |
+|---------|-----|
+| Frontend | `https://gwdspm.up.railway.app` |
+| Backend API | Set via `VITE_API_BASE_URL` env var |
+
+**Required Environment Variables (Backend):**
+| Variable | Description |
+|----------|-------------|
+| `DB_URI` | MongoDB Atlas connection string |
+| `JWT_SECRET` | Min 32 chars, used for access tokens |
+| `JWT_REFRESH_SECRET` | Min 32 chars, used for refresh tokens |
+| `NODE_ENV` | Set to `production` for Railway |
+| `RAZORPAY_KEY_ID` | Optional — Razorpay API key |
+| `RAZORPAY_KEY_SECRET` | Optional — Razorpay secret |
+| `CORS_ORIGIN` | Optional — comma-separated custom origins |
+
+**Required Environment Variables (Frontend):**
+| Variable | Description |
+|----------|-------------|
+| `VITE_API_BASE_URL` | Full backend API URL (e.g. `https://your-backend.up.railway.app/api`) |
+
+---
+
+## Recent Development Log (May 2026)
+
+### Admin Command Center Dashboard
+- **`GET /api/admin/dashboard`** — Unified KPI aggregation endpoint providing real-time student demographics, attendance rates with historical trends, financial health metrics, trainer load distribution, and automated "Drop-off Detection" for students absent 7+ days.
+- **`CommandCenter.tsx`** — Responsive dashboard component with 4 KPI hero cards, live-data widgets, and actionable drop-off alert system with click-to-contact integration.
+- **Top Performers Leaderboard** — Gold/silver/bronze medal ranking with click-to-view student detail dialog showing full performance history with color-coded progress bars.
+- **Popular Sports Sidebar** — Visual breakdown of trainer distribution across sports.
+
+### Financial Command Center
+- **`GET /api/admin/finance-analytics`** — Deep financial analytics endpoint aggregating:
+  - Lifetime, monthly, and quarterly revenue with period-over-period growth
+  - Payment status breakdown (success/pending/failed) with collection rate
+  - 12-month revenue trend data (gap-filled for missing months)
+  - 30-day daily revenue granularity
+  - Academy-wise revenue distribution
+  - Top paying students with contact details
+  - Fee defaulter list with outstanding amounts
+  - Average transaction value computation
+- **`FinanceDashboard.tsx`** — Rich SVG-based analytics dashboard featuring:
+  - 6 KPI hero cards with growth indicators
+  - Interactive 12-month revenue bar chart with hover tooltips
+  - Daily revenue sparkline area chart
+  - Payment status donut chart with amount breakdowns
+  - Academy revenue distribution bars
+  - Top payers leaderboard with direct contact links
+  - Actionable fee defaulter list with phone/email shortcuts
+
+### Cricket Performance Tracking
+- **Bowling Strike Rate & Fielding Rating** — Added to student performance evaluations with real-world calculation formulas.
+- **Student Performance Dialog** — Click any leaderboard entry to see full performance history with per-category progress bars and evaluator attribution.
+
+### Production Stability Fixes
+- **CORS Configuration** — Dynamic origin validation supporting any `*.railway.app` subdomain plus `CORS_ORIGIN` environment variable for custom domains.
+- **Proxy Trust** — Added `app.set('trust proxy', 1)` to fix rate limiting on Railway (was blocking all users because it saw the load balancer's IP as a single client).
+- **Rate Limiter Tuning** — Auth route limit increased from 5 to 20 attempts per 15-min window for smoother multi-account testing.
+- **Razorpay Env** — Made `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` optional with empty defaults so the server boots without payment credentials.
+- **TypeScript Build Fixes** — Resolved DTS generation errors by explicit `req.params` casting and Mongoose subdocument type handling.
+- **JSX Structure** — Fixed missing `</TabsContent>` closing tags causing Babel parse failures.
+
+### API Architecture Notes
+- All dashboard endpoints use complex MongoDB aggregation pipelines server-side to minimize client computation.
+- Frontend components are modularized under `frontend/src/components/admin/dashboard/` and `frontend/src/components/admin/fees/`.
+- Charts are rendered as pure SVG (no external charting library) for zero-dependency, pixel-perfect control.
+
+---
+
+## Project Structure
+
+```
+academy/
+├── backend/
+│   ├── src/
+│   │   ├── config/          # DB connection, env validation (Zod)
+│   │   ├── controllers/     # Business logic (admin, payment, event, etc.)
+│   │   ├── middleware/       # Auth, rate limiting, validation
+│   │   ├── routers/          # Express route definitions
+│   │   ├── schemas/          # Mongoose models & interfaces
+│   │   └── utils/            # Logger, helpers
+│   └── tsup.config.ts        # Build configuration
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── admin/
+│   │   │   │   ├── dashboard/   # CommandCenter, leaderboard
+│   │   │   │   └── fees/        # FinanceDashboard, FeesManagement
+│   │   │   ├── user/            # Student/trainer profile components
+│   │   │   └── ui/              # Shadcn UI primitives
+│   │   ├── pages/               # Route-level page components
+│   │   ├── services/            # API service layer
+│   │   └── store/               # Redux store & slices
+│   └── vite.config.ts
+└── package.json                 # Root workspace scripts
+```

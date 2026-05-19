@@ -1327,4 +1327,274 @@ export class AdminDashboardController {
       });
     }
   }
+
+  /**
+   * GET /admin/finance-analytics
+   * Deep financial analytics for the Fees Management dashboard
+   */
+  static async getFinanceAnalytics(req: AuthRequest, res: Response) {
+    try {
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+      const startOfQuarter = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1);
+      const startOfLastQuarter = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3 - 3, 1);
+      const endOfLastQuarter = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 0);
+      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const twelveMonthsAgo = new Date(now.getFullYear() - 1, now.getMonth(), 1);
+
+      // ── 1. Lifetime & Period Totals ──
+      const [lifetimeAgg, monthAgg, lastMonthAgg, quarterAgg, lastQuarterAgg] = await Promise.all([
+        FeePayment.aggregate([
+          { $match: { status: 'success' } },
+          { $group: { _id: null, total: { $sum: '$amount' }, count: { $sum: 1 } } },
+        ]),
+        FeePayment.aggregate([
+          { $match: { status: 'success', createdAt: { $gte: startOfMonth } } },
+          { $group: { _id: null, total: { $sum: '$amount' }, count: { $sum: 1 } } },
+        ]),
+        FeePayment.aggregate([
+          { $match: { status: 'success', createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth } } },
+          { $group: { _id: null, total: { $sum: '$amount' }, count: { $sum: 1 } } },
+        ]),
+        FeePayment.aggregate([
+          { $match: { status: 'success', createdAt: { $gte: startOfQuarter } } },
+          { $group: { _id: null, total: { $sum: '$amount' }, count: { $sum: 1 } } },
+        ]),
+        FeePayment.aggregate([
+          { $match: { status: 'success', createdAt: { $gte: startOfLastQuarter, $lte: endOfLastQuarter } } },
+          { $group: { _id: null, total: { $sum: '$amount' }, count: { $sum: 1 } } },
+        ]),
+      ]);
+
+      const lifetimeRevenue = lifetimeAgg[0]?.total || 0;
+      const lifetimeCount = lifetimeAgg[0]?.count || 0;
+      const monthlyRevenue = monthAgg[0]?.total || 0;
+      const lastMonthRevenue = lastMonthAgg[0]?.total || 0;
+      const quarterRevenue = quarterAgg[0]?.total || 0;
+      const lastQuarterRevenue = lastQuarterAgg[0]?.total || 0;
+
+      const monthGrowth = lastMonthRevenue > 0
+        ? Math.round(((monthlyRevenue - lastMonthRevenue) / lastMonthRevenue) * 100)
+        : monthlyRevenue > 0 ? 100 : 0;
+      const quarterGrowth = lastQuarterRevenue > 0
+        ? Math.round(((quarterRevenue - lastQuarterRevenue) / lastQuarterRevenue) * 100)
+        : quarterRevenue > 0 ? 100 : 0;
+
+      // ── 2. Payment Status Breakdown (All-Time) ──
+      const statusBreakdown = await FeePayment.aggregate([
+        {
+          $group: {
+            _id: '$status',
+            count: { $sum: 1 },
+            total: { $sum: '$amount' },
+          },
+        },
+      ]);
+
+      const statusMap: Record<string, { count: number; total: number }> = {};
+      statusBreakdown.forEach((s: any) => {
+        statusMap[s._id] = { count: s.count, total: s.total };
+      });
+      const totalTransactions = (statusMap.success?.count || 0) + (statusMap.pending?.count || 0) + (statusMap.failed?.count || 0);
+      const collectionRate = totalTransactions > 0
+        ? Math.round(((statusMap.success?.count || 0) / totalTransactions) * 1000) / 10
+        : 0;
+
+      // ── 3. Monthly Revenue Trend (Last 12 Months) ──
+      const monthlyTrend = await FeePayment.aggregate([
+        { $match: { status: 'success', createdAt: { $gte: twelveMonthsAgo } } },
+        {
+          $group: {
+            _id: {
+              year: { $year: '$createdAt' },
+              month: { $month: '$createdAt' },
+            },
+            revenue: { $sum: '$amount' },
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { '_id.year': 1, '_id.month': 1 } },
+      ]);
+
+      // Fill in missing months with 0
+      const trendData: { month: string; label: string; revenue: number; count: number }[] = [];
+      for (let i = 11; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const y = d.getFullYear();
+        const m = d.getMonth() + 1;
+        const found = monthlyTrend.find((t: any) => t._id.year === y && t._id.month === m);
+        trendData.push({
+          month: `${y}-${String(m).padStart(2, '0')}`,
+          label: d.toLocaleString('en-US', { month: 'short' }),
+          revenue: found ? found.revenue : 0,
+          count: found ? found.count : 0,
+        });
+      }
+
+      // ── 4. Daily Revenue (Last 30 Days) ──
+      const dailyRevenue = await FeePayment.aggregate([
+        { $match: { status: 'success', createdAt: { $gte: thirtyDaysAgo } } },
+        {
+          $group: {
+            _id: {
+              year: { $year: '$createdAt' },
+              month: { $month: '$createdAt' },
+              day: { $dayOfMonth: '$createdAt' },
+            },
+            revenue: { $sum: '$amount' },
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1 } },
+      ]);
+
+      const dailyData: { date: string; revenue: number; count: number }[] = [];
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+        const y = d.getFullYear();
+        const m = d.getMonth() + 1;
+        const day = d.getDate();
+        const found = dailyRevenue.find((t: any) => t._id.year === y && t._id.month === m && t._id.day === day);
+        dailyData.push({
+          date: `${String(m).padStart(2, '0')}/${String(day).padStart(2, '0')}`,
+          revenue: found ? found.revenue : 0,
+          count: found ? found.count : 0,
+        });
+      }
+
+      // ── 5. Academy-wise Revenue ──
+      const academyRevenue = await FeePayment.aggregate([
+        { $match: { status: 'success', studentId: { $ne: null } } },
+        { $lookup: { from: 'studentprofiles', localField: 'studentId', foreignField: 'userId', as: 'student' } },
+        { $unwind: { path: '$student', preserveNullAndEmptyArrays: true } },
+        { $lookup: { from: 'academies', localField: 'student.academyId', foreignField: '_id', as: 'academy' } },
+        {
+          $group: {
+            _id: { $arrayElemAt: ['$academy.name', 0] },
+            revenue: { $sum: '$amount' },
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { revenue: -1 } },
+        { $limit: 10 },
+      ]);
+
+      // ── 6. Top Paying Students ──
+      const topPayers = await FeePayment.aggregate([
+        { $match: { status: 'success', studentId: { $ne: null } } },
+        {
+          $group: {
+            _id: '$studentId',
+            totalPaid: { $sum: '$amount' },
+            txnCount: { $sum: 1 },
+            lastPayment: { $max: '$createdAt' },
+          },
+        },
+        { $sort: { totalPaid: -1 } },
+        { $limit: 10 },
+        { $lookup: { from: 'users', localField: '_id', foreignField: '_id', as: 'user' } },
+        { $unwind: '$user' },
+        {
+          $project: {
+            name: '$user.name',
+            email: '$user.email',
+            phone: '$user.phone',
+            totalPaid: 1,
+            txnCount: 1,
+            lastPayment: 1,
+          },
+        },
+      ]);
+
+      // ── 7. Overdue / Defaulters ──
+      const defaulters = await StudentProfile.find({ outstandingFees: { $gt: 0 }, isActive: true })
+        .populate('userId', 'name email phone')
+        .populate('academyId', 'name')
+        .sort({ outstandingFees: -1 })
+        .limit(15)
+        .lean();
+
+      const totalOutstandingAgg = await StudentProfile.aggregate([
+        { $match: { isActive: true, outstandingFees: { $gt: 0 } } },
+        { $group: { _id: null, total: { $sum: '$outstandingFees' }, count: { $sum: 1 } } },
+      ]);
+
+      // ── 8. Avg Transaction Value ──
+      const avgTxn = lifetimeCount > 0 ? Math.round(lifetimeRevenue / lifetimeCount) : 0;
+
+      // ── 9. Recent Transactions (last 10) ──
+      const recentTransactions = await FeePayment.find()
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .populate({ path: 'studentId', select: 'name email', model: 'User' })
+        .lean();
+
+      res.json({
+        success: true,
+        data: {
+          summary: {
+            lifetimeRevenue,
+            lifetimeCount,
+            monthlyRevenue,
+            lastMonthRevenue,
+            monthGrowth,
+            quarterRevenue,
+            lastQuarterRevenue,
+            quarterGrowth,
+            avgTransactionValue: avgTxn,
+            collectionRate,
+            totalOutstanding: totalOutstandingAgg[0]?.total || 0,
+            defaulterCount: totalOutstandingAgg[0]?.count || 0,
+          },
+          statusBreakdown: {
+            success: statusMap.success || { count: 0, total: 0 },
+            pending: statusMap.pending || { count: 0, total: 0 },
+            failed: statusMap.failed || { count: 0, total: 0 },
+            totalTransactions,
+          },
+          monthlyTrend: trendData,
+          dailyTrend: dailyData,
+          academyRevenue: academyRevenue.map((a: any) => ({
+            name: a._id || 'Unassigned',
+            revenue: a.revenue,
+            count: a.count,
+          })),
+          topPayers: topPayers.map((p: any) => ({
+            id: p._id,
+            name: p.name,
+            email: p.email,
+            phone: p.phone,
+            totalPaid: p.totalPaid,
+            txnCount: p.txnCount,
+            lastPayment: p.lastPayment,
+          })),
+          defaulters: defaulters.map((d: any) => ({
+            id: d._id,
+            name: d.userId?.name,
+            email: d.userId?.email,
+            phone: d.userId?.phone,
+            academy: (d.academyId as any)?.name || 'Unassigned',
+            outstanding: d.outstandingFees,
+            level: d.level,
+          })),
+          recentTransactions: recentTransactions.map((t: any) => ({
+            id: t._id,
+            orderId: t.orderId,
+            paymentId: t.paymentId,
+            amount: t.amount,
+            status: t.status,
+            receipt: t.receipt,
+            studentName: t.studentId?.name || null,
+            studentEmail: t.studentId?.email || null,
+            createdAt: t.createdAt,
+          })),
+        },
+      });
+    } catch (error) {
+      logger.error('Finance analytics error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  }
 }

@@ -19,6 +19,7 @@ import type {
   AdminFeePaymentsParams,
 } from "@/services/paymentService";
 import { toast } from "sonner";
+import { FinanceDashboard } from "./FinanceDashboard";
 
 export const FeesManagement: React.FC = () => {
   const [payments, setPayments] = useState<FeePaymentRecord[]>([]);
@@ -122,15 +123,21 @@ export const FeesManagement: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Fees Management</h2>
-          <p className="text-gray-500">
-            Monitor all transactions and overrides
-          </p>
-        </div>
-        <div className="flex items-center gap-2 text-sm font-medium text-gray-600 bg-white px-3 py-1.5 rounded-md border shadow-sm">
-          Total Transactions: {pagination.total}
+      {/* Financial Analytics Dashboard */}
+      <FinanceDashboard />
+
+      {/* Divider */}
+      <div className="border-t border-gray-200 pt-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Transaction Ledger</h2>
+            <p className="text-gray-500">
+              Complete payment history with filters and search
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-sm font-medium text-gray-600 bg-white px-3 py-1.5 rounded-md border shadow-sm">
+            Total Transactions: {pagination.total}
+          </div>
         </div>
       </div>
 

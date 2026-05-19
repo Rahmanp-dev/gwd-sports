@@ -42,6 +42,7 @@ router.use(authMiddleware, adminMiddleware);
 // DASHBOARD ROUTE
 // ========================
 router.get('/dashboard', AdminDashboardController.getDashboardStats);
+router.get('/finance-analytics', AdminDashboardController.getFinanceAnalytics);
 
 // ========================
 // SETTINGS ROUTES
