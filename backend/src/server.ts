@@ -16,6 +16,7 @@ const getAllowedOrigins = () => {
     const origins = [
       'https://mastergrade-production.up.railway.app',
       'https://gwd-spm-production.up.railway.app',
+      'https://gwdspm.up.railway.app',
     ];
     // Allow custom CORS_ORIGIN from env
     if (process.env.CORS_ORIGIN) {
