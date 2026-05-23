@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { BRAND_NAME } from "@/utils/constants";
 
 export default function ContactPage() {
   return (
@@ -20,10 +21,10 @@ export default function ContactPage() {
                 Email us for support or general enquiries.
               </p>
               <a
-                href="mailto:hello@mastergrade.com"
+                href={`mailto:hello@${BRAND_NAME.toLowerCase().replace(/\s/g, "")}.com`}
                 className="inline-block mt-4 bg-yellow-400 text-black font-semibold px-4 py-2 rounded-md"
               >
-                Email: hello@mastergrade.com
+                Email: hello@{BRAND_NAME.toLowerCase().replace(/\s/g, "")}.com
               </a>
 
               <div className="mt-6">
@@ -31,7 +32,7 @@ export default function ContactPage() {
                   Office
                 </h4>
                 <p className="text-gray-300 mt-2">
-                  MasterGrade Academy, 123 Sport Avenue, City, Country
+                  {BRAND_NAME} Academy, 123 Sport Avenue, City, Country
                 </p>
               </div>
             </div>

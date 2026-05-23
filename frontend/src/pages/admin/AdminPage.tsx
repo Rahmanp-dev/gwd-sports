@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { BRAND_NAME } from "@/utils/constants";
 import {
   LayoutDashboard,
   Users,
@@ -12,6 +13,7 @@ import {
   CreditCard,
   Package,
   LogOut,
+  Settings,
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { logout } from "@/store/slices/authSlice";
@@ -40,7 +42,7 @@ export default function AdminPage() {
       <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">
-            MasterGrade Admin
+            {BRAND_NAME} Admin
           </h1>
           <div className="flex items-center gap-4">
             <div className="hidden md:block text-right">
@@ -136,7 +138,7 @@ export default function AdminPage() {
                 value="settings"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
-                <LayoutDashboard className="h-4 w-4 mr-2" />
+                <Settings className="h-4 w-4 mr-2" />
                 Settings
               </TabsTrigger>
             </TabsList>
@@ -233,7 +235,7 @@ export default function AdminPage() {
       {/* Footer */}
       <footer className="bg-white border-t mt-6 py-4">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} MasterGrade Admin. All rights reserved.
+          © {new Date().getFullYear()} {BRAND_NAME} Admin. All rights reserved.
         </div>
       </footer>
     </div>

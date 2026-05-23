@@ -5,6 +5,12 @@ export interface SystemSettings {
   performanceMetrics: string[];
   defaultFeeAmount: number;
   currency: string;
+  heroMode?: "video" | "carousel";
+  heroImages?: string[];
+  logoUrl?: string;
+  logoAlignment?: "top_left" | "middle";
+  logoIsCircular?: boolean;
+  logoScale?: number;
 }
 
 export const getSystemSettings = async (): Promise<SystemSettings> => {
@@ -17,4 +23,28 @@ export const updateSystemSettings = async (
 ): Promise<SystemSettings> => {
   const response = await apiService.put("/admin/settings", settings);
   return (response as any).data;
+};
+
+export const uploadHeroImages = async (files: File[]): Promise<string[]> => {
+  const formData = new FormData();
+  files.forEach((file) => formData.append("images", file));
+
+  const response = await apiService.post("/admin/settings/upload-hero", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return (response as any).data.urls;
+};
+
+export const uploadLogo = async (file: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append("logo", file);
+
+  const response = await apiService.post("/admin/settings/upload-logo", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return (response as any).data.url;
 };

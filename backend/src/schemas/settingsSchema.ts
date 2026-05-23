@@ -4,6 +4,10 @@ export interface IGlobalSettings extends Document {
   performanceMetrics: string[];
   defaultFeeAmount: number;
   currency: string;
+  logoUrl?: string;
+  logoAlignment?: 'top_left' | 'middle';
+  logoIsCircular?: boolean;
+  logoScale?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -21,6 +25,32 @@ const globalSettingsSchema = new Schema<IGlobalSettings>(
     currency: {
       type: String,
       default: 'INR',
+    },
+    heroMode: {
+      type: String,
+      enum: ['video', 'carousel'],
+      default: 'video'
+    },
+    heroImages: {
+      type: [String],
+      default: []
+    },
+    logoUrl: {
+      type: String,
+      default: ''
+    },
+    logoAlignment: {
+      type: String,
+      enum: ['top_left', 'middle'],
+      default: 'top_left'
+    },
+    logoIsCircular: {
+      type: Boolean,
+      default: false
+    },
+    logoScale: {
+      type: Number,
+      default: 100
     }
   },
   { timestamps: true }

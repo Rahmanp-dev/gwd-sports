@@ -17,6 +17,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { BRAND_NAME } from "@/utils/constants";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -213,7 +221,7 @@ export const AcademyForm: React.FC<AcademyFormProps> = ({
                   <FormLabel>Academy Name *</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Mastergrade FC Academy"
+                      placeholder={`${BRAND_NAME} FC Academy`}
                       {...field}
                       disabled={isLoading}
                     />

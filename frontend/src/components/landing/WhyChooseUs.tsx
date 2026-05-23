@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Award, Users, Target, TrendingUp, Shield, Zap } from "lucide-react";
+import { BRAND_NAME } from "@/utils/constants";
 
 const reasons = [
   {
@@ -86,7 +87,7 @@ export default function WhyChooseUs() {
             className="inline-flex items-center gap-3 px-8 py-3 bg-amber-500/20 backdrop-blur-md border border-amber-500/30 text-amber-400 rounded-full mb-8"
           >
             <span className="text-sm font-black uppercase tracking-[0.3em] font-display">
-              Why Master Grade
+              Why {BRAND_NAME}
             </span>
           </motion.div>
 

@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'path';
 import cors from 'cors';
 import helmet from 'helmet';
 import config from './config/env';
@@ -59,6 +60,9 @@ app.use(helmet({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static uploads (like landing page hero images)
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Connect to the database and start server
 const startServer = async () => {

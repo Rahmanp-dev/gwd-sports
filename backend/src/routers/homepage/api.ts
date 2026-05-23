@@ -4,8 +4,11 @@ import { authMiddleware, adminMiddleware } from "../../middleware/auth";
 
 const router = Router();
 
-// Public route
+import { getPublicSettings } from "../../controllers/admin/settingsController";
+
+// Public routes
 router.get("/events", HomepageController.getLandingPageEvents);
+router.get("/settings", getPublicSettings);
 
 // Admin routes
 router.use(authMiddleware, adminMiddleware);

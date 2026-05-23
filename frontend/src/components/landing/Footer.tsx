@@ -9,6 +9,7 @@ import {
   MapPin,
   Zap,
 } from "lucide-react";
+import { BRAND_NAME } from "@/utils/constants";
 
 export default function Footer() {
   return (
@@ -40,9 +41,9 @@ export default function Footer() {
             viewport={{ once: true }}
           >
             <h3 className="text-5xl font-black uppercase mb-4 tracking-tight font-display">
-              Master{" "}
+              {BRAND_NAME.split(" ")[0] || BRAND_NAME}{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-500">
-                Grade
+                {BRAND_NAME.split(" ")[1] || ""}
               </span>
             </h3>
             <div className="w-20 h-1 bg-gradient-to-r from-amber-500 to-yellow-500 mb-6 shadow-lg shadow-amber-500/50" />
@@ -158,7 +159,7 @@ export default function Footer() {
               >
                 <Mail className="w-6 h-6 mt-1 text-amber-500 flex-shrink-0" />
                 <span className="font-bold text-base mt-1">
-                  hello@mastergrade.com
+                  hello@{BRAND_NAME.toLowerCase().replace(/\s/g, "")}.com
                 </span>
               </motion.li>
               <motion.li
@@ -181,7 +182,7 @@ export default function Footer() {
           className="pt-10 border-t border-amber-500/20 flex flex-col sm:flex-row justify-between items-center gap-6"
         >
           <p className="text-gray-400 font-bold uppercase tracking-widest text-sm">
-            © {new Date().getFullYear()} Master Grade. All Rights Reserved.
+            © {new Date().getFullYear()} {BRAND_NAME}. All Rights Reserved.
           </p>
           <div className="flex gap-8">
             <a

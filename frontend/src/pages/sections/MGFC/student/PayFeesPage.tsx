@@ -88,7 +88,7 @@ export default function PayFeesPage() {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_SS49Ahe904DIC8",
         amount: order.amount,
         currency: order.currency || "INR",
-        name: import.meta.env.VITE_APP_NAME || "MasterGrade FC",
+        name: import.meta.env.VITE_APP_NAME || BRAND_NAME,
         description: `Academy Fees Payment - ${user.name} (${user.email})`,
         order_id: order.id,
         notes: {
@@ -187,7 +187,7 @@ export default function PayFeesPage() {
               Pay Academy Fees
             </CardTitle>
             <CardDescription className="text-gray-400 text-base mt-2">
-              Complete your payment for MasterGrade FC
+              Complete your payment for {BRAND_NAME}
             </CardDescription>
           </CardHeader>
 

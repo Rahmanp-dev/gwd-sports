@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BRAND_NAME } from "@/utils/constants";
 
 const testimonials = [
   {
@@ -10,7 +11,7 @@ const testimonials = [
     image:
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
     content:
-      "Master Grade didn't just improve my game - they transformed my entire life. From struggling player to state champion in 18 months. The coaches here are legends!",
+      `${BRAND_NAME} didn't just improve my game - they transformed my entire life. From struggling player to state champion in 18 months. The coaches here are legends!`,
     rating: 5,
     achievement: "State Champion 2025",
   },
@@ -20,7 +21,7 @@ const testimonials = [
     image:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
     content:
-      "The intensity, professionalism, and world-class training here pushed me beyond my limits. Now I'm playing professionally. Dreams do come true at Master Grade!",
+      `The intensity, professionalism, and world-class training here pushed me beyond my limits. Now I'm playing professionally. Dreams do come true at ${BRAND_NAME}!`,
     rating: 5,
     achievement: "Pro League Player",
   },
@@ -30,7 +31,7 @@ const testimonials = [
     image:
       "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
     content:
-      "Olympic-standard facilities, expert coaches, and a supportive community. Master Grade gave me everything I needed to become a national champion. Forever grateful!",
+      `Olympic-standard facilities, expert coaches, and a supportive community. ${BRAND_NAME} gave me everything I needed to become a national champion. Forever grateful!`,
     rating: 5,
     achievement: "National Gold Medalist",
   },

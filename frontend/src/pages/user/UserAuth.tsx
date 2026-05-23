@@ -29,7 +29,9 @@ import {
   Target,
   Eye,
   EyeOff,
+  LayoutDashboard,
 } from "lucide-react";
+import { BRAND_NAME } from "@/utils/constants";
 
 export default function UserAuth() {
   const navigate = useNavigate();
@@ -229,7 +231,7 @@ export default function UserAuth() {
               <h1 className="text-5xl font-bold text-white mb-4">
                 Welcome to{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500">
-                  MasterGrade
+                  {BRAND_NAME}
                 </span>
               </h1>
               <p className="text-xl text-gray-400">

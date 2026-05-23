@@ -3,6 +3,7 @@ import { AdminUserController, AdminStudentController, AdminTrainerController, Ad
 import { EventController } from '../../controllers/event';
 import { TrainerController } from '../../controllers/trainer';
 import { getSettings, updateSettings } from '../../controllers/admin/settingsController';
+import { upload, uploadHeroImages, uploadLogoMulter, uploadLogoImage } from '../../controllers/admin/uploadController';
 import { authMiddleware, adminMiddleware } from '../../middleware/auth';
 import { 
   validateCreateUser, 
@@ -48,6 +49,8 @@ router.get('/finance-analytics', AdminDashboardController.getFinanceAnalytics);
 // SETTINGS ROUTES
 // ========================
 router.put('/settings', updateSettings);
+router.post('/settings/upload-hero', upload.array('images', 5), uploadHeroImages);
+router.post('/settings/upload-logo', uploadLogoMulter.single('logo'), uploadLogoImage);
 
 // ========================
 // EVENT MANAGEMENT ROUTES

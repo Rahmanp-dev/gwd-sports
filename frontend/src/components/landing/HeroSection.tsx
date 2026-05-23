@@ -1,34 +1,103 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Phone, Zap } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { BRAND_NAME, API_BASE_URL, IMAGE_BASE_URL } from "@/utils/constants";
+import axios from "axios";
 
 export default function HeroSection() {
-  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [mediaLoaded, setMediaLoaded] = useState(false);
+  const [heroMode, setHeroMode] = useState<"video" | "carousel">("video");
+  const [heroImages, setHeroImages] = useState<string[]>([]);
+  const [logoUrl, setLogoUrl] = useState<string>("");
+  const [logoAlignment, setLogoAlignment] = useState<"top_left" | "middle">("top_left");
+  const [logoIsCircular, setLogoIsCircular] = useState<boolean>(false);
+  const [logoScale, setLogoScale] = useState<number>(100);
+  const [currentImageIdx, setCurrentImageIdx] = useState(0);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/homepage/settings`);
+        if (res.data?.success && res.data.data) {
+          setHeroMode(res.data.data.heroMode || "video");
+          setHeroImages(res.data.data.heroImages || []);
+          setLogoUrl(res.data.data.logoUrl || "");
+          setLogoAlignment(res.data.data.logoAlignment || "top_left");
+          setLogoIsCircular(res.data.data.logoIsCircular || false);
+          setLogoScale(res.data.data.logoScale || 100);
+        }
+      } catch (err) {
+        console.error("Failed to fetch landing page settings:", err);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  // Carousel timer
+  useEffect(() => {
+    if (heroMode === "carousel" && heroImages.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentImageIdx((prev) => (prev + 1) % heroImages.length);
+      }, 5000); // 5 seconds per slide
+      return () => clearInterval(interval);
+    }
+  }, [heroMode, heroImages]);
+
+  // If carousel and images exist, consider media loaded immediately
+  useEffect(() => {
+    if (heroMode === "carousel" && heroImages.length > 0) {
+      setMediaLoaded(true);
+    }
+  }, [heroMode, heroImages]);
+
+  const brandFirstPart = BRAND_NAME.split(" ")[0] || BRAND_NAME;
+  const brandSecondPart = BRAND_NAME.split(" ")[1] || "";
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black">
-      {/* Background Video with Overlay */}
+      {/* Background Media with Overlay */}
       <div className="absolute inset-0">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          onLoadedData={() => setVideoLoaded(true)}
-          className="w-full h-full object-cover"
-        >
-          <source src="/videos/landing.webm" type="video/webm" />
-        </video>
+        {heroMode === "video" ? (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            onLoadedData={() => setMediaLoaded(true)}
+            className="w-full h-full object-cover"
+          >
+            <source src="/videos/landing.webm" type="video/webm" />
+          </video>
+        ) : (
+          <AnimatePresence mode="wait">
+            {heroImages.length > 0 ? (
+              <motion.img
+                key={currentImageIdx}
+                src={heroImages[currentImageIdx].startsWith('http') ? heroImages[currentImageIdx] : `${IMAGE_BASE_URL}${heroImages[currentImageIdx]}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.5 }}
+                className="absolute inset-0 w-full h-full object-cover"
+                alt="Hero Carousel"
+              />
+            ) : (
+              // Fallback if carousel mode but no images
+              <div className="absolute inset-0 bg-gray-900" />
+            )}
+          </AnimatePresence>
+        )}
+        
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: videoLoaded ? 1 : 0 }}
+          animate={{ opacity: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 1 : 0 }}
           transition={{ duration: 1.5, delay: 0.5 }}
           className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/50 to-black/85"
         />
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: videoLoaded ? 1 : 0 }}
+          animate={{ opacity: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 1 : 0 }}
           transition={{ duration: 1.5, delay: 0.8 }}
           className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-amber-500/20 via-transparent to-transparent"
         />
@@ -36,7 +105,7 @@ export default function HeroSection() {
 
       {/* Animated Background Elements */}
       <AnimatePresence>
-        {videoLoaded && (
+        {(mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0)) && (
           <>
             <motion.div
               initial={{ opacity: 0, scale: 0 }}
@@ -70,45 +139,57 @@ export default function HeroSection() {
         )}
       </AnimatePresence>
 
-      {/* Top Section - MASTER GRADE */}
+      {/* Top Section - BRAND NAME or LOGO */}
       <div className="absolute top-[10%] left-0 right-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Floating Badge */}
-          {/* <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: videoLoaded ? 1 : 0, y: videoLoaded ? 0 : -20 }}
-            transition={{ duration: 1, delay: 1.5 }}
-            className="inline-block mb-8"
+        {logoUrl && logoAlignment === 'top_left' && (
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 1 : 0, x: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 0 : -30 }}
+            transition={{ duration: 1, delay: 1 }}
+            className="absolute top-[-50px] sm:top-[-80px] left-8 sm:left-12 lg:left-16 flex items-center justify-center"
           >
-            <div className="inline-flex items-center gap-3 px-8 py-4 bg-amber-500/20 backdrop-blur-md border border-amber-500/30 rounded-full shadow-2xl shadow-amber-500/30">
-              <Zap className="w-5 h-5 text-amber-400 animate-pulse" />
-              <span className="text-amber-400 text-sm font-black uppercase tracking-[0.3em] font-display">
-                Elite Sports Academy
-              </span>
-            </div>
-          </motion.div> */}
+            <img 
+              src={logoUrl.startsWith('http') ? logoUrl : `${IMAGE_BASE_URL}${logoUrl}`} 
+              alt="Brand Logo" 
+              className={`h-24 sm:h-32 lg:h-40 drop-shadow-2xl ${logoIsCircular ? 'rounded-full object-cover aspect-square' : 'object-contain'}`} 
+              style={{ transform: `scale(${logoScale / 100})`, transformOrigin: 'top left' }}
+            />
+          </motion.div>
+        )}
 
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Main Heading with Stagger */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: videoLoaded ? 1 : 0, y: videoLoaded ? 0 : 30 }}
+            animate={{ opacity: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 1 : 0, y: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 0 : 30 }}
             transition={{ duration: 1.2, delay: 1.8 }}
-            className="flex justify-center"
+            className={`flex justify-center ${logoUrl && logoAlignment === 'top_left' ? 'mt-24 sm:mt-0' : ''}`}
           >
-            <h1 className="text-7xl sm:text-8xl lg:text-[140px] font-black text-white uppercase leading-[0.9] tracking-tighter font-display flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
-              MASTER
-              <motion.span
-                initial={{ opacity: 0, x: -50 }}
-                animate={{
-                  opacity: videoLoaded ? 1 : 0,
-                  x: videoLoaded ? 0 : -50,
-                }}
-                transition={{ duration: 1, delay: 2.2 }}
-                className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 drop-shadow-[0_0_30px_rgba(251,191,36,0.8)] font-display"
-              >
-                GRADE
-              </motion.span>
-            </h1>
+            {logoUrl && logoAlignment === 'middle' ? (
+              <img 
+                src={logoUrl.startsWith('http') ? logoUrl : `${IMAGE_BASE_URL}${logoUrl}`} 
+                alt="Brand Logo" 
+                className={`h-40 sm:h-56 lg:h-72 drop-shadow-2xl ${logoIsCircular ? 'rounded-full object-cover aspect-square' : 'object-contain'}`} 
+                style={{ transform: `scale(${logoScale / 100})`, transformOrigin: 'center center' }}
+              />
+            ) : (
+              <h1 className="text-7xl sm:text-8xl lg:text-[140px] font-black text-white uppercase leading-[0.9] tracking-tighter font-display flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+                {brandFirstPart}
+                {brandSecondPart && (
+                  <motion.span
+                    initial={{ opacity: 0, x: -50 }}
+                    animate={{
+                      opacity: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 1 : 0,
+                      x: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 0 : -50,
+                    }}
+                    transition={{ duration: 1, delay: 2.2 }}
+                    className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 drop-shadow-[0_0_30px_rgba(251,191,36,0.8)] font-display"
+                  >
+                    {brandSecondPart}
+                  </motion.span>
+                )}
+              </h1>
+            )}
           </motion.div>
         </div>
       </div>
@@ -121,8 +202,8 @@ export default function HeroSection() {
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{
-                opacity: videoLoaded ? 1 : 0,
-                y: videoLoaded ? 0 : 20,
+                opacity: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 1 : 0,
+                y: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 0 : 20,
               }}
               transition={{ duration: 1, delay: 2.8 }}
               className="text-3xl sm:text-4xl lg:text-5xl text-white font-black uppercase tracking-wider drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] font-display"
@@ -130,23 +211,12 @@ export default function HeroSection() {
               Where Legends Are Born
             </motion.p>
 
-            {/* Description */}
-            {/* <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: videoLoaded ? 1 : 0 }}
-              transition={{ duration: 1, delay: 3.2 }}
-              className="text-xl sm:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed font-semibold"
-            >
-              Transform your passion into power. Elite coaching, world-class
-              facilities, and a community of champions waiting for you.
-            </motion.p> */}
-
             {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{
-                opacity: videoLoaded ? 1 : 0,
-                y: videoLoaded ? 0 : 20,
+                opacity: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 1 : 0,
+                y: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 0 : 20,
               }}
               transition={{ duration: 1, delay: 3.6 }}
               className="flex justify-center"
@@ -172,61 +242,6 @@ export default function HeroSection() {
           </div>
         </div>
       </div>
-
-      {/* Floating Stats */}
-      {/* <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: videoLoaded ? 1 : 0, y: videoLoaded ? 0 : 40 }}
-        transition={{ duration: 1, delay: 4 }}
-        className="grid grid-cols-3 gap-8 mt-20 max-w-4xl mx-auto"
-      >
-        {[
-          { value: "10K+", label: "Athletes" },
-          { value: "7", label: "Sports" },
-          { value: "98%", label: "Success" },
-        ].map((stat, index) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: videoLoaded ? 1 : 0, y: videoLoaded ? 0 : 20 }}
-            transition={{ duration: 0.8, delay: 4.2 + index * 0.15 }}
-            whileHover={{ y: -10, scale: 1.05 }}
-            className="relative group"
-          >
-            <div className="bg-amber-500/10 backdrop-blur-md border border-amber-500/20 p-6 rounded-2xl shadow-2xl hover:shadow-[0_0_40px_rgba(251,191,36,0.4)] transition-all duration-300">
-              <div className="text-5xl sm:text-6xl font-black text-amber-500 mb-2 drop-shadow-[0_0_20px_rgba(251,191,36,0.5)] font-display">
-                {stat.value}
-              </div>
-              <div className="text-amber-300 uppercase tracking-[0.2em] font-bold text-sm font-display">
-                {stat.label}
-              </div>
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-          </motion.div>
-        ))}
-      </motion.div> */}
-
-      {/* Scroll Indicator */}
-      {/* <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ 
-          opacity: videoLoaded ? 1 : 0,
-          y: videoLoaded ? [0, 15, 0] : 0 
-        }}
-        transition={{ 
-          opacity: { duration: 1, delay: 4.5 },
-          y: { duration: 2, repeat: Infinity } 
-        }}
-        className="absolute bottom-5 left-1/2 -translate-x-1/2"
-      >
-        <div className="w-8 h-14 border-4 border-amber-500/40 rounded-full flex justify-center p-2">
-          <motion.div
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="w-2 h-2 bg-amber-500 rounded-full shadow-[0_0_10px_rgba(251,191,36,0.8)]"
-          />
-        </div>
-      </motion.div> */}
     </section>
   );
 }

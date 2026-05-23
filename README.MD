@@ -105,10 +105,20 @@ The application is deployed on [Railway](https://railway.app/) with separate ser
 | Variable | Description |
 |----------|-------------|
 | `VITE_API_BASE_URL` | Full backend API URL (e.g. `https://your-backend.up.railway.app/api`) |
+| `VITE_BRAND_NAME` | Global brand name string used across the app (defaults to "MasterGrade") |
 
 ---
 
 ## Recent Development Log (May 2026)
+
+### Landing Page & Brand Customization
+- **Global Branding** — Introduced `VITE_BRAND_NAME` to seamlessly inject custom brand text across the footer, navigation, and auth pages.
+- **Hero Section Customization** — Admin dashboard now controls whether the landing page shows a default background video or an interactive image carousel.
+- **Dynamic Logo Engine** — Upload a high-quality brand logo directly from the Admin settings:
+  - Supports structural alignment choices (Top Left or Middle hero replacement).
+  - Built-in circular cropping mode.
+  - Granular sizing control via a custom scale slider (50% to 300%).
+- **Backend File Handling** — Implemented dedicated Multer endpoints for hero and logo image uploads, serving static assets cleanly while ensuring ES-module path safety (`process.cwd()`).
 
 ### Admin Command Center Dashboard
 - **`GET /api/admin/dashboard`** — Unified KPI aggregation endpoint providing real-time student demographics, attendance rates with historical trends, financial health metrics, trainer load distribution, and automated "Drop-off Detection" for students absent 7+ days.

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { BRAND_NAME } from "@/utils/constants";
 
 export default function AboutPage() {
   return (
@@ -6,10 +7,10 @@ export default function AboutPage() {
       <div className="max-w-4xl w-full">
         <div className="p-8 rounded-lg border border-yellow-700 bg-black/60">
           <h1 className="text-3xl font-bold text-yellow-400">
-            About MasterGrade
+            About {BRAND_NAME}
           </h1>
           <p className="mt-4 text-gray-300">
-            MasterGrade is dedicated to helping athletes reach their full
+            {BRAND_NAME} is dedicated to helping athletes reach their full
             potential through professional coaching, structured programs, and a
             supportive community. We combine data-driven training with
             experienced coaches to provide a best-in-class learning environment.
