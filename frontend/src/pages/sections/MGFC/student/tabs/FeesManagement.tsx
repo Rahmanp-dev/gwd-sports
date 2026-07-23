@@ -34,36 +34,39 @@ export default function FeesManagement() {
   const [isLoading, setIsLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
 
-  const fetchProfileAndHistory = useCallback(async (page: number) => {
-    try {
-      setIsLoading(true);
-      setProfileLoading(true);
-      
-      const [historyRes, profileRes] = await Promise.all([
-        getPaymentHistory(page, 6),
-        fetch("http://localhost:3000/api/student/profile", {
-          headers: { Authorization: `Bearer ${token}` }
-        }).then(res => res.json())
-      ]);
+  const fetchProfileAndHistory = useCallback(
+    async (page: number) => {
+      try {
+        setIsLoading(true);
+        setProfileLoading(true);
 
-      if (historyRes.success) {
-        setPayments(historyRes.data.payments);
-        setPagination(historyRes.data.pagination);
-      } else {
-        toast.error("Failed to load payment history");
-      }
+        const [historyRes, profileRes] = await Promise.all([
+          getPaymentHistory(page, 6),
+          fetch("http://localhost:3000/api/student/profile", {
+            headers: { Authorization: `Bearer ${token}` },
+          }).then((res) => res.json()),
+        ]);
 
-      if (profileRes.success && profileRes.data?.studentProfile) {
-        setOutstandingFees(profileRes.data.studentProfile.outstandingFees);
+        if (historyRes.success) {
+          setPayments(historyRes.data.payments);
+          setPagination(historyRes.data.pagination);
+        } else {
+          toast.error("Failed to load payment history");
+        }
+
+        if (profileRes.success && profileRes.data?.studentProfile) {
+          setOutstandingFees(profileRes.data.studentProfile.outstandingFees);
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Error fetching fees data");
+      } finally {
+        setIsLoading(false);
+        setProfileLoading(false);
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Error fetching fees data");
-    } finally {
-      setIsLoading(false);
-      setProfileLoading(false);
-    }
-  }, [token]);
+    },
+    [token],
+  );
 
   useEffect(() => {
     if (token) fetchProfileAndHistory(1);
@@ -159,7 +162,11 @@ export default function FeesManagement() {
         {outstandingFees > 0 ? (
           <Button
             className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto shadow-lg shadow-green-600/20"
-            onClick={() => navigate("/mgfc/student/pay-fees", { state: { amount: outstandingFees } })}
+            onClick={() =>
+              navigate("/mgfc/student/pay-fees", {
+                state: { amount: outstandingFees },
+              })
+            }
           >
             <CreditCard className="w-4 h-4 mr-2" />
             Pay ₹{outstandingFees} Now

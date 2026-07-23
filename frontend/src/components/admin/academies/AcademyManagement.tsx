@@ -40,7 +40,10 @@ export const AcademyManagement: React.FC = () => {
 
   // Trainer–Student Relations dialog
   const [showRelations, setShowRelations] = useState(false);
-  const [relationsAcademy, setRelationsAcademy] = useState<{ id: string; name: string } | null>(null);
+  const [relationsAcademy, setRelationsAcademy] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const extractErrorMessage = (error: any): string => {
     const response = error?.response || error;
@@ -50,8 +53,10 @@ export const AcademyManagement: React.FC = () => {
       const firstError = data.errors[0];
       if (firstError?.message) return firstError.message;
     }
-    if (data?.message && data.message !== "Invalid request data") return data.message;
-    if (error?.message && error.message !== "Invalid request data") return error.message;
+    if (data?.message && data.message !== "Invalid request data")
+      return data.message;
+    if (error?.message && error.message !== "Invalid request data")
+      return error.message;
     return "An unexpected error occurred. Please check your input and try again.";
   };
 
@@ -84,7 +89,10 @@ export const AcademyManagement: React.FC = () => {
     setIsLoading(true);
     try {
       await academyService.createAcademy(data);
-      toastUtils.success("Academy created successfully", "The academy has been created.");
+      toastUtils.success(
+        "Academy created successfully",
+        "The academy has been created.",
+      );
       setShowForm(false);
       fetchAcademies();
     } catch (error: any) {
@@ -99,7 +107,10 @@ export const AcademyManagement: React.FC = () => {
     setIsLoading(true);
     try {
       await academyService.updateAcademy(selectedAcademy._id, data);
-      toastUtils.success("Academy updated successfully", "The academy information has been updated.");
+      toastUtils.success(
+        "Academy updated successfully",
+        "The academy information has been updated.",
+      );
       setShowForm(false);
       setSelectedAcademy(null);
       setIsEditMode(false);
@@ -119,7 +130,10 @@ export const AcademyManagement: React.FC = () => {
         setShowDetails(true);
       }
     } catch (error: any) {
-      toastUtils.error("Failed to fetch academy details", extractErrorMessage(error));
+      toastUtils.error(
+        "Failed to fetch academy details",
+        extractErrorMessage(error),
+      );
     }
   };
 
@@ -133,7 +147,10 @@ export const AcademyManagement: React.FC = () => {
         setShowDetails(false);
       }
     } catch (error: any) {
-      toastUtils.error("Failed to fetch academy details", extractErrorMessage(error));
+      toastUtils.error(
+        "Failed to fetch academy details",
+        extractErrorMessage(error),
+      );
     }
   };
 
@@ -142,7 +159,10 @@ export const AcademyManagement: React.FC = () => {
     setIsLoading(true);
     try {
       await academyService.deleteAcademy(academyId);
-      toastUtils.success("Academy deleted successfully", "The academy has been removed.");
+      toastUtils.success(
+        "Academy deleted successfully",
+        "The academy has been removed.",
+      );
       fetchAcademies();
     } catch (error: any) {
       toastUtils.error("Failed to delete academy", extractErrorMessage(error));

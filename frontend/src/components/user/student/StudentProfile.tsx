@@ -47,7 +47,15 @@ interface StudentProfileData {
   totalFeesPaid: number;
   outstandingFees: number;
   sports: string[];
-  level: "beginner" | "intermediate" | "advanced" | "U12" | "U14" | "U16" | "U19" | "U23";
+  level:
+    | "beginner"
+    | "intermediate"
+    | "advanced"
+    | "U12"
+    | "U14"
+    | "U16"
+    | "U19"
+    | "U23";
   isActive: boolean;
   medicalInfo?: {
     allergies?: string[];
@@ -328,30 +336,31 @@ export default function StudentProfile() {
                 }
                 className="grid grid-cols-3 gap-3"
               >
-                {(editedProfile.sports?.includes("cricket") ? ["U12", "U14", "U16", "U19", "U23"] : ["beginner", "intermediate", "advanced"]).map(
-                  (level) => (
-                    <div
-                      key={level}
-                      className={`flex items-center space-x-2 p-3 rounded-lg border cursor-pointer transition-all ${
-                        editedProfile.level === level
-                          ? "bg-blue-500/20 border-blue-500"
-                          : "bg-gray-800/50 border-gray-700 hover:bg-gray-700/50"
-                      }`}
+                {(editedProfile.sports?.includes("cricket")
+                  ? ["U12", "U14", "U16", "U19", "U23"]
+                  : ["beginner", "intermediate", "advanced"]
+                ).map((level) => (
+                  <div
+                    key={level}
+                    className={`flex items-center space-x-2 p-3 rounded-lg border cursor-pointer transition-all ${
+                      editedProfile.level === level
+                        ? "bg-blue-500/20 border-blue-500"
+                        : "bg-gray-800/50 border-gray-700 hover:bg-gray-700/50"
+                    }`}
+                  >
+                    <RadioGroupItem
+                      value={level}
+                      id={level}
+                      className="border-gray-400 text-white"
+                    />
+                    <Label
+                      htmlFor={level}
+                      className="text-white cursor-pointer capitalize flex-1"
                     >
-                      <RadioGroupItem
-                        value={level}
-                        id={level}
-                        className="border-gray-400 text-white"
-                      />
-                      <Label
-                        htmlFor={level}
-                        className="text-white cursor-pointer capitalize flex-1"
-                      >
-                        {level}
-                      </Label>
-                    </div>
-                  ),
-                )}
+                      {level}
+                    </Label>
+                  </div>
+                ))}
               </RadioGroup>
             ) : (
               <div>

@@ -11,7 +11,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-
   Card,
   CardContent,
   CardDescription,
@@ -241,11 +240,20 @@ export const SettingsManagement = () => {
           {settings.heroMode === "carousel" && (
             <div className="space-y-4">
               <label className="text-sm font-medium">Carousel Images</label>
-              
+
               <div className="flex flex-wrap gap-4">
                 {settings.heroImages?.map((url, idx) => (
-                  <div key={idx} className="relative group w-32 h-32 rounded-md overflow-hidden border">
-                    <img src={url.startsWith('http') ? url : `${IMAGE_BASE_URL}${url}`} alt={`Hero ${idx}`} className="w-full h-full object-cover" />
+                  <div
+                    key={idx}
+                    className="relative group w-32 h-32 rounded-md overflow-hidden border"
+                  >
+                    <img
+                      src={
+                        url.startsWith("http") ? url : `${IMAGE_BASE_URL}${url}`
+                      }
+                      alt={`Hero ${idx}`}
+                      className="w-full h-full object-cover"
+                    />
                     <button
                       onClick={() => {
                         const newImages = [...(settings.heroImages || [])];
@@ -258,7 +266,7 @@ export const SettingsManagement = () => {
                     </button>
                   </div>
                 ))}
-                
+
                 <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
                     {uploadingImages ? (
@@ -270,14 +278,15 @@ export const SettingsManagement = () => {
                       </>
                     )}
                   </div>
-                  <input 
-                    type="file" 
-                    multiple 
-                    accept="image/*" 
-                    className="hidden" 
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
                     disabled={uploadingImages}
                     onChange={async (e) => {
-                      if (!e.target.files || e.target.files.length === 0) return;
+                      if (!e.target.files || e.target.files.length === 0)
+                        return;
                       try {
                         setUploadingImages(true);
                         const files = Array.from(e.target.files);
@@ -288,7 +297,10 @@ export const SettingsManagement = () => {
                         });
                         toast({ title: "Images uploaded successfully" });
                       } catch (err) {
-                        toast({ title: "Failed to upload images", variant: "destructive" });
+                        toast({
+                          title: "Failed to upload images",
+                          variant: "destructive",
+                        });
                       } finally {
                         setUploadingImages(false);
                       }
@@ -296,7 +308,10 @@ export const SettingsManagement = () => {
                   />
                 </label>
               </div>
-              <p className="text-xs text-gray-500">Upload high-quality images (1920x1080 recommended). Max 5MB per image.</p>
+              <p className="text-xs text-gray-500">
+                Upload high-quality images (1920x1080 recommended). Max 5MB per
+                image.
+              </p>
             </div>
           )}
         </CardContent>
@@ -311,7 +326,9 @@ export const SettingsManagement = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2 max-w-md">
-            <label className="text-sm font-medium">Logo Alignment (Hero Section)</label>
+            <label className="text-sm font-medium">
+              Logo Alignment (Hero Section)
+            </label>
             <Select
               value={settings.logoAlignment || "top_left"}
               onValueChange={(val: "top_left" | "middle") =>
@@ -329,14 +346,21 @@ export const SettingsManagement = () => {
           </div>
 
           <div className="flex items-center space-x-2">
-            <input 
-              type="checkbox" 
-              id="circular-logo" 
+            <input
+              type="checkbox"
+              id="circular-logo"
               checked={settings.logoIsCircular || false}
-              onChange={(e) => setSettings({ ...settings, logoIsCircular: e.target.checked })}
+              onChange={(e) =>
+                setSettings({ ...settings, logoIsCircular: e.target.checked })
+              }
               className="w-4 h-4 cursor-pointer"
             />
-            <label htmlFor="circular-logo" className="text-sm font-medium cursor-pointer">Make Logo Circular</label>
+            <label
+              htmlFor="circular-logo"
+              className="text-sm font-medium cursor-pointer"
+            >
+              Make Logo Circular
+            </label>
           </div>
 
           <div className="space-y-2 max-w-md">
@@ -344,12 +368,17 @@ export const SettingsManagement = () => {
               <span>Logo Size Scale</span>
               <span>{settings.logoScale || 100}%</span>
             </label>
-            <input 
-              type="range" 
-              min="50" 
-              max="300" 
+            <input
+              type="range"
+              min="50"
+              max="300"
               value={settings.logoScale || 100}
-              onChange={(e) => setSettings({ ...settings, logoScale: parseInt(e.target.value) })}
+              onChange={(e) =>
+                setSettings({
+                  ...settings,
+                  logoScale: parseInt(e.target.value),
+                })
+              }
               className="w-full cursor-pointer"
             />
           </div>
@@ -359,7 +388,15 @@ export const SettingsManagement = () => {
             <div className="flex flex-wrap gap-4">
               {settings.logoUrl && (
                 <div className="relative group w-32 h-32 rounded-md overflow-hidden border bg-black/5 flex items-center justify-center">
-                  <img src={settings.logoUrl.startsWith('http') ? settings.logoUrl : `${IMAGE_BASE_URL}${settings.logoUrl}`} alt="Brand Logo" className="max-w-full max-h-full object-contain p-2" />
+                  <img
+                    src={
+                      settings.logoUrl.startsWith("http")
+                        ? settings.logoUrl
+                        : `${IMAGE_BASE_URL}${settings.logoUrl}`
+                    }
+                    alt="Brand Logo"
+                    className="max-w-full max-h-full object-contain p-2"
+                  />
                   <button
                     onClick={() => {
                       setSettings({ ...settings, logoUrl: "" });
@@ -370,7 +407,7 @@ export const SettingsManagement = () => {
                   </button>
                 </div>
               )}
-              
+
               <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   {uploadingLogo ? (
@@ -382,10 +419,10 @@ export const SettingsManagement = () => {
                     </>
                   )}
                 </div>
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  className="hidden" 
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
                   disabled={uploadingLogo}
                   onChange={async (e) => {
                     if (!e.target.files || e.target.files.length === 0) return;
@@ -399,7 +436,10 @@ export const SettingsManagement = () => {
                       });
                       toast({ title: "Logo uploaded successfully" });
                     } catch (err) {
-                      toast({ title: "Failed to upload logo", variant: "destructive" });
+                      toast({
+                        title: "Failed to upload logo",
+                        variant: "destructive",
+                      });
                     } finally {
                       setUploadingLogo(false);
                     }
@@ -407,7 +447,9 @@ export const SettingsManagement = () => {
                 />
               </label>
             </div>
-            <p className="text-xs text-gray-500">Upload a PNG or SVG with transparent background.</p>
+            <p className="text-xs text-gray-500">
+              Upload a PNG or SVG with transparent background.
+            </p>
           </div>
         </CardContent>
         <CardFooter className="border-t pt-4">

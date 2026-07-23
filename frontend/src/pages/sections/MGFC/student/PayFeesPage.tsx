@@ -24,66 +24,56 @@ import {
   loadRazorpayScript,
 } from "@/services/paymentService";
 import { motion } from "framer-motion";
+import { BRAND_NAME } from "@/utils/constants";
 
 export default function PayFeesPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isAuthenticated, token } = useAppSelector(
-    (state) => state.auth,
-  );
-  const [isLoading, setIsLoading] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState<
-    "idle" | "success" | "failed"
-  >("idle");
+  const { user } = useAppSelector((state) => state.auth);
 
-  const [feeAmount, setFeeAmount] = useState<number>(location.state?.amount || 0);
+  const [loading, setLoading] = useState(false);
+  const [razorpayLoaded, setRazorpayLoaded] = useState(false);
+
+  // Get fee details passed from navigation state or location state
+  const feeAmount = location.state?.amount || 3000;
+  const feeDescription =
+    location.state?.description || "Monthly Training & Facilities Fee";
+  const kitId = location.state?.kitId;
 
   useEffect(() => {
-    loadRazorpayScript();
+    loadRazorpayScript().then((loaded) => {
+      setRazorpayLoaded(loaded);
+      if (!loaded) {
+        toast.error(
+          "Failed to load Razorpay SDK. Please check your internet connection.",
+        );
+      }
+    });
+  }, []);
 
-    if (!location.state?.amount && token) {
-      const fetchProfile = async () => {
-        try {
-          const res = await fetch("http://localhost:3000/api/student/profile", {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          const data = await res.json();
-          if (data.success && data.data?.studentProfile) {
-            setFeeAmount(data.data.studentProfile.outstandingFees);
-          }
-        } catch (err) {
-          console.error("Failed to fetch profile fees:", err);
-        }
-      };
-      fetchProfile();
-    }
-  }, [token, location.state?.amount]);
-
-  if (!isAuthenticated || !user) {
-    toast.error("Please login to pay fees");
-    return <Navigate to="/user/auth" />;
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
 
   const handlePayment = async () => {
+    if (!razorpayLoaded) {
+      toast.error("Razorpay SDK is not loaded yet.");
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      setIsLoading(true);
-      setPaymentStatus("idle");
-
-      console.log("=== FRONTEND DEBUG ===");
-      console.log("Current User Object:", user);
-
       const orderPayload = {
         amount: feeAmount,
-        studentId: user?._id, // Passing user ID to backend to see if it reaches
-        period: 'monthly' // Add standard period mapping
+        currency: "INR",
+        description: feeDescription,
+        kitId: kitId,
+        period: "monthly",
       };
-      console.log("Payload sending to createRazorpayOrder:", orderPayload);
 
-      // 1. Create order
       const order = await createRazorpayOrder(orderPayload);
-      console.log("Response from createRazorpayOrder:", order);
 
-      // 2. Initialize Razorpay
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_SS49Ahe904DIC8",
         amount: order.amount,
@@ -96,147 +86,138 @@ export default function PayFeesPage() {
           student_name: user.name,
           student_email: user.email,
         },
+        prefill: {
+          name: user.name,
+          email: user.email,
+          contact: user.phone || "",
+        },
+        theme: {
+          color: "#7c3aed",
+        },
         handler: async function (response: any) {
           try {
-            // 1. Verify gateway cryptographic signatures on backend
-            await verifyRazorpayPayment({
+            setLoading(true);
+            const verificationPayload = {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-            });
+            };
 
-            // 2. Commit transaction metadata into StudentProfile fee tracking ledger arrays
-            await fetch("http://localhost:3000/api/student/pay-fees", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-              },
-              body: JSON.stringify({
-                amount: feeAmount,
-                period: 'monthly',
-                transactionId: response.razorpay_payment_id
-              })
-            });
+            const verifyResult =
+              await verifyRazorpayPayment(verificationPayload);
 
-            setPaymentStatus("success");
-            toast.success("Payment successful!");
-            setTimeout(() => {
-              navigate("/mgfc/student?tab=fees");
-            }, 2000);
-          } catch (error) {
-            setPaymentStatus("failed");
-            toast.error("Payment verification failed");
+            if (verifyResult.success) {
+              toast.success("Payment successful! Receipt generated.");
+              navigate("/mgfc/student");
+            } else {
+              toast.error(
+                verifyResult.message || "Payment verification failed.",
+              );
+            }
+          } catch (err: any) {
+            toast.error(
+              err.message || "An error occurred during payment verification.",
+            );
+          } finally {
+            setLoading(false);
           }
-        },
-        prefill: {
-          name: user.name || "Student Name",
-          email: user.email || "student@example.com",
-          contact: user.phone || "9999999999",
-        },
-        theme: {
-          color: "#16a34a", // Green to match theme
         },
         modal: {
           ondismiss: function () {
-            setPaymentStatus("failed");
-            toast.error("Payment cancelled");
-            setIsLoading(false);
+            setLoading(false);
+            toast.info("Payment cancelled.");
           },
         },
       };
 
       const rzp = new (window as any).Razorpay(options);
       rzp.open();
-    } catch (error) {
-      console.error(error);
-      setPaymentStatus("failed");
-      toast.error("Failed to initiate payment");
-      setIsLoading(false);
+    } catch (err: any) {
+      toast.error(
+        err.message || "Failed to initiate payment. Please try again.",
+      );
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-[url('/mgfc-bg.jpg')] bg-cover bg-center opacity-20" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
-
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-md z-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md"
       >
-        <Button
-          variant="ghost"
-          className="text-gray-400 hover:text-white mb-6"
-          onClick={() => navigate("/mgfc/student?tab=fees")}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Dashboard
-        </Button>
-
-        <Card className="bg-gray-900 border-gray-800 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-green-600/10 blur-3xl rounded-full" />
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-600/10 blur-3xl rounded-full" />
-
-          <CardHeader className="text-center pb-8 border-b border-gray-800 relative z-10">
-            <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-500/20">
-              <CreditCard className="w-8 h-8 text-white" />
+        <Card className="shadow-lg border-gray-200">
+          <CardHeader className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-t-xl">
+            <div className="flex items-center justify-between">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate(-1)}
+                className="text-white hover:bg-white/20 text-xs gap-1"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back
+              </Button>
+              <ShieldCheck className="w-5 h-5 text-purple-200" />
             </div>
-            <CardTitle className="text-2xl text-white font-bold">
-              Pay Academy Fees
+            <CardTitle className="text-xl font-bold mt-2">
+              Pay Training Fees
             </CardTitle>
-            <CardDescription className="text-gray-400 text-base mt-2">
-              Complete your payment for {BRAND_NAME}
+            <CardDescription className="text-purple-100 text-xs">
+              Secure fee payment via Razorpay Payment Gateway
             </CardDescription>
           </CardHeader>
-
-          <CardContent className="pt-8 space-y-6 relative z-10">
-            <div className="bg-black/40 rounded-xl p-6 border border-gray-800">
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-gray-400">Student Name</span>
-                <span className="text-white font-medium">
-                  {user?.name || "Student Name"}
+          <CardContent className="space-y-4 pt-6">
+            <div className="bg-purple-50 border border-purple-100 rounded-xl p-4 space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-500 font-medium">
+                  Student Name
+                </span>
+                <span className="text-xs font-bold text-gray-900">
+                  {user.name}
                 </span>
               </div>
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-gray-400">Class Type</span>
-                <span className="text-white font-medium">Monthly Fees</span>
-              </div>
-              <div className="flex justify-between items-center pt-4 border-t border-gray-800">
-                <span className="text-lg text-gray-300 font-semibold">
-                  Total Amount
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-500 font-medium">Email</span>
+                <span className="text-xs font-mono text-gray-700">
+                  {user.email}
                 </span>
-                <span className="text-3xl text-green-400 font-bold">
-                  ₹{feeAmount}
+              </div>
+              <div className="flex justify-between items-center pt-2 border-t border-purple-200/60">
+                <span className="text-xs text-gray-700 font-bold">
+                  Total Payable
+                </span>
+                <span className="text-xl font-extrabold text-purple-700">
+                  ₹{feeAmount.toLocaleString()}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center justify-center text-sm text-gray-500 gap-2">
-              <ShieldCheck className="w-4 h-4 text-green-500" />
-              <span>Secured by Razorpay</span>
+            <div className="text-xs text-gray-500 space-y-1">
+              <div className="flex items-center gap-1.5 text-gray-600">
+                <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" />
+                <span>Instant digital receipt generated upon completion</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-gray-600">
+                <CreditCard className="w-4 h-4 text-indigo-500 shrink-0" />
+                <span>
+                  Supports UPI, Debit/Credit Cards, NetBanking, and Wallets
+                </span>
+              </div>
             </div>
           </CardContent>
-
-          <CardFooter className="pb-8 relative z-10">
+          <CardFooter className="flex flex-col gap-3">
             <Button
-              className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-semibold text-lg transition-all shadow-lg shadow-green-600/20 hover:shadow-green-600/40"
               onClick={handlePayment}
-              disabled={isLoading || paymentStatus === "success"}
+              disabled={loading || !razorpayLoaded}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 rounded-xl shadow-md cursor-pointer"
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Processing...
-                </>
-              ) : paymentStatus === "success" ? (
-                <>
-                  <CheckCircle className="w-5 h-5 mr-2" />
-                  Payment Successful
-                </>
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" /> Processing...
+                </div>
               ) : (
-                `Pay ₹${feeAmount}`
+                `Pay ₹${feeAmount.toLocaleString()} Now`
               )}
             </Button>
           </CardFooter>

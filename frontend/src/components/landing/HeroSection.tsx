@@ -10,7 +10,9 @@ export default function HeroSection() {
   const [heroMode, setHeroMode] = useState<"video" | "carousel">("video");
   const [heroImages, setHeroImages] = useState<string[]>([]);
   const [logoUrl, setLogoUrl] = useState<string>("");
-  const [logoAlignment, setLogoAlignment] = useState<"top_left" | "middle">("top_left");
+  const [logoAlignment, setLogoAlignment] = useState<"top_left" | "middle">(
+    "top_left",
+  );
   const [logoIsCircular, setLogoIsCircular] = useState<boolean>(false);
   const [logoScale, setLogoScale] = useState<number>(100);
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
@@ -74,7 +76,11 @@ export default function HeroSection() {
             {heroImages.length > 0 ? (
               <motion.img
                 key={currentImageIdx}
-                src={heroImages[currentImageIdx].startsWith('http') ? heroImages[currentImageIdx] : `${IMAGE_BASE_URL}${heroImages[currentImageIdx]}`}
+                src={
+                  heroImages[currentImageIdx].startsWith("http")
+                    ? heroImages[currentImageIdx]
+                    : `${IMAGE_BASE_URL}${heroImages[currentImageIdx]}`
+                }
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -88,16 +94,28 @@ export default function HeroSection() {
             )}
           </AnimatePresence>
         )}
-        
+
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 1 : 0 }}
+          animate={{
+            opacity:
+              mediaLoaded ||
+              (heroMode === "carousel" && heroImages.length === 0)
+                ? 1
+                : 0,
+          }}
           transition={{ duration: 1.5, delay: 0.5 }}
           className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/50 to-black/85"
         />
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 1 : 0 }}
+          animate={{
+            opacity:
+              mediaLoaded ||
+              (heroMode === "carousel" && heroImages.length === 0)
+                ? 1
+                : 0,
+          }}
           transition={{ duration: 1.5, delay: 0.8 }}
           className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-amber-500/20 via-transparent to-transparent"
         />
@@ -105,7 +123,8 @@ export default function HeroSection() {
 
       {/* Animated Background Elements */}
       <AnimatePresence>
-        {(mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0)) && (
+        {(mediaLoaded ||
+          (heroMode === "carousel" && heroImages.length === 0)) && (
           <>
             <motion.div
               initial={{ opacity: 0, scale: 0 }}
@@ -141,18 +160,36 @@ export default function HeroSection() {
 
       {/* Top Section - BRAND NAME or LOGO */}
       <div className="absolute top-[10%] left-0 right-0 z-10">
-        {logoUrl && logoAlignment === 'top_left' && (
+        {logoUrl && logoAlignment === "top_left" && (
           <motion.div
             initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 1 : 0, x: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 0 : -30 }}
+            animate={{
+              opacity:
+                mediaLoaded ||
+                (heroMode === "carousel" && heroImages.length === 0)
+                  ? 1
+                  : 0,
+              x:
+                mediaLoaded ||
+                (heroMode === "carousel" && heroImages.length === 0)
+                  ? 0
+                  : -30,
+            }}
             transition={{ duration: 1, delay: 1 }}
             className="absolute top-[-50px] sm:top-[-80px] left-8 sm:left-12 lg:left-16 flex items-center justify-center"
           >
-            <img 
-              src={logoUrl.startsWith('http') ? logoUrl : `${IMAGE_BASE_URL}${logoUrl}`} 
-              alt="Brand Logo" 
-              className={`h-24 sm:h-32 lg:h-40 drop-shadow-2xl ${logoIsCircular ? 'rounded-full object-cover aspect-square' : 'object-contain'}`} 
-              style={{ transform: `scale(${logoScale / 100})`, transformOrigin: 'top left' }}
+            <img
+              src={
+                logoUrl.startsWith("http")
+                  ? logoUrl
+                  : `${IMAGE_BASE_URL}${logoUrl}`
+              }
+              alt="Brand Logo"
+              className={`h-24 sm:h-32 lg:h-40 drop-shadow-2xl ${logoIsCircular ? "rounded-full object-cover aspect-square" : "object-contain"}`}
+              style={{
+                transform: `scale(${logoScale / 100})`,
+                transformOrigin: "top left",
+              }}
             />
           </motion.div>
         )}
@@ -161,16 +198,34 @@ export default function HeroSection() {
           {/* Main Heading with Stagger */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 1 : 0, y: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 0 : 30 }}
+            animate={{
+              opacity:
+                mediaLoaded ||
+                (heroMode === "carousel" && heroImages.length === 0)
+                  ? 1
+                  : 0,
+              y:
+                mediaLoaded ||
+                (heroMode === "carousel" && heroImages.length === 0)
+                  ? 0
+                  : 30,
+            }}
             transition={{ duration: 1.2, delay: 1.8 }}
-            className={`flex justify-center ${logoUrl && logoAlignment === 'top_left' ? 'mt-24 sm:mt-0' : ''}`}
+            className={`flex justify-center ${logoUrl && logoAlignment === "top_left" ? "mt-24 sm:mt-0" : ""}`}
           >
-            {logoUrl && logoAlignment === 'middle' ? (
-              <img 
-                src={logoUrl.startsWith('http') ? logoUrl : `${IMAGE_BASE_URL}${logoUrl}`} 
-                alt="Brand Logo" 
-                className={`h-40 sm:h-56 lg:h-72 drop-shadow-2xl ${logoIsCircular ? 'rounded-full object-cover aspect-square' : 'object-contain'}`} 
-                style={{ transform: `scale(${logoScale / 100})`, transformOrigin: 'center center' }}
+            {logoUrl && logoAlignment === "middle" ? (
+              <img
+                src={
+                  logoUrl.startsWith("http")
+                    ? logoUrl
+                    : `${IMAGE_BASE_URL}${logoUrl}`
+                }
+                alt="Brand Logo"
+                className={`h-40 sm:h-56 lg:h-72 drop-shadow-2xl ${logoIsCircular ? "rounded-full object-cover aspect-square" : "object-contain"}`}
+                style={{
+                  transform: `scale(${logoScale / 100})`,
+                  transformOrigin: "center center",
+                }}
               />
             ) : (
               <h1 className="text-7xl sm:text-8xl lg:text-[140px] font-black text-white uppercase leading-[0.9] tracking-tighter font-display flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
@@ -179,8 +234,16 @@ export default function HeroSection() {
                   <motion.span
                     initial={{ opacity: 0, x: -50 }}
                     animate={{
-                      opacity: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 1 : 0,
-                      x: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 0 : -50,
+                      opacity:
+                        mediaLoaded ||
+                        (heroMode === "carousel" && heroImages.length === 0)
+                          ? 1
+                          : 0,
+                      x:
+                        mediaLoaded ||
+                        (heroMode === "carousel" && heroImages.length === 0)
+                          ? 0
+                          : -50,
                     }}
                     transition={{ duration: 1, delay: 2.2 }}
                     className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 drop-shadow-[0_0_30px_rgba(251,191,36,0.8)] font-display"
@@ -202,8 +265,16 @@ export default function HeroSection() {
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{
-                opacity: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 1 : 0,
-                y: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 0 : 20,
+                opacity:
+                  mediaLoaded ||
+                  (heroMode === "carousel" && heroImages.length === 0)
+                    ? 1
+                    : 0,
+                y:
+                  mediaLoaded ||
+                  (heroMode === "carousel" && heroImages.length === 0)
+                    ? 0
+                    : 20,
               }}
               transition={{ duration: 1, delay: 2.8 }}
               className="text-3xl sm:text-4xl lg:text-5xl text-white font-black uppercase tracking-wider drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] font-display"
@@ -215,8 +286,16 @@ export default function HeroSection() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{
-                opacity: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 1 : 0,
-                y: mediaLoaded || (heroMode === 'carousel' && heroImages.length === 0) ? 0 : 20,
+                opacity:
+                  mediaLoaded ||
+                  (heroMode === "carousel" && heroImages.length === 0)
+                    ? 1
+                    : 0,
+                y:
+                  mediaLoaded ||
+                  (heroMode === "carousel" && heroImages.length === 0)
+                    ? 0
+                    : 20,
               }}
               transition={{ duration: 1, delay: 3.6 }}
               className="flex justify-center"

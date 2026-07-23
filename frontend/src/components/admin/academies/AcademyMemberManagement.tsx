@@ -58,7 +58,9 @@ export const AcademyMemberManagement: React.FC<
 
   // Add dialog state
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [addDialogType, setAddDialogType] = useState<"student" | "trainer">("student");
+  const [addDialogType, setAddDialogType] = useState<"student" | "trainer">(
+    "student",
+  );
   const [availableMembers, setAvailableMembers] = useState<any[]>([]);
   const [selectedMemberId, setSelectedMemberId] = useState("");
   const [isAddingMember, setIsAddingMember] = useState(false);
@@ -98,21 +100,30 @@ export const AcademyMemberManagement: React.FC<
       setAvailableMembers([]);
 
       if (type === "trainer") {
-        const response = await trainerAdminService.getAllTrainers({ limit: 100 });
-        const allTrainers: any[] = response?.data?.trainers || response?.trainers || [];
+        const response = await trainerAdminService.getAllTrainers({
+          limit: 100,
+        });
+        const allTrainers: any[] =
+          response?.data?.trainers || response?.trainers || [];
 
         const currentTrainerIds = new Set(trainers.map((t) => t._id));
         const filtered = allTrainers.filter(
-          (t: any) => !currentTrainerIds.has(t.userId) && !currentTrainerIds.has(t.user?._id)
+          (t: any) =>
+            !currentTrainerIds.has(t.userId) &&
+            !currentTrainerIds.has(t.user?._id),
         );
         setAvailableMembers(filtered);
       } else {
-        const response = await studentAdminService.getAllStudents({ limit: 100 });
+        const response = await studentAdminService.getAllStudents({
+          limit: 100,
+        });
         const allStudents: any[] = response?.data?.students || [];
 
         const currentStudentIds = new Set(students.map((s) => s._id));
         const filtered = allStudents.filter(
-          (s: any) => !currentStudentIds.has(s.userId) && !currentStudentIds.has(s.user?._id)
+          (s: any) =>
+            !currentStudentIds.has(s.userId) &&
+            !currentStudentIds.has(s.user?._id),
         );
         setAvailableMembers(filtered);
       }
@@ -152,7 +163,7 @@ export const AcademyMemberManagement: React.FC<
     } catch (error: any) {
       toast.error(
         error.response?.data?.message ||
-          `Failed to add ${addDialogType} to academy`
+          `Failed to add ${addDialogType} to academy`,
       );
     } finally {
       setIsAddingMember(false);
@@ -162,7 +173,7 @@ export const AcademyMemberManagement: React.FC<
   const handleRemoveMember = (
     memberId: string,
     type: "student" | "trainer",
-    name: string
+    name: string,
   ) => {
     setMemberToRemove({ id: memberId, type, name });
     setRemoveDialogOpen(true);
@@ -172,17 +183,23 @@ export const AcademyMemberManagement: React.FC<
     if (!memberToRemove) return;
     try {
       if (memberToRemove.type === "trainer") {
-        await academyService.removeTrainerFromAcademy(academyId, memberToRemove.id);
+        await academyService.removeTrainerFromAcademy(
+          academyId,
+          memberToRemove.id,
+        );
         toast.success("Trainer removed from academy");
       } else {
-        await academyService.removeStudentFromAcademy(academyId, memberToRemove.id);
+        await academyService.removeStudentFromAcademy(
+          academyId,
+          memberToRemove.id,
+        );
         toast.success("Student removed from academy");
       }
       await fetchMembers();
     } catch (error: any) {
       toast.error(
         error.response?.data?.message ||
-          `Failed to remove ${memberToRemove.type} from academy`
+          `Failed to remove ${memberToRemove.type} from academy`,
       );
     } finally {
       setRemoveDialogOpen(false);
@@ -195,8 +212,7 @@ export const AcademyMemberManagement: React.FC<
     const q = searchTerm.toLowerCase();
     return members.filter(
       (m) =>
-        m.name.toLowerCase().includes(q) ||
-        m.email.toLowerCase().includes(q)
+        m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q),
     );
   };
 
@@ -247,7 +263,7 @@ export const AcademyMemberManagement: React.FC<
     <>
       {/* ── Custom Massive Main Dialog Overlay ── */}
       <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-6 transition-all duration-200">
-        <div 
+        <div
           className="w-full max-w-[96vw] h-[94vh] max-h-[96vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col bg-white border border-gray-100 transform transition-all animate-in fade-in zoom-in-95 duration-150"
           role="dialog"
           aria-modal="true"
@@ -262,7 +278,7 @@ export const AcademyMemberManagement: React.FC<
                 {academyName} — Add or remove trainers and students
               </p>
             </div>
-            <button 
+            <button
               onClick={onClose}
               className="text-white/80 hover:text-white p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-all"
             >
@@ -285,7 +301,9 @@ export const AcademyMemberManagement: React.FC<
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-32 gap-3">
                 <Loader className="h-12 w-12 animate-spin text-green-500" />
-                <p className="text-gray-500 font-medium">Synchronizing roster data...</p>
+                <p className="text-gray-500 font-medium">
+                  Synchronizing roster data...
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[calc(100%-5rem)] align-stretch">
@@ -320,10 +338,13 @@ export const AcademyMemberManagement: React.FC<
                         <div className="text-center py-20 text-gray-400">
                           <Users className="h-12 w-12 mx-auto mb-4 text-gray-200" />
                           <p className="font-semibold text-gray-500 text-base">
-                            {searchTerm ? "No trainers match your search criteria" : "No trainers associated yet"}
+                            {searchTerm
+                              ? "No trainers match your search criteria"
+                              : "No trainers associated yet"}
                           </p>
                           <p className="text-sm mt-1 text-gray-400">
-                            {!searchTerm && "Click 'Add Trainer' to expand your academy staff"}
+                            {!searchTerm &&
+                              "Click 'Add Trainer' to expand your academy staff"}
                           </p>
                         </div>
                       ) : (
@@ -343,30 +364,39 @@ export const AcademyMemberManagement: React.FC<
                                   <h4 className="font-bold text-gray-900 text-base truncate">
                                     {trainer.name}
                                   </h4>
-                                  <p className="text-sm text-gray-500 truncate font-medium">{trainer.email}</p>
+                                  <p className="text-sm text-gray-500 truncate font-medium">
+                                    {trainer.email}
+                                  </p>
                                   {trainer.phone && (
-                                    <p className="text-xs text-gray-400 font-medium">{trainer.phone}</p>
+                                    <p className="text-xs text-gray-400 font-medium">
+                                      {trainer.phone}
+                                    </p>
                                   )}
-                                  {trainer.sports && trainer.sports.length > 0 && (
-                                    <div className="flex flex-wrap gap-1 mt-2">
-                                      {trainer.sports.map((sport) => (
-                                        <Badge
-                                          key={sport}
-                                          variant="secondary"
-                                          className="text-xs bg-blue-50 text-blue-700 border-blue-100 capitalize px-2 py-0.5 font-semibold"
-                                        >
-                                          {sport}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  )}
+                                  {trainer.sports &&
+                                    trainer.sports.length > 0 && (
+                                      <div className="flex flex-wrap gap-1 mt-2">
+                                        {trainer.sports.map((sport) => (
+                                          <Badge
+                                            key={sport}
+                                            variant="secondary"
+                                            className="text-xs bg-blue-50 text-blue-700 border-blue-100 capitalize px-2 py-0.5 font-semibold"
+                                          >
+                                            {sport}
+                                          </Badge>
+                                        ))}
+                                      </div>
+                                    )}
                                 </div>
                               </div>
                               <Button
                                 size="sm"
                                 variant="ghost"
                                 onClick={() =>
-                                  handleRemoveMember(trainer._id, "trainer", trainer.name)
+                                  handleRemoveMember(
+                                    trainer._id,
+                                    "trainer",
+                                    trainer.name,
+                                  )
                                 }
                                 className="text-red-400 hover:text-red-600 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 rounded-lg p-2 h-auto"
                               >
@@ -411,10 +441,13 @@ export const AcademyMemberManagement: React.FC<
                         <div className="text-center py-20 text-gray-400">
                           <Users className="h-12 w-12 mx-auto mb-4 text-gray-200" />
                           <p className="font-semibold text-gray-500 text-base">
-                            {searchTerm ? "No students match your search criteria" : "No students onboarded yet"}
+                            {searchTerm
+                              ? "No students match your search criteria"
+                              : "No students onboarded yet"}
                           </p>
                           <p className="text-sm mt-1 text-gray-400">
-                            {!searchTerm && "Click 'Add Student' to assign members to this academy"}
+                            {!searchTerm &&
+                              "Click 'Add Student' to assign members to this academy"}
                           </p>
                         </div>
                       ) : (
@@ -434,30 +467,39 @@ export const AcademyMemberManagement: React.FC<
                                   <h4 className="font-bold text-gray-900 text-base truncate">
                                     {student.name}
                                   </h4>
-                                  <p className="text-sm text-gray-500 truncate font-medium">{student.email}</p>
+                                  <p className="text-sm text-gray-500 truncate font-medium">
+                                    {student.email}
+                                  </p>
                                   {student.phone && (
-                                    <p className="text-xs text-gray-400 font-medium">{student.phone}</p>
+                                    <p className="text-xs text-gray-400 font-medium">
+                                      {student.phone}
+                                    </p>
                                   )}
-                                  {student.sports && student.sports.length > 0 && (
-                                    <div className="flex flex-wrap gap-1 mt-2">
-                                      {student.sports.map((sport) => (
-                                        <Badge
-                                          key={sport}
-                                          variant="secondary"
-                                          className="text-xs bg-green-50 text-green-700 border-green-100 capitalize px-2 py-0.5 font-semibold"
-                                        >
-                                          {sport}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  )}
+                                  {student.sports &&
+                                    student.sports.length > 0 && (
+                                      <div className="flex flex-wrap gap-1 mt-2">
+                                        {student.sports.map((sport) => (
+                                          <Badge
+                                            key={sport}
+                                            variant="secondary"
+                                            className="text-xs bg-green-50 text-green-700 border-green-100 capitalize px-2 py-0.5 font-semibold"
+                                          >
+                                            {sport}
+                                          </Badge>
+                                        ))}
+                                      </div>
+                                    )}
                                 </div>
                               </div>
                               <Button
                                 size="sm"
                                 variant="ghost"
                                 onClick={() =>
-                                  handleRemoveMember(student._id, "student", student.name)
+                                  handleRemoveMember(
+                                    student._id,
+                                    "student",
+                                    student.name,
+                                  )
                                 }
                                 className="text-red-400 hover:text-red-600 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 rounded-lg p-2 h-auto"
                               >
@@ -475,7 +517,11 @@ export const AcademyMemberManagement: React.FC<
           </div>
 
           <div className="flex justify-end px-8 py-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl shadow-inner gap-4">
-            <Button variant="outline" onClick={onClose} className="px-8 h-11 text-base font-semibold border-gray-200 rounded-xl">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="px-8 h-11 text-base font-semibold border-gray-200 rounded-xl"
+            >
               Close Panel
             </Button>
           </div>
@@ -485,7 +531,7 @@ export const AcademyMemberManagement: React.FC<
       {/* ── Custom Massive Add Member Dialog Overlay ── */}
       {isAddDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4 md:p-6 transition-all duration-200">
-          <div 
+          <div
             className="w-full max-w-6xl h-[86vh] max-h-[88vh] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col transform transition-all border border-gray-100 animate-in fade-in zoom-in-95 duration-150"
             role="dialog"
             aria-modal="true"
@@ -502,10 +548,11 @@ export const AcademyMemberManagement: React.FC<
                   Add {addDialogType === "trainer" ? "Trainer" : "Student"}
                 </h3>
                 <p className="text-white/80 mt-1 text-sm font-medium">
-                  Select an available global profile pool asset to connect to {academyName}
+                  Select an available global profile pool asset to connect to{" "}
+                  {academyName}
                 </p>
               </div>
-              <button 
+              <button
                 onClick={() => setIsAddDialogOpen(false)}
                 className="text-white/80 hover:text-white p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-all"
               >
@@ -527,7 +574,8 @@ export const AcademyMemberManagement: React.FC<
 
               <div className="flex items-center justify-between border-b border-gray-100 pb-2">
                 <Label className="text-gray-800 font-bold text-base">
-                  Available Global Pool {addDialogType === "trainer" ? "Trainers" : "Students"}
+                  Available Global Pool{" "}
+                  {addDialogType === "trainer" ? "Trainers" : "Students"}
                   {!isFetchingAvailable && (
                     <span className="ml-2 text-sm font-semibold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-md">
                       {filteredAvailableMembers.length} records found
@@ -602,18 +650,34 @@ export const AcademyMemberManagement: React.FC<
                               {isSelected && (
                                 <div
                                   className={`flex-shrink-0 rounded-full p-1.5 shadow-sm text-white ${
-                                    addDialogType === "trainer" ? "bg-blue-600" : "bg-green-600"
+                                    addDialogType === "trainer"
+                                      ? "bg-blue-600"
+                                      : "bg-green-600"
                                   }`}
                                 >
-                                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                  <svg
+                                    className="w-3.5 h-3.5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="3"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      d="M5 13l4 4L19 7"
+                                    />
                                   </svg>
                                 </div>
                               )}
                             </div>
-                            <p className="text-xs text-gray-500 truncate font-semibold">{info.email}</p>
+                            <p className="text-xs text-gray-500 truncate font-semibold">
+                              {info.email}
+                            </p>
                             {info.phone && (
-                              <p className="text-xs text-gray-400 font-medium">{info.phone}</p>
+                              <p className="text-xs text-gray-400 font-medium">
+                                {info.phone}
+                              </p>
                             )}
                           </div>
                         </div>
@@ -627,12 +691,13 @@ export const AcademyMemberManagement: React.FC<
                                   ₹{(info as any).hourlyRate}/hr
                                 </span>
                               )}
-                              {(info as any).rating !== undefined && (info as any).rating > 0 && (
-                                <span className="flex items-center gap-1 bg-yellow-50 text-yellow-800 border border-yellow-100 px-2 py-1 rounded-md">
-                                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                  {(info as any).rating.toFixed(1)}
-                                </span>
-                              )}
+                              {(info as any).rating !== undefined &&
+                                (info as any).rating > 0 && (
+                                  <span className="flex items-center gap-1 bg-yellow-50 text-yellow-800 border border-yellow-100 px-2 py-1 rounded-md">
+                                    <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                    {(info as any).rating.toFixed(1)}
+                                  </span>
+                                )}
                             </div>
                           )}
                           {info.sports && info.sports.length > 0 && (
@@ -705,18 +770,27 @@ export const AcademyMemberManagement: React.FC<
                 <AlertTriangle className="h-6 w-6 text-red-600" />
               </div>
               <AlertDialogTitle className="text-gray-900 text-xl font-bold">
-                Remove {memberToRemove?.type === "trainer" ? "Trainer" : "Student"}?
+                Remove{" "}
+                {memberToRemove?.type === "trainer" ? "Trainer" : "Student"}?
               </AlertDialogTitle>
             </div>
             <AlertDialogDescription className="text-gray-600 pt-3 text-base leading-relaxed">
               Are you sure you want to decouple{" "}
-              <span className="font-bold text-gray-900 bg-gray-100 px-1.5 py-0.5 rounded">{memberToRemove?.name}</span> from{" "}
-              <span className="font-bold text-gray-900 bg-gray-100 px-1.5 py-0.5 rounded">{academyName}</span>?
-              This action terminates current organizational structural routing data hooks instantly.
+              <span className="font-bold text-gray-900 bg-gray-100 px-1.5 py-0.5 rounded">
+                {memberToRemove?.name}
+              </span>{" "}
+              from{" "}
+              <span className="font-bold text-gray-900 bg-gray-100 px-1.5 py-0.5 rounded">
+                {academyName}
+              </span>
+              ? This action terminates current organizational structural routing
+              data hooks instantly.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-6 gap-2">
-            <AlertDialogCancel className="border-gray-200 rounded-xl h-11 font-semibold px-6">Cancel Connection</AlertDialogCancel>
+            <AlertDialogCancel className="border-gray-200 rounded-xl h-11 font-semibold px-6">
+              Cancel Connection
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmRemoveMember}
               className="bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl h-11 px-6 shadow-md"

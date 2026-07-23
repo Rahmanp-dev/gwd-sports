@@ -1,0 +1,141 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { connectToDatabase } from '@/lib/db';
+import { roleMiddleware } from '@/lib/middleware/auth';
+import TrainerProfile from '@/lib/models/Trainer';
+import StudentProfile from '@/lib/models/Student';
+import User from '@/lib/models/User';
+import mongoose from 'mongoose';
+
+export async function GET(req: NextRequest) {
+  try {
+    const auth = await roleMiddleware(req, ['trainer', 'admin']);
+    if (auth?.error) return NextResponse.json({ success: false, message: auth.error }, { status: auth.status });
+    await connectToDatabase();
+
+    const { searchParams } = new URL(req.url);
+    const trainerId = searchParams.get('trainerId') || (req as any).user._id;
+    const page = parseInt(searchParams.get('page') || '1');
+    const limitNum = parseInt(searchParams.get('limit') || '10');
+    const level = searchParams.get('level');
+    const search = searchParams.get('search');
+    const skip = (page - 1) * limitNum;
+
+    const trainerProfile = await TrainerProfile.findOne({ userId: trainerId });
+    if (!trainerProfile) {
+      return NextResponse.json({ success: false, message: 'Trainer profile not found' }, { status: 404 });
+    }
+
+    const studentUserIds = (trainerProfile.students || []).map((id: any) => {
+      try {
+        return new mongoose.Types.ObjectId(id._id ? id._id.toString() : id.toString());
+      } catch (e) {
+        return null;
+      }
+    }).filter(Boolean);
+
+    if (studentUserIds.length === 0) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          students: [],
+          pagination: { currentPage: page, totalPages: 0, totalStudents: 0, hasNextPage: false, hasPrevPage: false }
+        }
+      });
+    }
+
+    const matchStage: any = { _id: { $in: studentUserIds } };
+    if (search) {
+      matchStage.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    const aggregatePipeline: any[] = [
+      { $match: matchStage },
+      {
+        $lookup: {
+          from: 'studentprofiles',
+          localField: '_id',
+          foreignField: 'userId',
+          as: 'profile'
+        }
+      },
+      {
+        $unwind: { path: '$profile', preserveNullAndEmptyArrays: true }
+      }
+    ];
+
+    if (level) {
+      aggregatePipeline.push({ $match: { 'profile.level': level } });
+    }
+
+    aggregatePipeline.push({
+      $project: {
+        _id: { $ifNull: ['$profile._id', '$_id'] },
+        userId: '$_id',
+        level: { $ifNull: ['$profile.level', 'unassigned'] },
+        sports: { $ifNull: ['$profile.sports', '$sports'] },
+        enrollmentDate: { $ifNull: ['$profile.enrollmentDate', '$createdAt'] },
+        totalFeesPaid: { $ifNull: ['$profile.totalFeesPaid', 0] },
+        outstandingFees: { $ifNull: ['$profile.outstandingFees', 0] },
+        isActive: { $ifNull: ['$profile.isActive', true] },
+        academyId: { $ifNull: ['$profile.academyId', null] },
+        attendance: { $ifNull: ['$profile.attendance', []] },
+        performance: { $ifNull: ['$profile.performance', []] },
+        user: {
+          _id: '$_id',
+          name: '$name',
+          email: '$email',
+          phone: '$phone',
+          sports: '$sports',
+          isActive: '$isActive'
+        }
+      }
+    });
+
+    aggregatePipeline.push({ $sort: { enrollmentDate: -1 } }, { $skip: skip }, { $limit: limitNum });
+
+    const countPipeline: any[] = [
+      { $match: matchStage },
+      {
+        $lookup: {
+          from: 'studentprofiles',
+          localField: '_id',
+          foreignField: 'userId',
+          as: 'profile'
+        }
+      },
+      { $unwind: { path: '$profile', preserveNullAndEmptyArrays: true } }
+    ];
+
+    if (level) {
+      countPipeline.push({ $match: { 'profile.level': level } });
+    }
+    countPipeline.push({ $count: 'total' });
+
+    const [students, countResult] = await Promise.all([
+      User.aggregate(aggregatePipeline),
+      User.aggregate(countPipeline)
+    ]);
+
+    const total = countResult[0]?.total ?? 0;
+    const totalPages = Math.ceil(total / limitNum);
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        students,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalStudents: total,
+          hasNextPage: page < totalPages,
+          hasPrevPage: page > 1
+        }
+      }
+    });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
+  }
+}

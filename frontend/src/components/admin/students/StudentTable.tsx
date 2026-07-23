@@ -214,7 +214,9 @@ export const StudentTable: React.FC<StudentTableProps> = ({
               <DropdownMenuItem onClick={() => handleLevelFilter("beginner")}>
                 Beginner
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleLevelFilter("intermediate")}>
+              <DropdownMenuItem
+                onClick={() => handleLevelFilter("intermediate")}
+              >
                 Intermediate
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleLevelFilter("advanced")}>

@@ -1,0 +1,27 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { connectToDatabase } from '@/lib/db';
+import User from '@/lib/models/User';
+import { generateTokens } from '@/lib/jwt';
+
+export async function POST(req: NextRequest) {
+  try {
+    await connectToDatabase();
+    const { email, password } = await req.json();
+
+    const user = await User.findOne({ email }).select('+password +refreshTokens');
+    if (!user) return NextResponse.json({ success: false, message: 'Invalid credentials' }, { status: 401 });
+    if (!user.isActive) return NextResponse.json({ success: false, message: 'Account is deactivated' }, { status: 401 });
+
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) return NextResponse.json({ success: false, message: 'Invalid credentials' }, { status: 401 });
+
+    const tokens = generateTokens({ userId: user._id.toString(), email: user.email, role: user.role });
+    await user.addRefreshToken(tokens.refreshToken);
+    user.lastLogin = new Date();
+    await user.save();
+
+    return NextResponse.json({ success: true, message: 'Login successful', data: { user: user.toJSON(), ...tokens } });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
+  }
+}

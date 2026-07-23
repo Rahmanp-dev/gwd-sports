@@ -35,7 +35,16 @@ const studentFormSchema = z.object({
   academyId: z.string().min(1, { message: "Academy is required" }),
   trainerId: z.string().optional(),
   sport: z.string().min(1, { message: "Sport is required" }),
-  level: z.enum(["beginner", "intermediate", "advanced", "U12", "U14", "U16", "U19", "U23"]),
+  level: z.enum([
+    "beginner",
+    "intermediate",
+    "advanced",
+    "U12",
+    "U14",
+    "U16",
+    "U19",
+    "U23",
+  ]),
   fees: z.object({
     amount: z.number().min(0, { message: "Amount must be positive" }),
     period: z.enum(["monthly", "quarterly", "yearly"]),
@@ -304,7 +313,9 @@ export const StudentForm: React.FC<StudentFormProps> = ({
                           ) : (
                             <>
                               <SelectItem value="beginner">Beginner</SelectItem>
-                              <SelectItem value="intermediate">Intermediate</SelectItem>
+                              <SelectItem value="intermediate">
+                                Intermediate
+                              </SelectItem>
                               <SelectItem value="advanced">Advanced</SelectItem>
                             </>
                           )}

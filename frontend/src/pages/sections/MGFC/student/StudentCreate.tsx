@@ -62,7 +62,15 @@ export default function StudentCreate() {
   // Student Details State
   const [studentDetails, setStudentDetails] = useState({
     sports: ["football"] as string[],
-    level: "beginner" as "beginner" | "intermediate" | "advanced" | "U12" | "U14" | "U16" | "U19" | "U23",
+    level: "beginner" as
+      | "beginner"
+      | "intermediate"
+      | "advanced"
+      | "U12"
+      | "U14"
+      | "U16"
+      | "U19"
+      | "U23",
     allergies: "",
     medications: "",
     emergencyName: "",
@@ -607,30 +615,31 @@ export default function StudentCreate() {
                       disabled={isSubmitting}
                       className="grid grid-cols-3 gap-3"
                     >
-                      {(studentDetails.sports.includes("cricket") ? ["U12", "U14", "U16", "U19", "U23"] : ["beginner", "intermediate", "advanced"]).map(
-                        (level) => (
-                          <div
-                            key={level}
-                            className={`relative flex items-center space-x-2 p-3 rounded-lg border cursor-pointer ${
-                              studentDetails.level === level
-                                ? "bg-green-500/20 border-green-500/50"
-                                : "bg-gray-800/50 border-gray-700 hover:bg-gray-700/50"
-                            }`}
+                      {(studentDetails.sports.includes("cricket")
+                        ? ["U12", "U14", "U16", "U19", "U23"]
+                        : ["beginner", "intermediate", "advanced"]
+                      ).map((level) => (
+                        <div
+                          key={level}
+                          className={`relative flex items-center space-x-2 p-3 rounded-lg border cursor-pointer ${
+                            studentDetails.level === level
+                              ? "bg-green-500/20 border-green-500/50"
+                              : "bg-gray-800/50 border-gray-700 hover:bg-gray-700/50"
+                          }`}
+                        >
+                          <RadioGroupItem
+                            value={level}
+                            id={level}
+                            className="border-gray-600"
+                          />
+                          <Label
+                            htmlFor={level}
+                            className="text-sm text-white cursor-pointer capitalize"
                           >
-                            <RadioGroupItem
-                              value={level}
-                              id={level}
-                              className="border-gray-600"
-                            />
-                            <Label
-                              htmlFor={level}
-                              className="text-sm text-white cursor-pointer capitalize"
-                            >
-                              {level}
-                            </Label>
-                          </div>
-                        ),
-                      )}
+                            {level}
+                          </Label>
+                        </div>
+                      ))}
                     </RadioGroup>
                   </div>
 
