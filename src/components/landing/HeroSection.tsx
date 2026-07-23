@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { BRAND_NAME, API_BASE_URL, IMAGE_BASE_URL } from "@/utils/constants";
 import axios from "axios";
 
-export default function HeroSection() {
+export default function HeroSection({ academy }: { academy?: any }) {
   const [mediaLoaded, setMediaLoaded] = useState(false);
   const [heroMode, setHeroMode] = useState<"video" | "carousel">("video");
   const [heroImages, setHeroImages] = useState<string[]>([]);
@@ -20,6 +20,22 @@ export default function HeroSection() {
 
   useEffect(() => {
     const fetchSettings = async () => {
+      // If we have an academy, we don't necessarily need to fetch global settings
+      // or we can override with academy settings later.
+      if (academy) {
+        setLogoUrl(academy.theme?.logoUrl || "");
+        setLogoAlignment("top_left");
+        setLogoIsCircular(false);
+        setLogoScale(100);
+        
+        if (academy.theme?.heroImages && academy.theme.heroImages.length > 0) {
+          setHeroImages(academy.theme.heroImages);
+          setHeroMode("carousel");
+        } else {
+          setHeroMode("video");
+        }
+        return;
+      }
       try {
         const res = await axios.get(`${API_BASE_URL}/homepage/settings`);
         if (res.data?.success && res.data.data) {
@@ -54,11 +70,14 @@ export default function HeroSection() {
     }
   }, [heroMode, heroImages]);
 
-  const brandFirstPart = BRAND_NAME.split(" ")[0] || BRAND_NAME;
-  const brandSecondPart = BRAND_NAME.split(" ")[1] || "";
+  const brandName = academy?.name || BRAND_NAME;
+  const brandFirstPart = brandName.split(" ")[0] || brandName;
+  const brandSecondPart = brandName.split(" ").slice(1).join(" ") || "";
+  const primaryColor = academy?.theme?.primaryColor || "#3b82f6"; // blue-500
+  const tagline = academy?.theme?.tagline || "Where Legends Are Born";
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-50">
       {/* Background Media with Overlay */}
       <div className="absolute inset-0">
         {heroMode === "video" ? (
@@ -91,7 +110,7 @@ export default function HeroSection() {
               />
             ) : (
               // Fallback if carousel mode but no images
-              <div className="absolute inset-0 bg-gray-900" />
+              <div className="absolute inset-0 bg-slate-100" />
             )}
           </AnimatePresence>
         )}
@@ -106,7 +125,7 @@ export default function HeroSection() {
                 : 0,
           }}
           transition={{ duration: 1.5, delay: 0.5 }}
-          className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/50 to-black/85"
+          className="absolute inset-0 bg-gradient-to-br from-white/60 via-slate-50/70 to-slate-100/90"
         />
         <motion.div
           initial={{ opacity: 0 }}
@@ -118,7 +137,7 @@ export default function HeroSection() {
                 : 0,
           }}
           transition={{ duration: 1.5, delay: 0.8 }}
-          className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-amber-500/20 via-transparent to-transparent"
+          className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-500/10 via-transparent to-transparent"
         />
       </div>
 
@@ -139,7 +158,7 @@ export default function HeroSection() {
                 scale: { duration: 20, repeat: Infinity, ease: "linear" },
                 rotate: { duration: 20, repeat: Infinity, ease: "linear" },
               }}
-              className="absolute top-20 right-20 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl"
+              className="absolute top-20 right-20 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0 }}
@@ -153,7 +172,7 @@ export default function HeroSection() {
                 scale: { duration: 25, repeat: Infinity, ease: "linear" },
                 rotate: { duration: 25, repeat: Infinity, ease: "linear" },
               }}
-              className="absolute bottom-20 left-20 w-[500px] h-[500px] bg-yellow-500/10 rounded-full blur-3xl"
+              className="absolute bottom-20 left-20 w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-3xl"
             />
           </>
         )}
@@ -229,7 +248,7 @@ export default function HeroSection() {
                 }}
               />
             ) : (
-              <h1 className="text-7xl sm:text-8xl lg:text-[140px] font-black text-white uppercase leading-[0.9] tracking-tighter font-display flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+              <h1 className="text-7xl sm:text-8xl lg:text-[140px] font-black text-slate-900 uppercase leading-[0.9] tracking-tighter font-display flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
                 {brandFirstPart}
                 {brandSecondPart && (
                   <motion.span
@@ -247,7 +266,7 @@ export default function HeroSection() {
                           : -50,
                     }}
                     transition={{ duration: 1, delay: 2.2 }}
-                    className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 drop-shadow-[0_0_30px_rgba(251,191,36,0.8)] font-display"
+                    className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 font-display"
                   >
                     {brandSecondPart}
                   </motion.span>
@@ -278,9 +297,9 @@ export default function HeroSection() {
                     : 20,
               }}
               transition={{ duration: 1, delay: 2.8 }}
-              className="text-3xl sm:text-4xl lg:text-5xl text-white font-black uppercase tracking-wider drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] font-display"
+              className="text-2xl sm:text-3xl lg:text-4xl text-slate-600 font-semibold uppercase tracking-wider font-display"
             >
-              Where Legends Are Born
+              {tagline}
             </motion.p>
 
             {/* CTA Buttons */}
@@ -307,14 +326,14 @@ export default function HeroSection() {
               >
                 <Button
                   size="lg"
-                  className="relative bg-gradient-to-r from-amber-500 to-yellow-500 text-black hover:from-amber-600 hover:to-yellow-600 text-xl font-black uppercase tracking-widest px-12 py-8 rounded-none shadow-[0_0_40px_rgba(251,191,36,0.6)] hover:shadow-[0_0_60px_rgba(251,191,36,0.8)] transition-all duration-300 group overflow-hidden font-display"
+                  className="relative bg-slate-900 text-white hover:bg-slate-800 text-lg font-semibold tracking-wide px-10 py-6 rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden"
                   onClick={() => {
                     window.location.href = "/user/auth";
                   }}
                 >
                   <span className="relative z-10 flex items-center gap-3">
                     Start Your Journey
-                    <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" />
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                   </span>
                 </Button>
               </motion.div>

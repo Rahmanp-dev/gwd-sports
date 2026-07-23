@@ -257,7 +257,7 @@ export const LandingPageManagement: React.FC = () => {
                       />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg flex items-center justify-center">
-                        <Calendar className="h-12 w-12 text-gray-400" />
+                        <Calendar className="h-12 w-12 text-slate-400" />
                       </div>
                     )}
                   </div>
@@ -474,7 +474,7 @@ export const LandingPageManagement: React.FC = () => {
                             />
                           ) : (
                             <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 rounded flex items-center justify-center">
-                              <Calendar className="h-6 w-6 text-gray-400" />
+                              <Calendar className="h-6 w-6 text-slate-400" />
                             </div>
                           )}
                         </div>

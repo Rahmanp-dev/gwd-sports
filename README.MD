@@ -1,193 +1,440 @@
-# MasterGrade
+# GWD Sports — Multi-Tenant Academy Platform
 
-MasterGrade is a comprehensive sports academy management system designed to streamline administration, tracking, and communication between admins, trainers, and students.
+GWD Sports is a **multi-tenant SaaS platform** for sports academies. A single GWD installation powers unlimited academies, each with their own branded public page, isolated data, and separate payment accounts — all managed from a unified super-admin panel.
 
-## How To Setup Locally
+---
 
-Follow these steps to get the project up and running on your local machine.
+## Architecture Overview
 
-### Prerequisites
-- Node.js (v18 or higher recommended)
-- MongoDB (Running locally or an Atlas connection URI)
-
-### Installation
-
-1. Install dependencies for the root, frontend, and backend concurrently from the root directory:
-```bash
-npm run install:all
+```
+gwd.in/                        → Discovery/portal landing page (coming soon)
+gwd.in/[academy-slug]          → Public academy page (themed, SEO-optimized)
+gwd.in/login                   → Shared auth gateway
+gwd.in/dashboard               → Academy admin dashboard (scoped to their data)
+gwd.in/student                 → Student portal
+gwd.in/admin/academies         → GWD Super Admin panel
 ```
 
-2. Setup the backend environment variables:
-```bash
-cd backend
-cp .env.example .env
-```
-*Make sure to update the `.env` file with your actual `DB_URI` and JWT secret keys, then return to the root directory.*
-
-### Running the Application
-
-From the root directory, start both development servers concurrently:
-```bash
-npm run dev
-```
-The frontend should now be running at `http://localhost:5173` and the backend at `http://localhost:3000`.
+Every academy gets `/[their-slug]` — e.g., `gwd.in/master-grid`, `gwd.in/champions-fc`. All data lives in a single MongoDB database, but every query is scoped by `academyId` at the API level so academies can never see each other's data.
 
 ---
 
 ## Tech Stack
 
-### Frontend
-- **Core Framework:** React 18, TypeScript, Vite
-- **Styling & UI:** Tailwind CSS, Shadcn UI, Radix Primitives
-- **Animations:** Framer Motion
-- **State Management & Fetching:** React Query, Redux Toolkit
-- **Icons:** Lucide React
-- **Charts:** Custom SVG-based charting (no external chart library dependency)
-
-### Backend
-- **Core Framework:** Node.js, Express.js, TypeScript
-- **Database:** MongoDB, Mongoose ODM
-- **Validation:** Zod, express-validator
-- **Authentication:** JWT (JSON Web Tokens), bcryptjs
-- **Payments:** Razorpay Integration
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | Next.js 15 (App Router) |
+| **Language** | TypeScript (strict) |
+| **Styling** | Tailwind CSS v4, Shadcn UI, Radix Primitives |
+| **State** | Redux Toolkit |
+| **Database** | MongoDB, Mongoose ODM |
+| **Auth** | JWT (access + refresh tokens), `jose` for edge |
+| **Payments** | Razorpay Routes (multi-account split) |
+| **Deployment** | Vercel / Railway |
 
 ---
 
-## Cutting-Edge Features
+## Local Setup
 
-### 🚀 Technology
-- **End-to-End Type Safety:** Strict TypeScript interfaces bridge the gap between Mongoose schemas and React components, virtually eliminating runtime type errors.
-- **Modern Build Tooling:** Leveraging Vite for lightning-fast Hot Module Replacement (HMR) and highly optimized production builds.
-- **Scalable Architecture:** Clean MVC (Model-View-Controller) architecture strictly followed in the backend, ensuring maintainability as the system grows.
+### Prerequisites
+- Node.js v18+
+- MongoDB (local or Atlas URI)
+- Razorpay account (for payment features)
 
-### 🛠️ Implementation
-- **Role-Based Workspaces:** Dedicated, purpose-built dashboards for Admins, Trainers, and Students ensuring personalized user experiences.
-- **Bidirectional Data Relationships:** Advanced REST APIs intelligently sync relationships (such as automatically updating `StudentProfile` logic when a student gets added or removed from an `Academy`).
-- **Responsive & Accessible Interfaces:** Mobile-first, completely responsive application interface using Tailwind CSS.
-- **Fluid & Contextual Animations:** Premium user experience via Framer Motion—smooth page transitions, dialog popups, staggered list renders, and dynamic UI state changes.
+### Installation
 
-### ⚡ Optimization
-- **Smart Data Fetching:** React Query is deeply integrated to handle caching, background synchronization, reducing redundant fetching, and automating state invalidation after mutations.
-- **Debounced Interactions:** Instant, non-intrusive API calls during searching and filtering using delayed execution (debouncing), minimizing server load.
-- **Database Indexing:** Mongoose schemas heavily annotated with optimized structured indexes ensuring fast query resolutions, even on massively scaled data.
-- **Aggregations & Pagination:** Fully paginated API resources reducing initial load times and payloads.
+```bash
+cd academy
+npm install
+cp .env.example .env.local
+```
 
-### 🛡️ Security
-- **Robust Authentication:** Secure JWT implementation featuring dual-token strategies with rotation concepts.
-- **Password Cryptography:** Industry standard safe salting and hashing handled by `bcryptjs`.
-- **Strict Input Validation:** Data constraints and payload formats validated robustly via Zod and `express-validator` *before* hitting the controller logic.
-- **Role-Based Access Control (RBAC):** Middleware-enforced strict route shielding based on token claims and role hierarchies.
+### Environment Variables
 
----
+```env
+# Database
+MONGODB_URI=mongodb+srv://...
 
-## Deployment
+# JWT
+JWT_SECRET=your-32-char-minimum-secret
+JWT_REFRESH_SECRET=your-32-char-minimum-refresh-secret
 
-### Railway (Production)
-The application is deployed on [Railway](https://railway.app/) with separate services for the backend API and frontend static build.
+# Razorpay
+NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_live_xxx
+RAZORPAY_KEY_SECRET=your_razorpay_secret
+RAZORPAY_WEBHOOK_SECRET=your_webhook_secret
 
-| Service | URL |
-|---------|-----|
-| Frontend | `https://gwdspm.up.railway.app` |
-| Backend API | Set via `VITE_API_BASE_URL` env var |
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
 
-**Required Environment Variables (Backend):**
-| Variable | Description |
-|----------|-------------|
-| `DB_URI` | MongoDB Atlas connection string |
-| `JWT_SECRET` | Min 32 chars, used for access tokens |
-| `JWT_REFRESH_SECRET` | Min 32 chars, used for refresh tokens |
-| `NODE_ENV` | Set to `production` for Railway |
-| `RAZORPAY_KEY_ID` | Optional — Razorpay API key |
-| `RAZORPAY_KEY_SECRET` | Optional — Razorpay secret |
-| `CORS_ORIGIN` | Optional — comma-separated custom origins |
+### Run Development Server
 
-**Required Environment Variables (Frontend):**
-| Variable | Description |
-|----------|-------------|
-| `VITE_API_BASE_URL` | Full backend API URL (e.g. `https://your-backend.up.railway.app/api`) |
-| `VITE_BRAND_NAME` | Global brand name string used across the app (defaults to "MasterGrade") |
+```bash
+npm run dev
+```
+
+App runs at `http://localhost:3000`.
 
 ---
 
-## Recent Development Log (May 2026)
+## Multi-Tenant Architecture
 
-### Landing Page & Brand Customization
-- **Global Branding** — Introduced `VITE_BRAND_NAME` to seamlessly inject custom brand text across the footer, navigation, and auth pages.
-- **Hero Section Customization** — Admin dashboard now controls whether the landing page shows a default background video or an interactive image carousel.
-- **Dynamic Logo Engine** — Upload a high-quality brand logo directly from the Admin settings:
-  - Supports structural alignment choices (Top Left or Middle hero replacement).
-  - Built-in circular cropping mode.
-  - Granular sizing control via a custom scale slider (50% to 300%).
-- **Backend File Handling** — Implemented dedicated Multer endpoints for hero and logo image uploads, serving static assets cleanly while ensuring ES-module path safety (`process.cwd()`).
+### How Tenancy Works
 
-### Admin Command Center Dashboard
-- **`GET /api/admin/dashboard`** — Unified KPI aggregation endpoint providing real-time student demographics, attendance rates with historical trends, financial health metrics, trainer load distribution, and automated "Drop-off Detection" for students absent 7+ days.
-- **`CommandCenter.tsx`** — Responsive dashboard component with 4 KPI hero cards, live-data widgets, and actionable drop-off alert system with click-to-contact integration.
-- **Top Performers Leaderboard** — Gold/silver/bronze medal ranking with click-to-view student detail dialog showing full performance history with color-coded progress bars.
-- **Popular Sports Sidebar** — Visual breakdown of trainer distribution across sports.
+1. **Single Database, Logical Isolation** — All models include an `academyId` foreign key. Every API query filters by this ID.
+2. **JWT Carries `academy_id`** — On login/register, the JWT payload includes the user's `academyId`. The edge middleware extracts it and injects it as an HTTP header (`x-academy-id`) on every request.
+3. **Three-Tier Access** — `gwd_super_admin` → all data; `admin` → their academy only; `student/trainer` → their own records.
 
-### Financial Command Center
-- **`GET /api/admin/finance-analytics`** — Deep financial analytics endpoint aggregating:
-  - Lifetime, monthly, and quarterly revenue with period-over-period growth
-  - Payment status breakdown (success/pending/failed) with collection rate
-  - 12-month revenue trend data (gap-filled for missing months)
-  - 30-day daily revenue granularity
-  - Academy-wise revenue distribution
-  - Top paying students with contact details
-  - Fee defaulter list with outstanding amounts
-  - Average transaction value computation
-- **`FinanceDashboard.tsx`** — Rich SVG-based analytics dashboard featuring:
-  - 6 KPI hero cards with growth indicators
-  - Interactive 12-month revenue bar chart with hover tooltips
-  - Daily revenue sparkline area chart
-  - Payment status donut chart with amount breakdowns
-  - Academy revenue distribution bars
-  - Top payers leaderboard with direct contact links
-  - Actionable fee defaulter list with phone/email shortcuts
+```
+JWT Payload: { userId, email, role, academy_id }
+                                         ↓
+Edge Middleware → x-academy-id header → API Route → tenantFilter
+```
 
-### Cricket Performance Tracking
-- **Bowling Strike Rate & Fielding Rating** — Added to student performance evaluations with real-world calculation formulas.
-- **Student Performance Dialog** — Click any leaderboard entry to see full performance history with per-category progress bars and evaluator attribution.
+### Tenant Isolation Pattern (applied to every admin API)
 
-### Production Stability Fixes
-- **CORS Configuration** — Dynamic origin validation supporting any `*.railway.app` subdomain plus `CORS_ORIGIN` environment variable for custom domains.
-- **Proxy Trust** — Added `app.set('trust proxy', 1)` to fix rate limiting on Railway (was blocking all users because it saw the load balancer's IP as a single client).
-- **Rate Limiter Tuning** — Auth route limit increased from 5 to 20 attempts per 15-min window for smoother multi-account testing.
-- **Razorpay Env** — Made `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` optional with empty defaults so the server boots without payment credentials.
-- **TypeScript Build Fixes** — Resolved DTS generation errors by explicit `req.params` casting and Mongoose subdocument type handling.
-- **JSX Structure** — Fixed missing `</TabsContent>` closing tags causing Babel parse failures.
+```typescript
+// Applied to every admin route
+const isSuperAdmin = auth.user.role === 'gwd_super_admin';
+const tenantFilter = (!isSuperAdmin && auth.academyId)
+  ? { academyId: auth.academyId }
+  : {};
 
-### API Architecture Notes
-- All dashboard endpoints use complex MongoDB aggregation pipelines server-side to minimize client computation.
-- Frontend components are modularized under `frontend/src/components/admin/dashboard/` and `frontend/src/components/admin/fees/`.
-- Charts are rendered as pure SVG (no external charting library) for zero-dependency, pixel-perfect control.
+// Example: students query
+const students = await StudentProfile.find(filter);
+```
+
+### Academy Slug Pages
+
+Each academy gets a public page at `gwd.in/[slug]`:
+
+```
+src/app/[slug]/page.tsx          → Server Component (DB lookup, SEO metadata)
+src/views/academy/AcademyPublicPage.tsx  → Client Component (themed UI, CTA)
+```
+
+Next.js App Router automatically prioritizes static routes (`/login`, `/admin`) over the dynamic `[slug]` catch-all — no conflict resolution needed.
+
+---
+
+## Payment Architecture (Razorpay Route)
+
+Every payment is split three ways automatically:
+
+```
+Student pays ₹3,000 (baseAmount)
+├── ₹30 (1%)     → GWD Platform Account (platform fee, stays in master Razorpay)
+├── ₹2,970 (99%) → Academy's Linked Bank Account (via Razorpay Route transfer)
+└── ~₹70.80      → Razorpay Gateway Fee (~2.36%, auto-deducted by Razorpay)
+```
+
+**How it's implemented:**
+
+```typescript
+// create-order/route.ts
+const platformFeePercent = academy.platformFeePercent ?? 1;
+const platformFee = baseAmount * (platformFeePercent / 100);
+const transferAmount = baseAmount - platformFee;
+
+// Razorpay Route: transfer to academy's account
+transfers = [{
+  account: academy.rzp_account,   // Each academy's linked RZP account
+  amount: Math.round(transferAmount * 100),
+  currency: 'INR',
+  on_hold: false
+}];
+```
+
+**Each academy** links their bank account via Razorpay's linked account system. Their `rzp_account` ID is stored on the `Academy` document and set by the GWD super admin during onboarding.
+
+---
+
+## Data Models
+
+### Academy
+```typescript
+{
+  name, slug (unique, indexed),
+  description, location, address,
+  sports[], fees: { monthly, quarterly, yearly },
+  facilities[], timings: { opening, closing, workingDays[] },
+  theme: { primaryColor, accentColor, logoUrl, heroImages[], tagline },
+  rzp_account,        // Razorpay linked account ID
+  platformFeePercent, // Default: 1
+  ownerId,            // Academy admin user
+  isActive,
+  // indexes: slug (unique), isActive
+}
+```
+
+### User
+```typescript
+{
+  name, email, password (select: false),
+  role: 'admin' | 'student' | 'trainer' | 'user' | 'gwd_super_admin',
+  academyId,  // Which academy this user belongs to
+  sports[], phone, isActive,
+  refreshTokens (select: false),
+  // indexes: academyId, { role, academyId }
+}
+```
+
+### FeePayment
+```typescript
+{
+  orderId, paymentId, signature,
+  amount,        // Total charged to student
+  baseAmount,    // Base fee before platform fee calc
+  platformFee,   // GWD's cut (1%)
+  gatewayFee,    // Estimated Razorpay gateway fee (~2.36%)
+  currency, status,
+  studentId, academyId,
+  transferId, transferStatus,
+  // indexes: { academyId, status }, { studentId }, { createdAt }
+}
+```
+
+### Settings (Per-Academy)
+```typescript
+{
+  academyId,       // null = global GWD settings
+  performanceMetrics[], defaultFeeAmount, currency,
+  heroMode, heroImages[], logoUrl, logoAlignment, logoIsCircular, logoScale
+  // index: { academyId } unique sparse
+}
+```
+
+---
+
+## API Reference
+
+### Authentication
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/user/login` | Login — returns JWT with `academy_id` |
+| POST | `/api/user/register` | Register — accepts `academyId` for academy selection |
+| POST | `/api/user/refresh` | Refresh access token |
+| POST | `/api/user/logout` | Invalidate refresh token |
+
+### Academy (Public — No Auth Required)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/academy` | List active academies (for registration dropdown) |
+| GET | `/[slug]` | Public academy page |
+
+### Admin (Academy-Scoped)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/admin/dashboard` | KPIs scoped to academy |
+| GET/PUT | `/api/admin/settings` | Per-academy settings |
+| GET | `/api/admin/students` | Academy's students only |
+| GET/POST | `/api/admin/trainers` | Academy's trainers only |
+| GET/POST | `/api/admin/users` | Academy's users only |
+| GET | `/api/admin/finance-analytics` | Academy's financials |
+| GET | `/api/admin/get-kits` | Academy's kit requests |
+| GET/POST | `/api/events` | Academy's events (`?academyId=` for public) |
+
+### Payments
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/payments/create-order` | Create Razorpay order with Route split |
+| POST | `/api/payments/verify-payment` | Verify signature, save transferId |
+| GET | `/api/payments/admin/all` | All payments (scoped to academy) |
+| GET | `/api/payments/admin/defaulters` | Students with outstanding fees |
+
+### GWD Super Admin Only
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET/POST | `/api/admin/academies` | List & create academies |
+| GET/PUT/DELETE | `/api/admin/academies/[id]` | Manage single academy |
+| POST | `/api/admin/academies/[id]/onboard` | Full onboarding (academy + admin user) |
+| GET | `/api/admin/platform-stats` | Platform-wide revenue, student counts |
 
 ---
 
 ## Project Structure
 
 ```
-academy/
-├── backend/
-│   ├── src/
-│   │   ├── config/          # DB connection, env validation (Zod)
-│   │   ├── controllers/     # Business logic (admin, payment, event, etc.)
-│   │   ├── middleware/       # Auth, rate limiting, validation
-│   │   ├── routers/          # Express route definitions
-│   │   ├── schemas/          # Mongoose models & interfaces
-│   │   └── utils/            # Logger, helpers
-│   └── tsup.config.ts        # Build configuration
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── admin/
-│   │   │   │   ├── dashboard/   # CommandCenter, leaderboard
-│   │   │   │   └── fees/        # FinanceDashboard, FeesManagement
-│   │   │   ├── user/            # Student/trainer profile components
-│   │   │   └── ui/              # Shadcn UI primitives
-│   │   ├── pages/               # Route-level page components
-│   │   ├── services/            # API service layer
-│   │   └── store/               # Redux store & slices
-│   └── vite.config.ts
-└── package.json                 # Root workspace scripts
+academy/src/
+├── app/
+│   ├── [slug]/                  # Dynamic public academy pages
+│   │   └── page.tsx             # Server Component + SEO metadata
+│   ├── api/
+│   │   ├── user/                # login, register, refresh, logout
+│   │   ├── admin/
+│   │   │   ├── academies/       # Super admin CRUD (+ [id]/onboard)
+│   │   │   ├── dashboard/       # Tenant-scoped KPI aggregations
+│   │   │   ├── students/        # Tenant-scoped student management
+│   │   │   ├── trainers/        # Tenant-scoped trainer management
+│   │   │   ├── users/           # Tenant-scoped user management
+│   │   │   ├── settings/        # Per-academy settings
+│   │   │   ├── finance-analytics/
+│   │   │   ├── get-kits/
+│   │   │   └── platform-stats/  # Super admin only
+│   │   ├── payments/
+│   │   │   ├── create-order/    # Razorpay Route with fee split
+│   │   │   ├── verify-payment/  # Signature verification + transfer tracking
+│   │   │   └── admin/           # all, defaulters
+│   │   └── events/              # Tenant-scoped events
+│   ├── dashboard/               # Academy admin views
+│   ├── student/                 # Student portal views
+│   ├── login/ register/         # Auth pages
+│   └── layout.tsx               # Root layout
+├── lib/
+│   ├── db.ts                    # MongoDB connection (singleton)
+│   ├── jwt.ts                   # Token generation (includes academy_id)
+│   ├── models/                  # Mongoose models
+│   │   ├── Academy.ts
+│   │   ├── User.ts
+│   │   ├── Student.ts
+│   │   ├── Trainer.ts
+│   │   ├── FeePayment.ts
+│   │   ├── Settings.ts
+│   │   └── Event.ts
+│   └── middleware/
+│       └── auth.ts              # authMiddleware, adminMiddleware, roleMiddleware
+├── middleware.ts                # Next.js Edge Middleware (JWT → headers)
+├── store/
+│   └── slices/authSlice.ts     # Redux auth (stores academyId)
+├── types/index.ts               # Shared TypeScript interfaces
+└── views/
+    └── academy/
+        └── AcademyPublicPage.tsx  # Themed public academy page
 ```
+
+---
+
+## Security Model
+
+| Layer | Implementation |
+|-------|---------------|
+| **Edge Middleware** | `jose` JWT verification at the edge — rejects invalid tokens before hitting any API |
+| **API Middleware** | `authMiddleware`, `adminMiddleware`, `roleMiddleware` extract and validate `academyId` |
+| **Tenant Isolation** | Every write operation forces `academyId = auth.academyId` for non-super-admins |
+| **Data Leakage Prevention** | All aggregate pipelines include `tenantFilter` as the first `$match` stage |
+| **Razorpay Security** | Payment verification uses HMAC-SHA256 signature validation |
+| **Password Hashing** | `bcryptjs` with automatic salting |
+| **Token Rotation** | Dual-token (access + refresh) with refresh token stored in DB and invalidated on logout |
+
+---
+
+## Development Log
+
+### July 2026 — Multi-Tenant Architecture (Phase 1–6)
+
+This release transforms GWD Sports from a single-academy system into a full multi-tenant SaaS platform.
+
+#### Phase 1: Database Schema Upgrades
+- **Academy model** — Added `slug` (unique, indexed), `theme` (primaryColor, accentColor, logoUrl, heroImages, tagline), `ownerId`, `rzp_account`, `platformFeePercent` (default 1%)
+- **User model** — Added `academyId` field, `gwd_super_admin` role, and performance indexes `{ academyId }`, `{ role, academyId }`
+- **FeePayment model** — Added `baseAmount`, `platformFee`, `gatewayFee`, `transferId`, `transferStatus` for financial auditability
+- **Settings model** — Added `academyId` for per-academy settings with unique sparse index
+- **Types** — Updated `UserRole`, `UserUpdateData`, `UserFilters`, `Academy` interface to reflect all new fields
+
+#### Phase 2: Auth & Middleware
+- **Edge Middleware** (`src/middleware.ts`) — `jose`-based JWT verification at the edge; extracts `academy_id` and injects `x-academy-id`, `x-user-id`, `x-user-role` request headers
+- **JWT** — `TokenPayload` now includes `academy_id`; both login and register routes sign JWTs with the user's academyId
+- **Register route** — Now accepts `academyId` in request body so students can select their academy during signup
+- **Redux Auth Slice** — Stores `academyId` from login/register response; role type includes `gwd_super_admin`
+
+#### Phase 3: Dynamic Academy Slug Pages
+- **`src/app/[slug]/page.tsx`** — Server Component that fetches academy by slug, generates SEO metadata (`<title>`, `<meta description>`), returns 404 for inactive/unknown academies
+- **`src/views/academy/AcademyPublicPage.tsx`** — Client Component rendering a fully themed public page with academy colors, sports badges, fee structure, facilities, timings, contact info, and a Join CTA
+
+#### Phase 4: Tenant Isolation — API Route Scoping
+All admin API routes now apply the `tenantFilter` pattern:
+- `gwd_super_admin` → unrestricted, sees all data
+- `admin` → filtered by `auth.academyId`
+
+Routes scoped: `students`, `trainers` (GET + POST), `users` (GET + POST), `dashboard`, `settings`, `finance-analytics`, `get-kits`, `payments/all`, `payments/defaulters`, `events` (GET + POST)
+
+#### Phase 5: GWD Super Admin APIs
+- `GET/POST /api/admin/academies` — List (with search/filter/paginate) and create academies
+- `GET/PUT/DELETE /api/admin/academies/[id]` — Single academy management including theme and `rzp_account` updates
+- `POST /api/admin/academies/[id]/onboard` — Atomic transaction: creates the academy + its admin user in one operation
+- `GET /api/admin/platform-stats` — Platform-wide stats: total academies, students, revenue, platform fees collected
+
+#### Phase 6: Razorpay Route Auto-Split
+- **create-order** — Calculates `platformFee = baseAmount × (platformFeePercent / 100)`, transfers `baseAmount - platformFee` to academy's `rzp_account` via Razorpay Routes, saves fee breakdown to `FeePayment`
+- **verify-payment** — Saves `transferId` from Razorpay after successful HMAC signature verification
+
+#### Security Audit Fixes (Post-Implementation)
+Four parallel auditors found and fixed 8 issues:
+- 🔴 Events API leaked events across all academies → Fixed with `academyId` filter
+- 🔴 Admin users route exposed all platform users → Fixed with tenant scoping
+- 🔴 Admin get-kits route leaked across academies → Fixed with `$match` pipeline stage
+- 🔴 Trainers POST allowed cross-tenant injection → Fixed with forced `auth.academyId`
+- 🟡 Missing `User.academyId` index → Added `{ academyId: 1 }` and `{ role, academyId }` compound indexes
+- 🟡 Missing `Settings.academyId` unique index → Added sparse unique index
+- 🟡 `UserUpdateData` / `UserFilters` missing `gwd_super_admin` → Fixed type unions
+
+---
+
+### May 2026 — Admin Command Center & Financial Analytics
+
+#### Landing Page & Brand Customization
+- **Global Branding** — `NEXT_PUBLIC_BRAND_NAME` environment variable for custom academy names
+- **Hero Section Customization** — Admin controls whether landing shows video or image carousel
+- **Dynamic Logo Engine** — Upload brand logo with alignment (top-left or center), circular crop mode, and scale slider (50%–300%)
+
+#### Admin Command Center Dashboard
+- **`GET /api/admin/dashboard`** — Unified KPI aggregation: student demographics, attendance trends, financial health, trainer load, automated drop-off detection (students absent 7+ days)
+- Responsive 4-KPI hero cards, live data widgets, drop-off alert system with click-to-contact
+
+#### Financial Command Center
+- **`GET /api/admin/finance-analytics`** — Lifetime/monthly/quarterly revenue, payment status breakdown, 12-month trend, 30-day daily granularity, top payers, fee defaulters
+
+#### Production Stability
+- CORS dynamic origin validation for Railway subdomain pattern
+- Proxy trust config for correct rate limiting on Railway
+- Auth rate limit tuned to 20 attempts per 15 min window
+
+---
+
+## Deployment
+
+### Vercel (Recommended for Next.js)
+
+```bash
+vercel --prod
+```
+
+Set all environment variables in the Vercel dashboard.
+
+### Railway
+
+Deploy the Next.js app as a single service.
+
+**Required Environment Variables:**
+
+| Variable | Description |
+|----------|-------------|
+| `MONGODB_URI` | MongoDB Atlas connection string |
+| `JWT_SECRET` | Min 32 chars |
+| `JWT_REFRESH_SECRET` | Min 32 chars |
+| `NEXT_PUBLIC_RAZORPAY_KEY_ID` | Razorpay public key |
+| `RAZORPAY_KEY_SECRET` | Razorpay secret key |
+| `RAZORPAY_WEBHOOK_SECRET` | For webhook signature validation |
+| `NEXT_PUBLIC_APP_URL` | Production URL (e.g. `https://gwd.in`) |
+
+---
+
+## Contributing
+
+1. Branch from `main`
+2. Follow the tenant isolation pattern for all new API routes
+3. Run `npx tsc --noEmit` before pushing — zero errors required
+4. Test both as `admin` (academy-scoped) and `gwd_super_admin` (global) roles
+
+### Recent Updates (July 2026 - Continuation)
+- **Master Athlete & User Directory**: Added full-functional user directory fetching from `/api/admin/users` into `SuperAdminDashboard` providing cross-tenant lookup capabilities for the GWD command center.
+- **Dynamic Fee Payment Checkout**: Upgraded `StudentPaymentPanel` to dynamically fetch academy-specific fee structures. Students can now directly select between Monthly, Quarterly, Half-Yearly, and Yearly plans, automatically populating the correct Razorpay charge amount.
+- **Database Migration**: Successfully copied all MongoDB collections (academies, students, users, payments, etc.) from the local environment to the production-ready MongoDB Atlas Cluster.
+- **Tenant Admin Page Corrections**: Removed the globally-scoped "Academies" tab from `AdminPage.tsx` for standard tenant admins, ensuring they only see features scoped to their academy.
+- **Render Error Fixes**: Resolved an application crash in `SuperAdminDashboard.tsx` Global Transaction Ledger caused by unpopulated `studentId` object mapping.

@@ -30,7 +30,10 @@ export async function authMiddleware(req: NextRequest) {
       return { error: 'Account is deactivated', status: 401 };
     }
     
-    return { user };
+    // Extract academyId from JWT or user record for tenant isolation
+    const academyId = decoded.academy_id || user.academyId?.toString() || null;
+    
+    return { user, academyId };
   } catch (error) {
     return { error: 'Authentication error or invalid token', status: 401 };
   }
@@ -40,7 +43,7 @@ export async function adminMiddleware(req: NextRequest) {
   const auth = await authMiddleware(req);
   if (auth?.error) return auth;
   
-  if (auth?.user.role !== 'admin') {
+  if (auth?.user.role !== 'admin' && auth?.user.role !== 'gwd_super_admin') {
     return { error: 'Admin access required', status: 403 };
   }
   

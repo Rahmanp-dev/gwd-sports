@@ -24,7 +24,12 @@ export async function GET(req: NextRequest) {
     const sortOrder = searchParams.get('sortOrder') || 'desc';
 
     const filter: any = {};
-    if (academyId) filter.academyId = academyId;
+    // Tenant isolation: force academyId from auth for non-super-admins
+    if (auth.user.role !== 'gwd_super_admin' && auth.academyId) {
+      filter.academyId = auth.academyId;
+    } else if (academyId) {
+      filter.academyId = academyId;
+    }
     if (sport) filter.sports = { $in: [sport] };
     if (isActive === 'true') filter.isActive = true;
     if (isActive === 'false') filter.isActive = false;
@@ -109,8 +114,10 @@ export async function POST(req: NextRequest) {
     await connectToDatabase();
 
     const body = await req.json();
-    // Simplified trainer creation logic based on what standard trainer profiles need
-    // Since creating users usually happens first, we'll just handle the profile
+    // Tenant isolation: force academyId for non-super-admins
+    if (auth.user.role !== 'gwd_super_admin' && auth.academyId) {
+      body.academyId = auth.academyId;
+    }
     const trainer = new TrainerProfile(body);
     await trainer.save();
 

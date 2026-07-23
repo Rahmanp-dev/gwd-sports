@@ -5,6 +5,7 @@ export interface CreateOrderParams {
   currency?: string;
   receipt?: string;
   studentId?: string;
+  period?: string;
 }
 
 export interface VerifyPaymentParams {

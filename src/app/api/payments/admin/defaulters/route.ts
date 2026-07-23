@@ -13,13 +13,19 @@ export async function GET(req: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const limitNum = parseInt(searchParams.get('limit') || '10');
 
-    const students = await StudentProfile.find({ outstandingFees: { $gt: 0 } })
+    // Tenant isolation
+    const tenantFilter: any = {};
+    if (auth.user.role !== 'gwd_super_admin' && auth.academyId) {
+      tenantFilter.academyId = auth.academyId;
+    }
+
+    const students = await StudentProfile.find({ outstandingFees: { $gt: 0 }, ...tenantFilter })
       .populate('userId', 'name email phone')
       .sort({ outstandingFees: -1 })
       .skip((page - 1) * limitNum)
       .limit(limitNum);
 
-    const total = await StudentProfile.countDocuments({ outstandingFees: { $gt: 0 } });
+    const total = await StudentProfile.countDocuments({ outstandingFees: { $gt: 0 }, ...tenantFilter });
 
     return NextResponse.json({
       success: true,

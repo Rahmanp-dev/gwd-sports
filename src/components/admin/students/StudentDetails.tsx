@@ -66,7 +66,7 @@ export const StudentDetails: React.FC<StudentDetailsProps> = ({
       case "U23":
         return "bg-blue-500 hover:bg-blue-600";
       default:
-        return "bg-gray-500 hover:bg-gray-600";
+        return "bg-slate-500 hover:bg-slate-600";
     }
   };
 
@@ -79,7 +79,7 @@ export const StudentDetails: React.FC<StudentDetailsProps> = ({
       case "overdue":
         return "bg-red-500 hover:bg-red-600";
       default:
-        return "bg-gray-500 hover:bg-gray-600";
+        return "bg-slate-500 hover:bg-slate-600";
     }
   };
 
@@ -92,7 +92,7 @@ export const StudentDetails: React.FC<StudentDetailsProps> = ({
       case "requested":
         return "bg-yellow-500 hover:bg-yellow-600";
       default:
-        return "bg-gray-500 hover:bg-gray-600";
+        return "bg-slate-500 hover:bg-slate-600";
     }
   };
 
@@ -280,7 +280,7 @@ export const StudentDetails: React.FC<StudentDetailsProps> = ({
             {student.kits.length === 0 ? (
               <Card>
                 <CardContent className="text-center py-8">
-                  <Package className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                  <Package className="h-12 w-12 mx-auto text-slate-400 mb-4" />
                   <p className="text-muted-foreground">
                     No kits requested yet.
                   </p>
@@ -342,7 +342,7 @@ export const StudentDetails: React.FC<StudentDetailsProps> = ({
             {student.attendance.length === 0 ? (
               <Card>
                 <CardContent className="text-center py-8">
-                  <Clock className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                  <Clock className="h-12 w-12 mx-auto text-slate-400 mb-4" />
                   <p className="text-muted-foreground">
                     No attendance records found.
                   </p>
@@ -384,7 +384,7 @@ export const StudentDetails: React.FC<StudentDetailsProps> = ({
             {student.performance.length === 0 ? (
               <Card>
                 <CardContent className="text-center py-8">
-                  <BarChart3 className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                  <BarChart3 className="h-12 w-12 mx-auto text-slate-400 mb-4" />
                   <p className="text-muted-foreground">
                     No performance records found.
                   </p>

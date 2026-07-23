@@ -3,8 +3,8 @@ import { connectToDatabase } from '@/lib/db';
 import { authMiddleware } from '@/lib/middleware/auth';
 import Razorpay from 'razorpay';
 import { FeePayment } from '@/lib/models/FeePayment';
-import { StudentProfile } from '@/lib/models/Student';
 import { Academy } from '@/lib/models/Academy';
+
 const razorpay = new Razorpay({
   key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
   key_secret: process.env.RAZORPAY_KEY_SECRET || ''
@@ -17,34 +17,53 @@ export async function POST(req: NextRequest) {
     
     await connectToDatabase();
     const body = await req.json();
-    const { amount, baseAmount, currency = "INR", description, kitId, period } = body;
+    const baseAmount = body.baseAmount || body.amount;
+    const currency = body.currency || "INR";
+    const description = body.description;
+    const kitId = body.kitId;
+    const period = body.period;
 
-    if (!amount) {
-      return NextResponse.json({ success: false, message: 'Amount is required' }, { status: 400 });
+    if (!baseAmount) {
+      return NextResponse.json({ success: false, message: 'baseAmount or amount is required' }, { status: 400 });
     }
 
-
-    const studentProfile = await StudentProfile.findOne({ userId: auth.user._id });
-    const academyId = studentProfile?.academyId;
+    const academyId = auth.academyId;
     
     let transfers: any[] = [];
+    let platformFee = 0;
+    let gatewayFee = 0;
+    let transferAmount = baseAmount;
+    let totalAmount = baseAmount;
+    
     if (academyId) {
       const academy = await Academy.findById(academyId);
-      if (academy && academy.rzp_account) {
-        // Auto-Split Engine: Academy gets 100% of the base fee (minus GWD/Razorpay fees which Razorpay handles from the main account, or per the commercial agreement).
-        // If baseAmount = 3000, Academy gets 300000 paise.
-        const transferAmount = baseAmount || amount;
-        transfers = [{
-          account: academy.rzp_account,
-          amount: Math.round(transferAmount * 100),
-          currency,
-          on_hold: false
-        }];
+      if (academy) {
+        const platformFeePercent = academy.platformFeePercent || 1;
+        platformFee = (baseAmount * platformFeePercent) / 100;
+        gatewayFee = (baseAmount + platformFee) * 0.0236;
+        
+        totalAmount = baseAmount + platformFee + gatewayFee;
+        transferAmount = baseAmount;
+        
+        if (academy.rzp_account) {
+          transfers = [{
+            account: academy.rzp_account,
+            amount: Math.round(transferAmount * 100),
+            currency,
+            on_hold: false
+          }];
+        }
+      } else {
+        gatewayFee = baseAmount * 0.0236;
+        totalAmount = baseAmount + gatewayFee;
       }
+    } else {
+      gatewayFee = baseAmount * 0.0236;
+      totalAmount = baseAmount + gatewayFee;
     }
 
     const orderOptions: any = {
-      amount: Math.round(amount * 100), // convert to paise
+      amount: Math.round(totalAmount * 100),
       currency,
       receipt: `receipt_${Date.now()}_${auth.user._id.toString().substring(0, 5)}`,
       notes: {
@@ -52,7 +71,11 @@ export async function POST(req: NextRequest) {
         academyId: academyId ? academyId.toString() : '',
         description: description || 'Academy Fees',
         kitId: kitId || '',
-        period: period || ''
+        period: period || '',
+        baseAmount: baseAmount.toString(),
+        platformFee: platformFee.toString(),
+        gatewayFee: gatewayFee.toString(),
+        transferAmount: transferAmount.toString()
       }
     };
 
@@ -62,10 +85,12 @@ export async function POST(req: NextRequest) {
 
     const order = await razorpay.orders.create(orderOptions);
 
-    // Save to FeePayment collection
     await FeePayment.create({
       orderId: order.id,
-      amount: amount,
+      amount: totalAmount,
+      baseAmount: baseAmount,
+      platformFee: platformFee,
+      gatewayFee: gatewayFee,
       currency,
       status: "pending",
       receipt: orderOptions.receipt,
@@ -75,7 +100,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: order
+      data: {
+        order,
+        key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || ''
+      }
     });
   } catch (error: any) {
     console.error("Razorpay Create Order Error:", error);

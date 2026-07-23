@@ -9,7 +9,7 @@ import Footer from "@/components/landing/Footer";
 
 export default function LandingPage() {
   return (
-    <div className="relative bg-black overflow-hidden">
+    <div className="relative bg-slate-50 overflow-hidden text-slate-900">
       <HeroSection />
       <SportsGrid />
       <WhyChooseUs />

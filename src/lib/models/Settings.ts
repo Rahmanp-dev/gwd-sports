@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IGlobalSettings extends Document {
+  academyId?: mongoose.Types.ObjectId;
   performanceMetrics: string[];
   defaultFeeAmount: number;
   currency: string;
@@ -10,12 +11,19 @@ export interface IGlobalSettings extends Document {
   logoAlignment?: 'top_left' | 'middle';
   logoIsCircular?: boolean;
   logoScale?: number;
+  themeColor?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 const globalSettingsSchema = new Schema<IGlobalSettings>(
   {
+    academyId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Academy',
+      default: null,
+      sparse: true
+    },
     performanceMetrics: {
       type: [String],
       default: ["dribble", "running", "defending", "strike", "stamina"],
@@ -53,10 +61,17 @@ const globalSettingsSchema = new Schema<IGlobalSettings>(
     logoScale: {
       type: Number,
       default: 100
+    },
+    themeColor: {
+      type: String,
+      default: '#3b82f6' // Default blue
     }
   },
   { timestamps: true }
 );
+
+// Enforce one settings document per academy
+globalSettingsSchema.index({ academyId: 1 }, { unique: true, sparse: true });
 
 export const GlobalSettings = mongoose.models.GlobalSettings || mongoose.model<IGlobalSettings>('GlobalSettings', globalSettingsSchema);
 

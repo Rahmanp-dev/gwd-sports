@@ -111,7 +111,7 @@ export const UserTable: React.FC<UserTableProps> = ({
 
   const getSortIcon = (field: string) => {
     if (currentFilters.sortBy !== field) {
-      return <ChevronsUpDown className="h-4 w-4 text-gray-400" />;
+      return <ChevronsUpDown className="h-4 w-4 text-slate-400" />;
     }
 
     return currentFilters.sortOrder === "asc" ? (
@@ -130,7 +130,7 @@ export const UserTable: React.FC<UserTableProps> = ({
       case "student":
         return "bg-green-500 hover:bg-green-600";
       default:
-        return "bg-gray-500 hover:bg-gray-600";
+        return "bg-slate-500 hover:bg-slate-600";
     }
   };
 
@@ -140,7 +140,7 @@ export const UserTable: React.FC<UserTableProps> = ({
         {/* Search Bar - Real-time search */}
         <div className="flex w-full md:w-1/2">
           <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               type="text"
               placeholder="Search by name, email, or phone..."
@@ -212,7 +212,7 @@ export const UserTable: React.FC<UserTableProps> = ({
           <TableHeader>
             <TableRow>
               <TableHead
-                className="w-[180px] cursor-pointer hover:bg-gray-50 select-none"
+                className="w-[180px] cursor-pointer hover:bg-slate-50 select-none"
                 onClick={() => handleSort("name")}
               >
                 <div className="flex items-center gap-2">
@@ -221,7 +221,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                 </div>
               </TableHead>
               <TableHead
-                className="cursor-pointer hover:bg-gray-50 select-none"
+                className="cursor-pointer hover:bg-slate-50 select-none"
                 onClick={() => handleSort("email")}
               >
                 <div className="flex items-center gap-2">
@@ -233,7 +233,7 @@ export const UserTable: React.FC<UserTableProps> = ({
               <TableHead>Role</TableHead>
               <TableHead className="hidden md:table-cell">Status</TableHead>
               <TableHead
-                className="hidden md:table-cell cursor-pointer hover:bg-gray-50 select-none"
+                className="hidden md:table-cell cursor-pointer hover:bg-slate-50 select-none"
                 onClick={() => handleSort("createdAt")}
               >
                 <div className="flex items-center gap-2">
@@ -249,7 +249,7 @@ export const UserTable: React.FC<UserTableProps> = ({
               <TableRow>
                 <TableCell colSpan={7} className="text-center h-24">
                   <div className="flex justify-center items-center">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-slate-900"></div>
                     <span className="ml-2">Loading...</span>
                   </div>
                 </TableCell>
@@ -266,7 +266,7 @@ export const UserTable: React.FC<UserTableProps> = ({
               </TableRow>
             ) : (
               users.map((user) => (
-                <TableRow key={user._id} className="hover:bg-gray-50">
+                <TableRow key={user._id} className="hover:bg-slate-50">
                   <TableCell className="font-medium">{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell className="hidden md:table-cell">

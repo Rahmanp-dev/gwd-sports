@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "@/lib/router-shim";
 import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { loginUser, registerUser, clearError } from "@/store/slices/authSlice";
+import { loginUser, registerUser, clearError, logout } from "@/store/slices/authSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,7 +30,6 @@ import {
   Target,
   Eye,
   EyeOff,
-  LayoutDashboard,
 } from "lucide-react";
 import { BRAND_NAME } from "@/utils/constants";
 
@@ -70,16 +69,22 @@ export default function UserAuth() {
 
   // Redirect if already authenticated
   useEffect(() => {
+    if (typeof window !== "undefined" && window.location.search.includes("clearsession=true")) {
+      dispatch(logout());
+      localStorage.clear();
+      document.cookie = "gwd_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    }
+
     if (isAuthenticated && user) {
       // Redirect based on role
-      const target = user.role === "admin" 
+      const target = (user.role === "admin" || user.role === "gwd_super_admin")
         ? "/admin/dashboard" 
-        : user.role === "user" 
-          ? "/user/profile" 
-          : `/mgfc/${user.role}`;
-      window.location.href = target;
+        : "/user/profile";
+      navigate(target, { replace: true });
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, dispatch, navigate]);
 
   // Clear errors when switching tabs
   useEffect(() => {
@@ -164,13 +169,11 @@ export default function UserAuth() {
       ).unwrap();
 
       const role = res?.user?.role;
-      const target = role === "admin" 
+      const target = (role === "admin" || role === "gwd_super_admin")
         ? "/admin/dashboard" 
-        : role === "user" 
-          ? "/user/profile" 
-          : `/mgfc/${role}`;
+        : "/user/profile";
       
-      window.location.href = target;
+      navigate(target, { replace: true });
     } catch (error: any) {
       console.error("Login failed:", error);
     }
@@ -213,15 +216,16 @@ export default function UserAuth() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center p-4">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background Effects */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-green-500/10 rounded-full blur-3xl" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-50" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-100 rounded-full blur-3xl opacity-50" />
       </div>
 
       <Button
-        className="absolute top-15 left-40 bg-gray-800 text-sm text-blue-400 hover:text-blue-300 cursor-pointer"
+        variant="ghost"
+        className="absolute top-6 left-6 text-slate-500 hover:text-slate-800 hover:bg-slate-100 z-20 font-semibold"
         onClick={() => navigate("/")}
       >
         ← Back to Home
@@ -231,465 +235,406 @@ export default function UserAuth() {
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="w-full max-w-6xl relative z-10"
+        className="w-full max-w-5xl relative z-10"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+          
           {/* Left Side - Branding */}
-          <div className="hidden lg:block space-y-8">
+          <div className="hidden lg:flex flex-col justify-center h-full p-12 bg-slate-50 border-r border-slate-100">
             <div>
-              <h1 className="text-5xl font-bold text-white mb-4">
+              <h1 className="text-4xl font-bold text-slate-900 mb-4 font-display tracking-tight">
                 Welcome to{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500">
+                <span className="text-blue-600">
                   {BRAND_NAME}
                 </span>
               </h1>
-              <p className="text-xl text-gray-400">
-                Join our community of athletes and achieve your sports dreams
+              <p className="text-lg text-slate-500 font-medium">
+                Join our community of athletes and achieve your sports dreams.
               </p>
             </div>
 
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
-                  <Trophy className="h-6 w-6 text-blue-400" />
+            <div className="space-y-8 mt-12">
+              <div className="flex items-start gap-5">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <Trophy className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">
+                  <h3 className="text-slate-900 font-semibold text-lg mb-1">
                     World-Class Training
                   </h3>
-                  <p className="text-gray-400 text-sm">
-                    Access professional coaching and state-of-the-art facilities
+                  <p className="text-slate-500 text-sm leading-relaxed">
+                    Access professional coaching and state-of-the-art facilities.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center flex-shrink-0">
-                  <Users className="h-6 w-6 text-green-400" />
+              <div className="flex items-start gap-5">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <Users className="h-6 w-6 text-indigo-600" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">
+                  <h3 className="text-slate-900 font-semibold text-lg mb-1">
                     Join a Community
                   </h3>
-                  <p className="text-gray-400 text-sm">
-                    Connect with like-minded athletes and build lasting
-                    friendships
+                  <p className="text-slate-500 text-sm leading-relaxed">
+                    Connect with like-minded athletes and build lasting friendships.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center flex-shrink-0">
-                  <Target className="h-6 w-6 text-purple-400" />
+              <div className="flex items-start gap-5">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <Target className="h-6 w-6 text-emerald-600" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">
+                  <h3 className="text-slate-900 font-semibold text-lg mb-1">
                     Achieve Your Goals
                   </h3>
-                  <p className="text-gray-400 text-sm">
-                    Track your progress and reach new milestones in your journey
+                  <p className="text-slate-500 text-sm leading-relaxed">
+                    Track your progress and reach new milestones in your journey.
                   </p>
                 </div>
               </div>
-            </div>
-
-            <div className="flex gap-4 pt-4">
-              <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/20">
-                500+ Students
-              </Badge>
-              <Badge className="bg-green-500/10 text-green-400 border-green-500/20">
-                50+ Trainers
-              </Badge>
-              <Badge className="bg-purple-500/10 text-purple-400 border-purple-500/20">
-                15+ Sports
-              </Badge>
             </div>
           </div>
 
           {/* Right Side - Auth Form */}
-          <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50 backdrop-blur-xl">
-            <CardHeader>
-              <CardTitle className="text-2xl text-white text-center">
+          <div className="p-8 sm:p-12 w-full max-w-md mx-auto lg:max-w-none">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-slate-900 font-display">
                 {activeTab === "login" ? "Welcome Back" : "Create Account"}
-              </CardTitle>
-              <CardDescription className="text-center text-gray-400">
+              </h2>
+              <p className="text-slate-500 mt-2 font-medium">
                 {activeTab === "login"
                   ? "Sign in to continue your journey"
                   : "Join us and start your sports journey"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Tabs
-                value={activeTab}
-                onValueChange={(v) => setActiveTab(v as "login" | "register")}
-              >
-                <TabsList className="grid w-full grid-cols-2 bg-gray-800 mb-6">
-                  <TabsTrigger
-                    value="login"
-                    className="data-[state=active]:bg-blue-600"
-                  >
-                    <LogIn className="h-4 w-4 mr-2" />
-                    Login
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="register"
-                    className="data-[state=active]:bg-green-600"
-                  >
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Register
-                  </TabsTrigger>
-                </TabsList>
+              </p>
+            </div>
 
-                {/* Display Error */}
-                {error && (
-                  <Alert variant="destructive" className="mb-4">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-
-                {/* Login Tab */}
-                <TabsContent value="login">
-                  <form onSubmit={handleLogin} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="login-email" className="text-white">
-                        Email
-                      </Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <Input
-                          id="login-email"
-                          type="email"
-                          placeholder="rahul.sharma@example.com"
-                          value={loginData.email}
-                          onChange={(e) =>
-                            setLoginData({
-                              ...loginData,
-                              email: e.target.value,
-                            })
-                          }
-                          className={`pl-10 bg-gray-800 border-gray-700 text-white ${
-                            validationErrors.email ? "border-red-500" : ""
-                          }`}
-                        />
-                      </div>
-                      {validationErrors.email && (
-                        <p className="text-red-500 text-sm">
-                          {validationErrors.email}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="login-password" className="text-white">
-                        Password
-                      </Label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <Input
-                          id="login-password"
-                          type={showLoginPassword ? "text" : "password"}
-                          placeholder="••••••••"
-                          value={loginData.password}
-                          onChange={(e) =>
-                            setLoginData({
-                              ...loginData,
-                              password: e.target.value,
-                            })
-                          }
-                          className={`pl-10 pr-10 bg-gray-800 border-gray-700 text-white ${
-                            validationErrors.password ? "border-red-500" : ""
-                          }`}
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setShowLoginPassword(!showLoginPassword)
-                          }
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
-                        >
-                          {showLoginPassword ? (
-                            <EyeOff className="h-5 w-5" />
-                          ) : (
-                            <Eye className="h-5 w-5" />
-                          )}
-                        </button>
-                      </div>
-                      {validationErrors.password && (
-                        <p className="text-red-500 text-sm">
-                          {validationErrors.password}
-                        </p>
-                      )}
-                    </div>
-
-                    <Button
-                      type="submit"
-                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                          Signing In...
-                        </>
-                      ) : (
-                        <>
-                          <LogIn className="h-4 w-4 mr-2" />
-                          Sign In
-                        </>
-                      )}
-                    </Button>
-                  </form>
-                </TabsContent>
-
-                {/* Register Tab */}
-                <TabsContent value="register">
-                  <form onSubmit={handleRegister} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="register-name" className="text-white">
-                        Full Name
-                      </Label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <Input
-                          id="register-name"
-                          type="text"
-                          placeholder="Rahul Sharma"
-                          value={registerData.name}
-                          onChange={(e) =>
-                            setRegisterData({
-                              ...registerData,
-                              name: e.target.value,
-                            })
-                          }
-                          className={`pl-10 bg-gray-800 border-gray-700 text-white ${
-                            validationErrors.name ? "border-red-500" : ""
-                          }`}
-                        />
-                      </div>
-                      {validationErrors.name && (
-                        <p className="text-red-500 text-sm">
-                          {validationErrors.name}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="register-email" className="text-white">
-                        Email
-                      </Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <Input
-                          id="register-email"
-                          type="email"
-                          placeholder="rahul.sharma@example.com"
-                          value={registerData.email}
-                          onChange={(e) =>
-                            setRegisterData({
-                              ...registerData,
-                              email: e.target.value,
-                            })
-                          }
-                          className={`pl-10 bg-gray-800 border-gray-700 text-white ${
-                            validationErrors.email ? "border-red-500" : ""
-                          }`}
-                        />
-                      </div>
-                      {validationErrors.email && (
-                        <p className="text-red-500 text-sm">
-                          {validationErrors.email}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="register-phone" className="text-white">
-                        Phone Number
-                      </Label>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <Input
-                          id="register-phone"
-                          type="tel"
-                          placeholder="98765 43210"
-                          value={registerData.phone}
-                          onChange={(e) =>
-                            setRegisterData({
-                              ...registerData,
-                              phone: e.target.value,
-                            })
-                          }
-                          className={`pl-10 bg-gray-800 border-gray-700 text-white ${
-                            validationErrors.phone ? "border-red-500" : ""
-                          }`}
-                        />
-                      </div>
-                      {validationErrors.phone && (
-                        <p className="text-red-500 text-sm">
-                          {validationErrors.phone}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="register-password" className="text-white">
-                        Password
-                      </Label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <Input
-                          id="register-password"
-                          type={showRegisterPassword ? "text" : "password"}
-                          placeholder="••••••••"
-                          value={registerData.password}
-                          onChange={(e) =>
-                            setRegisterData({
-                              ...registerData,
-                              password: e.target.value,
-                            })
-                          }
-                          className={`pl-10 pr-10 bg-gray-800 border-gray-700 text-white ${
-                            validationErrors.password ? "border-red-500" : ""
-                          }`}
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setShowRegisterPassword(!showRegisterPassword)
-                          }
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
-                        >
-                          {showRegisterPassword ? (
-                            <EyeOff className="h-5 w-5" />
-                          ) : (
-                            <Eye className="h-5 w-5" />
-                          )}
-                        </button>
-                      </div>
-                      {validationErrors.password && (
-                        <p className="text-red-500 text-sm">
-                          {validationErrors.password}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="register-confirm-password"
-                        className="text-white"
-                      >
-                        Confirm Password
-                      </Label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <Input
-                          id="register-confirm-password"
-                          type={showConfirmPassword ? "text" : "password"}
-                          placeholder="••••••••"
-                          value={registerData.confirmPassword}
-                          onChange={(e) =>
-                            setRegisterData({
-                              ...registerData,
-                              confirmPassword: e.target.value,
-                            })
-                          }
-                          className={`pl-10 pr-10 bg-gray-800 border-gray-700 text-white ${
-                            validationErrors.confirmPassword
-                              ? "border-red-500"
-                              : ""
-                          }`}
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setShowConfirmPassword(!showConfirmPassword)
-                          }
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
-                        >
-                          {showConfirmPassword ? (
-                            <EyeOff className="h-5 w-5" />
-                          ) : (
-                            <Eye className="h-5 w-5" />
-                          )}
-                        </button>
-                      </div>
-                      {validationErrors.confirmPassword && (
-                        <p className="text-red-500 text-sm">
-                          {validationErrors.confirmPassword}
-                        </p>
-                      )}
-                    </div>
-
-                    <Button
-                      type="submit"
-                      className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                          Creating Account...
-                        </>
-                      ) : (
-                        <>
-                          <UserPlus className="h-4 w-4 mr-2" />
-                          Create Account
-                        </>
-                      )}
-                    </Button>
-                  </form>
-                </TabsContent>
-              </Tabs>
-
-              <div className="mt-6 relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-green-500/20 to-blue-500/20 rounded-lg blur-xl" />
-                <Link
-                  to="/mgfc/student/register"
-                  className="relative block p-6 bg-gradient-to-br from-gray-800/80 to-gray-900/80 border border-gray-700/50 rounded-lg hover:border-blue-500/50 transition-all duration-300 group"
+            <Tabs
+              value={activeTab}
+              onValueChange={(v) => setActiveTab(v as "login" | "register")}
+              className="w-full"
+            >
+              <TabsList className="grid w-full grid-cols-2 mb-8 bg-slate-100 rounded-lg p-1">
+                <TabsTrigger
+                  value="login"
+                  className="rounded-md data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm text-slate-500 font-semibold transition-all"
                 >
-                  <div className="flex items-center justify-center gap-3 mb-2">
-                    <Trophy className="h-6 w-6 text-blue-400 group-hover:text-blue-300 transition-colors" />
-                    <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-green-400 to-blue-400 group-hover:from-blue-300 group-hover:via-green-300 group-hover:to-blue-300 transition-all">
-                      Join MGFC Academy
-                    </h3>
-                    <Trophy className="h-6 w-6 text-green-400 group-hover:text-green-300 transition-colors" />
-                  </div>
-                  <p className="text-gray-400 text-sm mb-3">
-                    Register as a student and unlock professional training
-                    programs
-                  </p>
-                  <div className="flex items-center justify-center gap-2 text-blue-400 group-hover:text-blue-300 transition-colors font-semibold">
-                    <span>Get Started Now</span>
-                    <svg
-                      className="h-5 w-5 group-hover:translate-x-1 transition-transform"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Login
+                </TabsTrigger>
+                <TabsTrigger
+                  value="register"
+                  className="rounded-md data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm text-slate-500 font-semibold transition-all"
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Register
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Display Error */}
+              {error && (
+                <Alert variant="destructive" className="mb-6 bg-red-50 border-red-200 text-red-600 rounded-xl">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription className="font-medium">{error}</AlertDescription>
+                </Alert>
+              )}
+
+              {/* Login Tab */}
+              <TabsContent value="login" className="focus-visible:outline-none">
+                <form onSubmit={handleLogin} className="space-y-5">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="login-email" className="text-slate-700 font-semibold">
+                      Email
+                    </Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+                      <Input
+                        id="login-email"
+                        type="email"
+                        placeholder="you@example.com"
+                        value={loginData.email}
+                        onChange={(e) =>
+                          setLoginData({
+                            ...loginData,
+                            email: e.target.value,
+                          })
+                        }
+                        className={`pl-10 h-12 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
+                          validationErrors.email ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""
+                        }`}
                       />
-                    </svg>
+                    </div>
+                    {validationErrors.email && (
+                      <p className="text-red-500 text-xs font-medium">
+                        {validationErrors.email}
+                      </p>
+                    )}
                   </div>
-                  <div className="mt-4 flex justify-center gap-3">
-                    <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-xs">
-                      ⚡ Quick Setup
-                    </Badge>
-                    <Badge className="bg-green-500/10 text-green-400 border-green-500/20 text-xs">
-                      🎯 Expert Coaches
-                    </Badge>
-                    <Badge className="bg-purple-500/10 text-purple-400 border-purple-500/20 text-xs">
-                      🏆 Track Progress
-                    </Badge>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="login-password" className="text-slate-700 font-semibold">
+                      Password
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+                      <Input
+                        id="login-password"
+                        type={showLoginPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={loginData.password}
+                        onChange={(e) =>
+                          setLoginData({
+                            ...loginData,
+                            password: e.target.value,
+                          })
+                        }
+                        className={`pl-10 pr-10 h-12 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
+                          validationErrors.password ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowLoginPassword(!showLoginPassword)
+                        }
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                      >
+                        {showLoginPassword ? (
+                          <EyeOff className="h-5 w-5" />
+                        ) : (
+                          <Eye className="h-5 w-5" />
+                        )}
+                      </button>
+                    </div>
+                    {validationErrors.password && (
+                      <p className="text-red-500 text-xs font-medium">
+                        {validationErrors.password}
+                      </p>
+                    )}
                   </div>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
+
+                  <Button
+                    type="submit"
+                    className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all active:scale-[0.98] mt-4"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                        Signing In...
+                      </>
+                    ) : (
+                      <>
+                        <LogIn className="h-5 w-5 mr-2" />
+                        Sign In
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </TabsContent>
+
+              {/* Register Tab */}
+              <TabsContent value="register" className="focus-visible:outline-none">
+                <form onSubmit={handleRegister} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="register-name" className="text-slate-700 font-semibold">
+                      Full Name
+                    </Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+                      <Input
+                        id="register-name"
+                        type="text"
+                        placeholder="John Doe"
+                        value={registerData.name}
+                        onChange={(e) =>
+                          setRegisterData({
+                            ...registerData,
+                            name: e.target.value,
+                          })
+                        }
+                        className={`pl-10 h-11 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
+                          validationErrors.name ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""
+                        }`}
+                      />
+                    </div>
+                    {validationErrors.name && (
+                      <p className="text-red-500 text-xs font-medium">
+                        {validationErrors.name}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="register-email" className="text-slate-700 font-semibold">
+                      Email
+                    </Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+                      <Input
+                        id="register-email"
+                        type="email"
+                        placeholder="you@example.com"
+                        value={registerData.email}
+                        onChange={(e) =>
+                          setRegisterData({
+                            ...registerData,
+                            email: e.target.value,
+                          })
+                        }
+                        className={`pl-10 h-11 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
+                          validationErrors.email ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""
+                        }`}
+                      />
+                    </div>
+                    {validationErrors.email && (
+                      <p className="text-red-500 text-xs font-medium">
+                        {validationErrors.email}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="register-phone" className="text-slate-700 font-semibold">
+                      Phone Number
+                    </Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+                      <Input
+                        id="register-phone"
+                        type="tel"
+                        placeholder="9876543210"
+                        value={registerData.phone}
+                        onChange={(e) =>
+                          setRegisterData({
+                            ...registerData,
+                            phone: e.target.value,
+                          })
+                        }
+                        className={`pl-10 h-11 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
+                          validationErrors.phone ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""
+                        }`}
+                      />
+                    </div>
+                    {validationErrors.phone && (
+                      <p className="text-red-500 text-xs font-medium">
+                        {validationErrors.phone}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="register-password" className="text-slate-700 font-semibold">
+                      Password
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+                      <Input
+                        id="register-password"
+                        type={showRegisterPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={registerData.password}
+                        onChange={(e) =>
+                          setRegisterData({
+                            ...registerData,
+                            password: e.target.value,
+                          })
+                        }
+                        className={`pl-10 pr-10 h-11 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
+                          validationErrors.password ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowRegisterPassword(!showRegisterPassword)
+                        }
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                      >
+                        {showRegisterPassword ? (
+                          <EyeOff className="h-5 w-5" />
+                        ) : (
+                          <Eye className="h-5 w-5" />
+                        )}
+                      </button>
+                    </div>
+                    {validationErrors.password && (
+                      <p className="text-red-500 text-xs font-medium">
+                        {validationErrors.password}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label
+                      htmlFor="register-confirm-password"
+                      className="text-slate-700 font-semibold"
+                    >
+                      Confirm Password
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+                      <Input
+                        id="register-confirm-password"
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={registerData.confirmPassword}
+                        onChange={(e) =>
+                          setRegisterData({
+                            ...registerData,
+                            confirmPassword: e.target.value,
+                          })
+                        }
+                        className={`pl-10 pr-10 h-11 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
+                          validationErrors.confirmPassword
+                            ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                            : ""
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="h-5 w-5" />
+                        ) : (
+                          <Eye className="h-5 w-5" />
+                        )}
+                      </button>
+                    </div>
+                    {validationErrors.confirmPassword && (
+                      <p className="text-red-500 text-xs font-medium">
+                        {validationErrors.confirmPassword}
+                      </p>
+                    )}
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all active:scale-[0.98] mt-4"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                        Creating Account...
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="h-5 w-5 mr-2" />
+                        Create Account
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
       </motion.div>
     </div>

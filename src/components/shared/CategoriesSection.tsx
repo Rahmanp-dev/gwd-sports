@@ -157,7 +157,7 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({
                 <h3 className="relative text-3xl font-black text-white uppercase mb-4 tracking-tight group-hover:text-amber-400 transition-colors font-display">
                   {category.title}
                 </h3>
-                <p className="relative text-gray-300 text-base font-semibold leading-relaxed mb-6">
+                <p className="relative text-slate-300 text-base font-semibold leading-relaxed mb-6">
                   {category.description}
                 </p>
 

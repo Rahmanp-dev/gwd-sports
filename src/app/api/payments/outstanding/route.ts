@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     if (auth?.error) return NextResponse.json({ success: false, message: auth.error }, { status: auth.status });
     await connectToDatabase();
 
-    const userId = (req as any).user._id;
+    const userId = auth.user._id;
     const studentProfile = await StudentProfile.findOne({ userId });
     
     if (!studentProfile) return NextResponse.json({ success: false, message: 'Student profile not found' }, { status: 404 });

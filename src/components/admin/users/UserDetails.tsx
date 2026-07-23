@@ -52,7 +52,7 @@ export const UserDetails: React.FC<UserDetailsProps> = ({
       case "student":
         return "bg-green-500 hover:bg-green-600";
       default:
-        return "bg-gray-500 hover:bg-gray-600";
+        return "bg-slate-500 hover:bg-slate-600";
     }
   };
 

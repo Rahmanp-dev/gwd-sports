@@ -1,6 +1,6 @@
 /** USER RELATED TYPE INTERFACES **/
 
-export type UserRole = "admin" | "trainer" | "student" | "user";
+export type UserRole = "admin" | "trainer" | "student" | "user" | "gwd_super_admin";
 
 export interface User {
   _id: string;
@@ -9,6 +9,7 @@ export interface User {
   phone: string;
   role: UserRole;
   sports?: string[];
+  academyId?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -29,7 +30,7 @@ export interface UserUpdateData {
   name?: string;
   email?: string;
   phone?: string;
-  role: "admin" | "student" | "trainer" | "user";
+  role: "admin" | "student" | "trainer" | "user" | "gwd_super_admin";
   sports?: string[];
   isActive?: boolean;
 }
@@ -37,7 +38,7 @@ export interface UserUpdateData {
 export interface UserFilters {
   page?: number;
   limit?: number;
-  role?: "admin" | "student" | "trainer" | "user";
+  role?: "admin" | "student" | "trainer" | "user" | "gwd_super_admin";
   isActive?: boolean;
   search?: string;
   sortBy?: string;
@@ -258,6 +259,7 @@ export interface Academy {
   location: string;
   address: string;
   sports: string[];
+  slug: string;
   fees: {
     monthly: number;
     quarterly: number;
@@ -280,6 +282,16 @@ export interface Academy {
   images: string[];
   isActive: boolean;
   createdBy: User;
+  ownerId: string;
+  rzp_account?: string;
+  theme: {
+    primaryColor: string;
+    accentColor: string;
+    logoUrl: string;
+    heroImages: string[];
+    tagline: string;
+  };
+  platformFeePercent: number;
   createdAt: string;
   updatedAt: string;
 }

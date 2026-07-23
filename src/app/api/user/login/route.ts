@@ -15,12 +15,23 @@ export async function POST(req: NextRequest) {
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) return NextResponse.json({ success: false, message: 'Invalid credentials' }, { status: 401 });
 
-    const tokens = generateTokens({ userId: user._id.toString(), email: user.email, role: user.role });
+    const tokens = generateTokens({ 
+      userId: user._id.toString(), 
+      email: user.email, 
+      role: user.role,
+      academy_id: user.academyId?.toString() 
+    });
     await user.addRefreshToken(tokens.refreshToken);
     user.lastLogin = new Date();
     await user.save();
 
-    return NextResponse.json({ success: true, message: 'Login successful', data: { user: user.toJSON(), ...tokens } });
+    const response = NextResponse.json({ success: true, message: 'Login successful', data: { user: user.toJSON(), ...tokens } });
+    response.cookies.set('gwd_token', tokens.accessToken, {
+      httpOnly: false, // allow client-side reading if needed, or secure access
+      path: '/',
+      maxAge: 7 * 24 * 60 * 60,
+    });
+    return response;
   } catch (error: any) {
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }

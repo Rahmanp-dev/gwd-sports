@@ -15,6 +15,7 @@ import {
   Package,
   LogOut,
   Settings,
+  Palette,
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { logout } from "@/store/slices/authSlice";
@@ -27,7 +28,9 @@ import { LandingPageManagement } from "@/components/admin/landing/LandingPageMan
 import { FeesManagement } from "@/components/admin/fees/FeesManagement";
 import { KitsManagement } from "@/components/admin/kits/KitsManagement";
 import { SettingsManagement } from "@/components/admin/settings/SettingsManagement";
+import { AcademyBrandingSettings } from "@/components/admin/settings/AcademyBrandingSettings";
 import { CommandCenter } from "@/components/admin/dashboard/CommandCenter";
+import SuperAdminDashboard from "@/views/admin/SuperAdminDashboard";
 
 export default function AdminPage() {
   const dispatch = useAppDispatch();
@@ -36,6 +39,10 @@ export default function AdminPage() {
   const handleLogout = () => {
     dispatch(logout());
   };
+
+  if (user?.role === "gwd_super_admin" as any) {
+    return <SuperAdminDashboard />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -60,8 +67,8 @@ export default function AdminPage() {
 
       {/* Main content */}
       <main className="container mx-auto px-4 py-6">
-        <Tabs defaultValue="dashboard" className="space-y-6">
-          <div className="bg-white p-2 rounded-lg shadow-sm overflow-x-auto">
+          <Tabs defaultValue="dashboard" className="space-y-6">
+            <div className="bg-white p-2 rounded-lg shadow-sm overflow-x-auto">
             <TabsList className="h-auto justify-start gap-2">
               <TabsTrigger
                 value="dashboard"
@@ -96,14 +103,6 @@ export default function AdminPage() {
               </TabsTrigger>
 
               <TabsTrigger
-                value="academies"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-              >
-                <Building2 className="h-4 w-4 mr-2" />
-                Academies
-              </TabsTrigger>
-
-              <TabsTrigger
                 value="events"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
@@ -133,6 +132,14 @@ export default function AdminPage() {
               >
                 <Package className="h-4 w-4 mr-2" />
                 Kits
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="branding"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <Palette className="h-4 w-4 mr-2" />
+                Branding
               </TabsTrigger>
 
               <TabsTrigger
@@ -177,15 +184,6 @@ export default function AdminPage() {
             </Card>
           </TabsContent>
 
-          {/* Academies Tab */}
-          <TabsContent value="academies">
-            <Card>
-              <CardContent className="p-6">
-                <AcademyManagement />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
           {/* Events Tab */}
           <TabsContent value="events">
             <Card>
@@ -218,6 +216,15 @@ export default function AdminPage() {
             <Card>
               <CardContent className="p-6">
                 <KitsManagement />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Branding Tab */}
+          <TabsContent value="branding">
+            <Card>
+              <CardContent className="p-6">
+                <AcademyBrandingSettings />
               </CardContent>
             </Card>
           </TabsContent>

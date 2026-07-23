@@ -116,7 +116,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
 
   const getSortIcon = (field: string) => {
     if (currentFilters.sortBy !== field) {
-      return <ChevronsUpDown className="h-4 w-4 text-gray-400" />;
+      return <ChevronsUpDown className="h-4 w-4 text-slate-400" />;
     }
 
     return currentFilters.sortOrder === "asc" ? (
@@ -141,7 +141,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       case "U23":
         return "bg-blue-500 hover:bg-blue-600";
       default:
-        return "bg-gray-500 hover:bg-gray-600";
+        return "bg-slate-500 hover:bg-slate-600";
     }
   };
 
@@ -154,7 +154,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       case "overdue":
         return "bg-red-500 hover:bg-red-600";
       default:
-        return "bg-gray-500 hover:bg-gray-600";
+        return "bg-slate-500 hover:bg-slate-600";
     }
   };
 
@@ -164,7 +164,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
         {/* Search Bar */}
         <div className="flex w-full md:w-1/2">
           <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               type="text"
               placeholder="Search by student name or email..."
@@ -277,7 +277,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
           <TableHeader>
             <TableRow>
               <TableHead
-                className="w-[180px] cursor-pointer hover:bg-gray-50 select-none"
+                className="w-[180px] cursor-pointer hover:bg-slate-50 select-none"
                 onClick={() => handleSort("user.name")}
               >
                 <div className="flex items-center gap-2">
@@ -292,7 +292,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
               <TableHead className="hidden lg:table-cell">Fee Status</TableHead>
               <TableHead className="hidden md:table-cell">Kits</TableHead>
               <TableHead
-                className="hidden md:table-cell cursor-pointer hover:bg-gray-50 select-none"
+                className="hidden md:table-cell cursor-pointer hover:bg-slate-50 select-none"
                 onClick={() => handleSort("enrollmentDate")}
               >
                 <div className="flex items-center gap-2">
@@ -308,7 +308,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
               <TableRow>
                 <TableCell colSpan={9} className="text-center h-24">
                   <div className="flex justify-center items-center">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-slate-900"></div>
                     <span className="ml-2">Loading...</span>
                   </div>
                 </TableCell>
@@ -326,11 +326,11 @@ export const StudentTable: React.FC<StudentTableProps> = ({
               </TableRow>
             ) : (
               students.map((student) => (
-                <TableRow key={student._id} className="hover:bg-gray-50">
+                <TableRow key={student._id} className="hover:bg-slate-50">
                   <TableCell className="font-medium">
                     <div>
                       <div>{student.user?.name || "Unknown Student"}</div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-slate-500">
                         {student.user?.email || "No email"}
                       </div>
                     </div>
@@ -340,7 +340,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                       <div className="font-medium">
                         {student.academy?.name || "No Academy"}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-slate-500">
                         {student.academy?.location || "Unknown Location"}
                       </div>
                     </div>

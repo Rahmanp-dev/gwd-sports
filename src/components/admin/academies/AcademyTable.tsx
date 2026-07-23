@@ -108,7 +108,7 @@ export const AcademyTable: React.FC<AcademyTableProps> = ({
         {/* Search Bar */}
         <div className="flex w-full md:w-1/2">
           <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               type="text"
               placeholder="Search by academy name or location..."
@@ -193,7 +193,7 @@ export const AcademyTable: React.FC<AcademyTableProps> = ({
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-8">
                   <div className="flex justify-center items-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
                   </div>
                 </TableCell>
               </TableRow>
@@ -201,7 +201,7 @@ export const AcademyTable: React.FC<AcademyTableProps> = ({
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-8">
                   <div className="flex flex-col items-center justify-center gap-2">
-                    <Building className="h-12 w-12 text-gray-400" />
+                    <Building className="h-12 w-12 text-slate-400" />
                     <p className="text-muted-foreground">
                       No academies found. Try adjusting your filters.
                     </p>
@@ -234,7 +234,7 @@ export const AcademyTable: React.FC<AcademyTableProps> = ({
                       className={
                         academy.isActive
                           ? "bg-green-500 hover:bg-green-600"
-                          : "bg-gray-500 hover:bg-gray-600"
+                          : "bg-slate-500 hover:bg-slate-600"
                       }
                     >
                       {academy.isActive ? "Active" : "Inactive"}

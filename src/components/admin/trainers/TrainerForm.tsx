@@ -409,9 +409,9 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                                 onClick={() => setShowPassword(!showPassword)}
                               >
                                 {showPassword ? (
-                                  <EyeOff className="h-4 w-4 text-gray-400" />
+                                  <EyeOff className="h-4 w-4 text-slate-400" />
                                 ) : (
-                                  <Eye className="h-4 w-4 text-gray-400" />
+                                  <Eye className="h-4 w-4 text-slate-400" />
                                 )}
                               </Button>
                             </div>

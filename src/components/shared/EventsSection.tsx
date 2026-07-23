@@ -95,7 +95,7 @@ export const EventsSection: React.FC<EventsSectionProps> = ({
               whileHover={{ y: -10 }}
               className="group"
             >
-              <div className="relative bg-gray-900 rounded-3xl overflow-hidden shadow-2xl hover:shadow-[0_30px_80px_rgba(34,197,94,0.3)] transition-all duration-500 border-4 border-green-500/20 hover:border-green-500/50">
+              <div className="relative bg-slate-900 rounded-3xl overflow-hidden shadow-2xl hover:shadow-[0_30px_80px_rgba(34,197,94,0.3)] transition-all duration-500 border-4 border-green-500/20 hover:border-green-500/50">
                 <div className="grid lg:grid-cols-2 gap-0">
                   {/* Image */}
                   <div className="relative h-96 lg:h-auto overflow-hidden">

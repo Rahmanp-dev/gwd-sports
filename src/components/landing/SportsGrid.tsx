@@ -1,17 +1,16 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Zap } from "lucide-react";
+import { ArrowRight, Trophy } from "lucide-react";
 import { Link } from "@/lib/router-shim";
 
-const sports = [
+const defaultSports = [
   {
     name: "Football Academy",
     icon: "⚽",
     tagline: "Elite Training",
     image:
       "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&h=600&fit=crop",
-    color: "from-yellow-600 to-amber-500",
     link: "/programs/football",
   },
   {
@@ -20,7 +19,6 @@ const sports = [
     tagline: "Champions League",
     image:
       "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&h=600&fit=crop",
-    color: "from-orange-600 to-red-500",
     link: "/programs/basketball",
   },
   {
@@ -29,7 +27,6 @@ const sports = [
     tagline: "Speed & Adrenaline",
     image:
       "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=800&h=600&fit=crop",
-    color: "from-red-600 to-orange-500",
     link: "/programs/racing-league",
   },
   {
@@ -38,7 +35,6 @@ const sports = [
     tagline: "Leadership & Oratory",
     image:
       "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&h=600&fit=crop",
-    color: "from-blue-600 to-indigo-500",
     link: "/programs/mun",
   },
   {
@@ -47,28 +43,22 @@ const sports = [
     tagline: "Premier Tournaments",
     image:
       "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&h=600&fit=crop",
-    color: "from-purple-600 to-pink-500",
     link: "/programs/galaxy-events",
   },
 ];
 
-export default function SportsGrid() {
+export default function SportsGrid({ academy }: { academy?: any }) {
+  const displaySports = academy?.theme?.programs?.length
+    ? academy.theme.programs
+    : defaultSports;
+
   return (
-    <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-black overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black" />
-      <motion.div
-        animate={{
-          rotate: [0, 360],
-          scale: [1, 1.2, 1],
-        }}
-        transition={{
-          duration: 30,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-        className="absolute top-1/4 right-0 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-3xl"
-      />
+    <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
+      {/* Premium Apple-style Light Background */}
+      <div className="absolute inset-0 bg-slate-50">
+        <div className="absolute top-40 right-0 w-[30rem] h-[30rem] rounded-full bg-blue-50/50 blur-3xl" />
+        <div className="absolute bottom-40 left-0 w-[30rem] h-[30rem] rounded-full bg-indigo-50/50 blur-3xl" />
+      </div>
 
       <div className="relative max-w-7xl mx-auto">
         {/* Section Header */}
@@ -80,105 +70,82 @@ export default function SportsGrid() {
           className="text-center mb-20"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-3 px-8 py-3 bg-gradient-to-r from-amber-500 to-yellow-500 text-black rounded-full mb-8 shadow-lg shadow-amber-500/50"
+            className="inline-flex items-center gap-3 px-6 py-2 bg-blue-50 border border-blue-100 text-blue-600 rounded-full shadow-sm mb-8"
           >
-            <Zap className="w-5 h-5" />
-            <span className="text-sm font-black uppercase tracking-[0.3em] font-display">
-              Our Programs
+            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+            <span className="text-sm font-semibold tracking-wider uppercase">
+              Disciplines
             </span>
           </motion.div>
 
-          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none font-display">
-            Choose Your
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500">
-              Champion Path
-            </span>
-          </h2>
-          <motion.div
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 1, delay: 0.3 }}
-            className="w-32 h-2 bg-gradient-to-r from-amber-500 to-yellow-500 mx-auto mb-8 shadow-lg shadow-amber-500/50"
-          />
-          <p className="text-xl sm:text-2xl text-gray-400 max-w-3xl mx-auto font-bold">
-            Five elite disciplines. One legendary destination.
-          </p>
+            className="text-4xl sm:text-5xl lg:text-7xl font-bold text-slate-900 mb-6 font-display tracking-tight"
+          >
+            Master Your <span className="text-blue-600">Game</span>
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto"
+          >
+            Train with elite coaches in state-of-the-art facilities across
+            multiple disciplines.
+          </motion.p>
         </motion.div>
 
         {/* Sports Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {sports.map((sport, index) => (
+          {displaySports.map((sport: any, index: number) => (
             <motion.div
               key={sport.name}
-              initial={{ opacity: 0, y: 60 }}
+              initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              whileHover={{ y: -20, rotateY: 5 }}
-              className="group relative"
-              style={{ perspective: "1000px" }}
+              whileHover={{ y: -10, scale: 1.02 }}
+              className="relative group cursor-pointer"
             >
-              <Link to={sport.link} className="block">
-                <div className="relative overflow-hidden bg-gray-900 rounded-3xl shadow-2xl hover:shadow-[0_20px_60px_rgba(251,191,36,0.3)] transition-all duration-500 transform-gpu">
-                  {/* Image */}
-                  <div className="relative h-80 overflow-hidden">
-                    <motion.img
-                      whileHover={{ scale: 1.2 }}
-                      transition={{ duration: 0.6 }}
-                      src={sport.image}
-                      alt={sport.name}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-
-                    {/* Icon Badge */}
-                    <motion.div
-                      whileHover={{ scale: 1.2, rotate: 360 }}
-                      transition={{ duration: 0.6 }}
-                      className="absolute top-6 left-6 w-20 h-20 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-2xl flex items-center justify-center text-4xl shadow-2xl"
-                    >
-                      {sport.icon}
-                    </motion.div>
-
-                    {/* Gradient Overlay on Hover */}
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-br ${sport.color} opacity-10 group-hover:opacity-40 transition-opacity duration-500 flex items-center justify-center`}
-                    >
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        whileHover={{ scale: 1 }}
-                        className="text-center"
-                      >
-                        <div className="text-7xl mb-4">{sport.icon}</div>
-                        <div className="text-white text-2xl font-black uppercase tracking-wider mb-2 font-display">
-                          {sport.tagline}
-                        </div>
-                        <div className="flex items-center justify-center gap-2 text-white font-black uppercase text-sm">
-                          Explore <ArrowRight className="w-5 h-5" />
-                        </div>
-                      </motion.div>
-                    </div>
-                  </div>
+              <Link to={sport.link || "/user/auth"} className="block h-full">
+                <div className="relative h-[400px] rounded-[2rem] overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-300 border border-slate-100">
+                  {/* Background Image */}
+                  <img
+                    src={sport.image}
+                    alt={sport.name}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  
+                  {/* Gradient Overlay */}
+                  <div className={`absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent transition-opacity duration-300 group-hover:opacity-90`} />
 
                   {/* Content */}
-                  <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
-                    <h3 className="text-4xl font-black text-white uppercase tracking-tight mb-2 font-display">
-                      {sport.name}
-                    </h3>
-                    <div className="text-amber-400 font-bold uppercase tracking-wider text-sm">
-                      {sport.tagline}
+                  <div className="absolute bottom-0 left-0 right-0 p-8">
+                    <div className="text-5xl mb-4 transform transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-2">
+                      {sport.icon}
+                    </div>
+                    <div>
+                      <h3 className="text-3xl font-bold text-white mb-2 font-display tracking-tight">
+                        {sport.name}
+                      </h3>
+                      <p className="text-white/80 font-medium">
+                        {sport.tagline}
+                      </p>
+                    </div>
+                    
+                    {/* Hover Reveal Details */}
+                    <div className="mt-6 overflow-hidden h-0 group-hover:h-auto opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <div className="flex items-center gap-2 text-white/90 font-medium">
+                        Explore Program <ArrowRight className="w-5 h-5" />
+                      </div>
                     </div>
                   </div>
-
-                  {/* Glowing Border */}
-                  <div
-                    className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${sport.color} opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 -z-10`}
-                  />
                 </div>
               </Link>
             </motion.div>
@@ -186,40 +153,33 @@ export default function SportsGrid() {
 
           {/* Special CTA Card */}
           <motion.div
-            initial={{ opacity: 0, y: 60 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: sports.length * 0.1 }}
-            whileHover={{ y: -20, scale: 1.05 }}
+            transition={{ duration: 0.6, delay: displaySports.length * 0.1 }}
+            whileHover={{ y: -10, scale: 1.02 }}
             className="relative group cursor-pointer"
           >
-            <div className="h-80 bg-gradient-to-br from-amber-500 via-yellow-500 to-amber-600 rounded-3xl flex items-center justify-center shadow-2xl hover:shadow-[0_20px_60px_rgba(251,191,36,0.6)] transition-all duration-500 overflow-hidden">
-              <div className="text-center z-10 relative p-8">
-                <motion.div
-                  animate={{ rotate: [0, 360] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                  className="text-7xl mb-6"
-                >
-                  💪
-                </motion.div>
-                <h3 className="text-5xl font-black text-black uppercase mb-4 tracking-tight font-display">
-                  Not Sure?
-                </h3>
-                <p className="text-black text-xl mb-6 font-bold">
-                  Get expert guidance
-                </p>
-                <div className="inline-flex items-center gap-3 text-black font-black uppercase text-base border-4 border-black px-8 py-4 hover:bg-black hover:text-amber-500 transition-all rounded-full">
-                  Contact Us <ArrowRight className="w-5 h-5" />
+            <Link to="/user/auth" className="block h-full">
+              <div className="relative h-[400px] rounded-[2rem] overflow-hidden bg-slate-900 border border-slate-800 flex flex-col items-center justify-center text-center p-8 transition-shadow duration-300 hover:shadow-2xl">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-900/50 via-slate-900 to-indigo-900/50" />
+                
+                <div className="relative z-10">
+                  <div className="w-20 h-20 mx-auto rounded-full bg-white/10 flex items-center justify-center mb-6 backdrop-blur-md group-hover:scale-110 group-hover:bg-white/20 transition-all duration-300">
+                    <Trophy className="w-10 h-10 text-blue-400" />
+                  </div>
+                  <h3 className="text-3xl font-bold text-white mb-4 font-display tracking-tight">
+                    Join The Academy
+                  </h3>
+                  <p className="text-slate-300 mb-8 max-w-[250px] mx-auto text-lg">
+                    Begin your journey to greatness with professional coaching.
+                  </p>
+                  <span className="inline-flex items-center gap-2 text-blue-400 font-semibold group-hover:text-blue-300 transition-colors">
+                    Enroll Now <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                  </span>
                 </div>
               </div>
-
-              {/* Animated Background Elements */}
-              <motion.div
-                animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.6, 0.3] }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="absolute inset-0 bg-black/10 rounded-full"
-              />
-            </div>
+            </Link>
           </motion.div>
         </div>
       </div>

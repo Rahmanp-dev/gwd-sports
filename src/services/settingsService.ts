@@ -11,6 +11,7 @@ export interface SystemSettings {
   logoAlignment?: "top_left" | "middle";
   logoIsCircular?: boolean;
   logoScale?: number;
+  themeColor?: string;
 }
 
 export const getSystemSettings = async (): Promise<SystemSettings> => {

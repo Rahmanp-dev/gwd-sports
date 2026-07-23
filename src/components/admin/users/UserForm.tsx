@@ -43,7 +43,7 @@ const userFormSchema = z.object({
     .optional()
     .or(z.literal("")),
   phone: z.string().optional(),
-  role: z.enum(["admin", "trainer", "student", "user"]),
+  role: z.enum(["admin", "trainer", "student", "user", "gwd_super_admin"]),
   sports: z.array(z.string()).optional(),
   isActive: z.boolean().default(true),
 });
@@ -202,9 +202,9 @@ export const UserForm: React.FC<UserFormProps> = ({
                           disabled={isLoading}
                         >
                           {showPassword ? (
-                            <EyeOff className="h-4 w-4 text-gray-400" />
+                            <EyeOff className="h-4 w-4 text-slate-400" />
                           ) : (
-                            <Eye className="h-4 w-4 text-gray-400" />
+                            <Eye className="h-4 w-4 text-slate-400" />
                           )}
                         </Button>
                       </div>

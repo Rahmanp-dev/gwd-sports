@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 import { connectToDatabase } from '@/lib/db';
 import { adminMiddleware } from '@/lib/middleware/auth';
 import User from '@/lib/models/User';
@@ -18,8 +19,14 @@ export async function GET(req: NextRequest) {
     const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
+    // Tenant isolation filter
+    const isSuperAdmin = auth.user.role === 'gwd_super_admin';
+    const academyObjectId = auth.academyId ? new mongoose.Types.ObjectId(auth.academyId.toString()) : null;
+    const tenantFilter: any = (!isSuperAdmin && academyObjectId) ? { academyId: academyObjectId } : {};
+
     // 1. STUDENTS
     const studentStats = await StudentProfile.aggregate([
+      { $match: tenantFilter },
       {
         $group: {
           _id: null,
@@ -32,7 +39,7 @@ export async function GET(req: NextRequest) {
     ]);
     
     const studentsByLevel = await StudentProfile.aggregate([
-      { $match: { isActive: true } },
+      { $match: { isActive: true, ...tenantFilter } },
       { $group: { _id: "$level", count: { $sum: 1 } } }
     ]);
     
@@ -46,19 +53,19 @@ export async function GET(req: NextRequest) {
       {
         $facet: {
           thisMonth: [
-            { $match: { status: 'success', createdAt: { $gte: startOfThisMonth } } },
+            { $match: { status: 'success', createdAt: { $gte: startOfThisMonth }, ...tenantFilter } },
             { $group: { _id: null, total: { $sum: "$amount" } } }
           ],
           lastMonth: [
-            { $match: { status: 'success', createdAt: { $gte: startOfLastMonth, $lt: startOfThisMonth } } },
+            { $match: { status: 'success', createdAt: { $gte: startOfLastMonth, $lt: startOfThisMonth }, ...tenantFilter } },
             { $group: { _id: null, total: { $sum: "$amount" } } }
           ],
           allTime: [
-            { $match: { status: 'success' } },
+            { $match: { status: 'success', ...tenantFilter } },
             { $group: { _id: null, total: { $sum: "$amount" } } }
           ],
           pending: [
-            { $match: { status: 'pending' } },
+            { $match: { status: 'pending', ...tenantFilter } },
             { $group: { _id: null, total: { $sum: "$amount" }, count: { $sum: 1 } } }
           ]
         }
@@ -76,18 +83,18 @@ export async function GET(req: NextRequest) {
       : (monthlyRevenue > 0 ? 100 : 0);
 
     // 3. TRAINERS
-    const trainerTotal = await TrainerProfile.countDocuments();
-    const trainerActive = await TrainerProfile.countDocuments({ isActive: true });
+    const trainerTotal = await TrainerProfile.countDocuments(tenantFilter);
+    const trainerActive = await TrainerProfile.countDocuments({ isActive: true, ...tenantFilter });
     
     const sportDistribution = await TrainerProfile.aggregate([
-      { $match: { isActive: true } },
+      { $match: { isActive: true, ...tenantFilter } },
       { $unwind: "$sports" },
       { $group: { _id: "$sports", count: { $sum: 1 } } },
       { $sort: { count: -1 } }
     ]);
 
     // Top Trainers mock (could aggregate student array length)
-    const topTrainers = await TrainerProfile.find({ isActive: true })
+    const topTrainers = await TrainerProfile.find({ isActive: true, ...tenantFilter })
       .populate('userId', 'name')
       .limit(3)
       .lean();
@@ -103,7 +110,7 @@ export async function GET(req: NextRequest) {
     const academiesActive = await Academy.countDocuments({ isActive: true });
 
     // 5. ATTENDANCE & DROP-OFF
-    const allStudents = await StudentProfile.find({ isActive: true }).select('attendance userId').populate('userId', 'name').lean();
+    const allStudents = await StudentProfile.find({ isActive: true, ...tenantFilter }).select('attendance userId').populate('userId', 'name').lean();
     
     let totalRecords = 0;
     let presentCount = 0;
@@ -148,8 +155,10 @@ export async function GET(req: NextRequest) {
     ];
 
     // 6. RECENT ACTIVITY
-    const newStudents = await User.find({ role: 'student' }).sort({ createdAt: -1 }).limit(5).select('name email createdAt').lean();
-    const recentPayments = await FeePayment.find({ status: 'success' }).sort({ createdAt: -1 }).limit(5).lean();
+    const userFilter: any = { role: 'student' };
+    if (!isSuperAdmin && auth.academyId) userFilter.academyId = auth.academyId;
+    const newStudents = await User.find(userFilter).sort({ createdAt: -1 }).limit(5).select('name email createdAt').lean();
+    const recentPayments = await FeePayment.find({ status: 'success', ...tenantFilter }).sort({ createdAt: -1 }).limit(5).lean();
 
     const formattedPayments = recentPayments.map((p: any) => ({
       id: p._id.toString(),

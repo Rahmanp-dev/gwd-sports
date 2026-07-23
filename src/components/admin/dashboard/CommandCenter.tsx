@@ -84,7 +84,7 @@ function formatCurrency(val: number): string {
 function GrowthIndicator({ value }: { value: number }) {
   if (value === 0)
     return (
-      <span className="text-xs text-gray-400 flex items-center gap-0.5">
+      <span className="text-xs text-slate-400 flex items-center gap-0.5">
         <Minus className="w-3 h-3" /> No change
       </span>
     );
@@ -117,14 +117,14 @@ function StatCard({
   iconBg: string;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-5 shadow-sm hover:shadow-md transition-shadow group">
+    <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-5 shadow-sm hover:shadow-md transition-shadow group">
       <div
         className="absolute -right-4 -top-4 w-24 h-24 rounded-full opacity-[0.07] group-hover:opacity-[0.12] transition-opacity"
         style={{ background: color }}
       />
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-400 mb-1">
+          <p className="text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
             {label}
           </p>
           <p
@@ -159,16 +159,16 @@ function MiniBar({
   const pct = max > 0 ? Math.round((value / max) * 100) : 0;
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xs text-gray-500 w-24 capitalize truncate">
+      <span className="text-xs text-slate-500 w-24 capitalize truncate">
         {label}
       </span>
-      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+      <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-700"
           style={{ width: `${pct}%`, background: color }}
         />
       </div>
-      <span className="text-xs font-semibold text-gray-700 w-6 text-right">
+      <span className="text-xs font-semibold text-slate-700 w-6 text-right">
         {value}
       </span>
     </div>
@@ -246,7 +246,7 @@ export function CommandCenter() {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-red-500" />
-        <p className="text-sm text-gray-500 font-medium">
+        <p className="text-sm text-slate-500 font-medium">
           Loading Command Center...
         </p>
       </div>
@@ -257,7 +257,7 @@ export function CommandCenter() {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4">
         <AlertTriangle className="w-10 h-10 text-red-400" />
-        <p className="text-gray-600">{error || "No data available"}</p>
+        <p className="text-slate-600">{error || "No data available"}</p>
         <Button variant="outline" size="sm" onClick={fetchDashboard}>
           <RefreshCw className="w-4 h-4 mr-2" />
           Retry
@@ -289,10 +289,10 @@ export function CommandCenter() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">
+          <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
             Your Command Center
           </h2>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-slate-500">
             Real-time dashboard — complete visibility at a glance.
           </p>
         </div>
@@ -322,7 +322,7 @@ export function CommandCenter() {
           value={`${data.attendance.rate}%`}
           color="#16a34a"
           iconBg="bg-green-50"
-          sub={<span className="text-xs text-gray-400">Last 30 days</span>}
+          sub={<span className="text-xs text-slate-400">Last 30 days</span>}
         />
         <StatCard
           icon={IndianRupee}
@@ -339,7 +339,7 @@ export function CommandCenter() {
           color="#ea580c"
           iconBg="bg-orange-50"
           sub={
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-slate-400">
               Outstanding: {formatCurrency(data.finance.totalOutstanding)}
             </span>
           }
@@ -369,13 +369,13 @@ export function CommandCenter() {
           </CardHeader>
           <CardContent>
             {leadersLoading ? (
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-8 text-slate-400">
                 <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
                 Loading leaderboard...
               </div>
             ) : leaders.length === 0 ? (
-              <div className="text-center py-8 text-gray-400">
-                <Trophy className="w-6 h-6 mx-auto mb-2 text-gray-300" />
+              <div className="text-center py-8 text-slate-400">
+                <Trophy className="w-6 h-6 mx-auto mb-2 text-slate-300" />
                 No performance records found.
               </div>
             ) : (
@@ -383,7 +383,7 @@ export function CommandCenter() {
                 {leaders.map((student, idx) => (
                   <div
                     key={student._id}
-                    className="flex items-center justify-between p-3 rounded-xl bg-gray-50/80 border border-gray-100 cursor-pointer hover:bg-white hover:shadow-sm hover:border-gray-200 transition-all group"
+                    className="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 border border-slate-100 cursor-pointer hover:bg-white hover:shadow-sm hover:border-slate-200 transition-all group"
                     onClick={() => handleStudentClick(student._id)}
                   >
                     <div className="flex items-center gap-3">
@@ -392,10 +392,10 @@ export function CommandCenter() {
                           idx === 0
                             ? "bg-gradient-to-br from-yellow-300 to-amber-400 text-white ring-2 ring-yellow-200"
                             : idx === 1
-                              ? "bg-gradient-to-br from-gray-300 to-gray-400 text-white ring-2 ring-gray-200"
+                              ? "bg-gradient-to-br from-gray-300 to-gray-400 text-white ring-2 ring-slate-200"
                               : idx === 2
                                 ? "bg-gradient-to-br from-orange-300 to-orange-400 text-white ring-2 ring-orange-200"
-                                : "bg-white text-gray-500 border border-gray-200"
+                                : "bg-white text-slate-500 border border-slate-200"
                         }`}
                       >
                         {idx < 3 ? (
@@ -405,7 +405,7 @@ export function CommandCenter() {
                         )}
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-gray-900 group-hover:text-red-600 transition-colors">
+                        <p className="text-sm font-semibold text-slate-900 group-hover:text-red-600 transition-colors">
                           {student.studentName}
                         </p>
                         <div className="flex items-center gap-1.5 mt-0.5">
@@ -415,21 +415,21 @@ export function CommandCenter() {
                           >
                             {student.level || "Beginner"}
                           </Badge>
-                          <span className="text-[10px] text-gray-400">
+                          <span className="text-[10px] text-slate-400">
                             {student.academyName || "Global"}
                           </span>
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="flex items-center justify-end gap-1 font-bold text-gray-900">
+                      <div className="flex items-center justify-end gap-1 font-bold text-slate-900">
                         <Activity className="w-3.5 h-3.5 text-emerald-500" />
                         <span className="text-base">{student.avgScore}</span>
-                        <span className="text-[10px] text-gray-400 font-normal">
+                        <span className="text-[10px] text-slate-400 font-normal">
                           / 100
                         </span>
                       </div>
-                      <p className="text-[9px] text-gray-400 font-semibold uppercase mt-0.5">
+                      <p className="text-[9px] text-slate-400 font-semibold uppercase mt-0.5">
                         {student.totalEvals} Evaluations
                       </p>
                     </div>
@@ -452,7 +452,7 @@ export function CommandCenter() {
           </CardHeader>
           <CardContent className="space-y-3">
             {data.trainers.sportDistribution.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-6">
+              <p className="text-sm text-slate-400 text-center py-6">
                 No sport data yet
               </p>
             ) : (
@@ -462,14 +462,14 @@ export function CommandCenter() {
                 return (
                   <div key={s._id} className="space-y-1">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-700 capitalize">
+                      <span className="text-sm font-medium text-slate-700 capitalize">
                         {s._id}
                       </span>
-                      <span className="text-xs font-semibold text-gray-500">
+                      <span className="text-xs font-semibold text-slate-500">
                         {s.count} trainers
                       </span>
                     </div>
-                    <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-700"
                         style={{
@@ -526,7 +526,7 @@ export function CommandCenter() {
               </div>
             </div>
             <div className="space-y-1.5 pt-1">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                 By Level
               </p>
               {data.students.byLevel.map((lvl, i) => (
@@ -591,7 +591,7 @@ export function CommandCenter() {
             </div>
             {data.recentActivity.recentPayments.length > 0 && (
               <div className="space-y-1.5 pt-1">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                   Recent Payments
                 </p>
                 {data.recentActivity.recentPayments
@@ -599,12 +599,12 @@ export function CommandCenter() {
                   .map((p: any) => (
                     <div
                       key={p.id}
-                      className="flex justify-between items-center text-xs bg-gray-50 rounded-lg px-3 py-2"
+                      className="flex justify-between items-center text-xs bg-slate-50 rounded-lg px-3 py-2"
                     >
-                      <span className="text-gray-500 font-mono truncate max-w-[120px]">
+                      <span className="text-slate-500 font-mono truncate max-w-[120px]">
                         {p.receipt || "—"}
                       </span>
-                      <span className="font-bold text-gray-800">
+                      <span className="font-bold text-slate-800">
                         ₹{p.amount}
                       </span>
                     </div>
@@ -634,17 +634,17 @@ export function CommandCenter() {
                   Active
                 </p>
               </div>
-              <div className="text-center p-3 rounded-xl bg-gray-50 border border-gray-200">
-                <p className="text-xl font-extrabold text-gray-700">
+              <div className="text-center p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <p className="text-xl font-extrabold text-slate-700">
                   {data.academies.active}
                 </p>
-                <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">
+                <p className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
                   Academies
                 </p>
               </div>
             </div>
             <div className="space-y-1.5 pt-1">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                 Sports Covered
               </p>
               {data.trainers.sportDistribution.slice(0, 5).map((s, i) => (
@@ -659,15 +659,15 @@ export function CommandCenter() {
             </div>
             {data.trainers.topTrainers.length > 0 && (
               <div className="space-y-1.5 pt-1">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                   Top Trainers
                 </p>
                 {data.trainers.topTrainers.slice(0, 3).map((t: any) => (
                   <div
                     key={t._id}
-                    className="flex justify-between items-center text-xs bg-gray-50 rounded-lg px-3 py-2"
+                    className="flex justify-between items-center text-xs bg-slate-50 rounded-lg px-3 py-2"
                   >
-                    <span className="text-gray-700 font-semibold truncate max-w-[140px]">
+                    <span className="text-slate-700 font-semibold truncate max-w-[140px]">
                       {t.name}
                     </span>
                     <Badge variant="outline" className="text-[10px] h-5">
@@ -692,7 +692,7 @@ export function CommandCenter() {
                 Attendance — No More Paper Registers
               </CardTitle>
             </div>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-slate-400 mt-1">
               Know exactly who showed up, who didn't, and who's at risk.
             </p>
           </CardHeader>
@@ -717,12 +717,12 @@ export function CommandCenter() {
               ].map((item) => (
                 <div
                   key={item.title}
-                  className={`p-3 rounded-xl bg-white border border-gray-100 border-l-4 ${item.color}`}
+                  className={`p-3 rounded-xl bg-white border border-slate-100 border-l-4 ${item.color}`}
                 >
-                  <p className="text-sm font-bold text-gray-800 mb-1">
+                  <p className="text-sm font-bold text-slate-800 mb-1">
                     {item.title}
                   </p>
-                  <p className="text-xs text-gray-500 leading-relaxed">
+                  <p className="text-xs text-slate-500 leading-relaxed">
                     {item.desc}
                   </p>
                 </div>
@@ -730,7 +730,7 @@ export function CommandCenter() {
             </div>
             {data.attendance.trend.length > 0 && (
               <div className="space-y-2 pt-2">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                   Monthly Trend
                 </p>
                 <div className="flex items-end gap-1.5 h-20">
@@ -739,7 +739,7 @@ export function CommandCenter() {
                       key={t.month}
                       className="flex-1 flex flex-col items-center gap-1"
                     >
-                      <span className="text-[9px] font-bold text-gray-600">
+                      <span className="text-[9px] font-bold text-slate-600">
                         {t.rate}%
                       </span>
                       <div
@@ -751,7 +751,7 @@ export function CommandCenter() {
                           style={{ height: `${t.rate}%` }}
                         />
                       </div>
-                      <span className="text-[8px] text-gray-400">
+                      <span className="text-[8px] text-slate-400">
                         {t.month.split("-")[1]}
                       </span>
                     </div>
@@ -776,13 +776,13 @@ export function CommandCenter() {
                 {data.dropOff.count} at risk
               </Badge>
             </div>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-slate-400 mt-1">
               Students absent 7+ days — act before they leave.
             </p>
           </CardHeader>
           <CardContent>
             {data.dropOff.students.length === 0 ? (
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-8 text-slate-400">
                 <UserCheck className="w-8 h-8 mx-auto mb-2 text-emerald-400" />
                 <p className="text-sm font-medium text-emerald-600">
                   All students are active!
@@ -796,12 +796,12 @@ export function CommandCenter() {
                     className="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100 hover:bg-red-50 transition-colors"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-800 truncate">
+                      <p className="text-sm font-semibold text-slate-800 truncate">
                         {s.studentName}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
                         {s.academyName && (
-                          <span className="text-[10px] text-gray-400">
+                          <span className="text-[10px] text-slate-400">
                             {s.academyName}
                           </span>
                         )}
@@ -872,10 +872,10 @@ export function CommandCenter() {
                   key={s._id || s.id || idx}
                   className="p-3 rounded-xl bg-cyan-50/50 border border-cyan-100"
                 >
-                  <p className="text-sm font-semibold text-gray-800 truncate">
+                  <p className="text-sm font-semibold text-slate-800 truncate">
                     {s.name}
                   </p>
-                  <p className="text-[10px] text-gray-400 truncate">
+                  <p className="text-[10px] text-slate-400 truncate">
                     {s.email}
                   </p>
                   <div className="flex items-center justify-between mt-2">
@@ -885,7 +885,7 @@ export function CommandCenter() {
                     >
                       {s.level}
                     </Badge>
-                    <span className="text-[9px] text-gray-400">
+                    <span className="text-[9px] text-slate-400">
                       {new Date(s.joinedAt).toLocaleDateString("en-IN", {
                         day: "2-digit",
                         month: "short",
@@ -912,11 +912,11 @@ export function CommandCenter() {
             {data.dropOff.students.map((s: any, i: number) => (
               <div
                 key={i}
-                className="flex items-center justify-between p-3 rounded-lg bg-gray-50 border"
+                className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border"
               >
                 <div>
                   <p className="text-sm font-semibold">{s.studentName}</p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-slate-400">
                     {s.email} • {s.academyName || "No Academy"}
                   </p>
                 </div>
@@ -954,11 +954,11 @@ export function CommandCenter() {
           ) : studentDetails ? (
             <div className="space-y-5">
               {/* Student Info Header */}
-              <div className="p-4 rounded-xl bg-gray-50 border border-gray-100">
-                <h3 className="text-lg font-bold text-gray-900">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                <h3 className="text-lg font-bold text-slate-900">
                   {studentDetails.userId?.name}
                 </h3>
-                <p className="text-sm text-gray-500 mt-0.5">
+                <p className="text-sm text-slate-500 mt-0.5">
                   {studentDetails.userId?.email} •{" "}
                   {studentDetails.userId?.phone}
                 </p>
@@ -980,13 +980,13 @@ export function CommandCenter() {
 
               {/* Performance History */}
               <div>
-                <h4 className="font-bold text-gray-800 text-sm border-b pb-2 mb-3 flex items-center gap-2">
+                <h4 className="font-bold text-slate-800 text-sm border-b pb-2 mb-3 flex items-center gap-2">
                   <Activity className="w-4 h-4 text-emerald-500" /> Performance
                   History
                 </h4>
                 {!studentDetails.performance ||
                 studentDetails.performance.length === 0 ? (
-                  <p className="text-sm text-gray-400 text-center py-6">
+                  <p className="text-sm text-slate-400 text-center py-6">
                     No performance records available.
                   </p>
                 ) : (
@@ -994,14 +994,14 @@ export function CommandCenter() {
                     {studentDetails.performance.map((perf: any) => (
                       <div
                         key={perf._id}
-                        className="p-3.5 rounded-xl bg-white border border-gray-100 hover:border-gray-200 transition-colors"
+                        className="p-3.5 rounded-xl bg-white border border-slate-100 hover:border-slate-200 transition-colors"
                       >
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <span className="font-bold text-gray-900 capitalize">
+                            <span className="font-bold text-slate-900 capitalize">
                               {perf.category}
                             </span>
-                            <span className="text-[10px] text-gray-400 ml-2 font-medium">
+                            <span className="text-[10px] text-slate-400 ml-2 font-medium">
                               {new Date(perf.evaluatedAt).toLocaleDateString(
                                 "en-IN",
                                 {
@@ -1012,14 +1012,14 @@ export function CommandCenter() {
                               )}
                             </span>
                           </div>
-                          <div className="text-sm font-extrabold text-gray-900">
+                          <div className="text-sm font-extrabold text-slate-900">
                             {perf.score}{" "}
-                            <span className="text-gray-400 font-normal text-xs">
+                            <span className="text-slate-400 font-normal text-xs">
                               / {perf.maxScore}
                             </span>
                           </div>
                         </div>
-                        <div className="w-full bg-gray-100 rounded-full h-2 mb-2">
+                        <div className="w-full bg-slate-100 rounded-full h-2 mb-2">
                           <div
                             className="h-2 rounded-full transition-all duration-500"
                             style={{
@@ -1034,11 +1034,11 @@ export function CommandCenter() {
                           />
                         </div>
                         {perf.remarks && (
-                          <p className="text-xs text-gray-500 italic leading-relaxed">
+                          <p className="text-xs text-slate-500 italic leading-relaxed">
                             "{perf.remarks}"
                           </p>
                         )}
-                        <p className="text-[10px] text-gray-400 mt-1.5 font-medium">
+                        <p className="text-[10px] text-slate-400 mt-1.5 font-medium">
                           Evaluated by: {perf.evaluatedBy?.name || "Unknown"}
                         </p>
                       </div>
@@ -1048,7 +1048,7 @@ export function CommandCenter() {
               </div>
             </div>
           ) : (
-            <p className="text-center py-8 text-gray-400">
+            <p className="text-center py-8 text-slate-400">
               Could not load student details.
             </p>
           )}

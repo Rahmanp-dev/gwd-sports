@@ -20,6 +20,11 @@ export async function GET(req: NextRequest) {
     const limitNum = parseInt(searchParams.get('limit') || '10');
 
     const query: any = {};
+    // Tenant isolation
+    if (auth.user.role !== 'gwd_super_admin' && auth.academyId) {
+      const mongoose = require('mongoose');
+      query.academyId = new mongoose.Types.ObjectId(auth.academyId);
+    }
     if (status && status !== 'all') query.status = status;
     if (minAmount || maxAmount) {
       query.amount = {};

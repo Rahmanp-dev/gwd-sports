@@ -9,28 +9,36 @@ const stats = [
     value: 1000,
     suffix: "+",
     label: "Athletes Trained",
-    color: "from-blue-500 to-cyan-400",
+    color: "from-blue-500 to-indigo-500",
+    bg: "bg-blue-50",
+    text: "text-blue-600",
   },
   {
     icon: Trophy,
     value: 25,
     suffix: "+",
     label: "Championships",
-    color: "from-amber-500 to-yellow-400",
+    color: "from-amber-400 to-yellow-500",
+    bg: "bg-amber-50",
+    text: "text-amber-600",
   },
   {
     icon: Target,
     value: 98,
     suffix: "%",
     label: "Success Rate",
-    color: "from-green-500 to-emerald-400",
+    color: "from-emerald-400 to-green-500",
+    bg: "bg-emerald-50",
+    text: "text-emerald-600",
   },
   {
     icon: Award,
     value: 10,
     suffix: "+",
     label: "Years Excellence",
-    color: "from-orange-500 to-amber-400",
+    color: "from-purple-500 to-fuchsia-500",
+    bg: "bg-purple-50",
+    text: "text-purple-600",
   },
 ];
 
@@ -68,7 +76,7 @@ function AnimatedCounter({ value, suffix }: AnimatedCounterProps) {
   return (
     <span
       ref={ref}
-      className="text-4xl sm:text-5xl lg:text-6xl font-black font-display"
+      className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display"
     >
       {count}
       {suffix}
@@ -76,9 +84,9 @@ function AnimatedCounter({ value, suffix }: AnimatedCounterProps) {
   );
 }
 
-export default function StatsSection() {
+export default function StatsSection({ academy }: { academy?: any }) {
   return (
-    <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-black overflow-hidden">
+    <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
       {/* Animated Background */}
       <motion.div
         animate={{
@@ -86,11 +94,11 @@ export default function StatsSection() {
           scale: [1, 1.1, 1],
         }}
         transition={{
-          duration: 20,
+          duration: 30,
           repeat: Infinity,
           ease: "linear",
         }}
-        className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-amber-500/10 to-yellow-500/10 rounded-full blur-3xl opacity-60"
+        className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-blue-50/50 to-indigo-50/50 rounded-full blur-3xl opacity-60"
       />
 
       <div className="relative max-w-7xl mx-auto">
@@ -102,19 +110,12 @@ export default function StatsSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-20"
         >
-          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase leading-none font-display">
-            Numbers That
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-500 font-display">
+          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-slate-900 mb-6 font-display tracking-tight">
+            Numbers That{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
               Speak Volumes
             </span>
           </h2>
-          <motion.div
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1, delay: 0.3 }}
-            className="w-32 h-2 bg-gradient-to-r from-amber-500 to-yellow-500 mx-auto shadow-lg shadow-amber-500/50"
-          />
         </motion.div>
 
         {/* Stats Grid */}
@@ -122,56 +123,38 @@ export default function StatsSection() {
           {stats.map((stat, index) => (
             <motion.div
               key={stat.label}
-              initial={{ opacity: 0, y: 60, rotateX: -45 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: index * 0.15 }}
-              whileHover={{
-                y: -20,
-                rotateY: 10,
-                rotateX: 5,
-              }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              whileHover={{ y: -10 }}
               className="group relative"
-              style={{ perspective: "1000px" }}
             >
-              <div className="relative bg-gradient-to-br from-gray-900 to-black rounded-3xl p-10 shadow-2xl hover:shadow-[0_30px_80px_rgba(251,191,36,0.4)] transition-all duration-500 border-4 border-amber-500/20 hover:border-amber-500/50 overflow-hidden">
+              <div className="relative bg-white border border-slate-100 rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden text-center">
                 {/* Icon */}
                 <motion.div
-                  whileHover={{ scale: 1.3, rotate: 360 }}
-                  transition={{ duration: 0.6 }}
-                  className={`w-20 h-20 bg-gradient-to-br ${stat.color} rounded-2xl flex items-center justify-center mb-8 shadow-xl group-hover:shadow-2xl group-hover:shadow-amber-500/50 transition-all duration-500`}
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ duration: 0.3 }}
+                  className={`w-16 h-16 mx-auto ${stat.bg} rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:shadow-md transition-all duration-300`}
                 >
-                  <stat.icon className="w-10 h-10 text-white" />
+                  <stat.icon className={`w-8 h-8 ${stat.text}`} />
                 </motion.div>
 
                 {/* Number */}
                 <div
-                  className={`text-transparent bg-clip-text bg-gradient-to-br ${stat.color} mb-4 drop-shadow-[0_0_20px_rgba(251,191,36,0.3)]`}
+                  className={`text-transparent bg-clip-text bg-gradient-to-br ${stat.color} mb-2`}
                 >
                   <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                 </div>
 
                 {/* Label */}
-                <div className="text-gray-300 font-black text-xl uppercase tracking-wider">
+                <div className="text-slate-500 font-semibold text-lg tracking-wide">
                   {stat.label}
                 </div>
 
-                {/* Animated Background Gradient */}
-                <motion.div
-                  animate={{
-                    rotate: [0, 360],
-                  }}
-                  transition={{
-                    duration: 10,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                  className={`absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br ${stat.color} rounded-full blur-3xl opacity-0 group-hover:opacity-30 transition-opacity duration-500`}
-                />
-
-                {/* Glowing Border */}
+                {/* Glowing Background on Hover */}
                 <div
-                  className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500 -z-10`}
+                  className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-[0.03] transition-opacity duration-500 -z-10`}
                 />
               </div>
             </motion.div>
@@ -180,15 +163,15 @@ export default function StatsSection() {
 
         {/* Floating Achievement Badge */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.8 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
           className="mt-20 text-center"
         >
-          <div className="inline-flex items-center gap-4 px-10 py-6 bg-gradient-to-r from-amber-500 to-yellow-500 text-black rounded-full shadow-2xl shadow-amber-500/50">
-            <Trophy className="w-8 h-8" />
-            <span className="text-2xl font-black uppercase font-display tracking-wider">
+          <div className="inline-flex items-center gap-3 px-8 py-4 bg-white border border-slate-200 text-slate-800 rounded-full shadow-md hover:shadow-lg transition-all">
+            <Trophy className="w-6 h-6 text-amber-500" />
+            <span className="text-lg font-bold font-display tracking-wide">
               #1 Rated Sports Academy
             </span>
           </div>

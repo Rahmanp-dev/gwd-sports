@@ -300,7 +300,7 @@ export const TrainerStudentRelations: React.FC<
       {/* ── Custom Viewport-Dominant Massive Modal Canvas Overlay ── */}
       <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-6 transition-all duration-200">
         <div
-          className="w-full max-w-[96vw] h-[94vh] max-h-[96vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col bg-white border border-gray-100 transform transition-all animate-in fade-in zoom-in-95 duration-150"
+          className="w-full max-w-[96vw] h-[94vh] max-h-[96vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col bg-white border border-slate-100 transform transition-all animate-in fade-in zoom-in-95 duration-150"
           role="dialog"
           aria-modal="true"
         >
@@ -324,20 +324,20 @@ export const TrainerStudentRelations: React.FC<
           </div>
 
           {/* Master Workspace View Layout Split */}
-          <div className="flex flex-1 overflow-hidden bg-gray-50/50">
+          <div className="flex flex-1 overflow-hidden bg-slate-50/50">
             {/* ── LEFT COMPARTMENT: Staff Directory Column ── */}
-            <div className="w-80 flex-shrink-0 border-r border-gray-200/80 flex flex-col bg-gray-50">
-              <div className="px-5 py-4 border-b border-gray-200/60 bg-white">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2.5">
+            <div className="w-80 flex-shrink-0 border-r border-slate-200/80 flex flex-col bg-slate-50">
+              <div className="px-5 py-4 border-b border-slate-200/60 bg-white">
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5">
                   Academy Instructors ({academyTrainers.length})
                 </p>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
                     placeholder="Search directory trainers..."
                     value={trainerSearch}
                     onChange={(e) => setTrainerSearch(e.target.value)}
-                    className="pl-9 h-10 text-sm bg-gray-50 border-gray-200 rounded-xl focus-visible:ring-indigo-500"
+                    className="pl-9 h-10 text-sm bg-slate-50 border-slate-200 rounded-xl focus-visible:ring-indigo-500"
                   />
                 </div>
               </div>
@@ -346,14 +346,14 @@ export const TrainerStudentRelations: React.FC<
                 {membersLoading ? (
                   <div className="flex flex-col items-center justify-center py-20 gap-2">
                     <Loader className="h-6 w-6 animate-spin text-indigo-500" />
-                    <p className="text-xs text-gray-400 font-medium">
+                    <p className="text-xs text-slate-400 font-medium">
                       Querying staff array...
                     </p>
                   </div>
                 ) : filteredTrainers.length === 0 ? (
-                  <div className="text-center py-16 text-gray-400 bg-white/50 rounded-xl border border-dashed border-gray-200 m-2">
-                    <Dumbbell className="h-8 w-8 mx-auto mb-2 text-gray-300" />
-                    <p className="text-sm font-semibold text-gray-500">
+                  <div className="text-center py-16 text-slate-400 bg-white/50 rounded-xl border border-dashed border-slate-200 m-2">
+                    <Dumbbell className="h-8 w-8 mx-auto mb-2 text-slate-300" />
+                    <p className="text-sm font-semibold text-slate-500">
                       No matching trainers
                     </p>
                   </div>
@@ -368,7 +368,7 @@ export const TrainerStudentRelations: React.FC<
                         className={`w-full text-left px-4 py-3.5 rounded-xl flex items-center gap-3 transition-all group ${
                           isSelected
                             ? "bg-indigo-600 text-white shadow-md font-medium"
-                            : "hover:bg-white hover:shadow-sm text-gray-700 bg-transparent"
+                            : "hover:bg-white hover:shadow-sm text-slate-700 bg-transparent"
                         }`}
                       >
                         <div
@@ -382,18 +382,18 @@ export const TrainerStudentRelations: React.FC<
                         </div>
                         <div className="flex-1 min-w-0">
                           <p
-                            className={`font-bold text-sm truncate ${isSelected ? "text-white" : "text-gray-900"}`}
+                            className={`font-bold text-sm truncate ${isSelected ? "text-white" : "text-slate-900"}`}
                           >
                             {trainer.name}
                           </p>
                           <p
-                            className={`text-xs truncate ${isSelected ? "text-white/70" : "text-gray-400"} font-medium`}
+                            className={`text-xs truncate ${isSelected ? "text-white/70" : "text-slate-400"} font-medium`}
                           >
                             {trainer.email}
                           </p>
                         </div>
                         <ChevronRight
-                          className={`h-5 w-5 flex-shrink-0 transition-transform ${isSelected ? "text-white translate-x-0.5" : "text-gray-300 group-hover:text-gray-500"}`}
+                          className={`h-5 w-5 flex-shrink-0 transition-transform ${isSelected ? "text-white translate-x-0.5" : "text-slate-300 group-hover:text-slate-500"}`}
                         />
                       </button>
                     );
@@ -405,13 +405,13 @@ export const TrainerStudentRelations: React.FC<
             {/* ── RIGHT COMPARTMENT: Active Workspace Assignment Canvas ── */}
             <div className="flex-1 flex flex-col overflow-hidden bg-white">
               {!selectedTrainer ? (
-                <div className="flex-1 flex items-center justify-center text-gray-400 bg-gray-50/30">
+                <div className="flex-1 flex items-center justify-center text-slate-400 bg-slate-50/30">
                   <div className="text-center max-w-md px-4">
-                    <Users className="h-16 w-16 mx-auto mb-4 text-gray-200" />
-                    <p className="text-xl font-bold text-gray-700">
+                    <Users className="h-16 w-16 mx-auto mb-4 text-slate-200" />
+                    <p className="text-xl font-bold text-slate-700">
                       Select an Instructor
                     </p>
-                    <p className="text-sm text-gray-400 mt-2 leading-relaxed">
+                    <p className="text-sm text-slate-400 mt-2 leading-relaxed">
                       Choose an instructor record path inside the left directory
                       to display structural relationship routing channels and
                       allocate students inside this academy.
@@ -421,15 +421,15 @@ export const TrainerStudentRelations: React.FC<
               ) : (
                 <div className="flex flex-col flex-1 overflow-hidden animate-in fade-in duration-200">
                   {/* Instructor Context Bar */}
-                  <div className="flex-shrink-0 px-8 py-4 border-b border-gray-100 bg-white flex items-center gap-4 shadow-sm z-10">
+                  <div className="flex-shrink-0 px-8 py-4 border-b border-slate-100 bg-white flex items-center gap-4 shadow-sm z-10">
                     <div className="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
                       {selectedTrainer.name.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <h3 className="font-bold text-gray-900 text-lg">
+                      <h3 className="font-bold text-slate-900 text-lg">
                         {selectedTrainer.name}
                       </h3>
-                      <p className="text-sm text-gray-500 font-medium">
+                      <p className="text-sm text-slate-500 font-medium">
                         {selectedTrainer.email}
                       </p>
                     </div>
@@ -438,7 +438,7 @@ export const TrainerStudentRelations: React.FC<
                         <Badge
                           key={s}
                           variant="secondary"
-                          className="text-xs capitalize font-semibold bg-gray-100 text-gray-700 px-2.5 py-0.5"
+                          className="text-xs capitalize font-semibold bg-slate-100 text-slate-700 px-2.5 py-0.5"
                         >
                           {s}
                         </Badge>
@@ -447,14 +447,14 @@ export const TrainerStudentRelations: React.FC<
                   </div>
 
                   {/* Operational Filtering Matrix Input Panel */}
-                  <div className="flex-shrink-0 px-8 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+                  <div className="flex-shrink-0 px-8 py-3 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
                     <div className="relative w-full max-w-md">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                       <Input
                         placeholder="Filter list down dynamically..."
                         value={studentSearch}
                         onChange={(e) => setStudentSearch(e.target.value)}
-                        className="pl-10 bg-white border-gray-200 h-10 text-sm rounded-xl shadow-sm focus-visible:ring-indigo-500"
+                        className="pl-10 bg-white border-slate-200 h-10 text-sm rounded-xl shadow-sm focus-visible:ring-indigo-500"
                       />
                     </div>
                   </div>
@@ -463,12 +463,12 @@ export const TrainerStudentRelations: React.FC<
                   <div className="flex-1 overflow-hidden grid grid-cols-2 divide-x divide-gray-200">
                     {/* Column A: Active Assignments */}
                     <div className="flex flex-col overflow-hidden bg-white">
-                      <div className="flex-shrink-0 px-6 py-3.5 bg-gray-50/30 border-b border-gray-100">
+                      <div className="flex-shrink-0 px-6 py-3.5 bg-slate-50/30 border-b border-slate-100">
                         <div className="flex items-center gap-2.5">
                           <div className="p-2 bg-indigo-50 rounded-xl border border-indigo-100">
                             <GraduationCap className="h-4 w-4 text-indigo-600" />
                           </div>
-                          <p className="font-bold text-gray-800 text-base">
+                          <p className="font-bold text-slate-800 text-base">
                             Assigned Students
                             <span className="ml-2.5 text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2.5 py-0.5 rounded-full">
                               {filteredTrainerStudents.length} Active Linkages
@@ -481,17 +481,17 @@ export const TrainerStudentRelations: React.FC<
                         {studentsLoading ? (
                           <div className="flex flex-col items-center justify-center py-16 gap-2">
                             <Loader className="h-6 w-6 animate-spin text-indigo-500" />
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-slate-400">
                               Loading active mappings...
                             </p>
                           </div>
                         ) : filteredTrainerStudents.length === 0 ? (
-                          <div className="text-center py-16 text-gray-400 border border-dashed border-gray-100 rounded-2xl bg-gray-50/50">
-                            <GraduationCap className="h-12 w-12 mx-auto mb-3 text-gray-200" />
-                            <p className="font-semibold text-gray-500">
+                          <div className="text-center py-16 text-slate-400 border border-dashed border-slate-100 rounded-2xl bg-slate-50/50">
+                            <GraduationCap className="h-12 w-12 mx-auto mb-3 text-slate-200" />
+                            <p className="font-semibold text-slate-500">
                               No students assigned yet
                             </p>
-                            <p className="text-xs text-gray-400 mt-0.5">
+                            <p className="text-xs text-slate-400 mt-0.5">
                               Use the right column pipeline to link academy
                               records
                             </p>
@@ -506,7 +506,7 @@ export const TrainerStudentRelations: React.FC<
                                   initial={{ opacity: 0, x: -8 }}
                                   animate={{ opacity: 1, x: 0 }}
                                   exit={{ opacity: 0, x: -8 }}
-                                  className="bg-white rounded-2xl border border-gray-100 p-4 hover:border-red-200 hover:shadow-md transition-all group relative flex items-center justify-between"
+                                  className="bg-white rounded-2xl border border-slate-100 p-4 hover:border-red-200 hover:shadow-md transition-all group relative flex items-center justify-between"
                                 >
                                   <div className="flex items-center gap-3.5 min-w-0 flex-1">
                                     <div className="h-11 w-11 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold text-base flex-shrink-0 shadow-sm">
@@ -515,11 +515,11 @@ export const TrainerStudentRelations: React.FC<
                                         .toUpperCase()}
                                     </div>
                                     <div className="flex-1 min-w-0 space-y-0.5">
-                                      <p className="font-bold text-gray-900 text-base truncate">
+                                      <p className="font-bold text-slate-900 text-base truncate">
                                         {s.user?.name ||
                                           "Unknown Profile Reference"}
                                       </p>
-                                      <p className="text-xs text-gray-500 font-medium truncate">
+                                      <p className="text-xs text-slate-500 font-medium truncate">
                                         {s.user?.email}
                                       </p>
                                       <div className="flex items-center gap-1.5 mt-2 flex-wrap">
@@ -527,7 +527,7 @@ export const TrainerStudentRelations: React.FC<
                                           <span
                                             className={`text-[10px] px-2 py-0.5 rounded border font-bold uppercase tracking-wider ${
                                               levelColor[s.level] ??
-                                              "bg-gray-50 text-gray-600 border-gray-200"
+                                              "bg-slate-50 text-slate-600 border-slate-200"
                                             }`}
                                           >
                                             {s.level}
@@ -537,7 +537,7 @@ export const TrainerStudentRelations: React.FC<
                                           <Badge
                                             key={sp}
                                             variant="secondary"
-                                            className="text-[10px] uppercase font-bold py-0 bg-gray-100 text-gray-600 border-transparent"
+                                            className="text-[10px] uppercase font-bold py-0 bg-slate-100 text-slate-600 border-transparent"
                                           >
                                             {sp}
                                           </Badge>
@@ -572,13 +572,13 @@ export const TrainerStudentRelations: React.FC<
                     </div>
 
                     {/* Column B: Allocation Candidate Pool */}
-                    <div className="flex flex-col overflow-hidden bg-gray-50/30">
-                      <div className="flex-shrink-0 px-6 py-3.5 bg-gray-50/30 border-b border-gray-100">
+                    <div className="flex flex-col overflow-hidden bg-slate-50/30">
+                      <div className="flex-shrink-0 px-6 py-3.5 bg-slate-50/30 border-b border-slate-100">
                         <div className="flex items-center gap-2.5">
                           <div className="p-2 bg-green-50 rounded-xl border border-green-100">
                             <UserPlus className="h-4 w-4 text-green-600" />
                           </div>
-                          <p className="font-bold text-gray-800 text-base">
+                          <p className="font-bold text-slate-800 text-base">
                             Available to Assign
                             <span className="ml-2.5 text-xs font-bold text-green-700 bg-green-50 border border-green-100 px-2.5 py-0.5 rounded-full">
                               {assignableStudents.length} Pool Candidates
@@ -591,17 +591,17 @@ export const TrainerStudentRelations: React.FC<
                         {membersLoading || studentsLoading ? (
                           <div className="flex flex-col items-center justify-center py-16 gap-2">
                             <Loader className="h-6 w-6 animate-spin text-green-500" />
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-slate-400">
                               Comparing structural indexes...
                             </p>
                           </div>
                         ) : assignableStudents.length === 0 ? (
-                          <div className="text-center py-16 text-gray-400 border border-dashed border-gray-200 rounded-2xl bg-white shadow-sm">
-                            <Users className="h-12 w-12 mx-auto mb-3 text-gray-200" />
-                            <p className="font-bold text-gray-700">
+                          <div className="text-center py-16 text-slate-400 border border-dashed border-slate-200 rounded-2xl bg-white shadow-sm">
+                            <Users className="h-12 w-12 mx-auto mb-3 text-slate-200" />
+                            <p className="font-bold text-slate-700">
                               Roster Stack Exhausted
                             </p>
-                            <p className="text-xs text-gray-400 mt-1 max-w-[18rem] mx-auto leading-relaxed">
+                            <p className="text-xs text-slate-400 mt-1 max-w-[18rem] mx-auto leading-relaxed">
                               {academyStudents.length === 0
                                 ? "No student database configurations exist natively inside this academy yet."
                                 : "Every registered student profile in this academy has an active allocation link mapped to this instructor."}
@@ -615,17 +615,17 @@ export const TrainerStudentRelations: React.FC<
                                 initial={{ opacity: 0, x: 8 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: 8 }}
-                                className="bg-white rounded-2xl border border-gray-100 p-4 hover:border-green-200 hover:shadow-md transition-all group flex items-center justify-between"
+                                className="bg-white rounded-2xl border border-slate-100 p-4 hover:border-green-200 hover:shadow-md transition-all group flex items-center justify-between"
                               >
                                 <div className="flex items-center gap-3.5 min-w-0 flex-1">
                                   <div className="h-11 w-11 rounded-full bg-gradient-to-br from-green-400 to-teal-500 flex items-center justify-center text-white font-bold text-base flex-shrink-0 shadow-sm">
                                     {s.name.charAt(0).toUpperCase()}
                                   </div>
                                   <div className="flex-1 min-w-0 space-y-0.5">
-                                    <p className="font-bold text-gray-900 text-base truncate">
+                                    <p className="font-bold text-slate-900 text-base truncate">
                                       {s.name}
                                     </p>
-                                    <p className="text-xs text-gray-500 font-medium truncate">
+                                    <p className="text-xs text-slate-500 font-medium truncate">
                                       {s.email}
                                     </p>
                                     {s.sports && s.sports.length > 0 && (
@@ -668,11 +668,11 @@ export const TrainerStudentRelations: React.FC<
           </div>
 
           {/* Action Footer Button Bar Container Strip */}
-          <div className="flex-shrink-0 flex justify-end px-8 py-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl shadow-inner gap-4">
+          <div className="flex-shrink-0 flex justify-end px-8 py-5 border-t border-slate-100 bg-slate-50 rounded-b-2xl shadow-inner gap-4">
             <Button
               variant="outline"
               onClick={onClose}
-              className="px-8 h-11 text-base font-semibold border-gray-200 rounded-xl"
+              className="px-8 h-11 text-base font-semibold border-slate-200 rounded-xl"
             >
               Close Panel
             </Button>
@@ -687,27 +687,27 @@ export const TrainerStudentRelations: React.FC<
           if (!o) setRemoveTarget(null);
         }}
       >
-        <AlertDialogContent className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xl">
+        <AlertDialogContent className="bg-white rounded-2xl border border-slate-100 p-6 shadow-xl">
           <AlertDialogHeader>
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-red-100 rounded-xl">
                 <AlertTriangle className="h-6 w-6 text-red-600" />
               </div>
-              <AlertDialogTitle className="text-gray-900 text-xl font-bold">
+              <AlertDialogTitle className="text-slate-900 text-xl font-bold">
                 Sever Roster Record Link?
               </AlertDialogTitle>
             </div>
-            <div className="text-gray-600 pt-3 text-base leading-relaxed">
+            <div className="text-slate-600 pt-3 text-base leading-relaxed">
               Are you sure you want to decouple student record{" "}
-              <span className="font-bold text-gray-900 bg-gray-100 px-1.5 py-0.5 rounded">
+              <span className="font-bold text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded">
                 {removeTarget?.name}
               </span>{" "}
               from the active roster listing of{" "}
-              <span className="font-bold text-gray-900 bg-gray-100 px-1.5 py-0.5 rounded">
+              <span className="font-bold text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded">
                 {selectedTrainer?.name}
               </span>
               ?
-              <p className="mt-2 text-sm text-gray-400">
+              <p className="mt-2 text-sm text-slate-400">
                 The student entity retains their primary documentation mapping
                 inside the master academy directory structure—only this explicit
                 instructor connection profile pointer will be detached.
@@ -715,7 +715,7 @@ export const TrainerStudentRelations: React.FC<
             </div>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-6 gap-2">
-            <AlertDialogCancel className="border-gray-200 rounded-xl h-11 font-semibold px-6">
+            <AlertDialogCancel className="border-slate-200 rounded-xl h-11 font-semibold px-6">
               Cancel Decouple
             </AlertDialogCancel>
             <AlertDialogAction

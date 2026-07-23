@@ -101,7 +101,7 @@ export const KitStatusForm: React.FC<KitStatusFormProps> = ({
       case "requested":
         return "bg-yellow-500 hover:bg-yellow-600";
       default:
-        return "bg-gray-500 hover:bg-gray-600";
+        return "bg-slate-500 hover:bg-slate-600";
     }
   };
 
@@ -119,14 +119,14 @@ export const KitStatusForm: React.FC<KitStatusFormProps> = ({
 
       {/* Kit Information Display */}
       <CardContent className="space-y-4">
-        <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+        <div className="bg-slate-50 p-4 rounded-lg space-y-2">
           <div className="flex items-center justify-between">
             <h3 className="font-medium">{kit.itemName}</h3>
             <Badge className={getStatusBadgeColor(kit.status)}>
               {kit.status}
             </Badge>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-slate-600">
             <div>
               <span className="font-medium">Requested:</span>{" "}
               {formatDate(kit.requestedDate)}

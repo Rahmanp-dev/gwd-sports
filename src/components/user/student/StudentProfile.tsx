@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import { studentPublicService } from "@/services/studentService";
 import { toast } from "sonner";
+import { StudentPaymentPanel } from "./StudentPaymentPanel";
 
 interface StudentProfileData {
   _id: string;
@@ -189,13 +190,13 @@ export default function StudentProfile() {
 
   if (!studentProfile) {
     return (
-      <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+      <Card className="border-slate-200 shadow-sm">
         <CardContent className="p-12 text-center">
           <AlertCircle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-white mb-2">
+          <h3 className="text-xl font-semibold text-slate-900 mb-2">
             No Student Profile Found
           </h3>
-          <p className="text-gray-400 mb-4">
+          <p className="text-slate-500 mb-4">
             You haven't created a student profile yet.
           </p>
           <Button onClick={() => navigate("/student/register/create")}>
@@ -209,14 +210,14 @@ export default function StudentProfile() {
   return (
     <div className="space-y-6">
       {/* Header Card */}
-      <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+      <Card className="border-slate-200 shadow-sm">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-white text-2xl">
+              <CardTitle className="text-slate-900 text-2xl">
                 Student Profile
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-slate-500">
                 Manage your student information and preferences
               </CardDescription>
             </div>
@@ -224,7 +225,7 @@ export default function StudentProfile() {
               <Button
                 variant="outline"
                 onClick={handleEdit}
-                className="border-gray-600"
+                className="border-slate-200 text-slate-700 hover:bg-slate-50"
               >
                 <Edit className="h-4 w-4 mr-2" />
                 Edit Student Profile
@@ -234,14 +235,14 @@ export default function StudentProfile() {
                 <Button
                   variant="outline"
                   onClick={handleCancel}
-                  className="border-gray-600 text-black"
+                  className="border-slate-200 text-slate-700 hover:bg-slate-50"
                 >
                   <X className="h-4 w-4 mr-2" />
                   Cancel
                 </Button>
                 <Button
                   onClick={handleSave}
-                  className="bg-green-600 hover:bg-green-700"
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   <Save className="h-4 w-4 mr-2" />
                   Save Changes
@@ -253,17 +254,17 @@ export default function StudentProfile() {
       </Card>
 
       {/* Profile Information */}
-      <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+      <Card className="border-slate-200 shadow-sm">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-yellow-400" />
-            <CardTitle className="text-white">Athletic Information</CardTitle>
+            <Trophy className="h-5 w-5 text-yellow-500" />
+            <CardTitle className="text-slate-900">Athletic Information</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Sports */}
           <div className="space-y-2">
-            <Label className="text-white">Sports</Label>
+            <Label className="text-slate-700">Sports</Label>
             {isEditing ? (
               <div className="space-y-3">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -277,7 +278,7 @@ export default function StudentProfile() {
                   ].map((sport) => (
                     <div
                       key={sport}
-                      className="flex items-center space-x-2 p-2 rounded-lg border border-gray-700"
+                      className="flex items-center space-x-2 p-2 rounded-lg border border-slate-200"
                     >
                       <Checkbox
                         id={sport}
@@ -296,11 +297,11 @@ export default function StudentProfile() {
                       />
                       <Label
                         htmlFor={sport}
-                        className="text-white capitalize cursor-pointer"
+                        className="text-slate-900 capitalize cursor-pointer"
                       >
                         {sport}
                         {sport === "football" && (
-                          <span className="text-xs text-blue-400 ml-1">
+                          <span className="text-xs text-blue-600 ml-1">
                             (Required)
                           </span>
                         )}
@@ -324,11 +325,11 @@ export default function StudentProfile() {
             )}
           </div>
 
-          <Separator className="bg-gray-700" />
+          <Separator className="bg-slate-200" />
 
           {/* Skill Level */}
           <div className="space-y-2">
-            <Label className="text-white">Skill Level</Label>
+            <Label className="text-slate-700">Skill Level</Label>
             {isEditing ? (
               <RadioGroup
                 value={editedProfile.level}
@@ -345,18 +346,18 @@ export default function StudentProfile() {
                     key={level}
                     className={`flex items-center space-x-2 p-3 rounded-lg border cursor-pointer transition-all ${
                       editedProfile.level === level
-                        ? "bg-blue-500/20 border-blue-500"
-                        : "bg-gray-800/50 border-gray-700 hover:bg-gray-700/50"
+                        ? "bg-blue-50 border-blue-500"
+                        : "bg-white border-slate-200 hover:bg-slate-50"
                     }`}
                   >
                     <RadioGroupItem
                       value={level}
                       id={level}
-                      className="border-gray-400 text-white"
+                      className="border-slate-300 text-slate-900"
                     />
                     <Label
                       htmlFor={level}
-                      className="text-white cursor-pointer capitalize flex-1"
+                      className="text-slate-900 cursor-pointer capitalize flex-1"
                     >
                       {level}
                     </Label>
@@ -369,10 +370,10 @@ export default function StudentProfile() {
                   variant="secondary"
                   className={`capitalize ${
                     studentProfile.level === "beginner"
-                      ? "bg-green-500/20 text-green-300 border-green-500/50"
+                      ? "bg-green-100 text-green-700 border-green-200"
                       : studentProfile.level === "intermediate"
-                        ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/50"
-                        : "bg-red-500/20 text-red-300 border-red-500/50"
+                        ? "bg-yellow-100 text-yellow-700 border-yellow-200"
+                        : "bg-red-100 text-red-700 border-red-200"
                   }`}
                 >
                   {studentProfile.level}
@@ -381,19 +382,19 @@ export default function StudentProfile() {
             )}
           </div>
 
-          <Separator className="bg-gray-700" />
+          <Separator className="bg-slate-200" />
 
           {/* Status */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-white">Status</Label>
+              <Label className="text-slate-700">Status</Label>
               <div>
                 <Badge
                   variant="secondary"
                   className={
                     studentProfile.isActive
-                      ? "bg-green-500/20 text-green-300 border-green-500/50"
-                      : "bg-gray-500/20 text-gray-300 border-gray-500/50"
+                      ? "bg-green-100 text-green-700 border-green-200"
+                      : "bg-slate-100 text-slate-700 border-slate-200"
                   }
                 >
                   {studentProfile.isActive ? "Active" : "Inactive"}
@@ -403,8 +404,8 @@ export default function StudentProfile() {
 
             {studentProfile.enrollmentDate && (
               <div className="space-y-2">
-                <Label className="text-white">Enrollment Date</Label>
-                <div className="flex items-center gap-2 text-gray-300">
+                <Label className="text-slate-700">Enrollment Date</Label>
+                <div className="flex items-center gap-2 text-slate-600">
                   <Calendar className="h-4 w-4" />
                   {new Date(studentProfile.enrollmentDate).toLocaleDateString()}
                 </div>
@@ -416,17 +417,17 @@ export default function StudentProfile() {
 
       {/* Medical Information */}
       {studentProfile.medicalInfo && (
-        <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+        <Card className="border-slate-200 shadow-sm">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Heart className="h-5 w-5 text-red-400" />
-              <CardTitle className="text-white">Medical Information</CardTitle>
+              <Heart className="h-5 w-5 text-red-500" />
+              <CardTitle className="text-slate-900">Medical Information</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Allergies */}
             <div className="space-y-2">
-              <Label className="text-white">Allergies</Label>
+              <Label className="text-slate-700">Allergies</Label>
               {isEditing ? (
                 <Textarea
                   placeholder="Enter allergies separated by commas (e.g., dust, pollen)"
@@ -439,12 +440,12 @@ export default function StudentProfile() {
                     setEditedProfile({
                       ...editedProfile,
                       medicalInfo: {
-                        ...editedProfile.medicalInfo!,
+                        ...editedProfile.medicalInfo,
                         allergies,
                       },
                     });
                   }}
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-white border-slate-200 text-slate-900"
                   rows={2}
                 />
               ) : (
@@ -456,14 +457,14 @@ export default function StudentProfile() {
                         <Badge
                           key={index}
                           variant="secondary"
-                          className="bg-red-500/20 text-red-300 border-red-500/50"
+                          className="bg-red-100 text-red-700 border-red-200"
                         >
                           {allergy}
                         </Badge>
                       ),
                     )
                   ) : (
-                    <p className="text-gray-400 text-sm">No allergies listed</p>
+                    <p className="text-slate-500 text-sm">No allergies listed</p>
                   )}
                 </div>
               )}
@@ -471,7 +472,7 @@ export default function StudentProfile() {
 
             {/* Medications */}
             <div className="space-y-2">
-              <Label className="text-white">Current Medications</Label>
+              <Label className="text-slate-700">Current Medications</Label>
               {isEditing ? (
                 <Textarea
                   placeholder="Enter medications separated by commas (e.g., inhaler, insulin)"
@@ -486,31 +487,31 @@ export default function StudentProfile() {
                     setEditedProfile({
                       ...editedProfile,
                       medicalInfo: {
-                        ...editedProfile.medicalInfo!,
+                        ...editedProfile.medicalInfo,
                         medications,
                       },
                     });
                   }}
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-white border-slate-200 text-slate-900"
                   rows={2}
                 />
               ) : (
                 <div className="flex flex-wrap gap-2">
-                  {studentProfile.medicalInfo.medications &&
+                  {studentProfile.medicalInfo?.medications &&
                   studentProfile.medicalInfo.medications.length > 0 ? (
                     studentProfile.medicalInfo.medications.map(
                       (medication, index) => (
                         <Badge
                           key={index}
                           variant="secondary"
-                          className="bg-purple-500/20 text-purple-300 border-purple-500/50"
+                          className="bg-purple-100 text-purple-700 border-purple-200"
                         >
                           {medication}
                         </Badge>
                       ),
                     )
                   ) : (
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-slate-500 text-sm">
                       No medications listed
                     </p>
                   )}
@@ -518,13 +519,13 @@ export default function StudentProfile() {
               )}
             </div>
 
-            <Separator className="bg-gray-700" />
+            <Separator className="bg-slate-200" />
 
             {/* Emergency Contact */}
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-yellow-400" />
-                <Label className="text-white font-semibold">
+                <Shield className="h-5 w-5 text-yellow-500" />
+                <Label className="text-slate-900 font-semibold">
                   Emergency Contact
                 </Label>
               </div>
@@ -532,7 +533,7 @@ export default function StudentProfile() {
               {isEditing ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-gray-400 text-sm">Name</Label>
+                    <Label className="text-slate-500 text-sm">Name</Label>
                     <Input
                       value={
                         editedProfile.medicalInfo?.emergencyContact?.name || ""
@@ -541,20 +542,23 @@ export default function StudentProfile() {
                         setEditedProfile({
                           ...editedProfile,
                           medicalInfo: {
-                            ...editedProfile.medicalInfo!,
+                            ...editedProfile.medicalInfo,
                             emergencyContact: {
-                              ...editedProfile.medicalInfo!.emergencyContact,
+                              name: "",
+                              phone: "",
+                              relation: "",
+                              ...editedProfile.medicalInfo?.emergencyContact,
                               name: e.target.value,
                             },
                           },
                         })
                       }
-                      className="bg-gray-800 border-gray-700 text-white"
+                      className="bg-white border-slate-200 text-slate-900"
                       placeholder="Emergency contact name"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-gray-400 text-sm">Phone</Label>
+                    <Label className="text-slate-500 text-sm">Phone</Label>
                     <Input
                       value={
                         editedProfile.medicalInfo?.emergencyContact?.phone || ""
@@ -563,20 +567,23 @@ export default function StudentProfile() {
                         setEditedProfile({
                           ...editedProfile,
                           medicalInfo: {
-                            ...editedProfile.medicalInfo!,
+                            ...editedProfile.medicalInfo,
                             emergencyContact: {
-                              ...editedProfile.medicalInfo!.emergencyContact,
+                              name: "",
+                              phone: "",
+                              relation: "",
+                              ...editedProfile.medicalInfo?.emergencyContact,
                               phone: e.target.value,
                             },
                           },
                         })
                       }
-                      className="bg-gray-800 border-gray-700 text-white"
+                      className="bg-white border-slate-200 text-slate-900"
                       placeholder="Phone number"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-gray-400 text-sm">Relation</Label>
+                    <Label className="text-slate-500 text-sm">Relation</Label>
                     <Input
                       value={
                         editedProfile.medicalInfo?.emergencyContact?.relation ||
@@ -586,15 +593,18 @@ export default function StudentProfile() {
                         setEditedProfile({
                           ...editedProfile,
                           medicalInfo: {
-                            ...editedProfile.medicalInfo!,
+                            ...editedProfile.medicalInfo,
                             emergencyContact: {
-                              ...editedProfile.medicalInfo!.emergencyContact,
+                              name: "",
+                              phone: "",
+                              relation: "",
+                              ...editedProfile.medicalInfo?.emergencyContact,
                               relation: e.target.value,
                             },
                           },
                         })
                       }
-                      className="bg-gray-800 border-gray-700 text-white"
+                      className="bg-white border-slate-200 text-slate-900"
                       placeholder="Relation (e.g., Mother)"
                     />
                   </div>
@@ -602,21 +612,21 @@ export default function StudentProfile() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-1">
-                    <Label className="text-gray-400 text-sm">Name</Label>
-                    <p className="text-white">
-                      {studentProfile.medicalInfo.emergencyContact.name}
+                    <Label className="text-slate-500 text-sm">Name</Label>
+                    <p className="text-slate-900">
+                      {studentProfile.medicalInfo?.emergencyContact?.name || "N/A"}
                     </p>
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-gray-400 text-sm">Phone</Label>
-                    <p className="text-white">
-                      {studentProfile.medicalInfo.emergencyContact.phone}
+                    <Label className="text-slate-500 text-sm">Phone</Label>
+                    <p className="text-slate-900">
+                      {studentProfile.medicalInfo?.emergencyContact?.phone || "N/A"}
                     </p>
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-gray-400 text-sm">Relation</Label>
-                    <p className="text-white capitalize">
-                      {studentProfile.medicalInfo.emergencyContact.relation}
+                    <Label className="text-slate-500 text-sm">Relation</Label>
+                    <p className="text-slate-900 capitalize">
+                      {studentProfile.medicalInfo?.emergencyContact?.relation || "N/A"}
                     </p>
                   </div>
                 </div>
@@ -627,26 +637,33 @@ export default function StudentProfile() {
       )}
 
       {/* Financial Information */}
-      <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+      <Card className="border-slate-200 shadow-sm">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Activity className="h-5 w-5 text-green-400" />
-            <CardTitle className="text-white">Financial Information</CardTitle>
+            <Activity className="h-5 w-5 text-green-500" />
+            <CardTitle className="text-slate-900">Financial Information</CardTitle>
           </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label className="text-gray-400 text-sm">Total Fees Paid</Label>
-              <p className="text-2xl font-bold text-green-400">
+              <Label className="text-slate-500 text-sm">Total Fees Paid</Label>
+              <p className="text-2xl font-bold text-green-600">
                 ₹{studentProfile.totalFeesPaid.toLocaleString()}
               </p>
             </div>
             <div className="space-y-2">
-              <Label className="text-gray-400 text-sm">Outstanding Fees</Label>
-              <p className="text-2xl font-bold text-red-400">
+              <Label className="text-slate-500 text-sm">Outstanding Fees</Label>
+              <p className="text-2xl font-bold text-red-600 mb-4">
                 ₹{studentProfile.outstandingFees.toLocaleString()}
               </p>
+              {studentProfile.outstandingFees > 0 && (
+                <StudentPaymentPanel 
+                  outstandingFees={studentProfile.outstandingFees} 
+                  onPaymentSuccess={fetchStudentProfile}
+                  academyFees={studentProfile.academyId?.fees}
+                />
+              )}
             </div>
           </div>
         </CardContent>

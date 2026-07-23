@@ -9,7 +9,7 @@ import { homepageService } from "@/services/homepageService";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { LandingEventCard } from "./LandingEventCard";
 
-export default function EventsTimeline() {
+export default function EventsTimeline({ academy }: { academy?: any }) {
   const { data, isLoading, error } = useQuery({
     queryKey: ["landingPageEvents"],
     queryFn: () => homepageService.getLandingPageEvents(),
@@ -25,7 +25,7 @@ export default function EventsTimeline() {
 
   if (isLoading) {
     return (
-      <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-black">
+      <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-slate-50">
         <div className="flex justify-center items-center min-h-[400px]">
           <LoadingSpinner />
         </div>
@@ -38,7 +38,7 @@ export default function EventsTimeline() {
   }
 
   return (
-    <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-black overflow-hidden">
+    <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-slate-50 overflow-hidden">
       {/* Animated Background */}
       <motion.div
         animate={{
@@ -46,11 +46,11 @@ export default function EventsTimeline() {
           rotate: [0, 180, 360],
         }}
         transition={{
-          duration: 30,
+          duration: 40,
           repeat: Infinity,
           ease: "linear",
         }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-to-br from-amber-500/10 to-yellow-500/10 rounded-full blur-3xl opacity-40"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-to-br from-blue-50/50 to-indigo-50/50 rounded-full blur-3xl opacity-60"
       />
 
       <div className="relative max-w-7xl mx-auto">
@@ -63,30 +63,23 @@ export default function EventsTimeline() {
           className="text-center mb-20"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-3 px-8 py-3 bg-gradient-to-r from-amber-500 to-yellow-500 text-black rounded-full mb-8 shadow-lg shadow-amber-500/50"
+            className="inline-flex items-center gap-3 px-6 py-2 bg-white border border-slate-200 text-slate-600 rounded-full shadow-sm mb-8"
           >
-            <Zap className="w-5 h-5" />
-            <span className="text-sm font-black uppercase tracking-[0.3em] font-display">
+            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+            <span className="text-sm font-semibold tracking-wider uppercase">
               Upcoming Events
             </span>
           </motion.div>
 
-          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 uppercase leading-none font-display">
-            Compete &
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-500">
+          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-slate-900 mb-6 font-display tracking-tight">
+            Compete &{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
               Conquer
             </span>
           </h2>
-          <motion.div
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1, delay: 0.3 }}
-            className="w-32 h-2 bg-gradient-to-r from-amber-500 to-yellow-500 mx-auto shadow-lg shadow-amber-500/50"
-          />
         </motion.div>
 
         {/* Events */}
@@ -98,7 +91,7 @@ export default function EventsTimeline() {
 
         {/* View All CTA */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.6 }}
@@ -109,10 +102,10 @@ export default function EventsTimeline() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-4 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black text-xl font-black uppercase px-12 py-7 rounded-xl shadow-xl hover:shadow-2xl hover:shadow-amber-500/50 transition-all"
+                className="bg-white border border-slate-200 text-slate-800 hover:bg-slate-50 hover:text-blue-600 text-lg font-semibold px-10 py-6 rounded-2xl shadow-sm hover:shadow-md transition-all"
               >
                 View All Events
-                <ArrowRight className="ml-3 w-6 h-6" />
+                <ArrowRight className="ml-3 w-5 h-5" />
               </Button>
             </Link>
           </motion.div>

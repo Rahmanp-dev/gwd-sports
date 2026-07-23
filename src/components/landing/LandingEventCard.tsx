@@ -57,49 +57,60 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
     navigate(`/events/${event._id}`);
   };
 
+  // Convert legacy color schemes to light theme equivalents
+  const getLightGradient = (scheme?: string) => {
+    if (!scheme) return "from-blue-50 to-indigo-50 text-blue-600";
+    if (scheme.includes("amber") || scheme.includes("yellow")) return "from-amber-50 to-orange-50 text-amber-600";
+    if (scheme.includes("green") || scheme.includes("emerald")) return "from-emerald-50 to-teal-50 text-emerald-600";
+    if (scheme.includes("red") || scheme.includes("rose")) return "from-rose-50 to-red-50 text-rose-600";
+    if (scheme.includes("purple") || scheme.includes("pink")) return "from-purple-50 to-fuchsia-50 text-purple-600";
+    return "from-blue-50 to-indigo-50 text-blue-600";
+  };
+  const lightStyle = getLightGradient(card.colorScheme);
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 60 }}
+      initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: index * 0.2 }}
-      whileHover={{ y: -10 }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+      whileHover={{ y: -5 }}
       className="group cursor-pointer"
       onClick={handleCardClick}
     >
-      <div className="relative bg-gray-900 rounded-3xl overflow-hidden shadow-2xl hover:shadow-[0_30px_80px_rgba(251,191,36,0.3)] transition-all duration-500 border-4 border-amber-500/20 hover:border-amber-500/50">
+      <div className="relative bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-slate-100">
         <div className="grid lg:grid-cols-2 gap-0">
           {/* Image */}
-          <div className="relative h-96 lg:h-auto overflow-hidden">
+          <div className="relative h-72 lg:h-auto overflow-hidden">
             {event.images && event.images.length > 0 ? (
               <motion.img
-                whileHover={{ scale: 1.15 }}
+                whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.6 }}
                 src={event.images[0]}
                 alt={event.name}
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+              <div className="w-full h-full bg-slate-100 flex items-center justify-center">
                 <span className="text-6xl">
                   {event.sport === "football" ? "⚽" : "🏆"}
                 </span>
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-br from-black/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
 
             {/* Floating Badge */}
             <motion.div
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              className={`absolute top-8 left-8 px-6 py-3 bg-gradient-to-r ${card.colorScheme} text-white rounded-full font-black uppercase text-sm shadow-2xl`}
+              whileHover={{ scale: 1.05, rotate: 2 }}
+              className={`absolute top-6 left-6 px-4 py-2 bg-white text-slate-800 rounded-full font-semibold text-xs shadow-md border border-slate-100`}
             >
               🔥 Featured Event
             </motion.div>
 
             {/* Sport Badge */}
-            <div className="absolute bottom-8 left-8">
+            <div className="absolute bottom-6 left-6">
               <Badge
-                className={`bg-gradient-to-r ${card.colorScheme} text-white text-sm px-4 py-2 capitalize`}
+                className={`bg-blue-600 text-white text-xs px-3 py-1 capitalize font-medium`}
               >
                 {event.sport}
               </Badge>
@@ -107,125 +118,79 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
           </div>
 
           {/* Content */}
-          <div className="p-12 flex flex-col justify-center bg-gradient-to-br from-gray-900 to-black">
-            <h3 className="text-4xl sm:text-5xl font-black text-white uppercase mb-8 tracking-tight group-hover:text-amber-500 transition-colors font-display line-clamp-2">
+          <div className="p-8 sm:p-10 flex flex-col justify-center bg-white">
+            <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-6 tracking-tight group-hover:text-blue-600 transition-colors font-display line-clamp-2">
               {event.name}
             </h3>
 
-            <div className="space-y-5 mb-10">
+            <div className="space-y-4 mb-8">
               {/* Date */}
-              <motion.div
-                whileHover={{ x: 10 }}
-                className="flex items-center gap-4"
-              >
-                <div
-                  className={`w-14 h-14 bg-gradient-to-br ${card.colorScheme} rounded-xl flex items-center justify-center shadow-lg shrink-0`}
-                >
-                  <Calendar className="w-7 h-7 text-white" />
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 bg-gradient-to-br ${lightStyle} rounded-xl flex items-center justify-center shadow-sm shrink-0`}>
+                  <Calendar className="w-6 h-6" />
                 </div>
-                <span className="text-white font-black text-lg uppercase font-display">
+                <span className="text-slate-700 font-semibold text-base font-display">
                   {formatDateRange()}
                 </span>
-              </motion.div>
+              </div>
 
               {/* Location */}
-              <motion.div
-                whileHover={{ x: 10 }}
-                className="flex items-center gap-4"
-              >
-                <div
-                  className={`w-14 h-14 bg-gradient-to-br ${card.colorScheme} rounded-xl flex items-center justify-center shadow-lg shrink-0`}
-                >
-                  <MapPin className="w-7 h-7 text-white" />
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 bg-gradient-to-br ${lightStyle} rounded-xl flex items-center justify-center shadow-sm shrink-0`}>
+                  <MapPin className="w-6 h-6" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-white font-black text-lg uppercase font-display">
+                  <span className="text-slate-700 font-semibold text-base font-display">
                     {event.venue}
                   </span>
-                  <span className="text-gray-400 text-sm">
+                  <span className="text-slate-500 text-sm">
                     {event.location}
                   </span>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Participants */}
-              <motion.div
-                whileHover={{ x: 10 }}
-                className="flex items-center gap-4"
-              >
-                <div
-                  className={`w-14 h-14 bg-gradient-to-br ${card.colorScheme} rounded-xl flex items-center justify-center shadow-lg shrink-0`}
-                >
-                  <Users className="w-7 h-7 text-white" />
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 bg-gradient-to-br ${lightStyle} rounded-xl flex items-center justify-center shadow-sm shrink-0`}>
+                  <Users className="w-6 h-6" />
                 </div>
-                <span className="text-white font-black text-lg uppercase font-display">
+                <span className="text-slate-700 font-semibold text-base font-display">
                   {event.participants.length}
                   {event.maxParticipants && ` / ${event.maxParticipants}`}{" "}
                   Participants
                 </span>
-              </motion.div>
+              </div>
 
               {/* Entry Fee */}
               {event.entryFee !== undefined && event.entryFee && (
-                <motion.div
-                  whileHover={{ x: 10 }}
-                  className="flex items-center gap-4"
-                >
-                  <div
-                    className={`w-14 h-14 bg-gradient-to-br ${card.colorScheme} rounded-xl flex items-center justify-center shadow-lg shrink-0`}
-                  >
-                    <IndianRupee className="w-7 h-7 text-white" />
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 bg-gradient-to-br ${lightStyle} rounded-xl flex items-center justify-center shadow-sm shrink-0`}>
+                    <IndianRupee className="w-6 h-6" />
                   </div>
                   {event.entryFee === 0 ? (
-                    <span className="text-white font-black text-lg uppercase font-display">
+                    <span className="text-slate-700 font-semibold text-base font-display">
                       Free Entry
                     </span>
                   ) : (
-                    <span className="text-white font-black text-lg uppercase font-display">
+                    <span className="text-slate-700 font-semibold text-base font-display">
                       {event.entryFee} Entry Fee
                     </span>
                   )}
-                </motion.div>
+                </div>
               )}
 
               {/* Registration Countdown Timer */}
               {showCountdown && (
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="relative"
+                  className="relative mt-2"
                 >
-                  {/* Pulsing Background */}
-                  <motion.div
-                    animate={{
-                      scale: [1, 1.05, 1],
-                      opacity: [0.3, 0.5, 0.3],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                    className={`absolute inset-0 bg-gradient-to-r ${card.colorScheme} rounded-2xl blur-xl`}
-                  />
-
-                  <div className="relative bg-black/60 backdrop-blur-md rounded-2xl p-4 border-2 border-amber-500/30">
-                    <div className="flex items-center gap-3 mb-3">
-                      <motion.div
-                        animate={{
-                          rotate: [0, 10, -10, 0],
-                          scale: [1, 1.1, 1],
-                        }}
-                        transition={{
-                          duration: 1.5,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                      >
-                        <Clock className="w-5 h-5 text-amber-400" />
-                      </motion.div>
-                      <span className="text-amber-400 font-black text-sm uppercase tracking-wider">
-                        ⚡ Registration Closes In
+                  <div className="relative bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Clock className="w-4 h-4 text-blue-500" />
+                      <span className="text-slate-600 font-bold text-xs uppercase tracking-wider">
+                        Registration Closes In
                       </span>
                     </div>
 
@@ -237,25 +202,12 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
                         { label: "Secs", value: timeLeft.seconds },
                       ].map((unit, idx) => (
                         <div key={unit.label} className="text-center">
-                          <AnimatePresence mode="popLayout">
-                            <motion.div
-                              key={unit.value}
-                              initial={{ y: -20, opacity: 0 }}
-                              animate={{ y: 0, opacity: 1 }}
-                              exit={{ y: 20, opacity: 0 }}
-                              transition={{
-                                type: "spring",
-                                stiffness: 500,
-                                damping: 30,
-                              }}
-                              className={`bg-gradient-to-br ${card.colorScheme} rounded-lg p-2 mb-1 shadow-lg`}
-                            >
-                              <span className="text-white font-black text-2xl font-mono">
-                                {String(unit.value).padStart(2, "0")}
-                              </span>
-                            </motion.div>
-                          </AnimatePresence>
-                          <span className="text-gray-400 text-xs font-bold uppercase">
+                          <div className={`bg-white border border-slate-100 rounded-lg p-2 mb-1 shadow-sm`}>
+                            <span className="text-slate-800 font-bold text-xl font-mono">
+                              {String(unit.value).padStart(2, "0")}
+                            </span>
+                          </div>
+                          <span className="text-slate-500 text-[10px] font-bold uppercase">
                             {unit.label}
                           </span>
                         </div>
@@ -264,24 +216,11 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
 
                     {/* Urgency Indicator */}
                     {timeLeft.days === 0 && timeLeft.hours < 24 && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="mt-3 text-center"
-                      >
-                        <motion.span
-                          animate={{
-                            opacity: [1, 0.5, 1],
-                          }}
-                          transition={{
-                            duration: 1,
-                            repeat: Infinity,
-                          }}
-                          className="text-red-500 font-black text-xs uppercase tracking-wider"
-                        >
-                          🔥 Hurry! Last Chance 🔥
-                        </motion.span>
-                      </motion.div>
+                      <div className="mt-3 text-center">
+                        <span className="text-red-500 font-bold text-xs uppercase tracking-wider">
+                          🔥 Hurry! Last Chance
+                        </span>
+                      </div>
                     )}
                   </div>
                 </motion.div>
@@ -292,11 +231,11 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="bg-red-500/10 border-2 border-red-500/30 rounded-2xl p-4"
+                  className="bg-red-50 border border-red-100 rounded-2xl p-4"
                 >
-                  <div className="flex items-center gap-3 justify-center">
-                    <Clock className="w-5 h-5 text-red-400" />
-                    <span className="text-red-400 font-black text-sm uppercase tracking-wider">
+                  <div className="flex items-center gap-2 justify-center">
+                    <Clock className="w-4 h-4 text-red-500" />
+                    <span className="text-red-600 font-bold text-xs uppercase tracking-wider">
                       Registration Closed
                     </span>
                   </div>
@@ -304,21 +243,16 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
               )}
             </div>
 
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
-                className={`bg-gradient-to-r ${card.colorScheme} hover:shadow-2xl hover:shadow-amber-500/50 text-white text-xl font-black uppercase px-10 py-7 rounded-xl w-full sm:w-auto group/btn`}
+                className={`bg-slate-900 text-white hover:bg-slate-800 text-base font-semibold px-8 py-6 rounded-xl w-full group/btn shadow-md`}
               >
                 View Details
-                <ArrowRight className="ml-3 w-6 h-6 group-hover/btn:translate-x-2 transition-transform" />
+                <ArrowRight className="ml-2 w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
               </Button>
             </motion.div>
           </div>
         </div>
-
-        {/* Glowing Border Effect */}
-        <div
-          className={`absolute inset-0 rounded-3xl bg-gradient-to-r ${card.colorScheme} opacity-0 group-hover:opacity-20 blur-2xl transition-opacity duration-500 -z-10`}
-        />
       </div>
     </motion.div>
   );

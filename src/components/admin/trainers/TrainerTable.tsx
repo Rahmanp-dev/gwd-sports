@@ -120,7 +120,7 @@ export const TrainerTable: React.FC<TrainerTableProps> = ({
 
   const getSortIcon = (field: string) => {
     if (currentFilters.sortBy !== field) {
-      return <ChevronsUpDown className="h-4 w-4 text-gray-400" />;
+      return <ChevronsUpDown className="h-4 w-4 text-slate-400" />;
     }
 
     return currentFilters.sortOrder === "asc" ? (
@@ -157,7 +157,7 @@ export const TrainerTable: React.FC<TrainerTableProps> = ({
         {/* Search Bar */}
         <div className="flex w-full md:w-1/2">
           <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               type="text"
               placeholder="Search by name, email, or sport..."
@@ -316,7 +316,7 @@ export const TrainerTable: React.FC<TrainerTableProps> = ({
                       className={
                         trainer.isActive
                           ? "bg-green-500 hover:bg-green-600"
-                          : "bg-gray-500 hover:bg-gray-600"
+                          : "bg-slate-500 hover:bg-slate-600"
                       }
                     >
                       {trainer.isActive ? "Active" : "Inactive"}

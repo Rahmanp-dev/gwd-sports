@@ -113,8 +113,9 @@ const authSlice = createSlice({
           name: user.name,
           email: user.email,
           phone: user.phone || "",
-          role: user.role as "admin" | "student" | "trainer" | "user",
+          role: user.role as "admin" | "student" | "trainer" | "user" | "gwd_super_admin",
           sports: user.sports || [],
+          academyId: user.academyId || undefined,
           isActive: user.isActive,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
@@ -123,8 +124,9 @@ const authSlice = createSlice({
 
         // Store in localStorage with console logs for debugging
         if (accessToken) {
-          console.log("Storing access token in localStorage:");
+          console.log("Storing access token in localStorage and cookies:");
           localStorage.setItem("mg_auth_token", accessToken);
+          document.cookie = `gwd_token=${accessToken}; path=/; max-age=604800`;
         }
 
         if (refreshToken) {
@@ -139,8 +141,9 @@ const authSlice = createSlice({
             name: user.name,
             email: user.email,
             phone: user.phone || "",
-            role: user.role as "admin" | "student" | "trainer" | "user",
+            role: user.role as "admin" | "student" | "trainer" | "user" | "gwd_super_admin",
             sports: user.sports || [],
+            academyId: user.academyId || undefined,
             isActive: user.isActive,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
@@ -174,8 +177,9 @@ const authSlice = createSlice({
           name: user.name,
           email: user.email,
           phone: user.phone || "",
-          role: user.role as "admin" | "student" | "trainer" | "user",
+          role: user.role as "admin" | "student" | "trainer" | "user" | "gwd_super_admin",
           sports: user.sports || [],
+          academyId: user.academyId || undefined,
           isActive: user.isActive,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,

@@ -107,7 +107,7 @@ export const FeaturesGrid: React.FC<FeaturesGridProps> = ({
               className="group relative"
               style={{ perspective: "1000px" }}
             >
-              <div className="relative bg-gray-900/50 backdrop-blur-md border border-green-500/20 rounded-3xl p-8 h-full shadow-2xl hover:shadow-[0_20px_60px_rgba(34,197,94,0.4)] transition-all duration-500 overflow-hidden">
+              <div className="relative bg-slate-900/50 backdrop-blur-md border border-green-500/20 rounded-3xl p-8 h-full shadow-2xl hover:shadow-[0_20px_60px_rgba(34,197,94,0.4)] transition-all duration-500 overflow-hidden">
                 {/* Gradient Overlay */}
                 <div
                   className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-20 transition-opacity duration-500`}
@@ -126,7 +126,7 @@ export const FeaturesGrid: React.FC<FeaturesGridProps> = ({
                 <h3 className="text-3xl font-black text-white uppercase mb-4 tracking-tight font-display">
                   {feature.title}
                 </h3>
-                <p className="text-gray-300 text-lg font-semibold leading-relaxed">
+                <p className="text-slate-300 text-lg font-semibold leading-relaxed">
                   {feature.description}
                 </p>
 

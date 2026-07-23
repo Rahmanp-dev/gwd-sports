@@ -11,6 +11,7 @@ export interface IAcademy extends Document {
   fees: {
     monthly: number;
     quarterly: number;
+    halfYearly: number;
     yearly: number;
   };
   contactInfo: {
@@ -28,8 +29,17 @@ export interface IAcademy extends Document {
   images: string[];
   isActive: boolean;
   createdBy: mongoose.Types.ObjectId;
-  slug?: string;
+  ownerId: mongoose.Types.ObjectId;
+  slug: string;
   rzp_account?: string;
+  theme: {
+    primaryColor: string;
+    accentColor: string;
+    logoUrl: string;
+    heroImages: string[];
+    tagline: string;
+  };
+  platformFeePercent: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -82,6 +92,12 @@ const AcademySchema = new Schema<IAcademy>({
       type: Number,
       required: true,
       min: [0, 'Quarterly fee cannot be negative']
+    },
+    halfYearly: {
+      type: Number,
+      required: true,
+      min: [0, 'Half-yearly fee cannot be negative'],
+      default: 0
     },
     yearly: {
       type: Number,
@@ -150,13 +166,34 @@ const AcademySchema = new Schema<IAcademy>({
     ref: "User",
     required: true
   },
+  ownerId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  },
   slug: {
     type: String,
+    required: [true, 'Academy slug is required'],
     unique: true,
-    sparse: true
+    lowercase: true,
+    trim: true,
+    match: [/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens']
   },
   rzp_account: {
     type: String
+  },
+  theme: {
+    primaryColor: { type: String, default: '#7c3aed' },
+    accentColor: { type: String, default: '#c8971a' },
+    logoUrl: { type: String, default: '' },
+    heroImages: [{ type: String }],
+    tagline: { type: String, default: '' }
+  },
+  platformFeePercent: {
+    type: Number,
+    default: 1,
+    min: 0,
+    max: 10
   }
 }, {
   timestamps: true,
@@ -169,6 +206,7 @@ const AcademySchema = new Schema<IAcademy>({
 });
 
 // Indexes
+AcademySchema.index({ ownerId: 1 });
 AcademySchema.index({ location: 1, sports: 1 });
 AcademySchema.index({ isActive: 1 });
 AcademySchema.index({ createdBy: 1 });

@@ -237,13 +237,13 @@ export default function TrainerProfile() {
 
   if (!trainerProfile) {
     return (
-      <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+      <Card className="border-slate-200 shadow-sm bg-white">
         <CardContent className="p-12 text-center">
           <AlertCircle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-white mb-2">
+          <h3 className="text-xl font-semibold text-slate-900 mb-2">
             No Trainer Profile Found
           </h3>
-          <p className="text-gray-400 mb-4">
+          <p className="text-slate-500 mb-4">
             You haven't created a trainer profile yet.
           </p>
           <Button onClick={() => navigate("/trainer/create")}>
@@ -257,11 +257,11 @@ export default function TrainerProfile() {
   return (
     <div className="space-y-6">
       {/* Header Card */}
-      <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+      <Card className="border-slate-200 shadow-sm bg-white">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-white text-2xl">
+              <CardTitle className="text-slate-900 text-2xl">
                 Trainer Profile
               </CardTitle>
               <CardDescription>
@@ -272,7 +272,7 @@ export default function TrainerProfile() {
               <Button
                 variant="outline"
                 onClick={handleEdit}
-                className="border-gray-600"
+                className="border-slate-200"
               >
                 <Edit className="h-4 w-4 mr-2" />
                 Edit Trainer Profile
@@ -282,7 +282,7 @@ export default function TrainerProfile() {
                 <Button
                   variant="outline"
                   onClick={handleCancel}
-                  className="border-gray-600 text-black"
+                  className="border-slate-200 text-black"
                 >
                   <X className="h-4 w-4 mr-2" />
                   Cancel
@@ -301,11 +301,11 @@ export default function TrainerProfile() {
       </Card>
 
       {/* Professional Information */}
-      <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+      <Card className="border-slate-200 shadow-sm bg-white">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-yellow-400" />
-            <CardTitle className="text-white">
+            <Trophy className="h-5 w-5 text-yellow-500" />
+            <CardTitle className="text-slate-900">
               Professional Information
             </CardTitle>
           </div>
@@ -313,7 +313,7 @@ export default function TrainerProfile() {
         <CardContent className="space-y-6">
           {/* Sports */}
           <div className="space-y-2">
-            <Label className="text-white">Sports</Label>
+            <Label className="text-slate-900">Sports</Label>
             {isEditing ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {[
@@ -349,12 +349,12 @@ export default function TrainerProfile() {
                             sports: updatedSports,
                           });
                         }}
-                        className="border-gray-500"
+                        className="border-slate-300"
                       />
                       <Label
                         htmlFor={sport}
                         className={`text-sm capitalize cursor-pointer ${
-                          isFootball ? "text-gray-500" : "text-white"
+                          isFootball ? "text-slate-400" : "text-slate-900"
                         }`}
                       >
                         {sport} {isFootball && "(Mandatory)"}
@@ -369,7 +369,7 @@ export default function TrainerProfile() {
                   <Badge
                     key={sport}
                     variant="secondary"
-                    className="bg-blue-500/20 text-blue-300 border-blue-500/50 capitalize"
+                    className="bg-blue-100 text-blue-700 border-blue-200 capitalize"
                   >
                     {sport}
                   </Badge>
@@ -378,12 +378,12 @@ export default function TrainerProfile() {
             )}
           </div>
 
-          <Separator className="bg-gray-700" />
+          <Separator className="bg-slate-200" />
 
           {/* Specializations */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-white">Specializations</Label>
+              <Label className="text-slate-900">Specializations</Label>
               {isEditing && (
                 <Button
                   type="button"
@@ -398,7 +398,7 @@ export default function TrainerProfile() {
                       ],
                     });
                   }}
-                  className="border-gray-600"
+                  className="border-slate-200"
                 >
                   <Plus className="h-4 w-4 mr-1" />
                   Add
@@ -422,7 +422,7 @@ export default function TrainerProfile() {
                         });
                       }}
                       placeholder="Enter specialization"
-                      className="bg-gray-800 border-gray-600 text-white"
+                      className="bg-white border-slate-200 text-slate-900"
                     />
                     <Button
                       type="button"
@@ -437,7 +437,7 @@ export default function TrainerProfile() {
                           specializations: updated,
                         });
                       }}
-                      className="border-gray-600 text-red-400 hover:text-red-300"
+                      className="border-slate-200 text-red-600 hover:text-red-300"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -450,7 +450,7 @@ export default function TrainerProfile() {
                   <Badge
                     key={index}
                     variant="secondary"
-                    className="bg-purple-500/20 text-purple-300 border-purple-500/50"
+                    className="bg-purple-100 text-purple-700 border-purple-200"
                   >
                     {spec}
                   </Badge>
@@ -459,19 +459,19 @@ export default function TrainerProfile() {
             )}
           </div>
 
-          <Separator className="bg-gray-700" />
+          <Separator className="bg-slate-200" />
 
           {/* Status and Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label className="text-white">Status</Label>
+              <Label className="text-slate-900">Status</Label>
               <div>
                 <Badge
                   variant="secondary"
                   className={
                     trainerProfile.isActive
-                      ? "bg-green-500/20 text-green-300 border-green-500/50"
-                      : "bg-gray-500/20 text-gray-300 border-gray-500/50"
+                      ? "bg-green-100 text-green-700 border-green-200"
+                      : "bg-slate-100 text-slate-700 border-slate-200"
                   }
                 >
                   {trainerProfile.isActive ? "Active" : "Inactive"}
@@ -480,8 +480,8 @@ export default function TrainerProfile() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-white">Students</Label>
-              <div className="flex items-center gap-2 text-gray-300">
+              <Label className="text-slate-900">Students</Label>
+              <div className="flex items-center gap-2 text-slate-600">
                 <Users className="h-4 w-4" />
                 {trainerProfile.students.length} Active
               </div>
@@ -489,8 +489,8 @@ export default function TrainerProfile() {
 
             {trainerProfile.joinedDate && (
               <div className="space-y-2">
-                <Label className="text-white">Joined Date</Label>
-                <div className="flex items-center gap-2 text-gray-300">
+                <Label className="text-slate-900">Joined Date</Label>
+                <div className="flex items-center gap-2 text-slate-600">
                   <Calendar className="h-4 w-4" />
                   {new Date(trainerProfile.joinedDate).toLocaleDateString()}
                 </div>
@@ -504,12 +504,12 @@ export default function TrainerProfile() {
       {(trainerProfile.qualifications &&
         trainerProfile.qualifications.length > 0) ||
       isEditing ? (
-        <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+        <Card className="border-slate-200 shadow-sm bg-white">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Award className="h-5 w-5 text-green-400" />
-                <CardTitle className="text-white">
+                <Award className="h-5 w-5 text-green-600" />
+                <CardTitle className="text-slate-900">
                   Qualifications & Certifications
                 </CardTitle>
               </div>
@@ -534,7 +534,7 @@ export default function TrainerProfile() {
                       ],
                     });
                   }}
-                  className="border-gray-600"
+                  className="border-slate-200"
                 >
                   <Plus className="h-4 w-4 mr-1" />
                   Add Qualification
@@ -547,10 +547,10 @@ export default function TrainerProfile() {
               ? (editedProfile.qualifications || []).map((qual, index) => (
                   <div
                     key={index}
-                    className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 space-y-3"
+                    className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-3"
                   >
                     <div className="flex items-start justify-between">
-                      <h4 className="text-white font-semibold">
+                      <h4 className="text-slate-900 font-semibold">
                         Qualification {index + 1}
                       </h4>
                       <Button
@@ -566,14 +566,14 @@ export default function TrainerProfile() {
                             qualifications: updated,
                           });
                         }}
-                        className="border-gray-600 text-red-400 hover:text-red-300"
+                        className="border-slate-200 text-red-600 hover:text-red-300"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div className="space-y-2">
-                        <Label className="text-white text-sm">
+                        <Label className="text-slate-900 text-sm">
                           Certification Name *
                         </Label>
                         <Input
@@ -592,11 +592,11 @@ export default function TrainerProfile() {
                             });
                           }}
                           placeholder="e.g., UEFA B License"
-                          className="bg-gray-800 border-gray-600 text-white"
+                          className="bg-white border-slate-200 text-slate-900"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-white text-sm">
+                        <Label className="text-slate-900 text-sm">
                           Issued By *
                         </Label>
                         <Input
@@ -615,11 +615,11 @@ export default function TrainerProfile() {
                             });
                           }}
                           placeholder="e.g., UEFA"
-                          className="bg-gray-800 border-gray-600 text-white"
+                          className="bg-white border-slate-200 text-slate-900"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-white text-sm">
+                        <Label className="text-slate-900 text-sm">
                           Issue Date *
                         </Label>
                         <Input
@@ -644,11 +644,11 @@ export default function TrainerProfile() {
                               qualifications: updated,
                             });
                           }}
-                          className="bg-gray-800 border-gray-600 text-white"
+                          className="bg-white border-slate-200 text-slate-900"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-white text-sm">
+                        <Label className="text-slate-900 text-sm">
                           Expiry Date
                         </Label>
                         <Input
@@ -673,11 +673,11 @@ export default function TrainerProfile() {
                               qualifications: updated,
                             });
                           }}
-                          className="bg-gray-800 border-gray-600 text-white"
+                          className="bg-white border-slate-200 text-slate-900"
                         />
                       </div>
                       <div className="space-y-2 md:col-span-2">
-                        <Label className="text-white text-sm">
+                        <Label className="text-slate-900 text-sm">
                           Certificate URL
                         </Label>
                         <Input
@@ -696,7 +696,7 @@ export default function TrainerProfile() {
                             });
                           }}
                           placeholder="https://..."
-                          className="bg-gray-800 border-gray-600 text-white"
+                          className="bg-white border-slate-200 text-slate-900"
                         />
                       </div>
                     </div>
@@ -705,26 +705,26 @@ export default function TrainerProfile() {
               : trainerProfile.qualifications?.map((qual) => (
                   <div
                     key={qual._id}
-                    className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 space-y-2"
+                    className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-2"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <h4 className="text-white font-semibold">
+                        <h4 className="text-slate-900 font-semibold">
                           {qual.certification}
                         </h4>
-                        <p className="text-gray-400 text-sm">
+                        <p className="text-slate-500 text-sm">
                           Issued by: {qual.issuedBy}
                         </p>
                       </div>
-                      <CheckCircle className="h-5 w-5 text-green-400 flex-shrink-0" />
+                      <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                      <div className="text-gray-400">
+                      <div className="text-slate-500">
                         <span className="font-medium">Issued:</span>{" "}
                         {new Date(qual.issuedDate).toLocaleDateString()}
                       </div>
                       {qual.expiryDate && (
-                        <div className="text-gray-400">
+                        <div className="text-slate-500">
                           <span className="font-medium">Expires:</span>{" "}
                           {new Date(qual.expiryDate).toLocaleDateString()}
                         </div>
@@ -739,12 +739,12 @@ export default function TrainerProfile() {
       {/* Experience */}
       {(trainerProfile.experience && trainerProfile.experience.length > 0) ||
       isEditing ? (
-        <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+        <Card className="border-slate-200 shadow-sm bg-white">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Briefcase className="h-5 w-5 text-blue-400" />
-                <CardTitle className="text-white">Work Experience</CardTitle>
+                <Briefcase className="h-5 w-5 text-blue-600" />
+                <CardTitle className="text-slate-900">Work Experience</CardTitle>
               </div>
               {isEditing && (
                 <Button
@@ -767,7 +767,7 @@ export default function TrainerProfile() {
                       ],
                     });
                   }}
-                  className="border-gray-600"
+                  className="border-slate-200"
                 >
                   <Plus className="h-4 w-4 mr-1" />
                   Add Experience
@@ -780,10 +780,10 @@ export default function TrainerProfile() {
               ? (editedProfile.experience || []).map((exp, index) => (
                   <div
                     key={index}
-                    className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 space-y-3"
+                    className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-3"
                   >
                     <div className="flex items-start justify-between">
-                      <h4 className="text-white font-semibold">
+                      <h4 className="text-slate-900 font-semibold">
                         Experience {index + 1}
                       </h4>
                       <Button
@@ -799,14 +799,14 @@ export default function TrainerProfile() {
                             experience: updated,
                           });
                         }}
-                        className="border-gray-600 text-red-400 hover:text-red-300"
+                        className="border-slate-200 text-red-600 hover:text-red-300"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div className="space-y-2">
-                        <Label className="text-white text-sm">Position *</Label>
+                        <Label className="text-slate-900 text-sm">Position *</Label>
                         <Input
                           value={exp.position}
                           onChange={(e) => {
@@ -823,11 +823,11 @@ export default function TrainerProfile() {
                             });
                           }}
                           placeholder="e.g., Head Coach"
-                          className="bg-gray-800 border-gray-600 text-white"
+                          className="bg-white border-slate-200 text-slate-900"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-white text-sm">
+                        <Label className="text-slate-900 text-sm">
                           Organization *
                         </Label>
                         <Input
@@ -846,11 +846,11 @@ export default function TrainerProfile() {
                             });
                           }}
                           placeholder="e.g., FC Hyderabad"
-                          className="bg-gray-800 border-gray-600 text-white"
+                          className="bg-white border-slate-200 text-slate-900"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-white text-sm">
+                        <Label className="text-slate-900 text-sm">
                           Start Date *
                         </Label>
                         <Input
@@ -875,11 +875,11 @@ export default function TrainerProfile() {
                               experience: updated,
                             });
                           }}
-                          className="bg-gray-800 border-gray-600 text-white"
+                          className="bg-white border-slate-200 text-slate-900"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-white text-sm">End Date</Label>
+                        <Label className="text-slate-900 text-sm">End Date</Label>
                         <Input
                           type="date"
                           value={
@@ -903,11 +903,11 @@ export default function TrainerProfile() {
                             });
                           }}
                           placeholder="Leave empty if current"
-                          className="bg-gray-800 border-gray-600 text-white"
+                          className="bg-white border-slate-200 text-slate-900"
                         />
                       </div>
                       <div className="space-y-2 md:col-span-2">
-                        <Label className="text-white text-sm">
+                        <Label className="text-slate-900 text-sm">
                           Description *
                         </Label>
                         <Textarea
@@ -927,7 +927,7 @@ export default function TrainerProfile() {
                           }}
                           placeholder="Describe your role and achievements"
                           rows={3}
-                          className="bg-gray-800 border-gray-600 text-white"
+                          className="bg-white border-slate-200 text-slate-900"
                         />
                       </div>
                     </div>
@@ -936,32 +936,32 @@ export default function TrainerProfile() {
               : trainerProfile.experience?.map((exp) => (
                   <div
                     key={exp._id}
-                    className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 space-y-3"
+                    className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-3"
                   >
                     <div className="flex items-start justify-between">
                       <div>
-                        <h4 className="text-white font-semibold">
+                        <h4 className="text-slate-900 font-semibold">
                           {exp.position}
                         </h4>
-                        <p className="text-gray-400 text-sm">
+                        <p className="text-slate-500 text-sm">
                           {exp.organization}
                         </p>
                       </div>
                       <Badge
                         variant="secondary"
-                        className="bg-blue-500/20 text-blue-300 border-blue-500/50"
+                        className="bg-blue-100 text-blue-700 border-blue-200"
                       >
                         {exp.endDate ? "Past" : "Current"}
                       </Badge>
                     </div>
-                    <div className="flex items-center gap-2 text-gray-400 text-sm">
+                    <div className="flex items-center gap-2 text-slate-500 text-sm">
                       <Calendar className="h-4 w-4" />
                       {new Date(exp.startDate).toLocaleDateString()} -{" "}
                       {exp.endDate
                         ? new Date(exp.endDate).toLocaleDateString()
                         : "Present"}
                     </div>
-                    <p className="text-gray-300 text-sm">{exp.description}</p>
+                    <p className="text-slate-600 text-sm">{exp.description}</p>
                   </div>
                 ))}
           </CardContent>
@@ -969,35 +969,35 @@ export default function TrainerProfile() {
       ) : null}
 
       {/* Availability & Rates */}
-      <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+      <Card className="border-slate-200 shadow-sm bg-white">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Clock className="h-5 w-5 text-orange-400" />
-            <CardTitle className="text-white">Availability & Pricing</CardTitle>
+            <CardTitle className="text-slate-900">Availability & Pricing</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Hourly Rate */}
           <div className="space-y-2">
-            <Label className="text-white">Hourly Rate</Label>
+            <Label className="text-slate-900">Hourly Rate</Label>
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold text-green-400">
+              <span className="text-2xl font-bold text-green-600">
                 ₹{trainerProfile.hourlyRate}
               </span>
-              <span className="text-gray-400">/hour</span>
+              <span className="text-slate-500">/hour</span>
             </div>
             {isEditing && (
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-slate-400">
                 Hourly rate can only be updated by admin
               </p>
             )}
           </div>
 
-          <Separator className="bg-gray-700" />
+          <Separator className="bg-slate-200" />
 
           {/* Available Days */}
           <div className="space-y-2">
-            <Label className="text-white">Available Days</Label>
+            <Label className="text-slate-900">Available Days</Label>
             {isEditing ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
@@ -1036,11 +1036,11 @@ export default function TrainerProfile() {
                             },
                           });
                         }}
-                        className="border-gray-500"
+                        className="border-slate-300"
                       />
                       <Label
                         htmlFor={`day-${day}`}
-                        className="text-sm capitalize cursor-pointer text-white"
+                        className="text-sm capitalize cursor-pointer text-slate-900"
                       >
                         {day}
                       </Label>
@@ -1063,12 +1063,12 @@ export default function TrainerProfile() {
             )}
           </div>
 
-          <Separator className="bg-gray-700" />
+          <Separator className="bg-slate-200" />
 
           {/* Time Slots */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-white">Time Slots</Label>
+              <Label className="text-slate-900">Time Slots</Label>
               {isEditing && (
                 <Button
                   type="button"
@@ -1093,7 +1093,7 @@ export default function TrainerProfile() {
                       },
                     });
                   }}
-                  className="border-gray-600"
+                  className="border-slate-200"
                 >
                   <Plus className="h-4 w-4 mr-1" />
                   Add Slot
@@ -1106,9 +1106,9 @@ export default function TrainerProfile() {
                   (slot, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700"
+                      className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg border border-slate-200"
                     >
-                      <Clock className="h-4 w-4 text-gray-400" />
+                      <Clock className="h-4 w-4 text-slate-500" />
                       <Input
                         type="time"
                         value={slot.start}
@@ -1129,9 +1129,9 @@ export default function TrainerProfile() {
                             },
                           });
                         }}
-                        className="bg-gray-800 border-gray-600 text-white"
+                        className="bg-white border-slate-200 text-slate-900"
                       />
-                      <span className="text-white">-</span>
+                      <span className="text-slate-900">-</span>
                       <Input
                         type="time"
                         value={slot.end}
@@ -1152,7 +1152,7 @@ export default function TrainerProfile() {
                             },
                           });
                         }}
-                        className="bg-gray-800 border-gray-600 text-white"
+                        className="bg-white border-slate-200 text-slate-900"
                       />
                       <Button
                         type="button"
@@ -1171,7 +1171,7 @@ export default function TrainerProfile() {
                             },
                           });
                         }}
-                        className="border-gray-600 text-red-400 hover:text-red-300"
+                        className="border-slate-200 text-red-600 hover:text-red-300"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -1184,10 +1184,10 @@ export default function TrainerProfile() {
                 {trainerProfile.availability.timeSlots.map((slot) => (
                   <div
                     key={slot._id}
-                    className="flex items-center gap-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700"
+                    className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg border border-slate-200"
                   >
-                    <Clock className="h-4 w-4 text-gray-400" />
-                    <span className="text-white">
+                    <Clock className="h-4 w-4 text-slate-500" />
+                    <span className="text-slate-900">
                       {slot.start} - {slot.end}
                     </span>
                   </div>
@@ -1199,36 +1199,36 @@ export default function TrainerProfile() {
       </Card>
 
       {/* Rating */}
-      <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+      <Card className="border-slate-200 shadow-sm bg-white">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Star className="h-5 w-5 text-yellow-400" />
-            <CardTitle className="text-white">Rating & Reviews</CardTitle>
+            <Star className="h-5 w-5 text-yellow-500" />
+            <CardTitle className="text-slate-900">Rating & Reviews</CardTitle>
           </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label className="text-gray-400 text-sm">Average Rating</Label>
+              <Label className="text-slate-500 text-sm">Average Rating</Label>
               <div className="flex items-center gap-2">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
                     key={star}
                     className={`h-6 w-6 ${
                       star <= trainerProfile.rating.average
-                        ? "text-yellow-400 fill-yellow-400"
-                        : "text-gray-600"
+                        ? "text-yellow-500 fill-yellow-400"
+                        : "text-slate-600"
                     }`}
                   />
                 ))}
-                <span className="text-2xl font-bold text-yellow-400">
+                <span className="text-2xl font-bold text-yellow-500">
                   {trainerProfile.rating.average.toFixed(1)}
                 </span>
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-gray-400 text-sm">Total Reviews</Label>
-              <p className="text-2xl font-bold text-white">
+              <Label className="text-slate-500 text-sm">Total Reviews</Label>
+              <p className="text-2xl font-bold text-slate-900">
                 {trainerProfile.rating.totalReviews}
               </p>
             </div>

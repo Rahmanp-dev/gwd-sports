@@ -265,7 +265,7 @@ export const AcademyMemberManagement: React.FC<
       {/* ── Custom Massive Main Dialog Overlay ── */}
       <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-6 transition-all duration-200">
         <div
-          className="w-full max-w-[96vw] h-[94vh] max-h-[96vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col bg-white border border-gray-100 transform transition-all animate-in fade-in zoom-in-95 duration-150"
+          className="w-full max-w-[96vw] h-[94vh] max-h-[96vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col bg-white border border-slate-100 transform transition-all animate-in fade-in zoom-in-95 duration-150"
           role="dialog"
           aria-modal="true"
         >
@@ -287,22 +287,22 @@ export const AcademyMemberManagement: React.FC<
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-8 py-8 bg-gray-50/50">
+          <div className="flex-1 overflow-y-auto px-8 py-8 bg-slate-50/50">
             {/* Search */}
             <div className="mb-8 relative max-w-3xl">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
               <Input
                 placeholder="Search members by name or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 h-12 text-base bg-white border-gray-200 shadow-sm rounded-xl focus-visible:ring-blue-500"
+                className="pl-12 h-12 text-base bg-white border-slate-200 shadow-sm rounded-xl focus-visible:ring-blue-500"
               />
             </div>
 
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-32 gap-3">
                 <Loader className="h-12 w-12 animate-spin text-green-500" />
-                <p className="text-gray-500 font-medium">
+                <p className="text-slate-500 font-medium">
                   Synchronizing roster data...
                 </p>
               </div>
@@ -336,14 +336,14 @@ export const AcademyMemberManagement: React.FC<
                   <CardContent className="p-6 flex-1 overflow-hidden">
                     <div className="space-y-4 h-full overflow-y-auto pr-1 max-h-[52vh]">
                       {filteredTrainers.length === 0 ? (
-                        <div className="text-center py-20 text-gray-400">
-                          <Users className="h-12 w-12 mx-auto mb-4 text-gray-200" />
-                          <p className="font-semibold text-gray-500 text-base">
+                        <div className="text-center py-20 text-slate-400">
+                          <Users className="h-12 w-12 mx-auto mb-4 text-slate-200" />
+                          <p className="font-semibold text-slate-500 text-base">
                             {searchTerm
                               ? "No trainers match your search criteria"
                               : "No trainers associated yet"}
                           </p>
-                          <p className="text-sm mt-1 text-gray-400">
+                          <p className="text-sm mt-1 text-slate-400">
                             {!searchTerm &&
                               "Click 'Add Trainer' to expand your academy staff"}
                           </p>
@@ -354,7 +354,7 @@ export const AcademyMemberManagement: React.FC<
                             key={trainer._id}
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-white rounded-xl p-5 border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all group"
+                            className="bg-white rounded-xl p-5 border border-slate-100 hover:border-blue-200 hover:shadow-md transition-all group"
                           >
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -362,14 +362,14 @@ export const AcademyMemberManagement: React.FC<
                                   {trainer.name.charAt(0).toUpperCase()}
                                 </div>
                                 <div className="min-w-0 space-y-0.5">
-                                  <h4 className="font-bold text-gray-900 text-base truncate">
+                                  <h4 className="font-bold text-slate-900 text-base truncate">
                                     {trainer.name}
                                   </h4>
-                                  <p className="text-sm text-gray-500 truncate font-medium">
+                                  <p className="text-sm text-slate-500 truncate font-medium">
                                     {trainer.email}
                                   </p>
                                   {trainer.phone && (
-                                    <p className="text-xs text-gray-400 font-medium">
+                                    <p className="text-xs text-slate-400 font-medium">
                                       {trainer.phone}
                                     </p>
                                   )}
@@ -439,14 +439,14 @@ export const AcademyMemberManagement: React.FC<
                   <CardContent className="p-6 flex-1 overflow-hidden">
                     <div className="space-y-4 h-full overflow-y-auto pr-1 max-h-[52vh]">
                       {filteredStudents.length === 0 ? (
-                        <div className="text-center py-20 text-gray-400">
-                          <Users className="h-12 w-12 mx-auto mb-4 text-gray-200" />
-                          <p className="font-semibold text-gray-500 text-base">
+                        <div className="text-center py-20 text-slate-400">
+                          <Users className="h-12 w-12 mx-auto mb-4 text-slate-200" />
+                          <p className="font-semibold text-slate-500 text-base">
                             {searchTerm
                               ? "No students match your search criteria"
                               : "No students onboarded yet"}
                           </p>
-                          <p className="text-sm mt-1 text-gray-400">
+                          <p className="text-sm mt-1 text-slate-400">
                             {!searchTerm &&
                               "Click 'Add Student' to assign members to this academy"}
                           </p>
@@ -457,7 +457,7 @@ export const AcademyMemberManagement: React.FC<
                             key={student._id}
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-white rounded-xl p-5 border border-gray-100 hover:border-green-200 hover:shadow-md transition-all group"
+                            className="bg-white rounded-xl p-5 border border-slate-100 hover:border-green-200 hover:shadow-md transition-all group"
                           >
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -465,14 +465,14 @@ export const AcademyMemberManagement: React.FC<
                                   {student.name.charAt(0).toUpperCase()}
                                 </div>
                                 <div className="min-w-0 space-y-0.5">
-                                  <h4 className="font-bold text-gray-900 text-base truncate">
+                                  <h4 className="font-bold text-slate-900 text-base truncate">
                                     {student.name}
                                   </h4>
-                                  <p className="text-sm text-gray-500 truncate font-medium">
+                                  <p className="text-sm text-slate-500 truncate font-medium">
                                     {student.email}
                                   </p>
                                   {student.phone && (
-                                    <p className="text-xs text-gray-400 font-medium">
+                                    <p className="text-xs text-slate-400 font-medium">
                                       {student.phone}
                                     </p>
                                   )}
@@ -517,11 +517,11 @@ export const AcademyMemberManagement: React.FC<
             )}
           </div>
 
-          <div className="flex justify-end px-8 py-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl shadow-inner gap-4">
+          <div className="flex justify-end px-8 py-5 border-t border-slate-100 bg-slate-50 rounded-b-2xl shadow-inner gap-4">
             <Button
               variant="outline"
               onClick={onClose}
-              className="px-8 h-11 text-base font-semibold border-gray-200 rounded-xl"
+              className="px-8 h-11 text-base font-semibold border-slate-200 rounded-xl"
             >
               Close Panel
             </Button>
@@ -533,7 +533,7 @@ export const AcademyMemberManagement: React.FC<
       {isAddDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4 md:p-6 transition-all duration-200">
           <div
-            className="w-full max-w-6xl h-[86vh] max-h-[88vh] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col transform transition-all border border-gray-100 animate-in fade-in zoom-in-95 duration-150"
+            className="w-full max-w-6xl h-[86vh] max-h-[88vh] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col transform transition-all border border-slate-100 animate-in fade-in zoom-in-95 duration-150"
             role="dialog"
             aria-modal="true"
           >
@@ -561,24 +561,24 @@ export const AcademyMemberManagement: React.FC<
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-8 py-6 bg-gray-50/50 space-y-6">
+            <div className="flex-1 overflow-y-auto px-8 py-6 bg-slate-50/50 space-y-6">
               {/* Search */}
               <div className="relative max-w-2xl">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                 <Input
                   placeholder={`Search global directory of ${addDialogType}s by name or email...`}
                   value={addSearchTerm}
                   onChange={(e) => setAddSearchTerm(e.target.value)}
-                  className="pl-12 h-11 text-sm bg-white border-gray-200 shadow-sm rounded-xl focus-visible:ring-emerald-500"
+                  className="pl-12 h-11 text-sm bg-white border-slate-200 shadow-sm rounded-xl focus-visible:ring-emerald-500"
                 />
               </div>
 
-              <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-                <Label className="text-gray-800 font-bold text-base">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <Label className="text-slate-800 font-bold text-base">
                   Available Global Pool{" "}
                   {addDialogType === "trainer" ? "Trainers" : "Students"}
                   {!isFetchingAvailable && (
-                    <span className="ml-2 text-sm font-semibold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-md">
+                    <span className="ml-2 text-sm font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md">
                       {filteredAvailableMembers.length} records found
                     </span>
                   )}
@@ -594,20 +594,20 @@ export const AcademyMemberManagement: React.FC<
                 <div className="flex items-center justify-center py-24">
                   <div className="text-center space-y-3">
                     <Loader className="h-10 w-10 animate-spin text-green-500 mx-auto" />
-                    <p className="text-gray-500 font-medium text-sm">
+                    <p className="text-slate-500 font-medium text-sm">
                       Querying centralized master database arrays...
                     </p>
                   </div>
                 </div>
               ) : filteredAvailableMembers.length === 0 ? (
-                <div className="text-center py-20 text-gray-500 border-2 border-dashed border-gray-200 rounded-2xl bg-white max-w-3xl mx-auto shadow-inner">
-                  <Users className="h-14 w-14 mx-auto mb-4 text-gray-300" />
-                  <p className="font-bold text-gray-700 text-lg">
+                <div className="text-center py-20 text-slate-500 border-2 border-dashed border-slate-200 rounded-2xl bg-white max-w-3xl mx-auto shadow-inner">
+                  <Users className="h-14 w-14 mx-auto mb-4 text-slate-300" />
+                  <p className="font-bold text-slate-700 text-lg">
                     {addSearchTerm
                       ? `No matching pipeline data for "${addSearchTerm}"`
                       : `No unassigned ${addDialogType} networks available`}
                   </p>
-                  <p className="text-sm mt-1 text-gray-400 px-6 max-w-md mx-auto">
+                  <p className="text-sm mt-1 text-slate-400 px-6 max-w-md mx-auto">
                     {addSearchTerm
                       ? "Verify spelling parameters or clear query filters to re-initialize grid search profiles."
                       : `All eligible system ${addDialogType} entries are currently locked to active contracts in this academy.`}
@@ -629,7 +629,7 @@ export const AcademyMemberManagement: React.FC<
                             ? addDialogType === "trainer"
                               ? "border-blue-500 bg-blue-50/70 ring-2 ring-blue-500/20"
                               : "border-green-500 bg-green-50/70 ring-2 ring-green-500/20"
-                            : "border-gray-100 bg-white hover:border-gray-300 hover:shadow-md"
+                            : "border-slate-100 bg-white hover:border-slate-300 hover:shadow-md"
                         }`}
                         onClick={() => setSelectedMemberId(info.idToSend)}
                       >
@@ -645,7 +645,7 @@ export const AcademyMemberManagement: React.FC<
                           </div>
                           <div className="flex-1 min-w-0 space-y-0.5">
                             <div className="flex items-center justify-between gap-2">
-                              <h4 className="font-bold text-gray-900 text-base truncate">
+                              <h4 className="font-bold text-slate-900 text-base truncate">
                                 {info.name}
                               </h4>
                               {isSelected && (
@@ -672,23 +672,23 @@ export const AcademyMemberManagement: React.FC<
                                 </div>
                               )}
                             </div>
-                            <p className="text-xs text-gray-500 truncate font-semibold">
+                            <p className="text-xs text-slate-500 truncate font-semibold">
                               {info.email}
                             </p>
                             {info.phone && (
-                              <p className="text-xs text-gray-400 font-medium">
+                              <p className="text-xs text-slate-400 font-medium">
                                 {info.phone}
                               </p>
                             )}
                           </div>
                         </div>
 
-                        <div className="pt-2 border-t border-gray-100/80 mt-auto">
+                        <div className="pt-2 border-t border-slate-100/80 mt-auto">
                           {addDialogType === "trainer" && (
-                            <div className="flex items-center gap-4 text-xs font-bold text-gray-600 mb-2">
+                            <div className="flex items-center gap-4 text-xs font-bold text-slate-600 mb-2">
                               {(info as any).hourlyRate !== undefined && (
-                                <span className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-md">
-                                  <DollarSign className="h-3 w-3 text-gray-500" />
+                                <span className="flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-md">
+                                  <DollarSign className="h-3 w-3 text-slate-500" />
                                   ₹{(info as any).hourlyRate}/hr
                                 </span>
                               )}
@@ -713,7 +713,7 @@ export const AcademyMemberManagement: React.FC<
                                 </Badge>
                               ))}
                               {info.sports.length > 2 && (
-                                <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-1 py-0 rounded">
+                                <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-1 py-0 rounded">
                                   +{info.sports.length - 2} more
                                 </span>
                               )}
@@ -727,7 +727,7 @@ export const AcademyMemberManagement: React.FC<
               )}
             </div>
 
-            <div className="flex justify-end gap-3 px-8 py-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl shadow-inner">
+            <div className="flex justify-end gap-3 px-8 py-5 border-t border-slate-100 bg-slate-50 rounded-b-2xl shadow-inner">
               <Button
                 variant="outline"
                 onClick={() => setIsAddDialogOpen(false)}
@@ -764,24 +764,24 @@ export const AcademyMemberManagement: React.FC<
 
       {/* ── Remove Confirmation ── */}
       <AlertDialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
-        <AlertDialogContent className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xl">
+        <AlertDialogContent className="bg-white rounded-2xl border border-slate-100 p-6 shadow-xl">
           <AlertDialogHeader>
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-red-100 rounded-xl">
                 <AlertTriangle className="h-6 w-6 text-red-600" />
               </div>
-              <AlertDialogTitle className="text-gray-900 text-xl font-bold">
+              <AlertDialogTitle className="text-slate-900 text-xl font-bold">
                 Remove{" "}
                 {memberToRemove?.type === "trainer" ? "Trainer" : "Student"}?
               </AlertDialogTitle>
             </div>
-            <AlertDialogDescription className="text-gray-600 pt-3 text-base leading-relaxed">
+            <AlertDialogDescription className="text-slate-600 pt-3 text-base leading-relaxed">
               Are you sure you want to decouple{" "}
-              <span className="font-bold text-gray-900 bg-gray-100 px-1.5 py-0.5 rounded">
+              <span className="font-bold text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded">
                 {memberToRemove?.name}
               </span>{" "}
               from{" "}
-              <span className="font-bold text-gray-900 bg-gray-100 px-1.5 py-0.5 rounded">
+              <span className="font-bold text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded">
                 {academyName}
               </span>
               ? This action terminates current organizational structural routing
@@ -789,7 +789,7 @@ export const AcademyMemberManagement: React.FC<
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-6 gap-2">
-            <AlertDialogCancel className="border-gray-200 rounded-xl h-11 font-semibold px-6">
+            <AlertDialogCancel className="border-slate-200 rounded-xl h-11 font-semibold px-6">
               Cancel Connection
             </AlertDialogCancel>
             <AlertDialogAction

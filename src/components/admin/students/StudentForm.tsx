@@ -173,15 +173,15 @@ export const StudentForm: React.FC<StudentFormProps> = ({
           <CardContent className="space-y-4">
             {/* Student Info Display */}
             {student && (
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="bg-slate-50 p-4 rounded-lg">
                 <h3 className="font-medium mb-2">Student Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                   <div>
-                    <span className="text-gray-600">Name:</span>{" "}
+                    <span className="text-slate-600">Name:</span>{" "}
                     {student.user?.name || "Unknown"}
                   </div>
                   <div>
-                    <span className="text-gray-600">Email:</span>{" "}
+                    <span className="text-slate-600">Email:</span>{" "}
                     {student.user?.email || "No email"}
                   </div>
                 </div>

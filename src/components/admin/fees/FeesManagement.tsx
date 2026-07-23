@@ -128,17 +128,17 @@ export const FeesManagement: React.FC = () => {
       <FinanceDashboard />
 
       {/* Divider */}
-      <div className="border-t border-gray-200 pt-6">
+      <div className="border-t border-slate-200 pt-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-slate-900">
               Transaction Ledger
             </h2>
-            <p className="text-gray-500">
+            <p className="text-slate-500">
               Complete payment history with filters and search
             </p>
           </div>
-          <div className="flex items-center gap-2 text-sm font-medium text-gray-600 bg-white px-3 py-1.5 rounded-md border shadow-sm">
+          <div className="flex items-center gap-2 text-sm font-medium text-slate-600 bg-white px-3 py-1.5 rounded-md border shadow-sm">
             Total Transactions: {pagination.total}
           </div>
         </div>
@@ -148,7 +148,7 @@ export const FeesManagement: React.FC = () => {
       <Card className="shadow-sm">
         <CardContent className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4 items-end">
           <div className="space-y-2 col-span-1 md:col-span-2">
-            <label className="text-sm font-medium text-gray-700">Search</label>
+            <label className="text-sm font-medium text-slate-700">Search</label>
             <Input
               type="text"
               placeholder="Search by Payment ID, Order ID, or Receipt..."
@@ -160,7 +160,7 @@ export const FeesManagement: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Status</label>
+            <label className="text-sm font-medium text-slate-700">Status</label>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
@@ -174,7 +174,7 @@ export const FeesManagement: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-slate-700">
               Min Amount (₹)
             </label>
             <Input
@@ -187,7 +187,7 @@ export const FeesManagement: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Sort By</label>
+            <label className="text-sm font-medium text-slate-700">Sort By</label>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
@@ -199,7 +199,7 @@ export const FeesManagement: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Order</label>
+            <label className="text-sm font-medium text-slate-700">Order</label>
             <select
               value={order}
               onChange={(e) => setOrder(e.target.value)}
@@ -231,8 +231,8 @@ export const FeesManagement: React.FC = () => {
       {/* Data Table */}
       <Card className="shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left text-gray-500">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+          <table className="w-full text-sm text-left text-slate-500">
+            <thead className="text-xs text-slate-700 uppercase bg-slate-50 border-b">
               <tr>
                 <th className="px-6 py-4">Transaction / Receipt</th>
                 <th className="px-6 py-4">Student ID / Details</th>
@@ -246,7 +246,7 @@ export const FeesManagement: React.FC = () => {
                 <tr>
                   <td
                     colSpan={5}
-                    className="px-6 py-12 text-center text-gray-500"
+                    className="px-6 py-12 text-center text-slate-500"
                   >
                     <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
                     Loading transactions...
@@ -256,9 +256,9 @@ export const FeesManagement: React.FC = () => {
                 <tr>
                   <td
                     colSpan={5}
-                    className="px-6 py-12 text-center text-gray-500"
+                    className="px-6 py-12 text-center text-slate-500"
                   >
-                    <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <FileText className="w-8 h-8 text-slate-400 mx-auto mb-2" />
                     No transactions found matching the current criteria.
                   </td>
                 </tr>
@@ -266,19 +266,19 @@ export const FeesManagement: React.FC = () => {
                 payments.map((fee) => (
                   <tr
                     key={fee._id}
-                    className="bg-white border-b hover:bg-gray-50 transition-colors"
+                    className="bg-white border-b hover:bg-slate-50 transition-colors"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-semibold text-gray-900">
+                      <div className="font-semibold text-slate-900">
                         {fee.receipt || "No Receipt ID"}
                       </div>
-                      <div className="text-xs text-gray-400 mt-1 font-mono">
+                      <div className="text-xs text-slate-400 mt-1 font-mono">
                         {fee.paymentId || fee.orderId}
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       {/* Depending on if studentId was fully populated by backend, show it here safely */}
-                      <div className="text-xs font-mono text-gray-500">
+                      <div className="text-xs font-mono text-slate-500">
                         {fee.studentId
                           ? typeof fee.studentId === "object"
                             ? (fee.studentId as any)._id
@@ -287,7 +287,7 @@ export const FeesManagement: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <span className="font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded">
+                      <span className="font-bold text-slate-900 bg-slate-100 px-2 py-1 rounded">
                         ₹{fee.amount.toFixed(2)}
                       </span>
                     </td>
@@ -295,14 +295,14 @@ export const FeesManagement: React.FC = () => {
                       {getStatusBadge(fee.status)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-gray-900">
+                      <div className="text-slate-900">
                         {new Date(fee.createdAt).toLocaleDateString("en-US", {
                           year: "numeric",
                           month: "short",
                           day: "numeric",
                         })}
                       </div>
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-slate-400">
                         {new Date(fee.createdAt).toLocaleTimeString("en-US", {
                           hour: "2-digit",
                           minute: "2-digit",
@@ -318,14 +318,14 @@ export const FeesManagement: React.FC = () => {
 
         {/* Pagination Footer */}
         {!isLoading && pagination.pages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50">
-            <span className="text-sm text-gray-600">
+          <div className="flex items-center justify-between px-6 py-4 border-t bg-slate-50">
+            <span className="text-sm text-slate-600">
               Showing Page{" "}
-              <span className="font-semibold text-gray-900">
+              <span className="font-semibold text-slate-900">
                 {pagination.page}
               </span>{" "}
               of{" "}
-              <span className="font-semibold text-gray-900">
+              <span className="font-semibold text-slate-900">
                 {pagination.pages}
               </span>
             </span>

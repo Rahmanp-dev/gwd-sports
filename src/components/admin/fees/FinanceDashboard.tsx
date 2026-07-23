@@ -40,7 +40,7 @@ function fmt(val: number): string {
 function GrowthBadge({ value }: { value: number }) {
   if (value === 0)
     return (
-      <span className="text-xs text-gray-400 flex items-center gap-0.5">
+      <span className="text-xs text-slate-400 flex items-center gap-0.5">
         <Minus className="w-3 h-3" /> No change
       </span>
     );
@@ -274,7 +274,7 @@ function StatusDonut({
 }) {
   const total = success + pending + failed;
   if (total === 0)
-    return <p className="text-gray-400 text-sm text-center py-4">No data</p>;
+    return <p className="text-slate-400 text-sm text-center py-4">No data</p>;
 
   const segments = [
     { val: success, color: "#16a34a", label: "Success" },
@@ -341,9 +341,9 @@ function StatusDonut({
               className="w-3 h-3 rounded-full"
               style={{ background: seg.color }}
             />
-            <span className="text-xs text-gray-600 w-14">{seg.label}</span>
-            <span className="text-xs font-bold text-gray-800">{seg.val}</span>
-            <span className="text-[10px] text-gray-400">
+            <span className="text-xs text-slate-600 w-14">{seg.label}</span>
+            <span className="text-xs font-bold text-slate-800">{seg.val}</span>
+            <span className="text-[10px] text-slate-400">
               ({total > 0 ? Math.round((seg.val / total) * 100) : 0}%)
             </span>
           </div>
@@ -370,14 +370,14 @@ function KPICard({
   bg: string;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-5 shadow-sm hover:shadow-md transition-all group">
+    <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-5 shadow-sm hover:shadow-md transition-all group">
       <div
         className={`absolute -right-4 -top-4 w-24 h-24 rounded-full opacity-[0.07] group-hover:opacity-[0.12] transition-opacity`}
         style={{ background: color }}
       />
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
             {label}
           </p>
           <p
@@ -430,7 +430,7 @@ export function FinanceDashboard() {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-red-500" />
-        <p className="text-sm text-gray-500 font-medium">
+        <p className="text-sm text-slate-500 font-medium">
           Loading Financial Analytics...
         </p>
       </div>
@@ -441,7 +441,7 @@ export function FinanceDashboard() {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
         <AlertTriangle className="w-10 h-10 text-red-400" />
-        <p className="text-gray-600">{error || "No data available"}</p>
+        <p className="text-slate-600">{error || "No data available"}</p>
         <Button variant="outline" size="sm" onClick={fetchAnalytics}>
           <RefreshCw className="w-4 h-4 mr-2" />
           Retry
@@ -479,11 +479,11 @@ export function FinanceDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight flex items-center gap-2">
+          <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
             <BarChart3 className="w-6 h-6 text-red-500" />
             Financial Command Center
           </h2>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-sm text-slate-500 mt-0.5">
             Deep insights into every rupee — collected, pending, and overdue.
           </p>
         </div>
@@ -506,7 +506,7 @@ export function FinanceDashboard() {
           color="#16a34a"
           bg="bg-green-50"
           sub={
-            <span className="text-[10px] text-gray-400">
+            <span className="text-[10px] text-slate-400">
               {summary.lifetimeCount} transactions
             </span>
           }
@@ -534,7 +534,7 @@ export function FinanceDashboard() {
           color="#059669"
           bg="bg-emerald-50"
           sub={
-            <span className="text-[10px] text-gray-400">success / total</span>
+            <span className="text-[10px] text-slate-400">success / total</span>
           }
         />
         <KPICard
@@ -544,7 +544,7 @@ export function FinanceDashboard() {
           color="#ea580c"
           bg="bg-orange-50"
           sub={
-            <span className="text-[10px] text-gray-400">
+            <span className="text-[10px] text-slate-400">
               {summary.defaulterCount} students
             </span>
           }
@@ -555,7 +555,7 @@ export function FinanceDashboard() {
           value={fmt(summary.avgTransactionValue)}
           color="#0891b2"
           bg="bg-cyan-50"
-          sub={<span className="text-[10px] text-gray-400">per payment</span>}
+          sub={<span className="text-[10px] text-slate-400">per payment</span>}
         />
       </div>
 
@@ -658,7 +658,7 @@ export function FinanceDashboard() {
           </CardHeader>
           <CardContent className="space-y-2.5">
             {academyRevenue.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-6">
+              <p className="text-sm text-slate-400 text-center py-6">
                 No academy revenue data
               </p>
             ) : (
@@ -676,16 +676,16 @@ export function FinanceDashboard() {
                   <div key={i} className="space-y-1">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-1.5">
-                        <Building2 className="w-3 h-3 text-gray-400" />
-                        <span className="text-sm font-medium text-gray-700 truncate max-w-[140px]">
+                        <Building2 className="w-3 h-3 text-slate-400" />
+                        <span className="text-sm font-medium text-slate-700 truncate max-w-[140px]">
                           {a.name}
                         </span>
                       </div>
-                      <span className="text-xs font-bold text-gray-800">
+                      <span className="text-xs font-bold text-slate-800">
                         {fmt(a.revenue)}
                       </span>
                     </div>
-                    <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-700"
                         style={{
@@ -694,7 +694,7 @@ export function FinanceDashboard() {
                         }}
                       />
                     </div>
-                    <p className="text-[9px] text-gray-400 text-right">
+                    <p className="text-[9px] text-slate-400 text-right">
                       {a.count} payments
                     </p>
                   </div>
@@ -716,14 +716,14 @@ export function FinanceDashboard() {
           </CardHeader>
           <CardContent className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
             {topPayers.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-6">
+              <p className="text-sm text-slate-400 text-center py-6">
                 No payment data
               </p>
             ) : (
               topPayers.map((p: any, i: number) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between p-2.5 rounded-xl bg-gray-50/80 border border-gray-100 hover:bg-white hover:shadow-sm transition-all"
+                  className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 hover:bg-white hover:shadow-sm transition-all"
                 >
                   <div className="flex items-center gap-2.5">
                     <div
@@ -731,19 +731,19 @@ export function FinanceDashboard() {
                         i === 0
                           ? "bg-yellow-100 text-yellow-700"
                           : i === 1
-                            ? "bg-gray-100 text-gray-600"
+                            ? "bg-slate-100 text-slate-600"
                             : i === 2
                               ? "bg-orange-100 text-orange-600"
-                              : "bg-white text-gray-500 border"
+                              : "bg-white text-slate-500 border"
                       }`}
                     >
                       #{i + 1}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-800 truncate max-w-[120px]">
+                      <p className="text-sm font-semibold text-slate-800 truncate max-w-[120px]">
                         {p.name}
                       </p>
-                      <p className="text-[9px] text-gray-400">
+                      <p className="text-[9px] text-slate-400">
                         {p.txnCount} payments
                       </p>
                     </div>
@@ -791,7 +791,7 @@ export function FinanceDashboard() {
                 {summary.defaulterCount} students
               </Badge>
             </div>
-            <p className="text-[10px] text-gray-400 mt-0.5">
+            <p className="text-[10px] text-slate-400 mt-0.5">
               Students with outstanding dues — reach out now.
             </p>
           </CardHeader>
@@ -810,16 +810,16 @@ export function FinanceDashboard() {
                   className="flex items-center justify-between p-2.5 rounded-xl bg-red-50/50 border border-red-100 hover:bg-red-50 transition-colors"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-gray-800 truncate">
+                    <p className="text-sm font-semibold text-slate-800 truncate">
                       {d.name}
                     </p>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="text-[9px] text-gray-400 truncate max-w-[100px]">
+                      <span className="text-[9px] text-slate-400 truncate max-w-[100px]">
                         {d.academy}
                       </span>
                       <Badge
                         variant="outline"
-                        className="text-[8px] h-3.5 capitalize border-gray-200"
+                        className="text-[8px] h-3.5 capitalize border-slate-200"
                       >
                         {d.level || "—"}
                       </Badge>

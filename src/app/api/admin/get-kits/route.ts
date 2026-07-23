@@ -9,7 +9,14 @@ export async function GET(req: NextRequest) {
     if (auth?.error) return NextResponse.json({ success: false, message: auth.error }, { status: auth.status });
     await connectToDatabase();
 
+    // Tenant isolation
+    const pipeline: any[] = [];
+    if (auth.user.role !== 'gwd_super_admin' && auth.academyId) {
+      pipeline.push({ $match: { academyId: auth.academyId } });
+    }
+
     const kits = await StudentProfile.aggregate([
+      ...pipeline,
       { $unwind: '$kits' },
       {
         $lookup: {

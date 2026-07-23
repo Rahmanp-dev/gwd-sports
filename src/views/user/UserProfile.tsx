@@ -36,7 +36,6 @@ import {
   Shield,
   Activity,
   Trophy,
-  LayoutDashboard,
 } from "lucide-react";
 import Footer from "@/components/landing/Footer";
 import { toast } from "sonner";
@@ -233,14 +232,15 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-green-600 to-purple-600 py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+      <div className="bg-white border-b border-slate-200 py-10 px-4 sm:px-6 lg:px-8 shadow-sm relative overflow-hidden">
+        <div className="absolute inset-0 bg-blue-50/50 opacity-50 blur-3xl -z-10" />
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-6">
-              <Avatar className="h-24 w-24 border-4 border-white shadow-2xl">
-                <AvatarFallback className="bg-gradient-to-br from-blue-600 to-green-600 text-white text-3xl font-bold">
+              <Avatar className="h-24 w-24 border-4 border-white shadow-lg bg-white">
+                <AvatarFallback className="bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 text-3xl font-bold">
                   {user.name
                     .split(" ")
                     .map((n) => n[0])
@@ -248,20 +248,20 @@ export default function UserProfile() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2 font-display tracking-tight">
                   {user.name}
                 </h1>
                 <div className="flex flex-wrap gap-2">
-                  <Badge className="bg-white/20 text-white border-white/30">
+                  <Badge className="bg-slate-100 text-slate-700 hover:bg-slate-200 border-none shadow-sm">
                     <Mail className="h-3 w-3 mr-1" />
                     {user.email}
                   </Badge>
-                  <Badge className="bg-white/20 text-white border-white/30">
+                  <Badge className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-none shadow-sm">
                     <Shield className="h-3 w-3 mr-1" />
                     {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                   </Badge>
                   {user.isActive && (
-                    <Badge className="bg-green-500/20 text-green-300 border-green-500/30">
+                    <Badge className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-none shadow-sm">
                       <CheckCircle className="h-3 w-3 mr-1" />
                       Active
                     </Badge>
@@ -270,19 +270,9 @@ export default function UserProfile() {
               </div>
             </div>
             <div className="flex gap-4">
-              {user.role !== "admin" && user.role !== "user" && (
-                <Button
-                  variant="outline"
-                  className="border-gray-500 text-black hover:bg-gray-200"
-                  onClick={() => navigate(`/mgfc/${user.role}`)}
-                >
-                  <LayoutDashboard className="h-4 w-4 mr-2" />
-                  My Dashboard
-                </Button>
-              )}
               <Button
                 variant="outline"
-                className="border-gray-500 text-black hover:bg-gray-200"
+                className="bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-blue-600 shadow-sm"
                 onClick={() => navigate("/events/my-events")}
               >
                 <Calendar className="h-4 w-4 mr-2" />
@@ -290,7 +280,7 @@ export default function UserProfile() {
               </Button>
               <Button
                 variant="outline"
-                className="border-gray-500 text-black hover:bg-gray-200"
+                className="bg-white border-slate-200 text-slate-700 hover:bg-red-50 hover:text-red-600 hover:border-red-100 shadow-sm transition-colors"
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4 mr-2" />
@@ -302,7 +292,7 @@ export default function UserProfile() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         <motion.div
           initial="hidden"
           animate="visible"
@@ -310,55 +300,61 @@ export default function UserProfile() {
           className="space-y-6"
         >
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <motion.div variants={itemVariants}>
-              <Card className="bg-gradient-to-br from-blue-600/20 to-blue-800/20 border-blue-500/30">
+              <Card className="bg-white border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-blue-200 text-sm mb-1">Member Since</p>
-                      <p className="text-white font-bold text-lg">
+                      <p className="text-slate-500 font-medium text-sm mb-1">Member Since</p>
+                      <p className="text-slate-900 font-bold text-xl font-display">
                         {new Date(user.createdAt).toLocaleDateString("en-US", {
                           month: "short",
                           year: "numeric",
                         })}
                       </p>
                     </div>
-                    <Calendar className="h-10 w-10 text-blue-400" />
+                    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+                      <Calendar className="h-6 w-6 text-blue-600" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <Card className="bg-gradient-to-br from-green-600/20 to-green-800/20 border-green-500/30">
+              <Card className="bg-white border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-green-200 text-sm mb-1">Sports</p>
-                      <p className="text-white font-bold text-lg">
+                      <p className="text-slate-500 font-medium text-sm mb-1">Sports</p>
+                      <p className="text-slate-900 font-bold text-xl font-display">
                         {user.sports?.length || 0} Enrolled
                       </p>
                     </div>
-                    <Trophy className="h-10 w-10 text-green-400" />
+                    <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center">
+                      <Trophy className="h-6 w-6 text-emerald-600" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <Card className="bg-gradient-to-br from-purple-600/20 to-purple-800/20 border-purple-500/30">
+              <Card className="bg-white border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-purple-200 text-sm mb-1">Last Login</p>
-                      <p className="text-white font-bold text-lg">
+                      <p className="text-slate-500 font-medium text-sm mb-1">Last Login</p>
+                      <p className="text-slate-900 font-bold text-xl font-display">
                         {user.lastLogin
                           ? new Date(user.lastLogin).toLocaleDateString()
                           : "N/A"}
                       </p>
                     </div>
-                    <Activity className="h-10 w-10 text-purple-400" />
+                    <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center">
+                      <Activity className="h-6 w-6 text-indigo-600" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -367,14 +363,14 @@ export default function UserProfile() {
 
           {/* Profile Details */}
           <motion.div variants={itemVariants}>
-            <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
-              <CardHeader>
+            <Card className="bg-white border border-slate-100 shadow-sm overflow-hidden">
+              <CardHeader className="bg-slate-50 border-b border-slate-100 px-8 py-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-white text-2xl">
+                    <CardTitle className="text-slate-900 text-xl font-bold font-display">
                       Profile Details
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-slate-500 font-medium mt-1">
                       Manage your personal information and settings
                     </CardDescription>
                   </div>
@@ -382,7 +378,7 @@ export default function UserProfile() {
                     <Button
                       variant="outline"
                       onClick={() => setIsEditing(true)}
-                      className="border-gray-500 text-black hover:bg-gray-200"
+                      className="bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-blue-600 shadow-sm"
                     >
                       <Edit className="h-4 w-4 mr-2" />
                       Edit Profile
@@ -390,37 +386,37 @@ export default function UserProfile() {
                   )}
                 </div>
               </CardHeader>
-              <CardContent>
-                <Tabs defaultValue="profile" className="space-y-6">
-                  <TabsList className="grid w-full grid-cols-2 bg-gray-800">
+              <CardContent className="p-8">
+                <Tabs defaultValue="profile" className="space-y-8">
+                  <TabsList className="grid w-full max-w-md grid-cols-2 bg-slate-100 p-1 rounded-lg">
                     <TabsTrigger
                       value="profile"
-                      className="data-[state=active]:bg-blue-600"
+                      className="rounded-md data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm text-slate-500 font-semibold transition-all"
                     >
-                      Profile Information
+                      Profile Info
                     </TabsTrigger>
                     <TabsTrigger
                       value="security"
-                      className="data-[state=active]:bg-blue-600"
+                      className="rounded-md data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm text-slate-500 font-semibold transition-all"
                     >
                       Security
                     </TabsTrigger>
                   </TabsList>
 
                   {/* Profile Tab */}
-                  <TabsContent value="profile" className="space-y-6">
+                  <TabsContent value="profile" className="space-y-6 focus-visible:outline-none">
                     {isEditing ? (
                       <form
                         onSubmit={handleUpdateProfile}
-                        className="space-y-4"
+                        className="space-y-6"
                       >
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="space-y-2">
-                            <Label htmlFor="name" className="text-white">
+                            <Label htmlFor="name" className="text-slate-700 font-semibold">
                               Full Name
                             </Label>
                             <div className="relative">
-                              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                               <Input
                                 id="name"
                                 value={profileData.name}
@@ -430,24 +426,24 @@ export default function UserProfile() {
                                     name: e.target.value,
                                   })
                                 }
-                                className={`pl-10 bg-gray-800 border-gray-700 text-white ${
-                                  validationErrors.name ? "border-red-500" : ""
+                                className={`pl-10 h-11 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
+                                  validationErrors.name ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""
                                 }`}
                               />
                             </div>
                             {validationErrors.name && (
-                              <p className="text-red-500 text-sm">
+                              <p className="text-red-500 text-sm font-medium">
                                 {validationErrors.name}
                               </p>
                             )}
                           </div>
 
                           <div className="space-y-2">
-                            <Label htmlFor="phone" className="text-white">
+                            <Label htmlFor="phone" className="text-slate-700 font-semibold">
                               Phone Number
                             </Label>
                             <div className="relative">
-                              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                               <Input
                                 id="phone"
                                 value={profileData.phone}
@@ -457,23 +453,23 @@ export default function UserProfile() {
                                     phone: e.target.value,
                                   })
                                 }
-                                className={`pl-10 bg-gray-800 border-gray-700 text-white ${
-                                  validationErrors.phone ? "border-red-500" : ""
+                                className={`pl-10 h-11 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
+                                  validationErrors.phone ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""
                                 }`}
                               />
                             </div>
                             {validationErrors.phone && (
-                              <p className="text-red-500 text-sm">
+                              <p className="text-red-500 text-sm font-medium">
                                 {validationErrors.phone}
                               </p>
                             )}
                           </div>
                         </div>
 
-                        <div className="flex gap-2 pt-4">
+                        <div className="flex gap-3 pt-4">
                           <Button
                             type="submit"
-                            className="bg-gradient-to-r from-blue-600 to-green-600"
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-all h-11 px-6"
                             disabled={isUpdating}
                           >
                             {isUpdating ? (
@@ -499,7 +495,7 @@ export default function UserProfile() {
                               });
                               setValidationErrors({});
                             }}
-                            className="border-gray-500 text-black hover:bg-gray-200"
+                            className="bg-white border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold rounded-xl h-11 px-6"
                           >
                             <X className="h-4 w-4 mr-2" />
                             Cancel
@@ -509,34 +505,34 @@ export default function UserProfile() {
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                          <Label className="text-gray-400">Full Name</Label>
-                          <div className="flex items-center gap-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
-                            <User className="h-5 w-5 text-gray-400" />
-                            <span className="text-white">{user.name}</span>
+                          <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Full Name</Label>
+                          <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                            <User className="h-5 w-5 text-slate-400" />
+                            <span className="text-slate-900 font-medium">{user.name}</span>
                           </div>
                         </div>
 
                         <div className="space-y-2">
-                          <Label className="text-gray-400">Email Address</Label>
-                          <div className="flex items-center gap-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
-                            <Mail className="h-5 w-5 text-gray-400" />
-                            <span className="text-white">{user.email}</span>
+                          <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Email Address</Label>
+                          <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                            <Mail className="h-5 w-5 text-slate-400" />
+                            <span className="text-slate-900 font-medium">{user.email}</span>
                           </div>
                         </div>
 
                         <div className="space-y-2">
-                          <Label className="text-gray-400">Phone Number</Label>
-                          <div className="flex items-center gap-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
-                            <Phone className="h-5 w-5 text-gray-400" />
-                            <span className="text-white">{user.phone}</span>
+                          <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Phone Number</Label>
+                          <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                            <Phone className="h-5 w-5 text-slate-400" />
+                            <span className="text-slate-900 font-medium">{user.phone}</span>
                           </div>
                         </div>
 
                         <div className="space-y-2">
-                          <Label className="text-gray-400">Account Role</Label>
-                          <div className="flex items-center gap-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
-                            <Shield className="h-5 w-5 text-gray-400" />
-                            <span className="text-white">
+                          <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Account Role</Label>
+                          <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                            <Shield className="h-5 w-5 text-slate-400" />
+                            <span className="text-slate-900 font-medium">
                               {user.role.charAt(0).toUpperCase() +
                                 user.role.slice(1)}
                             </span>
@@ -547,11 +543,11 @@ export default function UserProfile() {
                   </TabsContent>
 
                   {/* Security Tab */}
-                  <TabsContent value="security">
-                    <form onSubmit={handleChangePassword} className="space-y-4">
-                      <Alert className="bg-blue-500/10 border-blue-500/20">
-                        <Lock className="h-4 w-4 text-blue-400" />
-                        <AlertDescription className="text-gray-300">
+                  <TabsContent value="security" className="focus-visible:outline-none">
+                    <form onSubmit={handleChangePassword} className="space-y-5 max-w-xl">
+                      <Alert className="bg-blue-50 border-blue-200 text-blue-700 rounded-xl mb-6">
+                        <Lock className="h-4 w-4" />
+                        <AlertDescription className="font-medium ml-2">
                           Choose a strong password with at least 8 characters
                         </AlertDescription>
                       </Alert>
@@ -559,12 +555,12 @@ export default function UserProfile() {
                       <div className="space-y-2">
                         <Label
                           htmlFor="current-password"
-                          className="text-white"
+                          className="text-slate-700 font-semibold"
                         >
                           Current Password
                         </Label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                           <Input
                             id="current-password"
                             type="password"
@@ -575,26 +571,26 @@ export default function UserProfile() {
                                 currentPassword: e.target.value,
                               })
                             }
-                            className={`pl-10 bg-gray-800 border-gray-700 text-white ${
+                            className={`pl-10 h-11 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
                               validationErrors.currentPassword
-                                ? "border-red-500"
+                                ? "border-red-500 focus:border-red-500 focus:ring-red-100"
                                 : ""
                             }`}
                           />
                         </div>
                         {validationErrors.currentPassword && (
-                          <p className="text-red-500 text-sm">
+                          <p className="text-red-500 text-xs font-medium">
                             {validationErrors.currentPassword}
                           </p>
                         )}
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="new-password" className="text-white">
+                        <Label htmlFor="new-password" className="text-slate-700 font-semibold">
                           New Password
                         </Label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                           <Input
                             id="new-password"
                             type="password"
@@ -605,15 +601,15 @@ export default function UserProfile() {
                                 newPassword: e.target.value,
                               })
                             }
-                            className={`pl-10 bg-gray-800 border-gray-700 text-white ${
+                            className={`pl-10 h-11 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
                               validationErrors.newPassword
-                                ? "border-red-500"
+                                ? "border-red-500 focus:border-red-500 focus:ring-red-100"
                                 : ""
                             }`}
                           />
                         </div>
                         {validationErrors.newPassword && (
-                          <p className="text-red-500 text-sm">
+                          <p className="text-red-500 text-xs font-medium">
                             {validationErrors.newPassword}
                           </p>
                         )}
@@ -622,12 +618,12 @@ export default function UserProfile() {
                       <div className="space-y-2">
                         <Label
                           htmlFor="confirm-password"
-                          className="text-white"
+                          className="text-slate-700 font-semibold"
                         >
                           Confirm New Password
                         </Label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                           <Input
                             id="confirm-password"
                             type="password"
@@ -638,15 +634,15 @@ export default function UserProfile() {
                                 confirmPassword: e.target.value,
                               })
                             }
-                            className={`pl-10 bg-gray-800 border-gray-700 text-white ${
+                            className={`pl-10 h-11 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
                               validationErrors.confirmPassword
-                                ? "border-red-500"
+                                ? "border-red-500 focus:border-red-500 focus:ring-red-100"
                                 : ""
                             }`}
                           />
                         </div>
                         {validationErrors.confirmPassword && (
-                          <p className="text-red-500 text-sm">
+                          <p className="text-red-500 text-xs font-medium">
                             {validationErrors.confirmPassword}
                           </p>
                         )}
@@ -654,7 +650,7 @@ export default function UserProfile() {
 
                       <Button
                         type="submit"
-                        className="bg-gradient-to-r from-blue-600 to-green-600"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-all h-11 px-6 mt-4"
                         disabled={isChangingPassword}
                       >
                         {isChangingPassword ? (
@@ -678,13 +674,11 @@ export default function UserProfile() {
 
           {user.role === "student" && (
             // Student Profile
-
             <StudentProfile />
           )}
 
           {user.role === "trainer" && (
             // Trainer Profile
-
             <TrainerProfile />
           )}
         </motion.div>

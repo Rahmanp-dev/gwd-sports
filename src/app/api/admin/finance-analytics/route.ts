@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { adminMiddleware } from '@/lib/middleware/auth';
+import mongoose from 'mongoose';
 import FeePayment from '@/lib/models/FeePayment';
 import StudentProfile from '@/lib/models/Student';
 import Academy from '@/lib/models/Academy';
@@ -17,10 +18,16 @@ export async function GET(req: NextRequest) {
     const startOfThisQuarter = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1);
     const startOfLastQuarter = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3 - 3, 1);
 
+    // Tenant isolation
+    const isSuperAdmin = auth.user.role === 'gwd_super_admin';
+    const academyObjectId = auth.academyId ? new mongoose.Types.ObjectId(auth.academyId.toString()) : null;
+    const tenantFilter: any = (!isSuperAdmin && academyObjectId) ? { academyId: academyObjectId } : {};
+
     // 1. All Payments Aggregation
-    const payments = await FeePayment.find().lean();
+    const payments = await FeePayment.find(tenantFilter).lean();
     
     let lifetimeRevenue = 0;
+    let lifetimePlatformFee = 0;
     let lifetimeCount = 0;
     let monthlyRevenue = 0;
     let lastMonthRevenue = 0;
@@ -44,6 +51,7 @@ export async function GET(req: NextRequest) {
 
       if (p.status === 'success') {
         lifetimeRevenue += p.amount || 0;
+        lifetimePlatformFee += p.platformFee || 0;
         lifetimeCount++;
         successCount++;
 
@@ -78,7 +86,7 @@ export async function GET(req: NextRequest) {
     const collectionRate = totalCount > 0 ? Math.round((successCount / totalCount) * 100) : 100;
 
     // 2. Defaulters (Students with outstanding fees)
-    const defaulterStudents = await StudentProfile.find({ outstandingFees: { $gt: 0 }, isActive: true })
+    const defaulterStudents = await StudentProfile.find({ outstandingFees: { $gt: 0 }, isActive: true, ...tenantFilter })
       .populate('userId', 'name email phone')
       .lean();
 
@@ -115,7 +123,7 @@ export async function GET(req: NextRequest) {
 
     // 5. Top Payers
     const topPayersAgg = await FeePayment.aggregate([
-      { $match: { status: 'success' } },
+      { $match: { status: 'success', ...tenantFilter } },
       { $group: { _id: '$studentId', totalPaid: { $sum: '$amount' }, paymentsCount: { $sum: 1 } } },
       { $sort: { totalPaid: -1 } },
       { $limit: 5 }
@@ -149,6 +157,7 @@ export async function GET(req: NextRequest) {
       data: {
         summary: {
           lifetimeRevenue,
+          lifetimePlatformFee,
           lifetimeCount,
           monthlyRevenue,
           monthGrowth,

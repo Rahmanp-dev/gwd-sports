@@ -37,7 +37,7 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({
       return "border-blue-500 bg-blue-500/10";
     if (location.pathname.includes("racing"))
       return "border-amber-500 bg-amber-500/10";
-    return "border-gray-500 bg-gray-500/10";
+    return "border-slate-500 bg-slate-500/10";
   };
 
   return (
@@ -114,7 +114,7 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({
               className="group relative"
             >
               <div
-                className={`relative bg-gray-900/80 backdrop-blur-md rounded-3xl p-10 h-full shadow-2xl hover:shadow-[0_20px_60px_${accentColor.includes("amber") ? "rgba(245,158,11,0.4)" : "rgba(34,197,94,0.4)"}] transition-all duration-500 border-4 ${accentColor.includes("amber") ? "border-amber-500/20 hover:border-amber-500/50" : "border-green-500/20 hover:border-green-500/50"} overflow-hidden`}
+                className={`relative bg-slate-900/80 backdrop-blur-md rounded-3xl p-10 h-full shadow-2xl hover:shadow-[0_20px_60px_${accentColor.includes("amber") ? "rgba(245,158,11,0.4)" : "rgba(34,197,94,0.4)"}] transition-all duration-500 border-4 ${accentColor.includes("amber") ? "border-amber-500/20 hover:border-amber-500/50" : "border-green-500/20 hover:border-green-500/50"} overflow-hidden`}
               >
                 {/* Number Badge */}
                 <div
@@ -144,7 +144,7 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({
                     {program.age}
                   </div>
 
-                  <p className="text-gray-300 text-lg font-semibold leading-relaxed">
+                  <p className="text-slate-300 text-lg font-semibold leading-relaxed">
                     {program.description}
                   </p>
                 </div>

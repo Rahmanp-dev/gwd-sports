@@ -9,9 +9,12 @@ export async function GET(req: NextRequest) {
     if (auth?.error) return NextResponse.json({ success: false, message: auth.error }, { status: auth.status });
     await connectToDatabase();
 
-    let settings = await GlobalSettings.findOne();
+    // Tenant isolation: each academy has its own settings
+    const settingsFilter = auth.academyId ? { academyId: auth.academyId } : { academyId: null };
+    let settings = await GlobalSettings.findOne(settingsFilter);
     if (!settings) {
         settings = await GlobalSettings.create({
+        ...settingsFilter,
         performanceMetrics: ['dribble', 'running', 'defending', 'strike', 'stamina'],
         defaultFeeAmount: 1000,
         });
@@ -29,11 +32,13 @@ export async function PUT(req: NextRequest) {
     await connectToDatabase();
 
     const body = await req.json();
-    const { performanceMetrics, defaultFeeAmount, currency, heroMode, heroImages, logoUrl, logoAlignment, logoIsCircular, logoScale } = body;
+    const { performanceMetrics, defaultFeeAmount, currency, heroMode, heroImages, logoUrl, logoAlignment, logoIsCircular, logoScale, themeColor } = body;
     
-    let settings = await GlobalSettings.findOne();
+    // Tenant isolation
+    const settingsFilter = auth.academyId ? { academyId: auth.academyId } : { academyId: null };
+    let settings = await GlobalSettings.findOne(settingsFilter);
     if (!settings) {
-        settings = await GlobalSettings.create({});
+        settings = await GlobalSettings.create(settingsFilter);
     }
 
     if (performanceMetrics) settings.performanceMetrics = performanceMetrics;
@@ -45,6 +50,7 @@ export async function PUT(req: NextRequest) {
     if (logoAlignment) settings.logoAlignment = logoAlignment;
     if (logoIsCircular !== undefined) settings.logoIsCircular = logoIsCircular;
     if (logoScale !== undefined) settings.logoScale = logoScale;
+    if (themeColor !== undefined) settings.themeColor = themeColor;
 
     await settings.save();
 

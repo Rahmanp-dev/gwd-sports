@@ -6,7 +6,16 @@ import { adminMiddleware } from '@/lib/middleware/auth';
 export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
-    const events = await Event.find({ status: 'published' }).sort({ startDate: 1 });
+    const { searchParams } = new URL(req.url);
+    const academyId = searchParams.get('academyId');
+
+    // Tenant isolation: filter events by academyId if provided
+    const filter: any = { status: 'published' };
+    if (academyId) {
+      filter.academyId = academyId;
+    }
+
+    const events = await Event.find(filter).sort({ startDate: 1 });
     return NextResponse.json({ success: true, data: { events } });
   } catch (error) {
     return NextResponse.json({ success: false }, { status: 500 });
@@ -19,6 +28,12 @@ export async function POST(req: NextRequest) {
     if (auth?.error) return NextResponse.json({ success: false }, { status: auth.status });
     await connectToDatabase();
     const data = await req.json();
+
+    // Tenant isolation: force academyId from auth for non-super-admins
+    if (auth.user.role !== 'gwd_super_admin' && auth.academyId) {
+      data.academyId = auth.academyId;
+    }
+
     const event = new Event(data);
     await event.save();
     return NextResponse.json({ success: true, data: { event } }, { status: 201 });

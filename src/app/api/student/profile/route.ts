@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
     const student = await StudentProfile.findOne({ userId: auth.user._id })
       .populate('userId', 'name email phone')
-      .populate('academyId', 'name location')
+      .populate('academyId', 'name location fees')
       .populate('trainers', 'name phone email sports');
     return NextResponse.json({ success: true, data: { studentProfile: student } });
   } catch (error) {

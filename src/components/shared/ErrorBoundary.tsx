@@ -44,7 +44,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <h1 className="text-4xl font-bold text-red-500 mb-4">
             Oops! Something went wrong
           </h1>
-          <p className="text-xl text-gray-400 mb-8 max-w-2xl text-center">
+          <p className="text-xl text-slate-400 mb-8 max-w-2xl text-center">
             {this.state.error?.message ||
               "An unexpected error occurred while rendering the page."}
           </p>

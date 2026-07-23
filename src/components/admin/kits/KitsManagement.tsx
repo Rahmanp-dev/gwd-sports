@@ -204,16 +204,16 @@ export const KitsManagement: React.FC = () => {
     <div className="space-y-6">
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <Card className="bg-white border-gray-200 shadow-sm">
+        <Card className="bg-white border-slate-200 shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Kits</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm text-slate-600">Total Kits</p>
+                <p className="text-2xl font-bold text-slate-900">
                   {stats.total}
                 </p>
               </div>
-              <Package className="h-8 w-8 text-gray-400" />
+              <Package className="h-8 w-8 text-slate-400" />
             </div>
           </CardContent>
         </Card>
@@ -276,25 +276,25 @@ export const KitsManagement: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <Card className="bg-white border-gray-200 shadow-sm">
+      <Card className="bg-white border-slate-200 shadow-sm">
         <CardContent className="p-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
                 placeholder="Search by student name, email, or kit name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-white border-gray-300 text-gray-900"
+                className="pl-10 bg-white border-slate-300 text-slate-900"
               />
             </div>
             <div className="w-full md:w-48">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                <SelectTrigger className="bg-white border-slate-300 text-slate-900">
                   <Filter className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-gray-200">
+                <SelectContent className="bg-white border-slate-200">
                   <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="requested">Requested</SelectItem>
                   <SelectItem value="processing">Processing</SelectItem>
@@ -309,13 +309,13 @@ export const KitsManagement: React.FC = () => {
 
       {/* Kits List */}
       {filteredKits.length === 0 ? (
-        <Card className="bg-white border-gray-200 shadow-sm">
+        <Card className="bg-white border-slate-200 shadow-sm">
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <Package className="h-16 w-16 text-gray-300 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">
+            <Package className="h-16 w-16 text-slate-300 mb-4" />
+            <h3 className="text-xl font-semibold text-slate-600 mb-2">
               No Kits Found
             </h3>
-            <p className="text-gray-500 text-center">
+            <p className="text-slate-500 text-center">
               {searchTerm || statusFilter !== "all"
                 ? "Try adjusting your filters"
                 : "No kit requests yet"}
@@ -334,7 +334,7 @@ export const KitsManagement: React.FC = () => {
               key={`${kit.studentProfileId}-${kit.kitId}`}
               variants={itemVariants}
             >
-              <Card className="bg-white border-gray-200 shadow-sm hover:border-green-500 hover:shadow-md transition-all">
+              <Card className="bg-white border-slate-200 shadow-sm hover:border-green-500 hover:shadow-md transition-all">
                 <CardContent className="p-6">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-start gap-4 flex-1">
@@ -342,32 +342,32 @@ export const KitsManagement: React.FC = () => {
                         <Package className="h-6 w-6 text-white" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                        <h3 className="text-lg font-semibold text-slate-900 mb-1">
                           {kit.kitName}
                         </h3>
                         <div className="space-y-1">
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-slate-600">
                             Student:{" "}
-                            <span className="text-gray-900 font-medium">
+                            <span className="text-slate-900 font-medium">
                               {kit.studentName}
                             </span>
                           </p>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-slate-600">
                             Email:{" "}
-                            <span className="text-gray-900">
+                            <span className="text-slate-900">
                               {kit.studentEmail}
                             </span>
                           </p>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-slate-600">
                             Requested:{" "}
-                            <span className="text-gray-900">
+                            <span className="text-slate-900">
                               {new Date(kit.requestedAt).toLocaleDateString()}
                             </span>
                           </p>
                           {kit.deliveredAt && (
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-slate-600">
                               Delivered:{" "}
-                              <span className="text-gray-900">
+                              <span className="text-slate-900">
                                 {new Date(kit.deliveredAt).toLocaleDateString()}
                               </span>
                             </p>
@@ -405,28 +405,28 @@ export const KitsManagement: React.FC = () => {
 
       {/* Update Kit Dialog */}
       <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
-        <DialogContent className="bg-white border-gray-200">
+        <DialogContent className="bg-white border-slate-200">
           <DialogHeader>
-            <DialogTitle className="text-gray-900">
+            <DialogTitle className="text-slate-900">
               Update Kit Status
             </DialogTitle>
-            <DialogDescription className="text-gray-600">
+            <DialogDescription className="text-slate-600">
               Update the status and cost for {selectedKit?.kitName}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="status" className="text-gray-900">
+              <Label htmlFor="status" className="text-slate-900">
                 Status
               </Label>
               <Select
                 value={updateStatus}
                 onValueChange={(value: KitStatus) => setUpdateStatus(value)}
               >
-                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                <SelectTrigger className="bg-white border-slate-300 text-slate-900">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-gray-200">
+                <SelectContent className="bg-white border-slate-200">
                   <SelectItem value="requested">Requested</SelectItem>
                   <SelectItem value="processing">Processing</SelectItem>
                   <SelectItem value="delivered">Delivered</SelectItem>
@@ -436,9 +436,9 @@ export const KitsManagement: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="cost" className="text-gray-900">
+              <Label htmlFor="cost" className="text-slate-900">
                 Cost (₹){" "}
-                <span className="text-gray-500 text-sm">(optional)</span>
+                <span className="text-slate-500 text-sm">(optional)</span>
               </Label>
               <Input
                 id="cost"
@@ -448,7 +448,7 @@ export const KitsManagement: React.FC = () => {
                 placeholder="e.g., 75.00"
                 value={updateCost}
                 onChange={(e) => setUpdateCost(e.target.value)}
-                className="bg-white border-gray-300 text-gray-900"
+                className="bg-white border-slate-300 text-slate-900"
               />
             </div>
           </div>
@@ -456,7 +456,7 @@ export const KitsManagement: React.FC = () => {
             <Button
               variant="outline"
               onClick={() => setIsUpdateDialogOpen(false)}
-              className="border-gray-300"
+              className="border-slate-300"
             >
               Cancel
             </Button>

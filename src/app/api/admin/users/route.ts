@@ -17,6 +17,10 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get('search');
     
     const filter: any = {};
+    // Tenant isolation: scope by academyId for non-super-admins
+    if (auth.user.role !== 'gwd_super_admin' && auth.academyId) {
+      filter.academyId = auth.academyId;
+    }
     if (role) filter.role = role;
     if (isActive === 'true') filter.isActive = true;
     if (isActive === 'false') filter.isActive = false;
@@ -59,6 +63,10 @@ export async function POST(req: NextRequest) {
     await connectToDatabase();
 
     const data = await req.json();
+    // Tenant isolation: force academyId for non-super-admins
+    if (auth.user.role !== 'gwd_super_admin' && auth.academyId) {
+      data.academyId = auth.academyId;
+    }
     const existing = await User.findOne({ email: data.email });
     if (existing) return NextResponse.json({ success: false, message: 'User exists' }, { status: 409 });
 

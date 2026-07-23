@@ -364,7 +364,7 @@ export const SectionHero: React.FC<SectionHeroProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 1.2 }}
-              className="text-xl sm:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed font-semibold text-center"
+              className="text-xl sm:text-2xl text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed font-semibold text-center"
             >
               {description}
             </motion.p>

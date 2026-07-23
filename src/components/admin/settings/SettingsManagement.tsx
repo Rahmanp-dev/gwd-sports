@@ -106,6 +106,7 @@ export const SettingsManagement = () => {
         logoAlignment: settings.logoAlignment,
         logoIsCircular: settings.logoIsCircular,
         logoScale: settings.logoScale,
+        themeColor: settings.themeColor,
       });
       toast({
         title: "Success",
@@ -133,8 +134,8 @@ export const SettingsManagement = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">System Settings</h2>
-        <p className="text-gray-500">
+        <h2 className="text-2xl font-bold text-slate-900">System Settings</h2>
+        <p className="text-slate-500">
           Manage global configurations for the portal.
         </p>
       </div>
@@ -162,14 +163,14 @@ export const SettingsManagement = () => {
 
           <div className="flex flex-wrap gap-2">
             {settings.performanceMetrics.length === 0 ? (
-              <span className="text-sm text-gray-500 italic">
+              <span className="text-sm text-slate-500 italic">
                 No metrics defined.
               </span>
             ) : (
               settings.performanceMetrics.map((metric, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-full text-sm font-medium text-gray-800"
+                  className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full text-sm font-medium text-slate-800"
                 >
                   <span className="capitalize">{metric}</span>
                   <button
@@ -268,14 +269,14 @@ export const SettingsManagement = () => {
                   </div>
                 ))}
 
-                <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-slate-50 transition-colors">
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
                     {uploadingImages ? (
-                      <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+                      <Loader2 className="w-6 h-6 text-slate-400 animate-spin" />
                     ) : (
                       <>
-                        <Upload className="w-6 h-6 text-gray-400 mb-2" />
-                        <span className="text-xs text-gray-500">Upload</span>
+                        <Upload className="w-6 h-6 text-slate-400 mb-2" />
+                        <span className="text-xs text-slate-500">Upload</span>
                       </>
                     )}
                   </div>
@@ -309,7 +310,7 @@ export const SettingsManagement = () => {
                   />
                 </label>
               </div>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-slate-500">
                 Upload high-quality images (1920x1080 recommended). Max 5MB per
                 image.
               </p>
@@ -409,14 +410,14 @@ export const SettingsManagement = () => {
                 </div>
               )}
 
-              <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+              <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-slate-50 transition-colors">
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   {uploadingLogo ? (
-                    <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+                    <Loader2 className="w-6 h-6 text-slate-400 animate-spin" />
                   ) : (
                     <>
-                      <Upload className="w-6 h-6 text-gray-400 mb-2" />
-                      <span className="text-xs text-gray-500">Upload Logo</span>
+                      <Upload className="w-6 h-6 text-slate-400 mb-2" />
+                      <span className="text-xs text-slate-500">Upload Logo</span>
                     </>
                   )}
                 </div>
@@ -448,8 +449,37 @@ export const SettingsManagement = () => {
                 />
               </label>
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-slate-500">
               Upload a PNG or SVG with transparent background.
+            </p>
+          </div>
+          
+          {/* Theme Color Picker */}
+          <div className="space-y-2 max-w-md pt-4 border-t">
+            <label className="text-sm font-medium block">
+              Primary Theme Color
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="color"
+                value={settings.themeColor || "#3b82f6"}
+                onChange={(e) =>
+                  setSettings({ ...settings, themeColor: e.target.value })
+                }
+                className="w-12 h-12 p-1 rounded-md cursor-pointer border"
+              />
+              <Input
+                type="text"
+                value={settings.themeColor || "#3b82f6"}
+                onChange={(e) =>
+                  setSettings({ ...settings, themeColor: e.target.value })
+                }
+                className="w-32 font-mono uppercase"
+                placeholder="#000000"
+              />
+            </div>
+            <p className="text-xs text-slate-500">
+              Used for buttons, accents, and the main branding color on your landing page.
             </p>
           </div>
         </CardContent>

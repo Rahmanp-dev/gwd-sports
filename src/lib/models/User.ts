@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 import bcrypt from "bcryptjs";
 
-export type UserRole = "admin" | "trainer" | "student" | "user";
+export type UserRole = "admin" | "trainer" | "student" | "user" | "gwd_super_admin";
 
 export interface IUser extends Document {
   name: string;
@@ -10,6 +10,7 @@ export interface IUser extends Document {
   role: UserRole;
   phone?: string;
   sports?: string[];
+  academyId?: mongoose.Types.ObjectId;
   refreshTokens?: string[];
   isActive: boolean;
   lastLogin?: Date;
@@ -51,10 +52,15 @@ const UserSchema = new Schema<IUser>({
   role: { 
     type: String, 
     enum: {
-      values: ["admin", "trainer", "student", "user"],
+      values: ["admin", "trainer", "student", "user", "gwd_super_admin"],
       message: '{VALUE} is not a valid role'
     }, 
     default: "user" 
+  },
+  academyId: {
+    type: Schema.Types.ObjectId,
+    ref: "Academy",
+    default: null
   },
   sports: [{
     type: String,
@@ -118,6 +124,10 @@ UserSchema.methods.removeRefreshToken = async function(token: string): Promise<v
   this.refreshTokens = this.refreshTokens?.filter((t: string) => t !== token) || [];
   await this.save();
 };
+
+// Performance index for multi-tenant queries
+UserSchema.index({ academyId: 1 });
+UserSchema.index({ role: 1, academyId: 1 });
 
 export const User = mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
 

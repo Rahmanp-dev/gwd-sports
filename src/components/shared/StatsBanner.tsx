@@ -94,7 +94,7 @@ export const StatsBanner: React.FC<StatsBannerProps> = ({
                 </motion.div>
 
                 {/* Label */}
-                <div className="relative text-gray-400 uppercase tracking-[0.15em] font-bold text-sm group-hover:text-amber-400 transition-colors">
+                <div className="relative text-slate-400 uppercase tracking-[0.15em] font-bold text-sm group-hover:text-amber-400 transition-colors">
                   {stat.label}
                 </div>
 

@@ -3,6 +3,7 @@ import apiService from "./apiService";
 export interface AcademyFees {
   monthly: number;
   quarterly: number;
+  halfYearly: number;
   yearly: number;
 }
 
@@ -21,6 +22,7 @@ export interface AcademyTimings {
 export interface Academy {
   _id: string;
   name: string;
+  slug?: string;
   description: string;
   location: string;
   address: string;
@@ -34,6 +36,12 @@ export interface Academy {
   capacity: number;
   images: string[];
   isActive: boolean;
+  theme?: {
+    primaryColor: string;
+    logoUrl?: string;
+    tagline?: string;
+  };
+  platformFeePercent?: number;
   createdBy?: {
     _id: string;
     name: string;
@@ -56,6 +64,20 @@ export interface AcademyFormData {
   capacity: number;
   images: string[];
   isActive?: boolean;
+  platformFeePercent?: number;
+}
+
+export interface CreateAcademyDTO {
+  name: string;
+  slug: string;
+  location?: string;
+  capacity?: number;
+  platformFeePercent?: number;
+  adminEmail: string;
+  adminPassword?: string;
+  adminName?: string;
+  adminPhone?: string;
+  sports?: string[];
 }
 
 export interface AcademyFilters {
@@ -117,7 +139,7 @@ class AcademyService {
     return apiService.get<AcademyResponse>(`${this.baseUrl}/${id}`);
   }
 
-  async createAcademy(data: AcademyFormData): Promise<AcademyResponse> {
+  async createAcademy(data: AcademyFormData | CreateAcademyDTO | any): Promise<AcademyResponse> {
     return apiService.post<AcademyResponse>(this.baseUrl, data);
   }
 

@@ -23,7 +23,7 @@ export const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
     return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white text-sm font-medium">Loading...</div>;
   }
 
-  if (user?.role !== "admin" || !isAuthenticated) {
+  if ((user?.role !== "admin" && user?.role !== "gwd_super_admin") || !isAuthenticated) {
     return (
       <Navigate to="/user/auth" state={{ from: location.pathname }} replace />
     );

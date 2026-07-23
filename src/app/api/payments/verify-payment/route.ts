@@ -4,6 +4,12 @@ import { authMiddleware } from '@/lib/middleware/auth';
 import { FeePayment } from '@/lib/models/FeePayment';
 import { StudentProfile } from '@/lib/models/Student';
 import crypto from 'crypto';
+import Razorpay from 'razorpay';
+
+const razorpay = new Razorpay({
+  key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
+  key_secret: process.env.RAZORPAY_KEY_SECRET || ''
+});
 
 export async function POST(req: NextRequest) {
   try {
@@ -32,6 +38,17 @@ export async function POST(req: NextRequest) {
       payment.status = 'success';
       payment.paymentId = razorpay_payment_id;
       payment.signature = razorpay_signature;
+
+      try {
+        const transfers = await (razorpay.payments as any).fetchTransfer(razorpay_payment_id);
+        if (transfers && transfers.items && transfers.items.length > 0) {
+          payment.transferId = transfers.items[0].id;
+        }
+      } catch (err) {
+        // Transfer fetch is optional - may not exist if no Route splits were configured
+        console.warn("Transfer details not available:", err);
+      }
+
       await payment.save();
 
       // Update Student Profile
@@ -39,7 +56,7 @@ export async function POST(req: NextRequest) {
       await StudentProfile.findOneAndUpdate(
         { userId: auth.user._id },
         {
-          $inc: { totalFeesPaid: payment.amount, outstandingFees: -payment.amount },
+          $inc: { totalFeesPaid: payment.baseAmount, outstandingFees: -payment.baseAmount },
           $push: {
             feePayments: {
               amount: payment.amount,
