@@ -73,6 +73,33 @@ const academyFormSchema = z.object({
       .array(z.string())
       .min(1, { message: "Select at least one working day" }),
   }),
+  coordinates: z
+    .object({
+      lat: z.number().optional(),
+      lng: z.number().optional(),
+    })
+    .optional(),
+  coachName: z.string().optional(),
+  establishedYear: z.number().optional(),
+  achievements: z.array(z.string()).optional(),
+  starPlayers: z
+    .array(
+      z.object({
+        name: z.string(),
+        role: z.string(),
+        badge: z.string().optional(),
+      })
+    )
+    .optional(),
+  registeredTeams: z
+    .array(
+      z.object({
+        name: z.string(),
+        category: z.string(),
+        winRate: z.string().optional(),
+      })
+    )
+    .optional(),
   isActive: z.boolean().optional(),
 });
 
@@ -137,6 +164,15 @@ export const AcademyForm: React.FC<AcademyFormProps> = ({
           "friday",
         ],
       },
+      coordinates: {
+        lat: academy?.coordinates?.lat ?? undefined,
+        lng: academy?.coordinates?.lng ?? undefined,
+      },
+      coachName: academy?.coachName || "",
+      establishedYear: academy?.establishedYear || 2024,
+      achievements: academy?.achievements || [],
+      starPlayers: academy?.starPlayers || [],
+      registeredTeams: academy?.registeredTeams || [],
       isActive: academy?.isActive ?? true,
     },
   });
@@ -312,6 +348,54 @@ export const AcademyForm: React.FC<AcademyFormProps> = ({
                 </FormItem>
               )}
             />
+
+            {/* Map Pin Coordinates */}
+            <div className="pt-2 border-t border-gray-100">
+              <p className="text-xs font-semibold text-emerald-600 mb-2">📍 Map Pin Coordinates</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="coordinates.lat"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Latitude</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.0001"
+                          placeholder="17.4485"
+                          value={field.value ?? ''}
+                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="coordinates.lng"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Longitude</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.0001"
+                          placeholder="78.3908"
+                          value={field.value ?? ''}
+                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
 

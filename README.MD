@@ -438,3 +438,12 @@ Deploy the Next.js app as a single service.
 - **Database Migration**: Successfully copied all MongoDB collections (academies, students, users, payments, etc.) from the local environment to the production-ready MongoDB Atlas Cluster.
 - **Tenant Admin Page Corrections**: Removed the globally-scoped "Academies" tab from `AdminPage.tsx` for standard tenant admins, ensuring they only see features scoped to their academy.
 - **Render Error Fixes**: Resolved an application crash in `SuperAdminDashboard.tsx` Global Transaction Ledger caused by unpopulated `studentId` object mapping.
+
+### Production-Readiness Launch Updates (Current Checkpoint)
+- **Cloud Media Storage**: Integrated Cloudinary for seamless upload of academy logos and hero images, bypassing ephemeral filesystem limits.
+- **Communication Engine**: Added Resend SDK for transactional emails (welcome, receipts, password resets, attendance alerts) and MSG91 for SMS notifications.
+- **Recurring Subscriptions**: Fully integrated Razorpay Subscriptions with a secure HMAC-verified webhook (`/api/payments/subscription/webhook`) to handle lifecycle events (created, active, cancelled) and automated fee recording.
+- **Observability Stack**: Deployed Sentry for robust server/client error tracking and global error boundaries, plus PostHog for user analytics.
+- **Discovery Portal**: Built a global `/discover` page with advanced search and filtering to help users find and join active academies.
+- **Legal & Compliance**: Added Razorpay-mandated legal pages (Privacy Policy, Terms & Conditions, Refund Policy, Contact Us) and a unified global footer.
+- **Codebase Audit**: Cleared all TODOs, removed hardcoded localhost references, resolved all Next.js 15 build/type errors, and updated `.env.example` with the new production service keys.

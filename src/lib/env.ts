@@ -31,6 +31,29 @@ const envSchema = z.object({
 
   RAZORPAY_KEY_ID: z.string().default(""),
   RAZORPAY_KEY_SECRET: z.string().default(""),
+
+  // Email (Resend)
+  RESEND_API_KEY: z.string().default(''),
+  FROM_EMAIL: z.string().default('noreply@gwd.in'),
+
+  // SMS (MSG91)
+  MSG91_API_KEY: z.string().default(''),
+  MSG91_TEMPLATE_ID_OTP: z.string().default(''),
+
+  // Observability
+  SENTRY_DSN: z.string().default(''),
+  NEXT_PUBLIC_POSTHOG_KEY: z.string().default(''),
+  NEXT_PUBLIC_POSTHOG_HOST: z.string().default('https://app.posthog.com'),
+
+  // Media (Cloudinary)
+  CLOUDINARY_CLOUD_NAME: z.string().default(''),
+  CLOUDINARY_API_KEY: z.string().default(''),
+  CLOUDINARY_API_SECRET: z.string().default(''),
+
+  // Razorpay subscription plan IDs
+  RAZORPAY_PLAN_ID_MONTHLY: z.string().default(''),
+  RAZORPAY_PLAN_ID_QUARTERLY: z.string().default(''),
+  RAZORPAY_PLAN_ID_YEARLY: z.string().default(''),
 });
 
 const env = envSchema.parse(process.env);

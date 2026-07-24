@@ -4,11 +4,12 @@ import Academy from '@/lib/models/Academy';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectToDatabase();
-    const { slug } = await params;
+    const { id } = await params;
+    const slug = id; // use id as the slug to match existing logic
     
     const academy = await Academy.findOne({ slug, isActive: true })
       .select('-rzp_account -platformFeePercent -createdBy -trainers -students -__v')

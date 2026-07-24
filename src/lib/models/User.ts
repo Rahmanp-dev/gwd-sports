@@ -14,6 +14,8 @@ export interface IUser extends Document {
   refreshTokens?: string[];
   isActive: boolean;
   lastLogin?: Date;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
   createdAt: Date;
   updatedAt: Date;
   __v?: number; 
@@ -77,7 +79,9 @@ const UserSchema = new Schema<IUser>({
   lastLogin: {
     type: Date,
     default: null
-  }
+  },
+  resetPasswordToken: { type: String, default: null },
+  resetPasswordExpires: { type: Date, default: null },
 }, {
   timestamps: true,
   toJSON: {

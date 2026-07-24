@@ -1,8 +1,11 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import React, { useEffect, useRef } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
 interface EcosystemMapProps {
   academies: any[];
@@ -10,175 +13,166 @@ interface EcosystemMapProps {
   onSelectAcademy: (academy: any) => void;
 }
 
-const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
+/* ═══════════════════════════════════════════
+   PROGRESSIVE-DETAIL MARKER SYSTEM
+   ─ Zoom ≤13 : Clusters (auto)
+   ─ Zoom 14-15: Static ring + core dot
+   ─ Zoom ≥16 : Full animated node (pulse ring + hexagon core + glow)
+   CSS controls visibility via [data-zoom] on map container
+   ═══════════════════════════════════════════ */
+
+function createMarkerIcon(name = '', sport = '', idx = 0) {
+  const short = name.length > 22 ? name.slice(0, 20) + '…' : name;
+  // Stagger animation delays so pulses aren't all in sync
+  const delay = ((idx * 0.37) % 2.4).toFixed(2);
+  const delay2 = (((idx * 0.37) + 1.2) % 2.4).toFixed(2);
+
+  return L.divIcon({
+    className: '',
+    iconSize: [44, 44] as [number, number],
+    iconAnchor: [22, 22] as [number, number],
+    popupAnchor: [0, -24] as [number, number],
+    html: `<div class="gwd-node">
+      <div class="gwd-node-pulse" style="animation-delay:${delay}s"></div>
+      <div class="gwd-node-pulse gwd-node-pulse-2" style="animation-delay:${delay2}s"></div>
+      <div class="gwd-node-ring"></div>
+      <div class="gwd-node-core"></div>
+      <div class="gwd-node-label">
+        <span class="gwd-node-name">${short}</span>
+        <span class="gwd-node-sport">${sport}</span>
+      </div>
+    </div>`,
+  });
+}
+
+function createClusterIcon(cluster: any) {
+  const count = cluster.getChildCount();
+  let sizeClass = 'cluster-sm';
+  let size = 38;
+  if (count >= 10) { sizeClass = 'cluster-lg'; size = 54; }
+  else if (count >= 5) { sizeClass = 'cluster-md'; size = 46; }
+
+  return L.divIcon({
+    html: `<div class="gwd-cluster ${sizeClass}">
+      <div class="gwd-cluster-pulse"></div>
+      <div class="gwd-cluster-ring"></div>
+      <span>${count}</span>
+    </div>`,
+    className: '',
+    iconSize: [size, size] as [number, number],
+    iconAnchor: [size / 2, size / 2] as [number, number],
+  });
+}
 
 export default function EcosystemMap({ academies, selectedAcademy, onSelectAcademy }: EcosystemMapProps) {
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
-  const [mapLoaded, setMapLoaded] = useState(false);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstance = useRef<L.Map | null>(null);
+  const clusterRef = useRef<any>(null);
 
+  // Initialize map once
   useEffect(() => {
-    if (!MAPBOX_TOKEN) return;
-    if (map.current) return; // initialize map only once
-    if (!mapContainer.current) return;
+    if (mapInstance.current || !mapRef.current) return;
 
-    mapboxgl.accessToken = MAPBOX_TOKEN;
-    
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/dark-v11',
-      center: [78.4867, 17.3850], // Hyderabad default
-      zoom: 11,
-      pitch: 45,
-      bearing: -17.6,
-      antialias: true
+    const map = L.map(mapRef.current, {
+      center: [17.46, 78.39],
+      zoom: 12,
+      scrollWheelZoom: false,
+      zoomControl: false,
+      attributionControl: true,
+      preferCanvas: true,
     });
 
-    map.current.on('load', () => {
-      setMapLoaded(true);
-      
-      // Add 3D buildings
-      if (map.current) {
-        const layers = map.current.getStyle()?.layers;
-        if (layers) {
-          const labelLayerId = layers.find(
-            (layer) => layer.type === 'symbol' && layer.layout && layer.layout['text-field']
-          )?.id;
-
-          map.current.addLayer(
-            {
-              id: 'add-3d-buildings',
-              source: 'composite',
-              'source-layer': 'building',
-              filter: ['==', 'extrude', 'true'],
-              type: 'fill-extrusion',
-              minzoom: 15,
-              paint: {
-                'fill-extrusion-color': '#aaa',
-                'fill-extrusion-height': [
-                  'interpolate',
-                  ['linear'],
-                  ['zoom'],
-                  15,
-                  0,
-                  15.05,
-                  ['get', 'height']
-                ],
-                'fill-extrusion-base': [
-                  'interpolate',
-                  ['linear'],
-                  ['zoom'],
-                  15,
-                  0,
-                  15.05,
-                  ['get', 'min_height']
-                ],
-                'fill-extrusion-opacity': 0.6
-              }
-            },
-            labelLayerId
-          );
-        }
+    L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+      {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+        maxZoom: 19,
+        subdomains: 'abcd',
       }
+    ).addTo(map);
+
+    // Set initial data-zoom
+    mapRef.current.setAttribute('data-zoom', String(map.getZoom()));
+
+    // Update data-zoom on zoom change for CSS progressive detail
+    map.on('zoomend', () => {
+      const z = Math.round(map.getZoom());
+      mapRef.current?.setAttribute('data-zoom', String(z));
     });
+
+    mapInstance.current = map;
 
     return () => {
-      if (map.current) {
-        map.current.remove();
-        map.current = null;
-      }
+      map.remove();
+      mapInstance.current = null;
     };
   }, []);
 
   // Update markers when academies change
   useEffect(() => {
-    if (!map.current || !mapLoaded) return;
+    if (!mapInstance.current) return;
+    const map = mapInstance.current;
 
-    // Clear existing markers
-    markersRef.current.forEach(marker => marker.remove());
-    markersRef.current = [];
+    // Remove old cluster group
+    if (clusterRef.current) {
+      map.removeLayer(clusterRef.current);
+      clusterRef.current = null;
+    }
 
-    academies.forEach(academy => {
-      if (academy.coordinates && academy.coordinates.lng && academy.coordinates.lat) {
-        // Create custom DOM element for the marker
-        const el = document.createElement('div');
-        el.className = 'w-3 h-3 bg-[#e63946] rounded-full cursor-pointer shadow-[0_0_15px_rgba(230,57,70,0.8)] relative';
-        
-        // Add pulsing effect
-        const pulse = document.createElement('div');
-        pulse.className = 'absolute inset-0 rounded-full bg-[#e63946] animate-ping opacity-75';
-        el.appendChild(pulse);
-
-        el.addEventListener('click', (e) => {
-          e.stopPropagation();
-          onSelectAcademy(academy);
-        });
-
-        el.addEventListener('mouseenter', () => {
-          el.style.transform = 'scale(1.2)';
-        });
-        
-        el.addEventListener('mouseleave', () => {
-          el.style.transform = 'scale(1)';
-        });
-
-        // Add popup
-        const popup = new mapboxgl.Popup({ offset: 15, closeButton: false, className: 'dark-popup' })
-          .setHTML(`<div class="bg-[#111118] text-white px-3 py-2 rounded shadow-xl border border-[#1a1a24] text-xs font-bold">${academy.name}</div>`);
-
-        const marker = new mapboxgl.Marker(el)
-          .setLngLat([academy.coordinates.lng, academy.coordinates.lat])
-          .setPopup(popup)
-          .addTo(map.current!);
-
-        // Show popup on hover
-        el.addEventListener('mouseenter', () => marker.togglePopup());
-        el.addEventListener('mouseleave', () => marker.togglePopup());
-
-        markersRef.current.push(marker);
-      }
+    // Create MarkerClusterGroup
+    const cluster = (L as any).markerClusterGroup({
+      maxClusterRadius: 50,
+      showCoverageOnHover: false,
+      spiderfyOnMaxZoom: true,
+      disableClusteringAtZoom: 14,
+      iconCreateFunction: createClusterIcon,
+      animate: true,
     });
-  }, [academies, mapLoaded, onSelectAcademy]);
+
+    academies.forEach((academy, idx) => {
+      if (!academy.coordinates?.lat || !academy.coordinates?.lng) return;
+
+      const sport = Array.isArray(academy.sports) && academy.sports.length > 0 ? academy.sports[0] : '';
+      const icon = createMarkerIcon(academy.name || '', sport, idx);
+
+      const marker = L.marker([academy.coordinates.lat, academy.coordinates.lng], { icon });
+
+      marker.on('click', () => {
+        onSelectAcademy(academy);
+      });
+
+      cluster.addLayer(marker);
+    });
+
+    map.addLayer(cluster);
+    clusterRef.current = cluster;
+  }, [academies, onSelectAcademy]);
 
   // Handle selected academy fly-to
   useEffect(() => {
-    if (!map.current || !mapLoaded || !selectedAcademy) return;
-    
-    if (selectedAcademy.coordinates && selectedAcademy.coordinates.lng && selectedAcademy.coordinates.lat) {
-      map.current.flyTo({
-        center: [selectedAcademy.coordinates.lng, selectedAcademy.coordinates.lat],
-        zoom: 14,
-        duration: 1500,
-        essential: true
-      });
-    }
-  }, [selectedAcademy, mapLoaded]);
+    if (!mapInstance.current || !selectedAcademy) return;
+    if (!selectedAcademy.coordinates?.lat || !selectedAcademy.coordinates?.lng) return;
 
-  if (!MAPBOX_TOKEN) {
-    return (
-      <div className="absolute inset-0 bg-[#0a0a0f] flex items-center justify-center z-0">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-slate-700 border-t-[#e63946] rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-400 font-mono text-sm">Map requires NEXT_PUBLIC_MAPBOX_TOKEN</p>
-        </div>
-      </div>
+    mapInstance.current.flyTo(
+      [selectedAcademy.coordinates.lat, selectedAcademy.coordinates.lng],
+      15,
+      { duration: 1.5, easeLinearity: 0.25 }
     );
-  }
+  }, [selectedAcademy]);
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{__html: `
-        .dark-popup .mapboxgl-popup-content {
-          background: transparent !important;
-          padding: 0 !important;
-          box-shadow: none !important;
-        }
-        .dark-popup .mapboxgl-popup-tip {
-          display: none;
-        }
-      `}} />
-      <div ref={mapContainer} className="absolute inset-0 z-0 bg-[#0a0a0f]" />
+      <div
+        ref={mapRef}
+        id="map"
+        className="absolute inset-0 z-0"
+        style={{ background: '#050508' }}
+      />
+      {/* Custom zoom controls */}
+      <div className="custom-zoom">
+        <button onClick={() => mapInstance.current?.zoomIn()} aria-label="Zoom in">+</button>
+        <button onClick={() => mapInstance.current?.zoomOut()} aria-label="Zoom out">−</button>
+      </div>
     </>
   );
 }

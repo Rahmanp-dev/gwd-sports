@@ -42,6 +42,18 @@ export interface Academy {
     tagline?: string;
   };
   platformFeePercent?: number;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+  ecosystemScore?: number;
+  establishedYear?: number;
+  achievements?: string[];
+  coachName?: string;
+  starPlayers?: any[];
+  registeredTeams?: any[];
+  gwdFoundingAcademy?: boolean;
+  verificationStatus?: 'pending' | 'verified' | 'founding';
   createdBy?: {
     _id: string;
     name: string;
@@ -65,6 +77,13 @@ export interface AcademyFormData {
   images: string[];
   isActive?: boolean;
   platformFeePercent?: number;
+  coordinates?: {
+    lat?: number;
+    lng?: number;
+  };
+  ecosystemScore?: number;
+  verificationStatus?: 'pending' | 'verified' | 'founding';
+  gwdFoundingAcademy?: boolean;
 }
 
 export interface CreateAcademyDTO {

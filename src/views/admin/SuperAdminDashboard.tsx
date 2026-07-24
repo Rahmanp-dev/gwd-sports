@@ -80,6 +80,60 @@ export default function SuperAdminDashboard() {
   const [editingFeeAcademyId, setEditingFeeAcademyId] = useState<string | null>(null);
   const [newFeePercent, setNewFeePercent] = useState<number>(1.0);
 
+  // Edit Coords Modal State
+  const [editingCoordsAcademy, setEditingCoordsAcademy] = useState<any | null>(null);
+  const [editLat, setEditLat] = useState<string>('');
+  const [editLng, setEditLng] = useState<string>('');
+  const [editScore, setEditScore] = useState<number>(50);
+  const [editStatus, setEditStatus] = useState<'pending' | 'verified' | 'founding'>('pending');
+  const [editFounding, setEditFounding] = useState<boolean>(false);
+  const [editCoachName, setEditCoachName] = useState<string>('');
+  const [editEstYear, setEditEstYear] = useState<number>(2024);
+  const [editAchievements, setEditAchievements] = useState<string>('');
+  const [isSavingCoords, setIsSavingCoords] = useState<boolean>(false);
+
+  const handleOpenCoordsModal = (academy: any) => {
+    setEditingCoordsAcademy(academy);
+    setEditLat(academy.coordinates?.lat !== undefined ? String(academy.coordinates.lat) : '');
+    setEditLng(academy.coordinates?.lng !== undefined ? String(academy.coordinates.lng) : '');
+    setEditScore(academy.ecosystemScore || 50);
+    setEditStatus(academy.verificationStatus || 'pending');
+    setEditFounding(academy.gwdFoundingAcademy || false);
+    setEditCoachName(academy.coachName || '');
+    setEditEstYear(academy.establishedYear || 2024);
+    setEditAchievements(Array.isArray(academy.achievements) ? academy.achievements.join(', ') : '');
+  };
+
+  const handleSaveCoords = async () => {
+    if (!editingCoordsAcademy) return;
+    setIsSavingCoords(true);
+    try {
+      await academyService.updateAcademy(
+        editingCoordsAcademy._id,
+        {
+          coordinates: {
+            lat: editLat ? parseFloat(editLat) : undefined,
+            lng: editLng ? parseFloat(editLng) : undefined,
+          },
+          ecosystemScore: editScore,
+          verificationStatus: editStatus,
+          gwdFoundingAcademy: editFounding,
+          coachName: editCoachName,
+          establishedYear: editEstYear,
+          achievements: editAchievements ? editAchievements.split(',').map(s => s.trim()).filter(Boolean) : [],
+        } as any,
+        { superAdmin: true }
+      );
+      toastUtils.success("Map Pin Updated", "Academy map coordinates and ecosystem status saved.");
+      setEditingCoordsAcademy(null);
+      fetchAcademies();
+    } catch (error) {
+      toastUtils.error("Failed to update coordinates", "Could not save ecosystem data.");
+    } finally {
+      setIsSavingCoords(false);
+    }
+  };
+
   // Fetch Academies
   const fetchAcademies = async () => {
     setIsLoading(true);
@@ -536,6 +590,16 @@ export default function SuperAdminDashboard() {
                         {/* Tenant Controls */}
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
+                            {/* Pin Map Coordinates */}
+                            <Button 
+                              size="sm"
+                              onClick={() => handleOpenCoordsModal(academy)}
+                              className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/80 h-8 text-xs font-medium rounded-xl"
+                            >
+                              <MapPin className="w-3.5 h-3.5 mr-1" />
+                              Pin Map
+                            </Button>
+
                             {/* Enter Portal */}
                             <Button 
                               size="sm"
@@ -1014,6 +1078,152 @@ export default function SuperAdminDashboard() {
                   </Button>
                 </div>
               </form>
+            </motion.div>
+          </div>
+        )}
+
+        {/* EDIT MAP PIN COORDINATES MODAL */}
+        {editingCoordsAcademy && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl border border-slate-100"
+            >
+              <div className="flex justify-between items-center pb-4 border-b border-slate-100 mb-5">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-emerald-600" />
+                    Map Pin & Ecosystem Settings
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">{editingCoordsAcademy.name}</p>
+                </div>
+                <button 
+                  onClick={() => setEditingCoordsAcademy(null)}
+                  className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-slate-700 mb-1 block">Latitude (lat)</label>
+                    <Input
+                      type="number"
+                      step="0.0001"
+                      placeholder="e.g. 17.4485"
+                      value={editLat}
+                      onChange={(e) => setEditLat(e.target.value)}
+                      className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl font-mono text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-slate-700 mb-1 block">Longitude (lng)</label>
+                    <Input
+                      type="number"
+                      step="0.0001"
+                      placeholder="e.g. 78.3908"
+                      value={editLng}
+                      onChange={(e) => setEditLng(e.target.value)}
+                      className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl font-mono text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-slate-700 mb-1 block">Ecosystem Score (0-100)</label>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={editScore}
+                      onChange={(e) => setEditScore(parseInt(e.target.value) || 0)}
+                      className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl font-mono text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-slate-700 mb-1 block">Verification Status</label>
+                    <select
+                      value={editStatus}
+                      onChange={(e) => setEditStatus(e.target.value as any)}
+                      className="w-full h-10 px-3 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl text-xs font-medium"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="verified">Verified</option>
+                      <option value="founding">GWD Founding</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-slate-700 mb-1 block">Head Coach Name</label>
+                    <Input
+                      type="text"
+                      placeholder="e.g. Lucky Rao"
+                      value={editCoachName}
+                      onChange={(e) => setEditCoachName(e.target.value)}
+                      className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-slate-700 mb-1 block">Established Year</label>
+                    <Input
+                      type="number"
+                      placeholder="2024"
+                      value={editEstYear}
+                      onChange={(e) => setEditEstYear(parseInt(e.target.value) || 2024)}
+                      className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl font-mono text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-medium text-slate-700 mb-1 block">Public Achievements (comma-separated)</label>
+                  <Input
+                    type="text"
+                    placeholder="e.g. District Semifinalist, State Champions 2024"
+                    value={editAchievements}
+                    onChange={(e) => setEditAchievements(e.target.value)}
+                    className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl text-xs"
+                  />
+                </div>
+
+                <div className="pt-2">
+                  <label className="flex items-center gap-2 cursor-pointer p-3 bg-slate-50 rounded-xl border border-slate-200/80">
+                    <input
+                      type="checkbox"
+                      checked={editFounding}
+                      onChange={(e) => setEditFounding(e.target.checked)}
+                      className="w-4 h-4 rounded border-slate-300 text-emerald-600"
+                    />
+                    <span className="text-xs text-slate-700 font-semibold">GWD Founding Member Badge</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-6 mt-6 border-t border-slate-100">
+                <Button 
+                  type="button"
+                  variant="ghost" 
+                  onClick={() => setEditingCoordsAcademy(null)}
+                  className="text-slate-600 hover:bg-slate-100 rounded-xl"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="button"
+                  onClick={handleSaveCoords}
+                  disabled={isSavingCoords}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium px-5"
+                >
+                  {isSavingCoords ? "Saving..." : "Save Pin Coordinates"}
+                </Button>
+              </div>
             </motion.div>
           </div>
         )}

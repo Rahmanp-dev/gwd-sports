@@ -2,6 +2,7 @@ import React from "react";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { Providers } from "./Providers";
+import AnalyticsProvider from "@/components/providers/AnalyticsProvider";
 
 export const metadata = {
   title: "GWD Sports Ecosystem",
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet" />
       </head>
       <body suppressHydrationWarning>
+        <AnalyticsProvider />
         <Providers>
           {children}
           <Toaster

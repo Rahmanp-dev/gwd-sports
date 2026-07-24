@@ -1,5 +1,18 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+export interface IStarPlayer {
+  name: string;
+  role: string;
+  badge?: string;
+  avatarUrl?: string;
+}
+
+export interface IRegisteredTeam {
+  name: string;
+  category: string;
+  winRate?: string;
+}
+
 export interface IAcademy extends Document {
   name: string;
   description: string;
@@ -48,6 +61,8 @@ export interface IAcademy extends Document {
   establishedYear?: number;
   achievements: string[];
   coachName?: string;
+  starPlayers?: IStarPlayer[];
+  registeredTeams?: IRegisteredTeam[];
   gwdFoundingAcademy: boolean;
   verificationStatus: 'pending' | 'verified' | 'founding';
   createdAt: Date;
@@ -213,6 +228,17 @@ const AcademySchema = new Schema<IAcademy>({
   establishedYear: { type: Number },
   achievements: [{ type: String, trim: true }],
   coachName: { type: String, trim: true },
+  starPlayers: [{
+    name: { type: String, required: true },
+    role: { type: String, required: true },
+    badge: { type: String, default: 'STATE' },
+    avatarUrl: { type: String }
+  }],
+  registeredTeams: [{
+    name: { type: String, required: true },
+    category: { type: String, required: true },
+    winRate: { type: String, default: '75%' }
+  }],
   gwdFoundingAcademy: { type: Boolean, default: false },
   verificationStatus: {
     type: String,

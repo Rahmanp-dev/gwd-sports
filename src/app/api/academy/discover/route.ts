@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
     
     const academies = await Academy.find({ isActive: true })
-      .select('name slug location sports coordinates ecosystemScore theme.primaryColor theme.logoUrl verificationStatus gwdFoundingAcademy establishedYear coachName achievements students capacity')
+      .select('name slug location sports coordinates ecosystemScore theme.primaryColor theme.logoUrl verificationStatus gwdFoundingAcademy establishedYear coachName achievements starPlayers registeredTeams students capacity')
       .sort({ ecosystemScore: -1 })
       .lean();
 
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
           totalSports: allSports.size,
           sports: Array.from(allSports),
           cities: Array.from(allCities),
-          primaryCity: Array.from(allCities)[0] || 'India'
+          primaryCity: 'Hyderabad'
         }
       }
     });
