@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     if (auth?.error) return NextResponse.json({ success: false, message: auth.error }, { status: auth.status });
     await connectToDatabase();
 
-    const userId = (req as any).user._id;
+    const userId = auth.user._id;
     const { kitName } = await req.json();
 
     const studentProfile = await StudentProfile.findOne({ userId });

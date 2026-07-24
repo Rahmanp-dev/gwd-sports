@@ -26,8 +26,7 @@ export const UserProtectedRoute = ({ children }: UserProtectedRouteProps) => {
     return <Navigate to="/user/auth" replace />;
   }
 
-  // Redirect admin users to admin dashboard
-  if (user.role === "admin") {
+  if (user.role === "admin" || user.role === "gwd_super_admin") {
     return <Navigate to="/admin/dashboard" replace />;
   }
 

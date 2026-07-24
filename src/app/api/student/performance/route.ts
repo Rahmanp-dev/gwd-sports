@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     if (auth?.error) return NextResponse.json({ success: false, message: auth.error }, { status: auth.status });
     await connectToDatabase();
 
-    const userId = (req as any).user._id;
+    const userId = auth.user._id;
     const { searchParams } = new URL(req.url);
     const sport = searchParams.get('sport');
     const category = searchParams.get('category');

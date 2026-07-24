@@ -17,7 +17,14 @@ export async function POST(req: NextRequest) {
       const studentProfile = await Student.findOne({ userId: user._id });
       if (!studentProfile) return NextResponse.json({ success: true, message: 'Student profile not found' }, { status: 404 });
       return NextResponse.json({ success: true, message: 'User has a student profile', data: { user } });
-    } else if (user.role === 'trainer') {
+    }
+
+    const studentProfile = await Student.findOne({ userId: user._id });
+    if (studentProfile) {
+      return NextResponse.json({ success: true, message: 'User has a student profile', data: { user } });
+    }
+
+    if (user.role === 'trainer') {
       const trainerProfile = await Trainer.findOne({ userId: user._id });
       if (!trainerProfile) return NextResponse.json({ success: true, message: 'Trainer profile not found' }, { status: 404 });
       return NextResponse.json({ success: true, message: 'User has a trainer profile', data: { user } });

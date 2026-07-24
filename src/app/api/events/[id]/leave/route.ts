@@ -11,7 +11,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     await connectToDatabase();
 
     const { id } = await params;
-    const userId = (req as any).user._id;
+    const userId = auth.user._id;
 
     if (!mongoose.Types.ObjectId.isValid(id)) return NextResponse.json({ success: false, message: 'Invalid event ID' }, { status: 400 });
 

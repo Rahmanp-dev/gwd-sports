@@ -40,6 +40,16 @@ export interface IAcademy extends Document {
     tagline: string;
   };
   platformFeePercent: number;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+  ecosystemScore: number;
+  establishedYear?: number;
+  achievements: string[];
+  coachName?: string;
+  gwdFoundingAcademy: boolean;
+  verificationStatus: 'pending' | 'verified' | 'founding';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -194,6 +204,20 @@ const AcademySchema = new Schema<IAcademy>({
     default: 1,
     min: 0,
     max: 10
+  },
+  coordinates: {
+    lat: { type: Number },
+    lng: { type: Number }
+  },
+  ecosystemScore: { type: Number, default: 0, min: 0, max: 100 },
+  establishedYear: { type: Number },
+  achievements: [{ type: String, trim: true }],
+  coachName: { type: String, trim: true },
+  gwdFoundingAcademy: { type: Boolean, default: false },
+  verificationStatus: {
+    type: String,
+    enum: ['pending', 'verified', 'founding'],
+    default: 'pending'
   }
 }, {
   timestamps: true,
@@ -210,6 +234,7 @@ AcademySchema.index({ ownerId: 1 });
 AcademySchema.index({ location: 1, sports: 1 });
 AcademySchema.index({ isActive: 1 });
 AcademySchema.index({ createdBy: 1 });
+AcademySchema.index({ 'coordinates.lat': 1, 'coordinates.lng': 1 });
 
 // Virtual for student count
 AcademySchema.virtual('studentCount').get(function() {

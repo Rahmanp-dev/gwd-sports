@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
+import { API_BASE_URL } from "@/utils/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -67,7 +68,7 @@ interface TrainerStudentRelationsProps {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-const API = "http://localhost:3000/api";
+const API = API_BASE_URL;
 
 const levelColor: Record<string, string> = {
   beginner: "bg-green-50 text-green-700 border-green-200",

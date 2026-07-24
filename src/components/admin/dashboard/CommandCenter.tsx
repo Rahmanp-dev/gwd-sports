@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { API_BASE_URL } from "@/utils/constants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -181,7 +182,7 @@ export function CommandCenter() {
   const [error, setError] = useState("");
   const [dropOffOpen, setDropOffOpen] = useState(false);
   const { token } = useAppSelector((s) => s.auth);
-  const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api";
+  const API = API_BASE_URL;
 
   // Leaderboard state
   const [leaders, setLeaders] = useState<any[]>([]);

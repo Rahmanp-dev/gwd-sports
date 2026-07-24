@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     await connectToDatabase();
 
     const { academyId } = await req.json();
-    const userId = (req as any).user._id;
+    const userId = auth.user._id;
 
     if (!mongoose.Types.ObjectId.isValid(academyId)) {
       return NextResponse.json({ success: false, message: 'Invalid academy ID' }, { status: 400 });

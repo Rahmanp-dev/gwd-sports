@@ -74,14 +74,23 @@ class AuthService {
         throw new Error("No refresh token available");
       }
 
-      // TODO: check this
-      const response = await apiService.post<LoginResponse>(
-        "/user/refresh-token",
-        { refreshToken },
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"}/user/refresh-token`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refreshToken }),
+        },
       );
-      if (response.success && response.data.accessToken) {
-        localStorage.setItem(this.ACCESS_TOKEN_KEY, response.data.accessToken);
-        return response.data.accessToken;
+
+      if (!response.ok) {
+        throw new Error("Refresh token request failed");
+      }
+
+      const responseData = await response.json();
+      if (responseData.success && responseData.data?.accessToken) {
+        localStorage.setItem(this.ACCESS_TOKEN_KEY, responseData.data.accessToken);
+        return responseData.data.accessToken;
       }
 
       return null;

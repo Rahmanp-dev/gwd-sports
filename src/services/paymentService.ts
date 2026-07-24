@@ -2,10 +2,13 @@ import apiService from "./apiService";
 
 export interface CreateOrderParams {
   amount: number;
+  baseAmount?: number;
   currency?: string;
   receipt?: string;
   studentId?: string;
   period?: string;
+  description?: string;
+  kitId?: string;
 }
 
 export interface VerifyPaymentParams {
@@ -40,8 +43,10 @@ export interface PaymentHistoryResponse {
 }
 
 export const createRazorpayOrder = async (data: CreateOrderParams) => {
-  const response = await apiService.post("/payments/create-order", data);
-  return (response as any).data;
+  return apiService.post<{ success: boolean; message?: string; data: { order: any; key_id: string } }>(
+    "/payments/create-order",
+    data,
+  );
 };
 
 export const verifyRazorpayPayment = async (data: VerifyPaymentParams) => {

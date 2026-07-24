@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from "react";
+import { useNavigate } from "@/lib/router-shim";
 import { SectionHero } from "@/components/shared/SectionHero";
 import { ProgramsSection } from "@/components/shared/ProgramsSection";
 import { EventsSection } from "@/components/shared/EventsSection";
@@ -14,14 +15,14 @@ import {
 import StatsSection from "@/components/landing/StatsSection";
 
 export default function MGFCPage() {
+  const navigate = useNavigate();
+
   useEffect(() => {
-    // Scroll to top on component mount
     window.scrollTo(0, 0);
   }, []);
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Hero Section */}
       <SectionHero
         title={MGFC_HERO_DATA.title}
         subtitle={MGFC_HERO_DATA.subtitle}
@@ -33,6 +34,7 @@ export default function MGFCPage() {
         accentColor="from-amber-400 to-yellow-500"
         ctaText="Join MGFC"
         secondaryCtaText="Book Trial"
+        onCtaClick={() => navigate("/mgfc/student/register")}
       />
 
       <StatsSection />

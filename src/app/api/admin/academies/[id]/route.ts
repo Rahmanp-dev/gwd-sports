@@ -49,7 +49,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const auth = await roleMiddleware(req, ['gwd_super_admin', 'academy_admin', 'admin']);
+    const auth = await roleMiddleware(req, ['gwd_super_admin', 'admin']);
     if (auth?.error) {
       return NextResponse.json({ success: false, message: auth.error }, { status: auth.status });
     }

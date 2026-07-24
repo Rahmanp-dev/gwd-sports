@@ -67,7 +67,13 @@ export default function SuperAdminDashboard() {
     adminPassword: "",
     adminName: "",
     adminPhone: "",
-    sports: ["Football", "Cricket", "Basketball"]
+    sports: ["Football", "Cricket", "Basketball"],
+    coordinatesLat: undefined,
+    coordinatesLng: undefined,
+    ecosystemScore: 50,
+    coachName: "",
+    verificationStatus: 'pending',
+    gwdFoundingAcademy: false
   });
 
   // Edit Fee Modal State
@@ -912,6 +918,80 @@ export default function SuperAdminDashboard() {
                         className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl"
                         required
                       />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t border-slate-100 pt-3">
+                  <p className="text-xs font-semibold text-emerald-600 mb-2">📍 Ecosystem Map & Leaderboard</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-slate-600 mb-1 block">Latitude</Label>
+                      <Input
+                        type="number"
+                        step="0.0001"
+                        placeholder="e.g. 17.4485"
+                        value={newAcademy.coordinatesLat || ''}
+                        onChange={(e) => setNewAcademy({ ...newAcademy, coordinatesLat: parseFloat(e.target.value) || undefined })}
+                        className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl font-mono text-xs"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-600 mb-1 block">Longitude</Label>
+                      <Input
+                        type="number"
+                        step="0.0001"
+                        placeholder="e.g. 78.3908"
+                        value={newAcademy.coordinatesLng || ''}
+                        onChange={(e) => setNewAcademy({ ...newAcademy, coordinatesLng: parseFloat(e.target.value) || undefined })}
+                        className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl font-mono text-xs"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-600 mb-1 block">Ecosystem Score (0-100)</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        placeholder="50"
+                        value={newAcademy.ecosystemScore || ''}
+                        onChange={(e) => setNewAcademy({ ...newAcademy, ecosystemScore: parseInt(e.target.value) || 0 })}
+                        className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-600 mb-1 block">Head Coach Name</Label>
+                      <Input
+                        placeholder="e.g. Coach Lucky Rao"
+                        value={newAcademy.coachName || ''}
+                        onChange={(e) => setNewAcademy({ ...newAcademy, coachName: e.target.value })}
+                        className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mt-3">
+                    <div>
+                      <Label className="text-slate-600 mb-1 block">Verification Status</Label>
+                      <select
+                        value={newAcademy.verificationStatus || 'pending'}
+                        onChange={(e) => setNewAcademy({ ...newAcademy, verificationStatus: e.target.value as any })}
+                        className="w-full h-9 px-3 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl text-xs"
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="verified">Verified</option>
+                        <option value="founding">GWD Founding</option>
+                      </select>
+                    </div>
+                    <div className="flex items-end pb-1">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={newAcademy.gwdFoundingAcademy || false}
+                          onChange={(e) => setNewAcademy({ ...newAcademy, gwdFoundingAcademy: e.target.checked })}
+                          className="w-4 h-4 rounded border-slate-300 text-blue-600"
+                        />
+                        <span className="text-xs text-slate-600 font-medium">GWD Founding Academy Badge</span>
+                      </label>
                     </div>
                   </div>
                 </div>

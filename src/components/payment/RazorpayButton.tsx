@@ -43,19 +43,20 @@ export const RazorpayButton: React.FC<RazorpayButtonProps> = ({
       const orderData: CreateOrderParams = { amount, studentId };
       const res = await createRazorpayOrder(orderData);
 
-      if (!res.success) {
+      if (!res.success || !res.data?.order) {
         toast({
           title: "Failed to create order",
-          description: res.message,
+          description: res.message || "Could not create payment order",
           variant: "destructive",
         });
         return;
       }
 
-      const order = res.data;
+      const order = res.data.order;
+      const keyId = res.data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "TEST_KEY_ID";
 
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "TEST_KEY_ID", // Store in .env
+        key: keyId,
         amount: order.amount,
         currency: order.currency,
         name: "GWD Sports Ecosystem",

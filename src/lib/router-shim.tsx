@@ -3,6 +3,8 @@ import React from 'react';
 import NextLink from 'next/link';
 import { useRouter, usePathname, useParams as useNextParams, useSearchParams as useNextSearchParams } from 'next/navigation';
 
+const ROUTER_STATE_KEY = 'gwd_router_state';
+
 export const BrowserRouter = ({ children }: { children: React.ReactNode }) => <>{children}</>;
 export const MemoryRouter = ({ children }: { children: React.ReactNode }) => <>{children}</>;
 
@@ -24,6 +26,9 @@ export const useNavigate = () => {
       }
       return;
     }
+    if (options?.state && typeof window !== 'undefined') {
+      sessionStorage.setItem(ROUTER_STATE_KEY, JSON.stringify(options.state));
+    }
     if (options?.replace) {
       router.replace(path);
     } else {
@@ -35,11 +40,24 @@ export const useNavigate = () => {
 export const useLocation = () => {
   const pathname = usePathname();
   const searchParams = useNextSearchParams();
+  const [state, setState] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const stored = sessionStorage.getItem(ROUTER_STATE_KEY);
+    if (!stored) return;
+    try {
+      setState(JSON.parse(stored));
+    } finally {
+      sessionStorage.removeItem(ROUTER_STATE_KEY);
+    }
+  }, [pathname]);
+
   return {
     pathname: pathname || '/',
     search: searchParams && searchParams.toString() ? `?${searchParams.toString()}` : '',
     hash: typeof window !== 'undefined' ? window.location.hash : '',
-    state: null as any,
+    state,
     key: 'default'
   };
 };
@@ -69,11 +87,14 @@ export const useSearchParams = () => {
 export const Navigate = ({ to, replace, state }: { to: string; replace?: boolean; state?: any }) => {
   const router = useRouter();
   React.useEffect(() => {
+    if (state && typeof window !== 'undefined') {
+      sessionStorage.setItem(ROUTER_STATE_KEY, JSON.stringify(state));
+    }
     if (replace) {
       router.replace(to);
     } else {
       router.push(to);
     }
-  }, [to, replace, router]);
+  }, [to, replace, router, state]);
   return null;
 };

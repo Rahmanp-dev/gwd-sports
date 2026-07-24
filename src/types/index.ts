@@ -292,6 +292,16 @@ export interface Academy {
     tagline: string;
   };
   platformFeePercent: number;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+  ecosystemScore: number;
+  establishedYear?: number;
+  achievements: string[];
+  coachName?: string;
+  gwdFoundingAcademy: boolean;
+  verificationStatus: 'pending' | 'verified' | 'founding';
   createdAt: string;
   updatedAt: string;
 }

@@ -43,7 +43,20 @@ import { StudentPaymentPanel } from "./StudentPaymentPanel";
 interface StudentProfileData {
   _id: string;
   userId: string;
-  academyId: string | null;
+  academyId:
+    | string
+    | null
+    | {
+        _id: string;
+        name?: string;
+        location?: string;
+        fees?: {
+          monthly: number;
+          quarterly: number;
+          halfYearly: number;
+          yearly: number;
+        };
+      };
   trainerId: string | null;
   enrollmentDate: string | null;
   totalFeesPaid: number;
@@ -440,6 +453,8 @@ export default function StudentProfile() {
                     setEditedProfile({
                       ...editedProfile,
                       medicalInfo: {
+                        medications: [],
+                        emergencyContact: { name: "", phone: "", relation: "" },
                         ...editedProfile.medicalInfo,
                         allergies,
                       },
@@ -487,6 +502,8 @@ export default function StudentProfile() {
                     setEditedProfile({
                       ...editedProfile,
                       medicalInfo: {
+                        allergies: [],
+                        emergencyContact: { name: "", phone: "", relation: "" },
                         ...editedProfile.medicalInfo,
                         medications,
                       },
@@ -544,10 +561,8 @@ export default function StudentProfile() {
                           medicalInfo: {
                             ...editedProfile.medicalInfo,
                             emergencyContact: {
-                              name: "",
-                              phone: "",
-                              relation: "",
-                              ...editedProfile.medicalInfo?.emergencyContact,
+                              phone: editedProfile.medicalInfo?.emergencyContact?.phone ?? "",
+                              relation: editedProfile.medicalInfo?.emergencyContact?.relation ?? "",
                               name: e.target.value,
                             },
                           },
@@ -569,10 +584,8 @@ export default function StudentProfile() {
                           medicalInfo: {
                             ...editedProfile.medicalInfo,
                             emergencyContact: {
-                              name: "",
-                              phone: "",
-                              relation: "",
-                              ...editedProfile.medicalInfo?.emergencyContact,
+                              name: editedProfile.medicalInfo?.emergencyContact?.name ?? "",
+                              relation: editedProfile.medicalInfo?.emergencyContact?.relation ?? "",
                               phone: e.target.value,
                             },
                           },
@@ -595,10 +608,8 @@ export default function StudentProfile() {
                           medicalInfo: {
                             ...editedProfile.medicalInfo,
                             emergencyContact: {
-                              name: "",
-                              phone: "",
-                              relation: "",
-                              ...editedProfile.medicalInfo?.emergencyContact,
+                              name: editedProfile.medicalInfo?.emergencyContact?.name ?? "",
+                              phone: editedProfile.medicalInfo?.emergencyContact?.phone ?? "",
                               relation: e.target.value,
                             },
                           },
@@ -661,7 +672,11 @@ export default function StudentProfile() {
                 <StudentPaymentPanel 
                   outstandingFees={studentProfile.outstandingFees} 
                   onPaymentSuccess={fetchStudentProfile}
-                  academyFees={studentProfile.academyId?.fees}
+                  academyFees={
+                    typeof studentProfile.academyId === "object" && studentProfile.academyId?.fees
+                      ? studentProfile.academyId.fees
+                      : undefined
+                  }
                 />
               )}
             </div>

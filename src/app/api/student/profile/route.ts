@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import StudentProfile from '@/lib/models/Student';
+import User from '@/lib/models/User';
 import { authMiddleware } from '@/lib/middleware/auth';
 
 export async function GET(req: NextRequest) {
@@ -27,7 +28,12 @@ export async function POST(req: NextRequest) {
     data.userId = auth.user._id;
     const student = new StudentProfile(data);
     await student.save();
-    return NextResponse.json({ success: true, data: { student } }, { status: 201 });
+
+    if (auth.user.role !== 'student') {
+      await User.findByIdAndUpdate(auth.user._id, { role: 'student' });
+    }
+
+    return NextResponse.json({ success: true, data: { studentProfile: student } }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ success: false }, { status: 500 });
   }

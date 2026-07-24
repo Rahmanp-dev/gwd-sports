@@ -141,10 +141,9 @@ class TrainerAdminService {
 
   // Toggle trainer status
   async toggleTrainerStatus(trainerId: string): Promise<TrainerResponse> {
-    const response = await apiService.patch<TrainerResponse>(
+    return apiService.patch<TrainerResponse>(
       `${this.baseUrl}/${trainerId}/toggle-status`,
     );
-    return response.data;
   }
 
   // Get trainer statistics

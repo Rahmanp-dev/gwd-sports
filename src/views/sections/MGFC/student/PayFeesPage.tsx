@@ -57,7 +57,7 @@ export default function PayFeesPage() {
   }, []);
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/user/auth" replace />;
   }
 
   const handlePayment = async () => {
@@ -78,10 +78,18 @@ export default function PayFeesPage() {
         period: "monthly",
       };
 
-      const order = await createRazorpayOrder(orderPayload);
+      const res = await createRazorpayOrder(orderPayload);
+
+      if (!res.success || !res.data?.order) {
+        toast.error(res.message || "Failed to create payment order");
+        return;
+      }
+
+      const order = res.data.order;
+      const keyId = res.data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_TGk4a8OmY6rFxG";
 
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_TGk4a8OmY6rFxG",
+        key: keyId,
         amount: order.amount,
         currency: order.currency || "INR",
         name: process.env.NEXT_PUBLIC_APP_NAME || BRAND_NAME,

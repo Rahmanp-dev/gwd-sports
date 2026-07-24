@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "@/lib/router-shim";
+import { useNavigate, Link, useLocation } from "@/lib/router-shim";
+import { getRoleHomePath } from "@/components/auth/RoleProtectedRoute";
 import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { loginUser, registerUser, clearError, logout } from "@/store/slices/authSlice";
@@ -35,6 +36,7 @@ import { BRAND_NAME } from "@/utils/constants";
 
 export default function UserAuth() {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const { isLoading, error, isAuthenticated, user } = useAppSelector(
     (state) => state.auth,
@@ -44,7 +46,7 @@ export default function UserAuth() {
 
   // Login form state
   const [loginData, setLoginData] = useState({
-    email: "",
+    email: (location.state as any)?.email || "",
     password: "",
   });
 
@@ -78,13 +80,11 @@ export default function UserAuth() {
     }
 
     if (isAuthenticated && user) {
-      // Redirect based on role
-      const target = (user.role === "admin" || user.role === "gwd_super_admin")
-        ? "/admin/dashboard" 
-        : "/user/profile";
+      const from = (location.state as any)?.from as string | undefined;
+      const target = from || getRoleHomePath(user.role);
       navigate(target, { replace: true });
     }
-  }, [isAuthenticated, user, dispatch, navigate]);
+  }, [isAuthenticated, user, dispatch, navigate, location.state]);
 
   // Clear errors when switching tabs
   useEffect(() => {

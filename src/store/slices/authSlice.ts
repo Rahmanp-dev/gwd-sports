@@ -92,6 +92,28 @@ const authSlice = createSlice({
       state.user = action.payload;
       localStorage.setItem("mg_user", JSON.stringify(action.payload));
     },
+    setSession: (
+      state,
+      action: {
+        payload: {
+          accessToken: string;
+          refreshToken?: string;
+          user: User;
+        };
+      },
+    ) => {
+      const { accessToken, refreshToken, user } = action.payload;
+      state.token = accessToken;
+      state.refreshToken = refreshToken || state.refreshToken;
+      state.user = user;
+      state.isAuthenticated = true;
+      localStorage.setItem("mg_auth_token", accessToken);
+      if (refreshToken) localStorage.setItem("mg_refresh_token", refreshToken);
+      localStorage.setItem("mg_user", JSON.stringify(user));
+      if (typeof document !== "undefined") {
+        document.cookie = `gwd_token=${accessToken}; path=/; max-age=604800`;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -190,6 +212,7 @@ const authSlice = createSlice({
         if (accessToken) {
           console.log("Storing access token in localStorage");
           localStorage.setItem("mg_auth_token", accessToken);
+          document.cookie = `gwd_token=${accessToken}; path=/; max-age=604800`;
         }
 
         if (refreshToken) {
@@ -210,5 +233,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, clearError, setUser } = authSlice.actions;
+export const { logout, clearError, setUser, setSession } = authSlice.actions;
 export default authSlice.reducer;

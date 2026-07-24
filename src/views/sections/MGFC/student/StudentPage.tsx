@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
+import { API_BASE_URL } from "@/utils/constants";
 import { authService } from "@/services/authService";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { logout, setUser } from "@/store/slices/authSlice";
@@ -65,7 +66,7 @@ export default function MGFCStudentPage() {
     const fetchProfile = async () => {
       try {
         setProfileLoading(true);
-        const res = await fetch("http://localhost:3000/api/student/profile", {
+        const res = await fetch(`${API_BASE_URL}/student/profile`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

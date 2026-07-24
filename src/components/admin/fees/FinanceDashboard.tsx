@@ -27,6 +27,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { useAppSelector } from "@/store";
+import { API_BASE_URL } from "@/utils/constants";
 import axios from "axios";
 
 function fmt(val: number): string {
@@ -404,7 +405,7 @@ export function FinanceDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { token } = useAppSelector((s) => s.auth);
-  const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api";
+  const API = API_BASE_URL;
 
   const fetchAnalytics = async () => {
     setLoading(true);

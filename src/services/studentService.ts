@@ -167,7 +167,7 @@ class StudentAdminService {
 
     // Transform the response
     return {
-      success: response,
+      success: response.success,
       data: {
         students: response.data.students.map((student: any) =>
           this.transformStudent(student),
@@ -247,10 +247,8 @@ class StudentPublicService {
 
   // Check if the student has a User profile
   async checkStudentUserProfile(email: string) {
-    const response = await apiService.get<any>(`/user`, {
-      params: { email },
-    });
-    return response.data;
+    const response = await apiService.post<any>("/user/check-email", { email });
+    return response;
   }
 
   // Create Student Profile
@@ -371,13 +369,24 @@ class StudentPublicService {
   }
 
   // Join Academy
-  async joinAcademy() {}
+  async joinAcademy(academyId: string) {
+    return apiService.post<{ success: boolean; message: string }>(
+      `${this.baseStudentUrl}/join-academy`,
+      { academyId },
+    );
+  }
 
-  // Get Attendance Records
-  async getAttendanceRecords() {}
+  async getAttendanceRecords() {
+    return apiService.get<{ success: boolean; data: { attendance: any[] } }>(
+      `${this.baseStudentUrl}/attendance`,
+    );
+  }
 
-  // Get Performance Records
-  async getPerformanceRecords() {}
+  async getPerformanceRecords() {
+    return apiService.get<{ success: boolean; data: { performance: any[] } }>(
+      `${this.baseStudentUrl}/performance`,
+    );
+  }
 
   // Request Kit
   async requestKit(kitName: string) {

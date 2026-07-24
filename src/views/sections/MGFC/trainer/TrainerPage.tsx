@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
+import { API_BASE_URL } from "@/utils/constants";
 import { authService } from "@/services/authService";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { logout } from "@/store/slices/authSlice";
@@ -173,20 +174,16 @@ export default function MGFCTrainerPage() {
     // Fetch settings for dynamic metrics
     const fetchSettings = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/admin/settings", {
+        const res = await fetch(`${API_BASE_URL}/trainer/academy-settings`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
-        console.log("Fetched settings:", data);
-        console.log("Fetched settings:", data.data);
-        if (data.success && data.data?.performanceMetrics) {
-          setPerformanceMetrics(data.data.settings.performanceMetrics);
-          if (data.data.settings.performanceMetrics.length > 0) {
-            setAddPerformanceForm((prev) => ({
-              ...prev,
-              category: data.data.settings.performanceMetrics[0],
-            }));
-          }
+        if (data.success && data.data?.performanceMetrics?.length) {
+          setPerformanceMetrics(data.data.performanceMetrics);
+          setAddPerformanceForm((prev) => ({
+            ...prev,
+            category: data.data.performanceMetrics[0],
+          }));
         }
       } catch (err) {
         console.error("Failed to load settings:", err);
@@ -205,7 +202,7 @@ export default function MGFCTrainerPage() {
         try {
           setFetchingStudents(true);
           const res = await fetch(
-            `http://localhost:3000/api/trainer/students?trainerId=${trainerProfile.userId}`,
+            `${API_BASE_URL}/trainer/students?trainerId=${trainerProfile.userId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             },
@@ -234,10 +231,10 @@ export default function MGFCTrainerPage() {
       try {
         setProfileLoading(true);
         const [trainerRes, userRes] = await Promise.all([
-          fetch("http://localhost:3000/api/trainer/profile", {
+          fetch(`${API_BASE_URL}/trainer/profile`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("http://localhost:3000/api/user/profile", {
+          fetch(`${API_BASE_URL}/user/profile`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -292,7 +289,7 @@ export default function MGFCTrainerPage() {
     try {
       setSubmittingPerformance(true);
       const res = await fetch(
-        "http://localhost:3000/api/trainer/add-performance",
+        `${API_BASE_URL}/trainer/add-performance`,
         {
           method: "POST",
           headers: {
@@ -341,7 +338,7 @@ export default function MGFCTrainerPage() {
     try {
       setSubmittingAttendance(true);
       const res = await fetch(
-        "http://localhost:3000/api/trainer/mark-attendance",
+        `${API_BASE_URL}/trainer/mark-attendance`,
         {
           method: "POST",
           headers: {
@@ -383,7 +380,7 @@ export default function MGFCTrainerPage() {
       return;
     try {
       const res = await fetch(
-        `http://localhost:3000/api/trainer/performance/${studentId}/${performanceId}`,
+        `${API_BASE_URL}/trainer/performance/${studentId}/${performanceId}`,
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
@@ -429,7 +426,7 @@ export default function MGFCTrainerPage() {
     if (!editingPerformance || !selectedStudentForPerformance) return;
     try {
       const res = await fetch(
-        `http://localhost:3000/api/trainer/performance/${selectedStudentForPerformance.user?._id}/${editingPerformance._id}`,
+        `${API_BASE_URL}/trainer/performance/${selectedStudentForPerformance.user?._id}/${editingPerformance._id}`,
         {
           method: "PUT",
           headers: {

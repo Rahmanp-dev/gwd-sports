@@ -24,6 +24,7 @@ import { useAppSelector } from "@/store";
 import { getPaymentHistory } from "@/services/paymentService";
 import type { FeePaymentRecord } from "@/services/paymentService";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/utils/constants";
 
 export default function FeesManagement() {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ export default function FeesManagement() {
 
         const [historyRes, profileRes] = await Promise.all([
           getPaymentHistory(page, 6),
-          fetch("http://localhost:3000/api/student/profile", {
+          fetch(`${API_BASE_URL}/student/profile`, {
             headers: { Authorization: `Bearer ${token}` },
           }).then((res) => res.json()),
         ]);

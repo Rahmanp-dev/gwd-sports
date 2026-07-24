@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
-import { authMiddleware } from '@/lib/middleware/auth';
+import { adminMiddleware } from '@/lib/middleware/auth';
 import StudentProfile from '@/lib/models/Student';
 
 export async function POST(req: NextRequest) {
   try {
-    const auth = await authMiddleware(req);
+    const auth = await adminMiddleware(req);
     if (auth?.error) return NextResponse.json({ success: false, message: auth.error }, { status: auth.status });
     await connectToDatabase();
 
-    const userId = (req as any).user._id;
-    const { amount, period, transactionId } = await req.json();
+    const { studentUserId, amount, period, transactionId } = await req.json();
+    if (!studentUserId || !amount) {
+      return NextResponse.json({ success: false, message: 'studentUserId and amount are required' }, { status: 400 });
+    }
+
+    const userId = studentUserId;
 
     const studentProfile = await StudentProfile.findOne({ userId });
     if (!studentProfile) {

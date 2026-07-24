@@ -20,6 +20,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     if (auth?.error) return NextResponse.json({ success: false }, { status: auth.status });
     await connectToDatabase();
     const { id } = await params;
+
+    if (auth.user.role !== 'gwd_super_admin' && auth.academyId !== id) {
+      return NextResponse.json({ success: false, message: 'Unauthorized to edit this academy' }, { status: 403 });
+    }
+
     const data = await req.json();
     const academy = await Academy.findByIdAndUpdate(id, data, { new: true });
     return NextResponse.json({ success: true, data: { academy } });

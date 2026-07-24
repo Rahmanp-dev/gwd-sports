@@ -37,6 +37,7 @@
     "jose": "^6.2.4",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.487.0",
+    "mapbox-gl": "^3.27.0",
     "mongoose": "^8.17.0",
     "motion": "^12.42.2",
     "multer": "^2.1.1",

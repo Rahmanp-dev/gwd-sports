@@ -78,6 +78,13 @@ export interface CreateAcademyDTO {
   adminName?: string;
   adminPhone?: string;
   sports?: string[];
+  // Ecosystem fields
+  coordinatesLat?: number;
+  coordinatesLng?: number;
+  ecosystemScore?: number;
+  coachName?: string;
+  verificationStatus?: 'pending' | 'verified' | 'founding';
+  gwdFoundingAcademy?: boolean;
 }
 
 export interface AcademyFilters {
@@ -115,9 +122,11 @@ export interface AcademyResponse {
 
 class AcademyService {
   private baseUrl = "/academy";
+  private adminBaseUrl = "/admin/academies";
 
   async getAllAcademies(
     filters: AcademyFilters = {},
+    options: { superAdmin?: boolean } = {},
   ): Promise<AcademyListResponse> {
     const params = new URLSearchParams();
 
@@ -130,9 +139,26 @@ class AcademyService {
       params.append("isActive", filters.isActive.toString());
 
     const queryString = params.toString();
-    const url = queryString ? `${this.baseUrl}?${queryString}` : this.baseUrl;
+    const base = options.superAdmin ? this.adminBaseUrl : this.baseUrl;
+    const url = queryString ? `${base}?${queryString}` : base;
 
-    return apiService.get<AcademyListResponse>(url);
+    const response = await apiService.get<any>(url);
+    if (options.superAdmin && response?.data?.academies) {
+      return {
+        success: true,
+        data: {
+          academies: response.data.academies,
+          pagination: {
+            currentPage: response.data.pagination?.page || 1,
+            totalPages: response.data.pagination?.totalPages || 1,
+            totalAcademies: response.data.pagination?.total || response.data.academies.length,
+            hasNextPage: (response.data.pagination?.page || 1) < (response.data.pagination?.totalPages || 1),
+            hasPrevPage: (response.data.pagination?.page || 1) > 1,
+          },
+        },
+      };
+    }
+    return response;
   }
 
   async getAcademyById(id: string): Promise<AcademyResponse> {
@@ -140,14 +166,27 @@ class AcademyService {
   }
 
   async createAcademy(data: AcademyFormData | CreateAcademyDTO | any): Promise<AcademyResponse> {
+    if ("adminEmail" in data && data.adminEmail) {
+      return this.onboardAcademy(data as CreateAcademyDTO);
+    }
     return apiService.post<AcademyResponse>(this.baseUrl, data);
+  }
+
+  async onboardAcademy(dto: CreateAcademyDTO): Promise<AcademyResponse> {
+    return apiService.post<AcademyResponse>(this.adminBaseUrl, dto);
   }
 
   async updateAcademy(
     id: string,
     data: Partial<AcademyFormData>,
+    options: { superAdmin?: boolean } = {},
   ): Promise<AcademyResponse> {
-    return apiService.put<AcademyResponse>(`${this.baseUrl}/${id}`, data);
+    const base = options.superAdmin ? this.adminBaseUrl : this.baseUrl;
+    const response = await apiService.put<any>(`${base}/${id}`, data);
+    if (options.superAdmin && response?.data && !response.data.academy) {
+      return { success: response.success, data: { academy: response.data } };
+    }
+    return response;
   }
 
   async deleteAcademy(

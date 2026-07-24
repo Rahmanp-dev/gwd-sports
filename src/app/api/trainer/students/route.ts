@@ -13,7 +13,14 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
 
     const { searchParams } = new URL(req.url);
-    const trainerId = searchParams.get('trainerId') || (req as any).user._id;
+    const requestedTrainerId = searchParams.get('trainerId');
+    const trainerId = auth.user.role === 'admin'
+      ? (requestedTrainerId || auth.user._id.toString())
+      : auth.user._id.toString();
+
+    if (auth.user.role === 'trainer' && requestedTrainerId && requestedTrainerId !== auth.user._id.toString()) {
+      return NextResponse.json({ success: false, message: 'Unauthorized to view another trainer\'s students' }, { status: 403 });
+    }
     const page = parseInt(searchParams.get('page') || '1');
     const limitNum = parseInt(searchParams.get('limit') || '10');
     const level = searchParams.get('level');

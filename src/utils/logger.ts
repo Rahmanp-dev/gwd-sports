@@ -1,4 +1,5 @@
 import { store } from "@/store";
+import { API_BASE_URL } from "@/utils/constants";
 
 type LogLevel = "info" | "warn" | "error";
 
@@ -12,7 +13,7 @@ interface LogPayload {
 
 class FrontendLogger {
   private isProduction = (process.env.NODE_ENV === "production");
-  private backendUrl = "http://localhost:3000/api"; // Default fallback, should match apiService configuration
+  private backendUrl = API_BASE_URL;
 
   private getUserId(): string | undefined {
     try {

@@ -56,14 +56,19 @@ export function StudentPaymentPanel({
 
       // Create Order on Backend
       const orderRes = await createRazorpayOrder({
+        baseAmount: paymentAmount,
         amount: paymentAmount,
         currency: "INR",
         receipt: `receipt_${Date.now()}`,
         period: selectedPlan !== "custom" && selectedPlan !== "outstanding" ? selectedPlan : undefined,
       });
 
-      const orderData = orderRes?.order || orderRes?.data?.order || (orderRes?.id ? orderRes : null);
-      const key_id = orderRes?.key_id || orderRes?.data?.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+      if (!orderRes.success || !orderRes.data?.order) {
+        throw new Error(orderRes.message || "Failed to create order");
+      }
+
+      const orderData = orderRes.data.order;
+      const key_id = orderRes.data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
 
       if (!orderData || !orderData.id) {
         throw new Error("Failed to create order");

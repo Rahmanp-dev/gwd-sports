@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     if (auth?.error) return NextResponse.json({ success: false, message: auth.error }, { status: auth.status });
     await connectToDatabase();
 
-    const trainerId = (req as any).user._id;
+    const trainerId = auth.user._id;
     const { studentId, sport, score, maxScore, remarks, category } = await req.json();
 
     if (!mongoose.Types.ObjectId.isValid(studentId)) {

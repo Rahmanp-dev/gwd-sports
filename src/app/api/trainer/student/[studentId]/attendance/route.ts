@@ -10,7 +10,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ stud
     if (auth?.error) return NextResponse.json({ success: false, message: auth.error }, { status: auth.status });
     await connectToDatabase();
 
-    const trainerId = (req as any).user._id;
+    const trainerId = auth.user._id;
     const { studentId } = await params;
     const { searchParams } = new URL(req.url);
     const fromDate = searchParams.get('fromDate');

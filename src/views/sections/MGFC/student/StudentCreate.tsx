@@ -4,6 +4,9 @@ import { useNavigate, useLocation } from "@/lib/router-shim";
 import { motion } from "framer-motion";
 import { authService } from "@/services/authService";
 import { studentPublicService } from "@/services/studentService";
+import { useAppDispatch } from "@/store";
+import { setSession } from "@/store/slices/authSlice";
+import type { User as UserType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -46,6 +49,7 @@ interface MedicalInfo {
 export default function StudentCreate() {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useAppDispatch();
   const emailFromState = location.state?.email || "";
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -203,7 +207,7 @@ export default function StudentCreate() {
         email: userDetails.email,
         phone: userDetails.phone,
         password: userDetails.password,
-        role: "user",
+        role: "student",
         sports: studentDetails.sports,
       });
 
@@ -258,16 +262,21 @@ export default function StudentCreate() {
       toast.dismiss();
       toast.success("Student profile created successfully! 🎉");
 
-      // Wait a bit for user to see success message
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      dispatch(
+        setSession({
+          accessToken,
+          refreshToken: userResponse.data.refreshToken,
+          user: {
+            ...userResponse.data.user,
+            role: "student",
+            phone: userResponse.data.user.phone || userDetails.phone,
+            sports: studentDetails.sports,
+          } as UserType,
+        }),
+      );
 
-      // Redirect to login or dashboard
-      navigate("/user/auth", {
-        state: {
-          email: userDetails.email,
-          message: "Registration successful! Please login to continue.",
-        },
-      });
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      navigate("/mgfc/student", { replace: true });
     } catch (error: any) {
       console.error("Registration error:", error);
       toast.dismiss();

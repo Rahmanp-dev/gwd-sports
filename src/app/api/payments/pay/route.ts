@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
-import { authMiddleware } from '@/lib/middleware/auth';
+import { authMiddleware, adminMiddleware } from '@/lib/middleware/auth';
 import StudentProfile from '@/lib/models/Student';
 import { FeePayment } from '@/lib/models/FeePayment';
 import mongoose from 'mongoose';
 
 export async function POST(req: NextRequest) {
   try {
-    const auth = await authMiddleware(req);
+    const auth = await adminMiddleware(req);
     if (auth?.error) {
        return NextResponse.json({ success: false, message: auth.error }, { status: auth.status });
     }
