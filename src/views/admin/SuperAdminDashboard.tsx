@@ -78,7 +78,7 @@ export default function SuperAdminDashboard() {
   const fetchAcademies = async () => {
     setIsLoading(true);
     try {
-      const response = await academyService.getAllAcademies({ limit: 100 });
+      const response = await academyService.getAllAcademies({ limit: 100 }, { superAdmin: true });
       if (response?.data?.academies) {
         setAcademies(response.data.academies);
       }
@@ -150,8 +150,8 @@ export default function SuperAdminDashboard() {
   // Handlers
   const handleDeployAcademy = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newAcademy.name || !newAcademy.slug || !newAcademy.adminEmail) {
-      toastUtils.error("Missing Fields", "Please fill out name, slug, and admin email.");
+    if (!newAcademy.name || !newAcademy.slug || !newAcademy.adminEmail || !newAcademy.adminPassword || !newAcademy.adminName || !newAcademy.adminPhone) {
+      toastUtils.error("Missing Fields", "Please fill out all required academy and admin fields.");
       return;
     }
 
@@ -184,7 +184,7 @@ export default function SuperAdminDashboard() {
 
   const handleToggleFreezeTenant = async (id: string, currentStatus: boolean) => {
     try {
-      const res = await academyService.updateAcademy(id, { isActive: !currentStatus });
+      const res = await academyService.updateAcademy(id, { isActive: !currentStatus }, { superAdmin: true });
       if (res?.success) {
         toastUtils.success(
           !currentStatus ? "Tenant Activated" : "Tenant Deactivated",
@@ -199,7 +199,7 @@ export default function SuperAdminDashboard() {
 
   const handleUpdateFee = async (id: string) => {
     try {
-      const res = await academyService.updateAcademy(id, { platformFeePercent: newFeePercent });
+      const res = await academyService.updateAcademy(id, { platformFeePercent: newFeePercent }, { superAdmin: true });
       if (res?.success) {
         toastUtils.success("Fee Schedule Updated", `Platform fee updated to ${newFeePercent}%.`);
         setEditingFeeAcademyId(null);
@@ -871,6 +871,27 @@ export default function SuperAdminDashboard() {
                   <p className="text-xs font-semibold text-blue-600 mb-2">Initial Admin Account Credentials</p>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
+                      <Label className="text-slate-600 mb-1 block">Admin Full Name</Label>
+                      <Input
+                        placeholder="e.g. Rahul Sharma"
+                        value={newAcademy.adminName}
+                        onChange={(e) => setNewAcademy({ ...newAcademy, adminName: e.target.value })}
+                        className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-600 mb-1 block">Admin Phone</Label>
+                      <Input
+                        type="tel"
+                        placeholder="+919876543210"
+                        value={newAcademy.adminPhone}
+                        onChange={(e) => setNewAcademy({ ...newAcademy, adminPhone: e.target.value })}
+                        className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl"
+                        required
+                      />
+                    </div>
+                    <div>
                       <Label className="text-slate-600 mb-1 block">Admin Email</Label>
                       <Input
                         type="email"
@@ -889,6 +910,7 @@ export default function SuperAdminDashboard() {
                         value={newAcademy.adminPassword}
                         onChange={(e) => setNewAcademy({ ...newAcademy, adminPassword: e.target.value })}
                         className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl"
+                        required
                       />
                     </div>
                   </div>
