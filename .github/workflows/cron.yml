@@ -4,6 +4,20 @@ name: Job tick
 # THE 15-MINUTE TICK, RUN FOR FREE
 # ═══════════════════════════════════════════════════════════════════════════
 #
+# THIS FILE IS THE REAL SCHEDULE. `vercel.json` carries a DAILY cron
+# (`0 3 * * *`) which is only a safety net — Vercel's Hobby plan permits one run
+# per day and rejects anything more frequent. That file has no comments in it
+# because Vercel validates vercel.json against a strict schema and rejects even
+# a `//` key, so the reasoning lives here instead.
+#
+# Running both is safe: every stage of the tick self-guards, so an overlapping
+# run cannot double-message anyone.
+#
+# `maxDuration` there is 60 rather than 300 because Hobby caps Node functions at
+# 60 seconds. Raise it on Pro or GCP, where a large queue may take longer to
+# drain.
+#
+#
 # Vercel's Hobby plan allows one cron run per day. The messaging engine is built
 # around a 15-minute cadence — on a daily schedule an attendance confirmation
 # could reach a parent a full day after their child trained, which is worse than
