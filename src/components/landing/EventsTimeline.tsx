@@ -50,7 +50,7 @@ export default function EventsTimeline({ academy }: { academy?: any }) {
           repeat: Infinity,
           ease: "linear",
         }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-to-br from-blue-50/50 to-indigo-50/50 rounded-full blur-3xl opacity-60"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-to-br from-[var(--brand-soft)]/50 to-[var(--brand-soft)]/50 rounded-full blur-3xl opacity-60"
       />
 
       <div className="relative max-w-7xl mx-auto">
@@ -68,7 +68,7 @@ export default function EventsTimeline({ academy }: { academy?: any }) {
             viewport={{ once: true }}
             className="inline-flex items-center gap-3 px-6 py-2 bg-white border border-slate-200 text-slate-600 rounded-full shadow-sm mb-8"
           >
-            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-[var(--brand)] animate-pulse" />
             <span className="text-sm font-semibold tracking-wider uppercase">
               Upcoming Events
             </span>
@@ -76,7 +76,7 @@ export default function EventsTimeline({ academy }: { academy?: any }) {
 
           <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-slate-900 mb-6 font-display tracking-tight">
             Compete &{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand)] to-[var(--brand-strong)]">
               Conquer
             </span>
           </h2>
@@ -102,7 +102,7 @@ export default function EventsTimeline({ academy }: { academy?: any }) {
               <Button
                 size="lg"
                 variant="outline"
-                className="bg-white border border-slate-200 text-slate-800 hover:bg-slate-50 hover:text-blue-600 text-lg font-semibold px-10 py-6 rounded-2xl shadow-sm hover:shadow-md transition-all"
+                className="bg-white border border-slate-200 text-slate-800 hover:bg-slate-50 hover:text-[color:var(--brand)] text-lg font-semibold px-10 py-6 rounded-[var(--brand-radius)] shadow-sm hover:shadow-md transition-all"
               >
                 View All Events
                 <ArrowRight className="ml-3 w-5 h-5" />

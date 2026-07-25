@@ -73,7 +73,9 @@ export default function HeroSection({ academy }: { academy?: any }) {
   const brandName = academy?.name || BRAND_NAME;
   const brandFirstPart = brandName.split(" ")[0] || brandName;
   const brandSecondPart = brandName.split(" ").slice(1).join(" ") || "";
-  const primaryColor = academy?.theme?.primaryColor || "#3b82f6"; // blue-500
+  // Colour is no longer read here — it arrives as CSS custom properties from
+  // <AcademyTheme>, which is why every section now honours the brand rather
+  // than only the two that remembered to accept a prop.
   const tagline = academy?.theme?.tagline || "Where Legends Are Born";
 
   return (
@@ -137,7 +139,7 @@ export default function HeroSection({ academy }: { academy?: any }) {
                 : 0,
           }}
           transition={{ duration: 1.5, delay: 0.8 }}
-          className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-500/10 via-transparent to-transparent"
+          className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-[var(--brand)]/10 via-transparent to-transparent"
         />
       </div>
 
@@ -158,7 +160,7 @@ export default function HeroSection({ academy }: { academy?: any }) {
                 scale: { duration: 20, repeat: Infinity, ease: "linear" },
                 rotate: { duration: 20, repeat: Infinity, ease: "linear" },
               }}
-              className="absolute top-20 right-20 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"
+              className="absolute top-20 right-20 w-96 h-96 bg-[var(--brand)]/5 rounded-full blur-3xl"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0 }}
@@ -172,7 +174,7 @@ export default function HeroSection({ academy }: { academy?: any }) {
                 scale: { duration: 25, repeat: Infinity, ease: "linear" },
                 rotate: { duration: 25, repeat: Infinity, ease: "linear" },
               }}
-              className="absolute bottom-20 left-20 w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-3xl"
+              className="absolute bottom-20 left-20 w-[500px] h-[500px] bg-[var(--brand)]/5 rounded-full blur-3xl"
             />
           </>
         )}
@@ -266,7 +268,7 @@ export default function HeroSection({ academy }: { academy?: any }) {
                           : -50,
                     }}
                     transition={{ duration: 1, delay: 2.2 }}
-                    className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 font-display"
+                    className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand)] via-[var(--accent)] to-[var(--brand-strong)] font-display"
                   >
                     {brandSecondPart}
                   </motion.span>
@@ -326,7 +328,7 @@ export default function HeroSection({ academy }: { academy?: any }) {
               >
                 <Button
                   size="lg"
-                  className="relative bg-slate-900 text-white hover:bg-slate-800 text-lg font-semibold tracking-wide px-10 py-6 rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden"
+                  className="relative bg-slate-900 text-white hover:bg-slate-800 text-lg font-semibold tracking-wide px-10 py-6 rounded-[var(--brand-radius)] shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden"
                   onClick={() => {
                     window.location.href = "/user/auth";
                   }}

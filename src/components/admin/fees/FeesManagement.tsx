@@ -269,12 +269,25 @@ export const FeesManagement: React.FC = () => {
                     className="bg-white border-b hover:bg-slate-50 transition-colors"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
+                      {/* The parent-facing receipt number when there is one —
+                          `receipt` is the internal Razorpay order reference and
+                          means nothing to anybody outside this table. */}
                       <div className="font-semibold text-slate-900">
-                        {fee.receipt || "No Receipt ID"}
+                        {(fee as any).receiptNumber || fee.receipt || "—"}
                       </div>
                       <div className="text-xs text-slate-400 mt-1 font-mono">
                         {fee.paymentId || fee.orderId}
                       </div>
+                      {fee.status === "success" && (
+                        <a
+                          href={`/receipt/${fee._id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-1 inline-block text-xs font-medium text-blue-600 hover:underline"
+                        >
+                          View receipt →
+                        </a>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       {/* Depending on if studentId was fully populated by backend, show it here safely */}

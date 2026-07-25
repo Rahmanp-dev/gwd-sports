@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, useReducedMotion } from "motion/react";
+// framer-motion, not "motion/react": both packages were installed, which meant
+// shipping two copies of the same animation runtime for the sake of one file.
+import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { ArrowUpRight, MapPin } from "lucide-react";
 import { academyService, Academy } from "@/services/academyService";

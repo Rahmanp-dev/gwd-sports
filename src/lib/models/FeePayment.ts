@@ -56,6 +56,18 @@ export interface IFeePayment extends Document {
 
   description?: string;
   period?: string;
+
+  /**
+   * The parent-facing receipt number, e.g. "MGFC/2627/00042".
+   *
+   * Distinct from `receipt`, which is the internal Razorpay order reference.
+   * Allocated ONLY on successful settlement — see lib/payments/receiptNumber.ts
+   * for why numbering an unpaid order would leave permanent gaps in a series
+   * that is required to be gapless.
+   */
+  receiptNumber?: string;
+  receiptIssuedAt?: Date;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -103,6 +115,11 @@ const feePaymentSchema = new Schema<IFeePayment>(
 
     description: { type: String },
     period: { type: String },
+
+    // Unique sparse: two payments must never share a receipt number, and
+    // unsettled orders have none.
+    receiptNumber: { type: String, unique: true, sparse: true },
+    receiptIssuedAt: { type: Date },
   },
   { timestamps: true }
 );

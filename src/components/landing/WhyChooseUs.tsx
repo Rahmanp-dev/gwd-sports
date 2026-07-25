@@ -9,22 +9,22 @@ const reasons = [
     icon: Award,
     title: "Elite Coaches",
     description: "Train with world champions and certified professionals",
-    gradient: "from-blue-50 to-indigo-50",
-    iconColor: "text-blue-600",
+    gradient: "from-[var(--brand-soft)] to-[var(--brand-soft)]",
+    iconColor: "text-[color:var(--brand)]",
   },
   {
     icon: Target,
     title: "Proven Results",
     description: "Science-backed training that delivers champions",
-    gradient: "from-sky-50 to-blue-50",
+    gradient: "from-sky-50 to-[var(--brand-soft)]",
     iconColor: "text-sky-600",
   },
   {
     icon: Users,
     title: "Strong Community",
     description: "Join a family of 10,000+ dedicated athletes",
-    gradient: "from-indigo-50 to-purple-50",
-    iconColor: "text-indigo-600",
+    gradient: "from-[var(--brand-soft)] to-purple-50",
+    iconColor: "text-[color:var(--brand)]",
   },
   {
     icon: TrendingUp,
@@ -67,14 +67,14 @@ export default function WhyChooseUs({ academy }: { academy?: any }) {
             viewport={{ once: true }}
             className="inline-flex items-center gap-3 px-6 py-2 bg-white border border-slate-200 text-slate-600 rounded-full shadow-sm mb-8"
           >
-            <span className="w-2 h-2 rounded-full bg-blue-500" />
+            <span className="w-2 h-2 rounded-full bg-[var(--brand)]" />
             <span className="text-sm font-semibold tracking-wider uppercase">
               Why {academy?.name || BRAND_NAME}
             </span>
           </motion.div>
 
           <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-slate-900 mb-6 font-display tracking-tight">
-            The Elite <span className="text-blue-600">Difference</span>
+            The Elite <span className="text-[color:var(--brand)]">Difference</span>
           </h2>
         </motion.div>
 
@@ -101,7 +101,7 @@ export default function WhyChooseUs({ academy }: { academy?: any }) {
                   <motion.div
                     whileHover={{ scale: 1.1, rotate: 5 }}
                     transition={{ duration: 0.3 }}
-                    className={`w-16 h-16 bg-white border border-slate-100 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:shadow-md transition-all duration-300`}
+                    className={`w-16 h-16 bg-white border border-slate-100 rounded-[var(--brand-radius)] flex items-center justify-center mb-6 shadow-sm group-hover:shadow-md transition-all duration-300`}
                   >
                     <reason.icon className={`w-8 h-8 ${reason.iconColor}`} />
                   </motion.div>

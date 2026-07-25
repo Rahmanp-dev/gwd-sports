@@ -25,12 +25,13 @@ import {
   loadRazorpayScript,
 } from "@/services/paymentService";
 import { motion } from "framer-motion";
-import { BRAND_NAME } from "@/utils/constants";
+import { useBrand } from "@/hooks/useBrand";
 
 export default function PayFeesPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAppSelector((state) => state.auth);
+  const brand = useBrand();
 
   const [loading, setLoading] = useState(false);
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
@@ -92,7 +93,10 @@ export default function PayFeesPage() {
         key: keyId,
         amount: order.amount,
         currency: order.currency || "INR",
-        name: process.env.NEXT_PUBLIC_APP_NAME || BRAND_NAME,
+        // The name on the Razorpay modal. A parent paying MasterGrade should
+        // see MasterGrade there, not the platform — an unfamiliar name on a
+        // payment screen is where people abandon a checkout.
+        name: brand.name,
         description: `Academy Fees Payment - ${user.name} (${user.email})`,
         order_id: order.id,
         notes: {

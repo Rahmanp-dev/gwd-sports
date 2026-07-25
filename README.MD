@@ -447,3 +447,12 @@ Deploy the Next.js app as a single service.
 - **Discovery Portal**: Built a global `/discover` page with advanced search and filtering to help users find and join active academies.
 - **Legal & Compliance**: Added Razorpay-mandated legal pages (Privacy Policy, Terms & Conditions, Refund Policy, Contact Us) and a unified global footer.
 - **Codebase Audit**: Cleared all TODOs, removed hardcoded localhost references, resolved all Next.js 15 build/type errors, and updated `.env.example` with the new production service keys.
+
+### July 2026 — Platform Operations & Communications (Phases 0–5)
+- **Phase 0 (Payment Hardening):** Resolved critical payment routing bugs, implemented strict integer-paise math, and hardened Razorpay webhook processing with HMAC signatures. Added a local browser-based fallback verification route (`/pay/verify`).
+- **Phase 1 (Bulk Onboarding):** Implemented an OCR/CSV/Text import wizard with a robust data staging pipeline and atomic MongoDB commits to handle batch student uploads flawlessly.
+- **Phase 2 (WhatsApp Communication Engine):** Built a high-reliability messaging queue, scheduler, and registry of Meta-approved templates. Added an Alert Feed and Message Log to the Admin dashboard.
+- **Phase 3 (Dual-Mode Attendance):** Built a robust attendance engine featuring parent QR self-check-in windows and a coach one-click checklist, intelligently merged to prevent double-messaging.
+- **Phase 4 (Parent-Facing Surface):** Created secure, unauthenticated public routes (`/passport/[id]` and `/pay/[id]`) for WhatsApp sharing with strict privacy whitelists and zero data leakage.
+- **Phase 5 (Performance Taxonomy & Achievements):** Rebuilt the performance architecture with categorized metrics (Tactical, Technical, SSG, Match Play) and an automated rule-based achievement/badge generator.
+- **Production Hardening:** Centralized branding studio with dynamic CSS variables, optimized Admin Dashboard using Next.js code splitting (saving ~85% on first load JS), and configured Vercel cron jobs for the messaging engine.

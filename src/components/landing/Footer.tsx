@@ -27,7 +27,7 @@ export default function Footer({ academy }: { academy?: any }) {
       <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-30" />
 
       {/* Top Border Accent */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-500" />
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[var(--brand)] via-[var(--accent)] to-[var(--brand-strong)]" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         {/* Main Footer Content */}
@@ -40,11 +40,11 @@ export default function Footer({ academy }: { academy?: any }) {
           >
             <h3 className="text-4xl font-bold mb-4 tracking-tight font-display text-slate-900">
               {brandFirstPart}{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand)] to-[var(--brand-strong)]">
                 {brandSecondPart}
               </span>
             </h3>
-            <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mb-6 rounded-full" />
+            <div className="w-16 h-1 bg-gradient-to-r from-[var(--brand)] to-[var(--brand-strong)] mb-6 rounded-full" />
             <p className="text-slate-500 mb-8 leading-relaxed font-medium">
               Building legends since 2010. Where champions train and achieve greatness.
             </p>
@@ -56,7 +56,7 @@ export default function Footer({ academy }: { academy?: any }) {
                   key={index}
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-12 h-12 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 text-slate-500 flex items-center justify-center rounded-xl transition-all duration-300 shadow-sm hover:shadow-md border border-slate-100"
+                  className="w-12 h-12 bg-slate-50 hover:bg-[var(--brand-soft)] hover:text-[color:var(--brand)] text-slate-500 flex items-center justify-center rounded-xl transition-all duration-300 shadow-sm hover:shadow-md border border-slate-100"
                 >
                   <Icon className="w-5 h-5" />
                 </motion.button>
@@ -86,9 +86,9 @@ export default function Footer({ academy }: { academy?: any }) {
                 <li key={item.label}>
                   <Link
                     to={item.href}
-                    className="text-slate-500 hover:text-blue-600 transition-colors font-medium flex items-center gap-2 group"
+                    className="text-slate-500 hover:text-[color:var(--brand)] transition-colors font-medium flex items-center gap-2 group"
                   >
-                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500 transition-colors" />
+                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-[color:var(--brand)] transition-colors" />
                     {item.label}
                   </Link>
                 </li>
@@ -119,9 +119,9 @@ export default function Footer({ academy }: { academy?: any }) {
                 <li key={sport.label}>
                   <Link
                     to={sport.href}
-                    className="text-slate-500 hover:text-blue-600 transition-colors font-medium flex items-center gap-2 group"
+                    className="text-slate-500 hover:text-[color:var(--brand)] transition-colors font-medium flex items-center gap-2 group"
                   >
-                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500 transition-colors" />
+                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-[color:var(--brand)] transition-colors" />
                     {sport.label}
                   </Link>
                 </li>
@@ -141,20 +141,20 @@ export default function Footer({ academy }: { academy?: any }) {
             </h4>
             <ul className="space-y-6">
               <li className="flex items-start gap-4 text-slate-500 hover:text-slate-700 transition-colors group">
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
-                  <Phone className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 bg-[var(--brand-soft)] rounded-lg flex items-center justify-center shrink-0 group-hover:bg-[var(--brand-soft)] transition-colors">
+                  <Phone className="w-5 h-5 text-[color:var(--brand)]" />
                 </div>
                 <span className="font-medium mt-2">{phone}</span>
               </li>
               <li className="flex items-start gap-4 text-slate-500 hover:text-slate-700 transition-colors group">
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
-                  <Mail className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 bg-[var(--brand-soft)] rounded-lg flex items-center justify-center shrink-0 group-hover:bg-[var(--brand-soft)] transition-colors">
+                  <Mail className="w-5 h-5 text-[color:var(--brand)]" />
                 </div>
                 <span className="font-medium mt-2 break-all">{email}</span>
               </li>
               <li className="flex items-start gap-4 text-slate-500 hover:text-slate-700 transition-colors group">
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
-                  <MapPin className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 bg-[var(--brand-soft)] rounded-lg flex items-center justify-center shrink-0 group-hover:bg-[var(--brand-soft)] transition-colors">
+                  <MapPin className="w-5 h-5 text-[color:var(--brand)]" />
                 </div>
                 <span className="font-medium mt-2">{location}</span>
               </li>
@@ -176,19 +176,19 @@ export default function Footer({ academy }: { academy?: any }) {
           <div className="flex gap-8">
             <Link
               to="/contact"
-              className="text-slate-500 hover:text-blue-600 transition-colors font-semibold text-sm"
+              className="text-slate-500 hover:text-[color:var(--brand)] transition-colors font-semibold text-sm"
             >
               Contact Us
             </Link>
             <Link
               to="/privacy-policy"
-              className="text-slate-500 hover:text-blue-600 transition-colors font-semibold text-sm"
+              className="text-slate-500 hover:text-[color:var(--brand)] transition-colors font-semibold text-sm"
             >
               Privacy
             </Link>
             <Link
               to="/terms-and-conditions"
-              className="text-slate-500 hover:text-blue-600 transition-colors font-semibold text-sm"
+              className="text-slate-500 hover:text-[color:var(--brand)] transition-colors font-semibold text-sm"
             >
               Terms
             </Link>

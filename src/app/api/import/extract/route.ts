@@ -12,6 +12,7 @@ import {
   OcrExtractionError,
 } from '@/lib/import/ocr';
 import { stageRows } from '@/lib/import/flags';
+import { summarise } from '@/lib/import/summarise';
 import type { ExtractedRow } from '@/lib/import/types';
 
 /**
@@ -201,17 +202,8 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export function summarise(rows: Array<{ status: string }>) {
-  const counts = { total: rows.length, ready: 0, needsReview: 0, skipped: 0, created: 0, failed: 0 };
-  for (const row of rows) {
-    if (row.status === 'ready') counts.ready++;
-    else if (row.status === 'needs_review' || row.status === 'pending') counts.needsReview++;
-    else if (row.status === 'skipped') counts.skipped++;
-    else if (row.status === 'created') counts.created++;
-    else if (row.status === 'failed') counts.failed++;
-  }
-  return counts;
-}
+// `summarise` moved to lib/import/summarise.ts — a route module may only
+// export handlers and config in Next 15, and exporting it here broke typegen.
 
 /** Base64 is ~4/3 the size of the bytes it encodes. */
 function approximateDataUrlBytes(dataUrl: string): number {

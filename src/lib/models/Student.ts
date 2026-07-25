@@ -1,10 +1,31 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
+/**
+ * Who put this mark here. Both modes write the same record — this is what tells
+ * them apart afterwards, and it is what lets the coach's checklist overwrite a
+ * parent's self-check-in without the two being confused for each other.
+ */
+export type AttendanceSource = 'coach' | 'self_qr';
+
 export interface IAttendance {
   date: Date;
   present: boolean;
   markedBy: mongoose.Types.ObjectId;
   remarks?: string;
+
+  /**
+   * "<batchId>:<YYYY-MM-DD>", derived — see lib/attendance/session.ts. The
+   * idempotency key for the whole feature: a parent scanning at the gate and a
+   * coach ticking the same child ten minutes later resolve to this same string,
+   * so they produce one record and one parent message rather than two.
+   *
+   * Optional because records created before Phase 3 have no session.
+   */
+  sessionId?: string;
+  batchId?: mongoose.Types.ObjectId;
+  source?: AttendanceSource;
+  /** When the parent actually scanned, as distinct from when it was recorded. */
+  checkedInAt?: Date;
 }
 
 export interface IKit {
@@ -22,7 +43,26 @@ export interface IPerformance {
   remarks: string;
   evaluatedBy: mongoose.Types.ObjectId;
   evaluatedAt: Date;
-  category: string; // e.g., "fitness", "technique", "game"
+
+  /**
+   * LEGACY free text ("fitness", "technique", "game"). Kept required so old
+   * records keep validating, and still written on new ones for any dashboard
+   * that reads it. Do NOT group or average on this — see categoryKey.
+   */
+  category: string;
+
+  /**
+   * One of the four fixed assessment categories — see
+   * lib/performance/taxonomy.ts. Optional only because records written before
+   * Phase 5 do not have it; those are mapped on read by `categoryFromLegacy`.
+   *
+   * This exists because averaging a technical drill against a match-play
+   * assessment produces a number that moves when the coach changes what they
+   * test, not when the child changes.
+   */
+  categoryKey?: string;
+  /** The specific thing assessed within that category, e.g. "first touch". */
+  metric?: string;
 }
 
 export interface IFeePayment {
@@ -213,6 +253,23 @@ const StudentProfileSchema = new Schema<IStudentProfile>({
     remarks: {
       type: String,
       trim: true
+    },
+    // Phase 3. All optional: rows written before dated sessions existed have
+    // none of these, and must keep loading.
+    sessionId: {
+      type: String,
+      index: true
+    },
+    batchId: {
+      type: Schema.Types.ObjectId,
+      ref: "Batch"
+    },
+    source: {
+      type: String,
+      enum: ["coach", "self_qr"]
+    },
+    checkedInAt: {
+      type: Date
     }
   }],
   kits: [{
@@ -273,6 +330,18 @@ const StudentProfileSchema = new Schema<IStudentProfile>({
       type: String,
       required: true,
       trim: true
+    },
+    // Phase 5. Optional so pre-existing records keep loading; they are mapped
+    // onto the taxonomy on read.
+    categoryKey: {
+      type: String,
+      enum: ["tactical", "technical", "ssg", "match_play"],
+      index: true
+    },
+    metric: {
+      type: String,
+      trim: true,
+      lowercase: true
     }
   }],
   sports: [{

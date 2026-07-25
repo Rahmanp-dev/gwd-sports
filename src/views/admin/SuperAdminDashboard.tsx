@@ -28,8 +28,10 @@ import {
   CheckCircle2,
   X,
   ChevronRight,
-  Filter
+  Filter,
+  MessagesSquare
 } from "lucide-react";
+import { CommunicationCenter } from "@/components/admin/messaging/CommunicationCenter";
 import { academyService, Academy, CreateAcademyDTO } from "@/services/academyService";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -52,7 +54,7 @@ export default function SuperAdminDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [isUsersLoading, setIsUsersLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<"tenants" | "revenue" | "users" | "health">("tenants");
+  const [activeTab, setActiveTab] = useState<"tenants" | "revenue" | "users" | "comms" | "health">("tenants");
   
   // New Academy Modal State
   const [isDeployModalOpen, setIsDeployModalOpen] = useState(false);
@@ -448,6 +450,22 @@ export default function SuperAdminDashboard() {
               Global User Directory
             </button>
 
+            {/* Platform-wide comms. The same components the academy admin
+                sees — the APIs already widen to every tenant for this role and
+                add academy attribution, so nothing here is a second
+                implementation. */}
+            <button
+              onClick={() => setActiveTab("comms")}
+              className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${
+                activeTab === "comms"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <MessagesSquare className="w-3.5 h-3.5 inline mr-1.5" />
+              Communications
+            </button>
+
             <button
               onClick={() => setActiveTab("health")}
               className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${
@@ -829,6 +847,12 @@ export default function SuperAdminDashboard() {
         )}
 
         {/* TAB 4: SYSTEM HEALTH */}
+        {activeTab === "comms" && (
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs">
+            <CommunicationCenter />
+          </div>
+        )}
+
         {activeTab === "health" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-3">

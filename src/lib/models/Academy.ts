@@ -58,6 +58,7 @@ export interface IAcademy extends Document {
     logoUrl: string;
     heroImages: string[];
     tagline: string;
+    style?: 'bold' | 'classic' | 'minimal';
   };
   platformFeePercent: number;
   coordinates?: {
@@ -74,6 +75,36 @@ export interface IAcademy extends Document {
   verificationStatus: 'pending' | 'verified' | 'founding';
   createdAt: Date;
   updatedAt: Date;
+}
+
+/**
+ * Coerces a weekday to the canonical lowercase full name.
+ *
+ * Accepts what is actually in the database and what people type: "Mon",
+ * "MONDAY", " monday ". Anything unrecognised is returned untouched so the
+ * enum still rejects genuine nonsense — this normalises, it does not silence.
+ */
+const WEEKDAY_BY_PREFIX: Record<string, string> = {
+  mon: 'monday',
+  tue: 'tuesday',
+  wed: 'wednesday',
+  thu: 'thursday',
+  fri: 'friday',
+  sat: 'saturday',
+  sun: 'sunday',
+};
+
+export function normaliseWorkingDay(value: unknown): unknown {
+  if (typeof value !== 'string') return value;
+  const cleaned = value.trim().toLowerCase();
+  if (!cleaned) return value;
+  const canonical = WEEKDAY_BY_PREFIX[cleaned.slice(0, 3)];
+  // Only accept a prefix match if the whole string is consistent with it —
+  // "sunflower" must not silently become "sunday".
+  if (canonical && (cleaned === canonical || cleaned === cleaned.slice(0, 3))) {
+    return canonical;
+  }
+  return value;
 }
 
 const AcademySchema = new Schema<IAcademy>({
@@ -170,8 +201,19 @@ const AcademySchema = new Schema<IAcademy>({
       required: true,
       match: [/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Please enter valid time format (HH:MM)']
     },
+    /**
+     * Canonical form is lowercase full names. Real documents in the database
+     * hold "Mon", "Tue", "Wed" — written before this enum existed.
+     *
+     * That mismatch is not cosmetic: Mongoose validates the ENTIRE document on
+     * save(), so a legacy value here failed any unrelated write to the academy
+     * and took the whole student import down with it. The setter coerces on
+     * write, so every save from now on normalises rather than rejects. Existing
+     * documents are fixed by scripts/normalize-working-days.js.
+     */
     workingDays: [{
       type: String,
+      set: normaliseWorkingDay,
       enum: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
     }]
   },
@@ -223,7 +265,17 @@ const AcademySchema = new Schema<IAcademy>({
     accentColor: { type: String, default: '#c8971a' },
     logoUrl: { type: String, default: '' },
     heroImages: [{ type: String }],
-    tagline: { type: String, default: '' }
+    tagline: { type: String, default: '' },
+    /**
+     * How the page feels: corner radius, shadow weight and how heavily the
+     * brand colour tints surfaces. Three coherent presets rather than a pile of
+     * sliders — see lib/branding/palette.ts for why.
+     */
+    style: {
+      type: String,
+      enum: ['bold', 'classic', 'minimal'],
+      default: 'classic'
+    }
   },
   platformFeePercent: {
     type: Number,

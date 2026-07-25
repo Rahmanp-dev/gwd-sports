@@ -29,18 +29,48 @@ class FrontendLogger {
     }
   }
 
+  /**
+   * Folds the useful parts of `metadata` into the message itself.
+   *
+   * WHY. This used to log `console.error("[ERROR] " + message, payload)`, and
+   * Next's dev overlay renders that wrapper object as `{}` — so a failed import
+   * surfaced as `[ERROR] API Request Failed {}` with the status code, endpoint
+   * and server message all present in the payload but invisible. A log line that
+   * hides the one fact you opened it for is worse than no log line.
+   *
+   * Only scalars are inlined; anything structural stays in the object argument
+   * for devtools to expand.
+   */
+  private summarise(metadata?: Record<string, any>): string {
+    if (!metadata) return "";
+    const parts = Object.entries(metadata)
+      .filter(
+        ([, value]) =>
+          value !== undefined &&
+          value !== null &&
+          value !== "" &&
+          (typeof value === "string" ||
+            typeof value === "number" ||
+            typeof value === "boolean"),
+      )
+      .map(([key, value]) => `${key}=${value}`);
+    return parts.length ? ` — ${parts.join(" ")}` : "";
+  }
+
   private async sendLog(payload: LogPayload) {
     if (!this.isProduction) {
-      // In development, log to console
+      // In development, log to console. The metadata is summarised into the
+      // message so it survives whatever the dev overlay does to the object.
+      const line = `[${payload.level.toUpperCase()}] ${payload.message}${this.summarise(payload.metadata)}`;
       switch (payload.level) {
         case "info":
-          console.info(`[INFO] ${payload.message}`, payload);
+          console.info(line, payload.metadata ?? {});
           break;
         case "warn":
-          console.warn(`[WARN] ${payload.message}`, payload);
+          console.warn(line, payload.metadata ?? {});
           break;
         case "error":
-          console.error(`[ERROR] ${payload.message}`, payload);
+          console.error(line, payload.metadata ?? {});
           break;
       }
       return;

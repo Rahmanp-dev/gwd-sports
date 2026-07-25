@@ -46,7 +46,14 @@ export async function runEventDispatchTick(
   const pending = await DomainEvent.find({
     status: 'pending',
     availableAt: { $lte: now },
-    name: { $in: ['student.created', 'attendance.created', 'payment.settled'] },
+    name: {
+      $in: [
+        'student.created',
+        'attendance.created',
+        'achievement.created',
+        'payment.settled',
+      ],
+    },
   })
     .sort({ availableAt: 1 })
     .limit(limit);
@@ -112,6 +119,8 @@ async function handleEvent(event: IDomainEvent): Promise<HandleOutcome> {
       return handleStudentCreated(event);
     case 'attendance.created':
       return handleAttendanceCreated(event);
+    case 'achievement.created':
+      return handleAchievementCreated(event);
     case 'payment.settled':
       return handlePaymentSettled(event);
     default:
@@ -217,6 +226,54 @@ async function handleAttendanceCreated(event: IDomainEvent): Promise<HandleOutco
       childName: p.studentName,
       checkInTime,
       academyName: p.academyName ?? 'your academy',
+    },
+  });
+
+  return toOutcome(enqueued);
+}
+
+/**
+ * TRIGGER 3 — ACHIEVEMENT
+ *
+ * "🏅 [Child] earned [badge] at [academy]!"
+ *
+ * The producer is Phase 5 (lib/performance/award.ts). This template sat in the
+ * registry from Phase 2 with nothing able to send it.
+ *
+ * This is the one message in the set built to be FORWARDED — the template notes
+ * call it "distribution and retention in one motion". That is also why the
+ * achievement rules are strict: a badge every child earns in a fortnight is
+ * forwarded by nobody, and still spends the parent's daily message budget.
+ */
+async function handleAchievementCreated(event: IDomainEvent): Promise<HandleOutcome> {
+  const p = event.payload as Record<string, any>;
+
+  if (!p.parentPhone) {
+    return { status: 'skipped', reason: 'No parent phone on the achievement event.' };
+  }
+  if (!p.passportId || !p.studentName || !p.achievementName) {
+    return { status: 'skipped', reason: 'Achievement event is missing required details.' };
+  }
+  if (!p.passportUrl) {
+    return { status: 'skipped', reason: 'Achievement event has no passport URL to link to.' };
+  }
+
+  const enqueued = await enqueueMessage({
+    templateKey: 'achievement',
+    recipientPhone: p.parentPhone,
+    recipientName: p.parentName ?? null,
+    academyId: p.academyId ?? event.academyId,
+    passportId: p.passportId,
+    studentUserId: p.studentUserId ?? null,
+    sourceEventId: event._id as any,
+    // One message per badge per student, forever. The badge itself cannot be
+    // re-earned, but a replayed event must not re-congratulate.
+    dedupeKey: `achievement:${p.passportId}:${p.achievementKey}`,
+    variables: {
+      childName: p.studentName,
+      achievementName: p.achievementName,
+      academyName: p.academyName ?? 'your academy',
+      passportUrl: p.passportUrl,
     },
   });
 

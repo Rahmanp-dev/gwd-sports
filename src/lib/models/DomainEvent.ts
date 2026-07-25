@@ -18,6 +18,7 @@ export type DomainEventName =
   | 'payment.settled'
   | 'payment.failed'
   | 'attendance.created'
+  | 'achievement.created'
   | 'fee.due'
   | 'fee.overdue';
 

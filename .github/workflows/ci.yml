@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A second push to the same branch makes the first run irrelevant. Cancel it
+# rather than queueing behind work nobody is waiting for.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # Ordered cheapest-first so an obvious break fails in seconds rather than
+      # after a three-minute build.
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+        env:
+          # The build imports modules that read these at load time. They are
+          # deliberately DUMMY values — CI must never hold credentials that can
+          # message a real parent or move real money, and nothing in the build
+          # makes a network call with them.
+          NODE_ENV: production
+          NEXT_PUBLIC_APP_URL: https://example.invalid
+          NEXT_PUBLIC_RAZORPAY_KEY_ID: rzp_test_ci
+          RAZORPAY_KEY_SECRET: ci-not-a-real-secret
+          JWT_SECRET: ci-not-a-real-secret
+          MONGODB_URI: mongodb://127.0.0.1:27017/ci
+          # Sentry upload is skipped without a token; the build still succeeds.
+          SENTRY_AUTH_TOKEN: ''

@@ -4,6 +4,7 @@ import { Loader2, Plus, Trash2, Save, Upload, X } from "lucide-react";
 import { IMAGE_BASE_URL } from "@/utils/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CATEGORY_DEFINITIONS } from "@/lib/performance/taxonomy";
 import {
   Select,
   SelectContent,
@@ -142,16 +143,48 @@ export const SettingsManagement = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Performance Metrics</CardTitle>
+          <CardTitle>Your assessment vocabulary</CardTitle>
           <CardDescription>
-            Define the metrics trainers will use to evaluate students. Metrics
-            can take integer values.
+            Extra metric names your coaches can pick when evaluating a student —
+            alongside the suggestions already built into each area of the game.
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/*
+            These used to BE the categories, and this card was labelled
+            "Performance Metrics". Phase 5 fixed the underlying problem — a
+            technical drill and a match-play assessment were being averaged
+            together — by making the four areas fixed in code. This list now
+            means something narrower, and saying so is the point: an owner who
+            adds "match play" here expecting it to become a category would be
+            quietly wrong.
+          */}
+          <div className="mb-5 rounded-lg border border-slate-200 bg-slate-50 p-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              The four areas are fixed
+            </p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {Object.values(CATEGORY_DEFINITIONS).map((definition) => (
+                <span
+                  key={definition.key}
+                  className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600"
+                  title={definition.description}
+                >
+                  {definition.label}
+                </span>
+              ))}
+            </div>
+            <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
+              Every score belongs to one of these, and scores are only ever
+              averaged within an area. They are the same at every academy so a
+              student's record still means something after a transfer — which is
+              why they cannot be edited here.
+            </p>
+          </div>
+
           <div className="flex gap-2 max-w-md mb-6">
             <Input
-              placeholder="e.g. stamina, strike..."
+              placeholder="e.g. first touch, work rate..."
               value={newMetric}
               onChange={(e) => setNewMetric(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAddMetric()}
@@ -164,7 +197,8 @@ export const SettingsManagement = () => {
           <div className="flex flex-wrap gap-2">
             {settings.performanceMetrics.length === 0 ? (
               <span className="text-sm text-slate-500 italic">
-                No metrics defined.
+                None added — coaches will see the built-in suggestions for each
+                area, and can type anything else they need.
               </span>
             ) : (
               settings.performanceMetrics.map((metric, idx) => (

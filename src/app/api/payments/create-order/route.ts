@@ -1,30 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { authMiddleware } from '@/lib/middleware/auth';
-import Razorpay from 'razorpay';
-import { FeePayment } from '@/lib/models/FeePayment';
-import { Academy } from '@/lib/models/Academy';
 import StudentProfile from '@/lib/models/Student';
+import { MoneyError } from '@/lib/payments/money';
 import {
-  computeFeeSplit,
-  configuredSplitConfig,
-  percentToBps,
-  paiseToRupees,
-  formatInr,
-  MoneyError,
-} from '@/lib/payments/money';
-import {
-  resolveAmountDue,
   validateAdminSuppliedAmount,
   NoFeeConfiguredError,
   type FeePeriod,
 } from '@/lib/payments/dues';
-import { resolveSettlementStrategy } from '@/lib/payments/settlement';
-
-const razorpay = new Razorpay({
-  key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || '',
-});
+import { createFeeOrder, NothingDueError } from '@/lib/payments/createOrder';
 
 const ADMIN_ROLES = ['admin', 'gwd_super_admin'];
 
@@ -34,6 +18,11 @@ const ADMIN_ROLES = ['admin', 'gwd_super_admin'];
  * The amount is ALWAYS derived server-side (see dues.ts). A `baseAmount` in the
  * request body is ignored for non-admin callers — it used to be trusted, which
  * let a parent open devtools and set their own price.
+ *
+ * This route now owns only AUTHORISATION — who may be charged, and who may name
+ * an ad-hoc amount. The money itself (split, settlement, order, ledger row)
+ * lives in lib/payments/createOrder.ts, shared with the public /pay/<passportId>
+ * page so the two cannot drift apart on what a parent is charged.
  *
  * Body:
  *   period?        'monthly' | 'quarterly' | 'halfYearly' | 'yearly'
@@ -86,108 +75,37 @@ export async function POST(req: NextRequest) {
     const academyId = profile?.academyId ?? auth.academyId ?? null;
 
     // ---- How much -----------------------------------------------------------
-    let baseAmountPaise: number;
-    let amountSource: string;
-
-    if (isAdmin && body.amount !== undefined) {
-      // Admins may enter an ad-hoc amount (kit charge, partial settlement).
-      baseAmountPaise = validateAdminSuppliedAmount(body.amount);
-      amountSource = 'admin_supplied';
-    } else {
-      const due = await resolveAmountDue({ studentUserId, academyId, period });
-      baseAmountPaise = due.baseAmountPaise;
-      amountSource = due.source;
-    }
-
-    if (baseAmountPaise <= 0) {
-      return NextResponse.json(
-        { success: false, message: 'Nothing is currently due for this student' },
-        { status: 400 }
-      );
-    }
-
-    // ---- Split --------------------------------------------------------------
-    const academy = academyId ? await Academy.findById(academyId) : null;
-    const marginRateBps =
-      academy && typeof academy.platformFeePercent === 'number'
-        ? percentToBps(academy.platformFeePercent)
+    // Admins may enter an ad-hoc amount (kit charge, partial settlement). Anyone
+    // else gets the server-derived figure, whatever they put in the body.
+    const overrideBaseAmountPaise =
+      isAdmin && body.amount !== undefined
+        ? validateAdminSuppliedAmount(body.amount)
         : undefined;
 
-    const split = computeFeeSplit(baseAmountPaise, configuredSplitConfig(marginRateBps));
-
-    // ---- Settlement ---------------------------------------------------------
-    const strategy = resolveSettlementStrategy(academy);
-    const settlementInstruction = strategy.buildOrderInstruction({
-      split,
-      academyRzpAccount: academy?.rzp_account,
-      currency: 'INR',
-    });
-
-    const receipt = `rcpt_${Date.now()}_${String(studentUserId).slice(-5)}`;
-
-    const orderOptions: Record<string, any> = {
-      // Razorpay takes paise. The split is already integer paise, so there is no
-      // float multiplication anywhere in this path.
-      amount: split.parentTotalPaise,
-      currency: 'INR',
-      receipt,
-      notes: {
-        studentUserId: String(studentUserId),
-        academyId: academyId ? String(academyId) : '',
-        description: description || 'Academy Fees',
-        period,
-        amountSource,
-        academyAmountPaise: String(split.academyAmountPaise),
-        gatewayFeePaise: String(split.gatewayFeePaise),
-        gwdNetPaise: String(split.gwdNetPaise),
-        settlementStrategy: strategy.name,
-      },
-      ...settlementInstruction.orderFields,
-    };
-
-    const order = await razorpay.orders.create(orderOptions as any);
-
-    await FeePayment.create({
-      orderId: order.id,
-      // Legacy rupee fields, derived — kept so existing dashboards keep working.
-      amount: paiseToRupees(split.parentTotalPaise),
-      baseAmount: paiseToRupees(split.academyAmountPaise),
-      platformFee: paiseToRupees(split.gwdNetPaise),
-      gatewayFee: paiseToRupees(split.gatewayFeePaise),
-      // Exact paise — the source of truth for reconciliation.
-      parentTotalPaise: split.parentTotalPaise,
-      academyAmountPaise: split.academyAmountPaise,
-      gatewayFeePaise: split.gatewayFeePaise,
-      gwdNetPaise: split.gwdNetPaise,
-      currency: 'INR',
-      status: 'pending',
-      receipt,
-      studentId: studentUserId,
-      academyId: academyId || undefined,
-      settlementStrategy: strategy.name,
-      transferStatus: settlementInstruction.transferStatus,
-      description,
+    const result = await createFeeOrder({
+      studentUserId,
+      academyId,
       period,
+      description,
+      overrideBaseAmountPaise,
     });
 
     return NextResponse.json({
       success: true,
       data: {
-        order,
-        key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
+        order: result.order,
+        key_id: result.keyId,
         // The breakdown the payment page must disclose to the parent.
-        breakdown: {
-          academyFee: paiseToRupees(split.academyAmountPaise),
-          convenienceFee: paiseToRupees(split.convenienceFeePaise),
-          total: paiseToRupees(split.parentTotalPaise),
-          totalFormatted: formatInr(split.parentTotalPaise),
-          period,
-        },
+        breakdown: result.breakdown,
       },
     });
   } catch (error: any) {
     if (error instanceof NoFeeConfiguredError) {
       return NextResponse.json({ success: false, message: error.message }, { status: 409 });
+    }
+    // 400, matching this route's behaviour before the shared path was extracted.
+    if (error instanceof NothingDueError) {
+      return NextResponse.json({ success: false, message: error.message }, { status: 400 });
     }
     if (error instanceof MoneyError) {
       return NextResponse.json({ success: false, message: error.message }, { status: 400 });

@@ -532,6 +532,1376 @@ is already waiting on. `Batch.qrToken` was added in Phase 1 for this.
 
 ---
 
+## Session 3 — 2026-07-25 · Phase 2 loose ends (owner-facing comms UI)
+
+**Branch:** `main`
+**State at end of session:** staged, not committed, not pushed. **231 tests
+passing** (up from 202), `tsc --noEmit` clean, `next build` compiles in 16.3s.
+
+Session 2 closed with two gaps flagged: the alert feed was queryable but nothing
+rendered it, and delivery status was tracked per message but "why didn't this
+send?" was only answerable by reading code. Both are now screens.
+
+### 21:45 – 21:52 · `explainMessage()` — the row-level explanation
+
+New `src/lib/messaging/explain.ts`. Pure function, no database, no clock of its
+own.
+
+**Why a second explain function rather than extending `explainDecision()`:**
+they explain different objects. `explainDecision` explains a *plan* — a decision
+held in memory with the live config and the decision object in hand.
+`explainMessage` explains a *row* — a message that went through the queue and
+now sits in Mongo with a status, some timestamps, and a free-text error string
+written by whichever code path last touched it. Reconstructing the sentence from
+that is a different problem, and folding it in would have meant passing
+half-populated decision objects around to satisfy a UI.
+
+The interesting case is `queued`, which four unrelated situations share:
+
+| Situation | Reads as | Why it matters |
+|---|---|---|
+| deferred by cap/quiet hours | **Held back** + the exact future slot | the owner must not think it was dropped |
+| retryable provider error | **Retrying** + raw error | this one *is* a problem |
+| `scheduledFor` in the future | **Scheduled**, "queued and healthy" | not stuck |
+| due, awaiting a tick | **Due now** | clears within 15 min |
+
+Deferral outranks attempt count when both are present — a message that failed
+once and was *later* deferred is being held, and that is the live reason.
+
+**Load-bearing distinction:** a `skipped` row whose error matches
+`/not configured|no whatsapp provider|no sms provider|dlt/i` is rendered as an
+**activation gap**, not a delivery failure — "Nothing is wrong with this
+message: it was built, validated and rendered correctly, and there was simply
+nowhere to send it." With no BSP credentials *every* message skips, and an owner
+seeing a screen of red would reasonably conclude the system is broken when in
+fact it just hasn't been switched on. A test asserts a policy skip is not dressed
+up the same way.
+
+**✅ 21:53 — 29/29 new tests passing.**
+
+### 21:52 – 21:55 · `GET /api/academy/messages`
+
+Tenant-scoped exactly like the alerts route — a parent's phone number and a
+rendered message body are both personal data, so super admin sees everything,
+an academy admin sees only their own.
+
+Two decisions worth keeping:
+
+1. **The explanation is computed server-side and shipped per row.** The wording
+   *is* policy. Policy stated in a React component drifts the first time someone
+   restyles the table.
+2. **Status counts ignore the active status filter.** Selecting "Failed" must not
+   zero out the other chips — that hides the evidence you are filtering against.
+   Implemented by stripping `status` from the filter before the count aggregate.
+
+Also returns the live `schedulingConfig`, so the UI states the actual cap rather
+than hardcoding "3 a day" and being wrong the moment the env var changes. The
+template dropdown is sourced from the `TEMPLATES` registry rather than a
+`distinct()` over the collection, so a template that has never been used is still
+filterable. Search input is regex-escaped.
+
+### 21:55 – 21:57 · The two screens
+
+`AlertFeed.tsx`, `MessageLog.tsx`, `CommunicationCenter.tsx` under
+`components/admin/messaging/`, wired into `AdminPage` as one **Comms** tab with
+two sub-tabs. One tab rather than two because they answer the same question from
+opposite ends — "what needs me to decide" vs "what did the system actually do" —
+and an owner chasing an overdue fee moves between them constantly.
+
+The alert feed repeats the T+7/T+15 rule in the UI on purpose: an owner who does
+not know the platform stopped messaging will assume it is still chasing on their
+behalf. The banner states plainly that automated reminders have stopped and that
+the system will never restrict a student's attendance or Passport over an unpaid
+fee. Acknowledge/resolve trigger nothing beyond marking the row.
+
+**✅ 21:57 — 231/231 tests passing, `tsc --noEmit` clean, `next build` clean,
+`/api/academy/messages` registered.**
+
+### Assumptions taken
+
+1. **Comms is one tab with sub-tabs, not two top-level tabs.** The tab bar
+   already carries ten entries; two more would wrap on a laptop.
+2. **No retry button on a failed message.** The row explains itself and stops
+   there. A re-send needs to decide whether it re-renders variables against
+   current data or replays the stored ones, and getting that wrong sends a stale
+   fee amount to a parent. Deliberately deferred until someone actually needs it.
+3. **Message log page size 25, alert feed unpaginated** (the API caps at 200).
+   An academy with more than 200 *open* alerts has a different problem.
+4. **`variableMap` is excluded from the log response** — it duplicates
+   `bodyPreview` for display purposes and is debugging data.
+
+### Open items / gaps flagged
+
+- **Both screens are untested end-to-end against real data**, because there is
+  none: with no Interakt credentials every row would render as the activation-gap
+  variant. The explanation logic is unit-tested across all eight statuses, but
+  nobody has seen this screen with a genuinely delivered message on it.
+- **No CSV export from the message log.** Asked for eventually, not now.
+- **`fallbackMessageId` is shown as "an SMS fallback was raised" but does not
+  link** to the fallback row. Needs a lookup the current query does not do.
+- **Pre-existing `next build` noise, untouched:** duplicate Mongoose index
+  warnings on `academyId` and `razorpaySubscriptionId`, and a Sentry deprecation
+  about `sentry.client.config.ts` vs `instrumentation-client.ts`.
+
+### Blockers
+
+Unchanged from Session 2 and still the only thing between this code and working
+messages: **six WhatsApp templates need Meta approval via Interakt**, plus
+`INTERAKT_API_KEY`, `INTERAKT_WEBHOOK_SECRET`, `CRON_SECRET` in the environment.
+Nothing built this session moves that.
+
+### Next up
+
+Phase 3 — dual-mode attendance (parent QR self-check-in + coach one-click
+checklist), which produces the `attendance.created` event the Phase 2 consumer is
+already waiting on. `Batch.qrToken` was added in Phase 1 for this.
+
+---
+
+## Session 4 — 2026-07-25 · Import in the dashboard + full comms surface for both roles
+
+**Branch:** `main`
+**State at end of session:** staged, not committed, not pushed. **249 tests
+passing** (up from 231), `tsc --noEmit` clean, `next build` compiles in 25.1s.
+
+Session 3 built the two screens Session 2 flagged as missing. This session made
+them reachable and complete: bulk onboarding was only ever at a standalone URL,
+the comms center was admin-only, and two things the engine supports had no UI at
+all.
+
+### 22:00 – 22:03 · Import, reachable from the dashboard
+
+`ImportWizard` + `ActivationDashboard` were only mounted at `/admin/import` —
+an owner living in the dashboard would never find them. Extracted the tab shell
+into `components/admin/import/OnboardingCenter` and mounted the same component
+both places: `views/admin/ImportPage` is now a thin wrapper for the shareable
+link, and AdminPage has an **Import** tab next to Students. Deliberately next to
+Students, not under Settings — importing a roster is student management.
+
+### 22:03 – 22:06 · `GET /api/academy/messages/health` + Delivery Status panel
+
+**The gap this closes:** with no BSP credentials the engine builds, validates and
+queues everything correctly, then records each send as `skipped`. That is the
+design. From the message log alone it is indistinguishable from a system quietly
+failing, and there was no screen anywhere that said "nothing has gone out yet,
+and the reason is not in the code".
+
+The panel leads with one verdict — connected or not — then lists blockers, none
+of which are code: the missing `INTERAKT_API_KEY`, the six template names to
+submit, and any messages stuck in `sending` for over 30 minutes (a dispatch run
+that died after claiming them).
+
+Template approval status **cannot be read back through the Interakt API**, so
+the list is what must be submitted, not what has been accepted. Said explicitly
+on the panel so nobody reads a green screen as "approved".
+
+The connected check keys off `resolveWhatsAppProvider().name !== 'noop'` rather
+than reading `INTERAKT_API_KEY` directly, so it stays honest if a second BSP is
+added.
+
+### 22:06 – 22:09 · Broadcast composer — the risky one
+
+`gwd_broadcast_v1` existed in the registry with nothing able to send it. This is
+the only message an owner types themselves and the only one that reaches every
+parent at once, so the guards are stricter than the template validator and live
+in `lib/messaging/broadcast.ts` as pure functions.
+
+**The passport-id guard is the one that matters.** Every other template runs
+`assertVariablesBelongTo`, which refuses to send if a variable references a
+passport other than the message's own. A broadcast has no passport — it is about
+nobody in particular — so that check cannot run. Without a replacement, a pasted
+`"GWD-4P8QRT hasn't paid"` goes to every parent in the academy carrying one
+family's identifier. Rejected outright; there is no correct way to send that.
+
+The alphabet matters here: passport ids exclude `0/1/I/L/O/U`, so `GWD-101ILO` is
+not a passport and must not be rejected. A test pins that.
+
+**Two-step flow enforced by the API, not just the UI.** A POST without
+`confirm: true` validates, resolves the audience and returns the count plus the
+exact rendered text, queueing nothing. The UI is not the only caller a route ever
+gets.
+
+**`dedupeByPhone` is not cosmetic.** Siblings share a parent's mobile, and the
+frequency cap is applied per phone number. Without it a family with three
+children gets the announcement three times *and* burns that parent's entire
+daily budget, silently deferring the fee reminder meant for the same evening.
+
+One `broadcastId` seeds every message's `dedupeKey`, so a double-clicked send
+collides on the unique index and returns `duplicate` per recipient rather than
+messaging anyone twice.
+
+### 22:09 – 22:12 · Super admin parity
+
+The alerts and messages APIs already widened to every tenant for
+`gwd_super_admin`, but the rows came back with no academy attribution — a
+platform-wide feed was a list of student names with no way to tell which academy
+was being asked to act. Added `populate('academyId', 'name')` for that role only,
+plus an `academyId` query filter **honoured only for a super admin** (an academy
+admin's scope is fixed server-side and must not be overridable from a query
+string), and an academies list in the response. The client keys its filter and
+badge off that list being non-null rather than doing its own role check.
+
+`CommunicationCenter` is mounted unchanged in `SuperAdminDashboard` as a
+**Communications** tab. Same components, no second implementation.
+
+**Broadcast is hidden for super admin, and 403s server-side.** A platform-wide
+message to every parent of every tenant is not a feature anyone asked for, and
+should not fall out of a role check.
+
+**✅ 22:12 — 249/249 tests passing, `tsc --noEmit` clean, `next build` clean.
+`/api/academy/broadcast` and `/api/academy/messages/health` both registered.**
+
+### Assumptions taken
+
+1. **Broadcast audience is "everyone in the academy" in the UI.** The API also
+   accepts `audience: 'batch'` with a `batchId`, but no batch picker is wired up
+   — nothing in the UI can send one yet.
+2. **`BROADCAST_MAX_LENGTH` 600, min 10.** Editorial, not a Meta limit: a
+   WhatsApp message long enough to be truncated in the notification shade gets
+   ignored.
+3. **Whitespace is collapsed before the length check**, so an owner is never told
+   they are over the limit by characters that will be removed, and the preview
+   they approve is character-for-character what sends.
+4. **Stuck-send threshold 30 minutes**, against a 15-minute cron. One missed tick
+   is not an incident; two is.
+5. **Super admin gets no Import tab.** They have no `academyId`, so
+   `/api/academy/activation` 403s for them by design.
+
+### Open items / gaps flagged
+
+- **Nothing here has been exercised against a live provider.** Every new screen
+  renders the not-connected path in this environment. The pure logic is tested;
+  the connected path is not, and cannot be until credentials exist.
+- **No batch picker for broadcasts** — the API supports it, the UI does not.
+- **No broadcast history view.** Sent announcements are in the message log like
+  everything else, but there is no "what have I announced" screen, and no way to
+  cancel a queued broadcast from the UI (`cancelQueuedMessages` exists in
+  `enqueue.ts` and is unused by any route).
+- **The health panel's "stuck" count has no recovery action** — it reports, it
+  does not requeue.
+- **`OnboardingCenter` renders inside a `Card` in the dashboard tab and inside a
+  page wrapper at `/admin/import`.** Slight double padding on the standalone
+  route; cosmetic, not fixed.
+
+### Blockers
+
+Unchanged and still the only thing between this code and working messages: **six
+WhatsApp templates need Meta approval via Interakt**, plus `INTERAKT_API_KEY`,
+`INTERAKT_WEBHOOK_SECRET`, `CRON_SECRET` in the environment. The new Delivery
+Status panel now states this in-product instead of it living only in these notes.
+
+### Next up
+
+Phase 3 — dual-mode attendance (parent QR self-check-in + coach one-click
+checklist), which produces the `attendance.created` event the Phase 2 consumer is
+already waiting on. `Batch.qrToken` was added in Phase 1 for this.
+
+---
+
+## Session 5 — 2026-07-25 · Phase 3 (dual-mode attendance)
+
+**Branch:** `main`
+**State at end of session:** staged, not committed, not pushed. **280 tests
+passing** (up from 249), `tsc --noEmit` clean, `next build` compiles in 22.2s.
+New dependency: `qrcode` + `@types/qrcode`.
+
+### The bug that set the agenda
+
+`consumers.ts:113` has handled `attendance.created` since Phase 2. Nothing in
+the codebase emitted it. The attendance confirmation — the message parents would
+notice daily — could never fire, and `trainer/mark-attendance` wrote straight to
+the array and told nobody. That framed the whole session: the producer was the
+missing half.
+
+### 22:15 – 22:18 · Dated sessions, pure
+
+`lib/attendance/session.ts`. A session is one batch on one calendar day, and both
+modes must agree on which one they are marking or the same child is recorded
+twice and their parent gets two messages for one evening.
+
+**No `Session` collection.** A session is entirely determined by (batch, local
+date), so `sessionId = "<batchId>:<YYYY-MM-DD>"` is derived, not stored.
+Materialising a row per batch per day means a second source of truth to keep in
+sync with the recurring schedule, and the failure mode of that drift is a coach
+opening tonight's register to find it empty because nobody generated it. A
+derived id is correct the moment the batch exists, needs no backfill when a
+schedule changes, and two independent writers compute the same string.
+
+**IST throughout** — a 9pm Saturday practice must not file under Sunday.
+
+`isScheduledDay` is deliberately **separate** from `resolveSession`: a coach
+running a one-off extra practice on an unscheduled Wednesday must not be
+blocked, while a parent's unattended scan that day should be.
+
+**Fail open on configuration, closed on time.** A batch with no `daysOfWeek`
+meets any day; no times falls back to 06:00–21:00; an end before its start
+becomes start+1h. An unconfigured batch that rejects every scan presents to a
+parent as "the QR code is broken" when the real problem is an unfilled schedule.
+
+**✅ 22:17 — 20/20 tests.**
+
+### 22:18 – 22:21 · One write path for both modes
+
+`lib/attendance/record.ts`. Separate write paths would drift — one emits the
+event, the other does not; one dedupes, the other double-messages. Everything
+goes through `recordAttendance`.
+
+Two precedence rules, both tested:
+
+1. **The coach's mark wins.** A coach tick overwrites a parent's self-check-in,
+   because the coach can see the child. The reverse is *refused* — a parent
+   cannot quietly flip an absence the coach recorded.
+2. **One event per student per session, and only for `present`.** Absences are
+   never messaged, and — the subtle part — an absence must not consume the
+   dedupe key, or a coach correcting a mistake to "present" would silently never
+   send the confirmation.
+
+Extended `StudentProfile.attendance` with `sessionId`, `batchId`, `source`,
+`checkedInAt`, all optional so pre-Phase-3 rows keep loading. The recorder
+matches an existing row by session first, then falls back to same-calendar-day
+with no session — which upgrades a legacy row in place rather than creating a
+second one for the same day.
+
+### 22:21 – 22:22 · The producer, finally
+
+`trainer/mark-attendance` now routes through the recorder. Contract unchanged;
+it emits `attendance.created` and resolves the student's own batch so a single
+mark lands on the same session the checklist and a QR scan would.
+
+### 22:22 – 22:24 · Coach checklist
+
+`GET/POST /api/trainer/batch-attendance` + `GET /api/trainer/batches` +
+`BatchRegister.tsx`, mounted as a **Register** tab on the trainer page (second,
+after Overview — it is what a coach opens the page to do).
+
+**Everyone defaults to present.** Registers are overwhelmingly "everyone came",
+and a UI charging twenty taps for the common case gets filled in from memory on
+the drive home, if at all. The coach marks the exceptions.
+
+**Whole roster in one POST**, not one request per child: twenty requests on
+academy wifi with a partial failure halfway leaves a register that is neither
+marked nor unmarked, with no way to tell which.
+
+Children whose parent already scanned arrive pre-ticked and labelled — the coach
+confirms a list instead of building one.
+
+Admins can mark any batch in their academy; trainers only their own. An admin
+covering for an ill coach is exactly when the register would otherwise go
+unmarked.
+
+### 22:24 – 22:28 · Parent QR self-check-in
+
+`GET/POST /api/attendance/check-in`, `GET/POST /api/academy/batches/qr`,
+`/check-in/[token]` page, `BatchQrCodes.tsx` in a new admin **Check-in** tab.
+
+**One code per batch, not per student.** A per-student code would need
+distributing to sixty parents and reprinting whenever a child joined. The code
+says *which batch*; the login says *which child* — so a photographed code cannot
+check in anybody else.
+
+**The window is the security model.** The code is on a wall, so it *will* be
+photographed — that is its lifecycle, not a breach. It only means something from
+60 min before a scheduled session to 120 min after, and only on training days.
+Rotation invalidates a leaked code by reprinting rather than rebuilding a roster,
+and the rotate button says plainly that there is no undo.
+
+**Accepted exposure:** a parent marking their child present from the car park
+during a real session. The coach's checklist overwrites it. Chasing further means
+geofencing every academy, which costs more than the fraud it prevents.
+
+QR renders client-side to a data URI — the token never travels through a
+third-party QR service.
+
+**✅ 22:28 — 280/280 tests, `tsc` clean, `next build` clean, all four new routes
+plus `/check-in/[token]` registered.**
+
+### Assumptions taken
+
+1. **Check-in window 60 min before / 120 min after.** Generous both ways:
+   families arrive early, and a coach who forgets until the drive home should
+   still be able to mark.
+2. **The check-in page is not route-guarded.** A parent scanning at a gate must
+   reach a page that explains itself and offers sign-in, not a bare login
+   redirect — the scan would be wasted. The API enforces auth.
+3. **A student with no batch can still be marked**; the record just dedupes on
+   the calendar date. Refusing would block attendance for anyone not yet
+   assigned to a batch.
+4. **`markedBy` on a self-check-in is the student's own account**, with `source`
+   telling the two apart. Avoids making a required field optional.
+5. **QR token is 32 hex chars from `crypto.randomBytes`**, minted lazily on first
+   view — most batches come from the bulk import and never have a code printed.
+
+### Open items / gaps flagged
+
+- **Nothing here has been exercised against a real database.** The pure logic and
+  the recorder are unit-tested (`DomainEvent` mocked); no route has been hit with
+  a live Mongo, and no QR has been scanned by an actual phone.
+- **The `Batch.qrToken` unique index is sparse** — fine, but two batches can
+  never share a token, and nothing tests the collision path on regeneration.
+- **No attendance history view for parents.** They get the check-in message and
+  nothing else; `student/attendance` predates this and does not know about
+  sessions.
+- **`check-in` GET's "already checked in" only matches by `sessionId`**, so a
+  legacy same-day row shows as not-yet-checked-in in the preview. The POST then
+  correctly updates it. Cosmetic inconsistency, not fixed.
+- **No way to un-mark a session** — a coach who saves the wrong batch must
+  re-save with corrected values.
+- **The batch schedule has no UI.** `daysOfWeek`/`startTime`/`endTime` drive the
+  check-in window but can only be set by import or directly in the database, so
+  in practice most batches will fall through to the fail-open defaults.
+
+### Blockers
+
+Unchanged: **six WhatsApp templates need Meta approval via Interakt**, plus
+`INTERAKT_API_KEY`, `INTERAKT_WEBHOOK_SECRET`, `CRON_SECRET`. Phase 3 now
+produces the event, so the attendance message is queued correctly — it still
+cannot be delivered.
+
+### Next up
+
+- Batch schedule editing UI, without which the check-in window is guesswork.
+- The TODO.MD P0 list: performance metrics (tactical/technical/SSG/match play),
+  trainer-page views for performance/fees/kits/attendance, dynamic academy names,
+  fee and event invoices.
+
+---
+
+## Session 6 — 2026-07-25 · Batch schedules (closing the Phase 3 hole)
+
+**Branch:** `main`
+**State at end of session:** staged, not committed, not pushed. **296 tests
+passing** (up from 280), `tsc --noEmit` clean, `next build` compiles in 19.4s.
+
+### The hole this closes
+
+`lib/import/commit.ts:288` creates a batch with `{ academyId, name, sport,
+isActive }` — no days, no times, no coaches. That was harmless until Phase 3,
+because nothing read those fields. Now they compute the QR check-in window, so
+**every batch created by the student import has a printed code accepted on any
+day of the week from 05:00 to 23:00** — which is not what an owner taping a code
+to a wall believes they are doing. There was no way to fix it outside the
+database.
+
+### 22:30 – 22:34 · `validateSchedule`, and why a bad time is worse than none
+
+`lib/attendance/schedule.ts`, pure. The rule that shaped it: a malformed time
+does not fail loudly at the check-in endpoint — `session.ts` ignores it and falls
+back to the wide default. So the batch *looks* configured while behaving as if it
+is not, which is worse than either state on its own. Validation therefore happens
+at the point of writing, not reading.
+
+Three rejections, each for that reason:
+
+- **Malformed clock** (`5pm`, `17:60`, `7:00`) — would silently fall through.
+- **One time without the other** — the missing half falls back to a default hours
+  away from the real session.
+- **End at or before start** — `session.ts` rescues this to start+1h, so it would
+  save and quietly produce a window nobody chose.
+
+Empty *is* allowed, because that is what the import creates and refusing it here
+would make every imported batch uneditable.
+
+Days are stored in **week order rather than click order**, so the UI never sorts
+and two batches with the same days compare equal.
+
+`scheduleGaps()` produces the warning text, and **a test pins that text to the
+behaviour it describes** — asserting `validateCheckIn` really does accept 05:00
+and 22:59 on a Sunday for an unscheduled batch, and really does reject 04:00 and
+23:30. A warning that drifts from the enforced window is worse than no warning.
+
+**✅ 22:33 — 16/16 tests.**
+
+### 22:34 – 22:36 · `/api/academy/batches` + `BatchManagement`
+
+GET returns batches with student counts, coach names, `hasQrCode` and computed
+`scheduleGaps`, **plus the assignable coach list in the same response** — an
+admin opening a batch to fix its schedule should not wait on a second round trip
+to populate a dropdown.
+
+PATCH changes **only the supplied fields**. An admin setting `daysOfWeek` alone
+must not clear the times, or fixing one half of a schedule silently destroys the
+other. The schedule is still validated as a unit, because its rules are
+relational — an end time is only wrong relative to a start time — so a partial
+patch is merged onto the stored values before validating.
+
+Coach assignment is **tenant-scoped on write**: a coach id from another academy
+is rejected rather than stored, since assignment is what grants the right to mark
+that batch's register.
+
+Deactivation is a **soft delete and stops there**. Students keep their `batchId`
+and their attendance history keeps its `sessionId`s; a hard delete would orphan
+every past register. The intended side effect is that the QR code stops
+resolving.
+
+The UI leads with a count of unscheduled batches and repeats the exact window
+those codes accept, because an owner who imported their roster has *every* batch
+in that state and no reason to suspect it. Day buttons are two letters, not one —
+single initials collide on Tue/Thu and Sat/Sun, and mis-setting a training day is
+exactly the error that makes a code refuse scans on the evening it matters.
+
+### 22:36 · Restructure
+
+`AttendanceCenter` puts **Batches & schedule** and **Check-in codes** side by side
+as sub-tabs of the admin Check-in tab, schedule first — it is the step people
+skip, and the code's window is computed entirely from it.
+
+**✅ 22:37 — 296/296 tests, `tsc` clean, `next build` clean,
+`/api/academy/batches` registered.**
+
+### Assumptions taken
+
+1. **Batch name max 80 chars**, matching the model. Names are printed on posters.
+2. **`BatchQrCodes` still reads `/trainer/batches`** rather than the new richer
+   endpoint. Both return the same active-batch set for an admin; switching adds
+   risk without benefit.
+3. **No batch delete, only deactivate.** Nothing in the UI can destroy
+   attendance history.
+4. **Sport is a free-text field**, consistent with how the import creates it.
+   A dropdown would need a canonical sport list that does not exist yet.
+
+### Open items / gaps flagged
+
+- **Still untested against a real database.** All 296 tests are pure or mocked;
+  no route in Sessions 3–6 has been hit with live Mongo.
+- **No bulk schedule editing.** An academy with twelve imported batches sets
+  twelve schedules by hand.
+- **Changing a batch's schedule does not re-validate past attendance.** Sessions
+  already recorded keep their `sessionId`s, which is correct, but a batch moved
+  from Monday to Tuesday leaves Monday sessions in the history with no
+  explanation.
+- **Nothing warns when a batch has no coach assigned** — its register can then
+  only be marked by an admin. Visible in the list, not flagged.
+- **Super admin has no academy**, so `POST /api/academy/batches` 403s for them.
+  Consistent with broadcast, but it means a super admin can edit schedules and
+  not create batches.
+
+### Blockers
+
+Unchanged: **six WhatsApp templates need Meta approval via Interakt**, plus
+`INTERAKT_API_KEY`, `INTERAKT_WEBHOOK_SECRET`, `CRON_SECRET`.
+
+### Next up
+
+The TODO.MD P0 list — performance metrics (tactical/technical/SSG/match play),
+trainer-page views for performance/fees/kits/attendance, dynamic academy names,
+fee and event invoices.
+
+---
+
+## Session 7 — 2026-07-25 · Phase 4 (the parent-facing surface)
+
+**Branch:** `main`
+**State at end of session:** staged, not committed, not pushed. **325 tests
+passing** (up from 296), `tsc --noEmit` clean, `next build` compiles in 21.9s.
+
+### The bug that defined the phase
+
+Four of the six WhatsApp templates link to `/passport/<id>` or `/pay/<id>`:
+welcome, weekly digest, achievement, fee reminder. **Neither route existed.**
+Every one of those messages sent a parent to a 404.
+
+Corroborating it: `recordParentEngagement()` at `lib/passport.ts:245`, documented
+since Phase 1 as *"drives the activation dashboard's engaged count"*, had **zero
+callers**. Session 1 predicted the dashboard would read 0% "until Phase 2 ships".
+Phase 2 shipped and it still read 0, because the thing that sets engagement was a
+page nobody had built. Everything Phases 1–3 produced terminated in a dead link.
+
+### 22:45 – 22:50 · The public passport, and its whitelist
+
+`/passport/<id>` is **deliberately unauthenticated**. It goes over WhatsApp to a
+parent with no account and, on onboarding day, no reason to make one — a login
+wall would defeat the activation funnel Phase 1 measures and make the welcome
+message's central promise a dead end.
+
+The cost of that is handled in `lib/passport-public.ts`. The link IS the
+audience: 31^6 ≈ 887M ids means no enumeration, but the URL gets forwarded,
+screenshotted and pasted into family group chats. So the projection is an
+**explicit whitelist, not a delete-list** — a blacklist starts leaking the day
+someone adds a field to the model.
+
+Withheld regardless of what the caller asks for: parent phone and name (also the
+QR check-in identity key), fee amounts and dues, medical info, email, internal
+ids, `identityKey` (which would reconstruct the phone), siblings. Age is shown,
+**date of birth is not** — a birth date is an identity-document field.
+
+**Coach remarks are dropped from attendance.** A coach's "distracted today, sent
+home early" is written in the expectation that the academy reads it. On a
+forwardable public page it changes what coaches are willing to write down, and
+the register stops being honest.
+
+The test asserting no leak runs against a fixture carrying *every* sensitive
+field the model can hold, plus a key-set assertion so a new model field cannot
+silently appear in the output.
+
+**✅ 22:49 — 22/22 tests.**
+
+### 22:50 – 22:53 · Paying without an account
+
+`/pay/<id>` is the link in every fee reminder, also with no login. Safe for three
+specific reasons, all of them structural:
+
+1. **The amount is never an input** — resolved server-side by `dues.ts` from the
+   student's own ledger. A caller says who to pay for, never how much.
+2. **Settlement does not depend on the browser.** The `payment.captured` webhook
+   is authoritative and verifies Razorpay's signature. A parent who loses signal
+   mid-checkout is still recorded as paid — so the page makes no verify call at
+   all.
+3. **Paying someone else's fee is not an attack.**
+
+What the link discloses — first name and amount owed — is strictly less than the
+fee reminder message that carried it, and that message went to the parent's
+phone. This is why the *passport* page withholds fee data: that link gets
+forwarded; this one is sent only to the payer.
+
+**Refactor, done reluctantly but necessary:** order creation was ~100 lines
+inside `create-order/route.ts`. Rather than copy it, extracted
+`lib/payments/createOrder.ts` and pointed both routes at it. Two copies of the
+code that decides what a parent is charged, what the academy receives and what
+GWD keeps *will* drift, and the drift is money. `create-order` now owns only
+authorisation; its behaviour is unchanged, including the 400 (not 409) on
+"nothing currently due".
+
+### 22:53 – 22:55 · Pricing, pinned rather than decided
+
+Could not resolve the rate — that is a finance decision and picking one would be
+inventing an answer. What was wrong was that the number sat three calls deep
+behind two env vars and could move without anyone noticing.
+
+`lib/payments/pricing.test.ts` now pins it. The finding worth recording: the
+three sources are not three roundings of one rate, they are **two different
+models**.
+
+| Source | ₹3,000 fee | Model |
+|---|---|---|
+| `gwd_platform_edge_cases.html` | ₹3,075 | flat 2.5% |
+| this codebase | **₹3,104** | gateway cost + 1% margin |
+| Phase 4 brief | "2.5–3%" | a range |
+
+A ₹29 gap on the worked example that **widens with the fee**, because the
+gateway's cut is computed on the captured total rather than the base. A test
+asserts the codebase is measurably not a flat 2.5% at either ₹1,000 or ₹10,000,
+so the two models cannot be reconciled by adjusting a rate.
+
+**✅ 22:55 — 325/325 tests, `tsc` clean, `next build` clean.
+`/passport/[passportId]` and `/pay/[passportId]` both register.**
+
+### Assumptions taken
+
+1. **Attendance summary window is 90 days; streak runs over all history.** A
+   four-month perfect streak must not reset because the window moved.
+2. **Both pages are `robots: noindex`.** They name a child; the pay page names an
+   amount owed.
+3. **No student name in the passport's page metadata** — WhatsApp unfurls the
+   link into a thumbnail seen by everyone in a group before anyone opens it.
+4. **`/pay` shows an itemised breakdown, always.** A parent seeing a total larger
+   than the fee their academy quoted, unexplained, does not pay — they phone the
+   academy, and the academy phones us.
+5. **Engagement recording is fire-and-forget** on both routes. It is a metric; it
+   must never delay or break the page a parent is trying to read.
+
+### Open items / gaps flagged
+
+- **Still nothing run against a real database or a real Razorpay account.** Five
+  sessions now. The public payment path in particular has never taken a rupee.
+- **`create-order` was refactored without an integration test to catch a
+  regression.** Behaviour is preserved by inspection and by `tsc`, not by a test
+  that exercises the route. This is the riskiest change in the staged diff.
+- **The passport page shows no achievements or performance** — the model has no
+  achievement records yet, and `gwd_achievement_v1` has no producer. A template
+  therefore still links to a page that will not show what the message promised.
+- **No receipt after payment.** The success screen says one will follow; nothing
+  sends it.
+- **Subscription charges still carry no GWD margin** (`gwdNetPaise: 0`) — needs
+  Razorpay plan amounts with the fee baked in. Unchanged from Session 1, and
+  blocked on the same pricing decision.
+- **`/pay` does not handle a part-payment or a parent who wants to pay a
+  different amount.** It is the full outstanding figure or nothing.
+
+### Blockers
+
+1. **Six WhatsApp templates need Meta approval** — unchanged, and now the only
+   thing between a working funnel and a parent actually receiving these links.
+2. **The convenience-rate decision.** Three documents, two models. Needs one
+   canonical answer before any of this bills a real parent.
+
+### Next up
+
+- The Phase 4 brief itself has not been seen — scoping here was inferred from the
+  code. Worth checking this against it.
+- TODO.MD P0: performance metrics (tactical/technical/SSG/match play), which
+  would also give the passport page something to show.
+
+---
+
+## Session 8 — 2026-07-25 · Phase 5 (performance taxonomy + achievements)
+
+**Branch:** `main`
+**State at end of session:** staged, not committed, not pushed. **380 tests
+passing** (up from 325), `tsc --noEmit` clean, `next build` compiles in 20.4s.
+
+Three things converged on one piece of work: the next phase, the top P0 item,
+and the trainer UI gap were all the same missing feature.
+
+### The bug in the old model
+
+`Performance.category` was free text, and `Settings.performanceMetrics` a flat
+`string[]` defaulting to `["dribble","running","defending","strike","stamina"]`.
+
+The leaderboard averages `score/maxScore` across every record a student has. So
+a 7/10 for stamina in a fitness drill and a 7/10 for decision-making in a match
+were added together as if they measured the same thing. **A coach who runs more
+fitness tests than match play changes a child's headline number without anything
+about the child changing** — and a parent reads that as progress or decline.
+
+### 23:00 – 23:05 · The taxonomy
+
+`lib/performance/taxonomy.ts`. A metric now belongs to a category; scores are
+only averaged within one.
+
+**Categories are fixed in code, metrics are not.** The four — tactical,
+technical, SSG, match play — are the assessment framework, a coaching decision
+that predates this software and is the same at every academy. Metric vocabulary
+is local and academies genuinely differ. Fixed categories are what make one
+academy's report comparable with another's, which a Passport that survives a
+transfer depends on.
+
+Three decisions worth keeping:
+
+- **Legacy rows are mapped, not dropped.** Every existing record has free text
+  and no `categoryKey`; without mapping, a child's history would appear to
+  restart on the day this shipped. The mapping is conservative — anything
+  unrecognised becomes `technical`, never `match_play`, because match play is the
+  number a parent cares about and inventing scores in it is the worse error.
+- **Records are normalised to a percentage before averaging.** `maxScore` varies
+  between records, so averaging raw scores weights a drill marked out of 100
+  forty times more heavily than one out of 5 — purely because of how a coach
+  wrote it down.
+- **`overallScore` averages the CATEGORY averages, not the raw records.**
+  Otherwise twenty technical drills drown out one match assessment. Unassessed
+  categories are excluded rather than counted as zero: a child never assessed on
+  match play has not scored badly at it.
+
+`score > maxScore` is now rejected. Without it a coach fat-fingers 70 out of 10
+and that student tops the leaderboard forever — the aggregate cannot notice,
+because every value in it is individually plausible.
+
+**✅ 23:04 — 28/28 tests.**
+
+### 23:05 – 23:08 · Achievements, and the third dead template
+
+`gwd_achievement_v1` had **no producer** — the third dead path found in this
+codebase after `attendance.created` and the passport 404. `lib/performance/award.ts`
+is its producer.
+
+`Achievement` is keyed on **`passportId`, not academyId**, and is a collection
+rather than a subdocument on StudentProfile. A child who earned a hundred-session
+badge and transfers has still attended a hundred sessions; StudentProfile is the
+academy's enrolment record and is created afresh each enrolment, so an
+achievement has to outlive it.
+
+The rules are strict on purpose. The template notes call this message
+"distribution and retention in one motion" — it is built to be forwarded. **A
+badge every child earns in a fortnight is forwarded by nobody**, and still spends
+the parent's daily message budget, starving a fee reminder. So:
+
+- Mastery needs 80% over **at least three** evaluations. Without the minimum, a
+  coach's first generous 9/10 mints a "mastery" badge and the parent gets
+  congratulated about one drill.
+- The all-round award is **blocked by an unassessed category** rather than
+  skipping it — claiming all-round ability nobody measured is worse than
+  withholding the badge.
+- Evidence is frozen at the moment of earning, and **badges are never revoked**.
+  A ten-session streak stays earned after the streak breaks.
+- Coach awards are a **fixed list, not free text**. These land on a public
+  Passport that outlives the academy and get forwarded into family group chats —
+  a free-text field there is an inside joke waiting to become permanent.
+
+Idempotency is at two levels: `Achievement.dedupeKey` stops a badge being stored
+twice, `DomainEvent.dedupeKey` stops a second message if the row was written but
+the event write failed and the whole thing retried.
+
+**✅ 23:06 — 22/22 tests.**
+
+### 23:08 – 23:14 · Trainer panels
+
+`GET/POST /api/trainer/student-detail` + `StudentDetail.tsx`, wired to the
+previously-dead "View Profile" menu item. One endpoint, not four — a coach opens
+a student to look at all of it, and four round trips on academy wifi is four
+chances to see a spinner. Closes four P0 items at once.
+
+Records that predate the taxonomy are marked **"inferred"** in the UI rather than
+presenting a mapped category as fact.
+
+Both write paths (`add-performance`, `batch-attendance`) now re-run the
+achievement rules, wrapped so a failure never fails the underlying save — the
+score or the register is already recorded, and a missed badge is picked up next
+session.
+
+### 23:14 – 23:16 · Passport page
+
+Achievements are placed **above** attendance: a parent arriving from the
+achievement message is looking for the badge they were just told about.
+
+**Category percentages are published; individual evaluations are not.** A "3/10
+for composure under pressure" attached to a named child on a forwardable page is
+something a parent would rightly object to — and a coach who knows raw scores go
+public stops recording honest ones. A test asserts remarks, metric names and
+`maxScore` never reach the output, and that the achievement `evidence` blob
+(which can hold a coach's private note) is dropped.
+
+**✅ 23:16 — 380/380 tests, `tsc` clean, `next build` clean.**
+
+### Assumptions taken
+
+1. **Mastery threshold 80% / 3 evaluations; all-round 70% across all four.**
+   Judgement, not science. Stated in the module so they can be argued with.
+2. **`achievementsAwarded` is surfaced to the coach in a toast** — they caused a
+   parent to get a message and should know.
+3. **The legacy `category` field is still written**, from the taxonomy label, so
+   older dashboards reading it keep working.
+4. **`Settings.performanceMetrics` is repurposed as metric SUGGESTIONS**, not
+   categories. Existing academy values still appear, now in the datalist.
+5. **Streak and total counts for achievements use all-time attendance**, not the
+   90-day window the passport page displays.
+
+### Open items / gaps flagged
+
+- **Six sessions now with no live database.** `evaluateAndAward` and both
+  student-detail routes have never run against real data; the pure logic beneath
+  them is well covered, the wiring is not.
+- **No backfill for `categoryKey`.** Legacy rows are mapped on every read
+  instead. Correct, but it means the mapping runs forever rather than once, and
+  `inferredCategory` will show on old records indefinitely.
+- **Achievements are evaluated only on write.** A student whose data changes by
+  any other path (admin edit, import) will not be re-evaluated until their next
+  session or assessment.
+- **No way to revoke a coach award**, deliberately — but a genuine mis-click is
+  therefore permanent and public.
+- **The academy has no UI to configure metric suggestions** now that Settings'
+  meaning has changed; the admin settings screen still labels them
+  "performance metrics".
+- **`gwd_achievement_v1` still cannot deliver** — same Meta approval blocker.
+  The producer exists now, so the message queues correctly and stops there.
+
+### Blockers
+
+Unchanged: **six WhatsApp templates need Meta approval**, and **the
+convenience-rate decision** (three documents, two models — see Session 7).
+
+### Next up
+
+- Remaining P0: dynamic academy names, fee and event invoices.
+- The Phase 4 brief still has not been seen; Sessions 7–8 were scoped from the
+  code.
+
+---
+
+## Session 9 — 2026-07-25 · Receipts, dynamic academy names, settings fix
+
+**Branch:** `main`
+**State at end of session:** staged, not committed, not pushed. **396 tests
+passing** (up from 380), `tsc --noEmit` clean, `next build` compiles in 26.6s.
+
+### 23:20 – 23:26 · Payment receipts
+
+**The document is a RECEIPT, not a GST tax invoice, and that is deliberate.**
+
+A single payment here is really *two supplies*: the academy supplies coaching
+(`academyAmountPaise`) and GWD supplies payment processing (`gwdNetPaise`). A GST
+tax invoice must be issued by each supplier for their own portion, carrying their
+own GSTIN and HSN/SAC. Issuing one combined document under the academy's name for
+the full amount would misstate who supplied what — and neither party's tax
+registration is held anywhere in this system. So the document itemises both
+components with "Supplied by" against each, and calls itself a receipt. A
+compliant tax invoice needs the same finance conversation the pricing question is
+already blocked on.
+
+**Numbering is the part with real constraints.** Indian practice expects a series
+that is unique, sequential, **gapless**, restarted each financial year, and
+scoped to the issuer. Gapless is what shapes the implementation:
+
+- **Numbers are allocated at settlement, never at order creation.** Most orders
+  are never paid; numbering them would leave permanent holes.
+- **Allocated after the ledger credit succeeds**, because the settlement path
+  releases its claim and retries on failure — a number burned on a failed attempt
+  is a gap.
+- **`Counter` uses `$inc` + `upsert`**, which is the one operation Mongo
+  guarantees atomic here. A read-then-write lets two concurrent settlements both
+  write 42, and a duplicate receipt number is something a parent could reasonably
+  read as a double charge.
+- **Lazy allocation on first view** if numbering failed after settlement. The
+  alternative — failing the settlement — means taking money and marking the
+  student a defaulter over a document-numbering error.
+
+The financial year is **April–March, evaluated in IST**. A server thinking in UTC
+puts a 1 April 04:00 IST payment (22:30 UTC on 31 March) in the wrong year. Tests
+pin both sides of that boundary.
+
+### 23:26 – 23:29 · Dynamic academy names
+
+`BRAND_NAME` is a build-time env var. Fine for one academy; wrong the moment five
+branches run under one domain, which is the stated plan — one deployment cannot
+have five values of one variable.
+
+Added `useBrand()`, resolving from the signed-in user's academy with `BRAND_NAME`
+as the fallback for genuinely platform-level surfaces. Cached per academy at
+module level: a page header must not cost a request per tab switch.
+
+A hook rather than a context provider because the landing components already
+take an `academy` prop and resolve it themselves — rewiring working code for no
+behavioural gain. This filled the screens that had no way to know: admin header
+and footer, and the **Razorpay checkout modal**, which was showing the platform
+name to a parent paying their academy. An unfamiliar name on a payment screen is
+where people abandon a checkout.
+
+**Bug found in the testimonials carousel:** the quotes were built at *module
+load* with the platform name baked in, so on an academy's public page they named
+the wrong organisation entirely. Now built per render from the academy prop.
+
+⚠️ **But see the flag below** — fixing that has a consequence worth a decision.
+
+Audited every remaining `BRAND_NAME`: all correct, either `academy?.name ||
+BRAND_NAME` or genuinely platform-level (the About page, the logged-out auth
+screen, a placeholder for creating a new academy).
+
+### 23:29 – 23:31 · Settings screen was telling owners something untrue
+
+Phase 5 changed `Settings.performanceMetrics` from *categories* to *metric
+suggestions*, and the admin card still said "Performance Metrics — define the
+metrics trainers will use". An owner adding "match play" there would have been
+quietly wrong.
+
+Relabelled, and the card now shows the four fixed areas as read-only chips with
+the reason they cannot be edited: they are the same at every academy so a
+student's record still means something after a transfer.
+
+**✅ 23:31 — 396/396 tests, `tsc` clean, `next build` clean.**
+
+### Assumptions taken
+
+1. **Receipt number format `ISSUER/FYCODE/NNNNN`** e.g. `MGFC/2627/00042`.
+   Issuer derived from the academy *slug*, not the display name — a name can be
+   edited and a series must not change identity mid-year.
+2. **Sequence padded to 5 digits** so the series sorts lexicographically too;
+   it does not truncate past that.
+3. **The receipt page is authenticated**, unlike the passport and pay links. It
+   names an amount already paid by a specific family and has no onboarding
+   reason to be open.
+4. **One acceptable gap**: if two callers race to allocate, the loser's sequence
+   is discarded rather than reused. Two payments sharing a number is worse.
+
+### Open items / gaps flagged
+
+- **⚠️ The testimonials are fabricated.** Invented quotes, invented people, stock
+  photos — pre-existing demo content, not written this session. They previously
+  named the platform; they now name whichever academy's page they appear on,
+  which on a live site makes them **fabricated endorsements of a real, named
+  business**. Either replace them with real testimonials or gate the section
+  behind academies that have supplied some. Flagged at the code site. **This is a
+  decision for whoever owns the marketing site.**
+- **Event payment invoices are NOT done.** `Event.entryFee` exists but there is
+  no event payment flow at all — no routes, no orders, nothing collecting it.
+  There is no payment to receipt. The receipt engine covers events the moment
+  those payments route through `FeePayment`, which they would have to.
+- **No backfill of receipt numbers** for payments settled before this session.
+  They allocate lazily on first view, which means an old payment viewed today
+  gets a number in *today's* financial-year series.
+- **Still no live database.** Seven sessions. The `Counter` atomicity argument is
+  sound in principle and has never been exercised under real concurrency.
+- **Remaining P0, untouched:** "student/trainer/admin interactions — check the
+  flow", and "too many authentication attempts on first login" — both need a
+  running system to reproduce.
+
+### Blockers
+
+1. **Six WhatsApp templates need Meta approval.**
+2. **The convenience-rate decision** — three documents, two models.
+3. **NEW: who issues a tax invoice for which component**, and under which GSTIN.
+   Same conversation as (2).
+
+### Next up
+
+Nothing in the P0 list can be completed without a running system. The remaining
+items are reproduction tasks, not build tasks.
+
+---
+
+## Session 10 — 2026-07-25 · Per-academy branding
+
+**Branch:** `main`
+**State at end of session:** staged, not committed, not pushed. **425 tests
+passing** (up from 396), `tsc --noEmit` clean, `next build` compiles in 20.8s.
+
+### What was actually broken
+
+`Academy.theme` already had `primaryColor` and `accentColor`, and there was
+already a branding form to set them. **Two of nine landing components read the
+colour. The other seven rendered the platform's blue** — 87 hardcoded
+`blue-*`/`indigo-*` classes across the section files. `accentColor` was read
+nowhere at all.
+
+So an owner could pick a colour, save it, and see almost nothing change. The
+feature looked shipped and was decorative.
+
+The cause is architectural: colour was passed down as a prop and applied with
+`style={{ color }}` at each use site, which means every new section has to
+remember to opt in — and none of them did.
+
+### 23:36 – 23:39 · The palette engine
+
+`lib/branding/palette.ts`, pure. Derives everything from one or two colours an
+owner picks: hover shade, surface tint, border, and — the one that matters — the
+**readable foreground**.
+
+**The bug this prevents:** the old code hardcoded white text on `primaryColor`.
+An academy whose brand is yellow, lime or pale cyan got white-on-yellow. Nobody
+catches it in review because the reviewer's academy is blue. The foreground is
+now computed from WCAG relative luminance, choosing whichever of white or ink
+has the higher contrast.
+
+Gamma linearisation matters here and is easy to skip — the raw sRGB channel
+gives confidently wrong answers right in the mid-range where brand colours live.
+A test pins mid-grey at ~0.216 luminance rather than 0.502.
+
+**A useful finding while testing:** the band where a colour fails AA against
+*both* white and ink is narrow — roughly luminance 0.18–0.21, e.g. `#7d7d7d` at
+4.34:1. That narrowness is exactly why the missing check survived: almost
+everything anyone tries does pass, so nobody discovers the gap until an academy
+picks a mid grey.
+
+Contrast is **reported, not enforced**. It is the owner's brand; refusing to
+save it would be the wrong trade. Shipping it unknowingly is the thing to stop.
+
+**"Feel" is three presets, not sliders.** Exposing radius, shadow, spacing and
+saturation individually guarantees broken-looking pages; exposing nothing was
+the status quo. Bold / Classic / Minimal are each a coherent set.
+
+**✅ 23:39 — 29/29 tests.**
+
+### 23:39 – 23:43 · CSS variables, and the sweep
+
+`<AcademyTheme>` sets the variables once at the page root. `display: contents`
+so the wrapper carries properties without introducing a box that changes
+stacking.
+
+Then the mechanical part: **87 colour classes rewritten** to
+`bg-[var(--brand)]`, `text-[color:var(--brand-soft)]` and so on, by shade —
+50/100 → soft, 200/300 → border, 400–600 → brand, 700+ → strong.
+
+Two things the sweep got wrong on the first pass, both caught by reading the
+output rather than by a test:
+
+1. **Gradients collapsed.** `from-blue-600 via-indigo-600 to-blue-600` all
+   mapped to `--brand`, turning every gradient into a flat colour. Fixed by
+   giving later stops somewhere to travel: brand → accent → brand-strong.
+2. **My first regex was too narrow** — it only matched the shades I had
+   enumerated by hand and missed 57 of the 87. Replaced with a generic
+   `(utility)-(blue|indigo)-(\d+)` sweep.
+
+`rounded-2xl/3xl` → `rounded-[var(--brand-radius)]` on large surfaces only.
+Small chrome keeps its own radius: a 1.25rem radius on a 24px badge is a circle.
+
+### 23:43 – 23:46 · The branding studio
+
+Preset palettes, colour pickers, feel selector, tagline, and a live preview.
+
+**The preview renders through `buildThemeVariables` — the same function the real
+page uses.** A preview built from a separate mock is a preview that lies, and the
+first time it lies the owner stops trusting the screen.
+
+**Caught before shipping:** my first version sent `{ theme: { ... } }` to the
+generic `PUT /api/academy/[id]`, which does a plain `findByIdAndUpdate` — that
+would have replaced the whole subdocument and silently wiped `logoUrl` and
+`heroImages`, which are edited on a different screen. Looks like unexplained data
+loss. The existing branding form already used dot-notation for this reason;
+matched it.
+
+**✅ 23:46 — 425/425 tests, `tsc` clean, `next build` clean. 70 brand-variable
+usages across the landing components, up from 3.**
+
+### Assumptions taken
+
+1. **Six curated presets** as starting points, because nobody arrives with a hex
+   code.
+2. **`--brand-strong` is darkened, not opacity-shifted** — the hero is full of
+   photographs and a translucent hover would show them through the button.
+3. **Ink is `#0f172a`, not pure black** — reads as intentional rather than as a
+   default.
+4. **Style defaults to `classic`** for existing academies and unknown values.
+
+### Open items / gaps flagged
+
+- **Nothing has been looked at in a browser.** The sweep is mechanical and the
+  build passes, but 87 class rewrites across seven files have not been visually
+  checked. This is the most likely place for a cosmetic regression in the whole
+  staged diff.
+- **The admin dashboard itself is not branded** — only the public page. An owner
+  sees their colours on the site and the platform's violet in their console.
+- **`heroImages` and `logoUrl` are still on the old form**, separate from the
+  studio. Two screens for one job.
+- **Dark backgrounds were swept too.** `from-blue-900 to-indigo-900` on the
+  sports grid became brand-strong, which is correct in principle but will look
+  different from before for every existing academy.
+- **No per-academy font choice.** "Feel" is radius, shadow and tint only.
+
+### Blockers
+
+Unchanged: Meta template approval; the convenience-rate decision; who issues a
+tax invoice for which component.
+
+### Next up
+
+Look at the public page in a browser — this session's work is the least
+verifiable so far by tests alone.
+
+---
+
+## Session 11 — 2026-07-26 · Production hardening + performance
+
+**Branch:** `main`
+**State at end of session:** staged, not committed, not pushed (as instructed).
+**434 tests passing** (up from 425), `tsc --noEmit` clean, `next build` clean.
+
+### 00:00 – 00:05 · The cron was never scheduled
+
+`/api/jobs/tick` has existed since Phase 2 as the single entry point for
+dispatch, reminders, digest and send. **There was no `vercel.json`.** Nothing
+scheduled it. Even with Meta approval, no message would have gone out, no fee
+reminder fired, no digest sent — the engine would have sat idle looking broken.
+
+Added `vercel.json` with the 15-minute cadence the design calls for, and a
+300-second `maxDuration` since a tick drains a queue.
+
+I expected to also need a GET handler — Vercel Cron issues GET, and I
+remembered the route as POST-only. It already delegates GET to POST. No change
+needed there.
+
+### 00:05 – 00:10 · Placeholder accounts (open since Session 1)
+
+Bulk import creates a User per student because StudentProfile needs one.
+`User.email` is required and unique, so imported students get
+`gwd-7k2m9x@import.gwd.in` and `isImportedPlaceholder: true`.
+
+**Why this mattered more than it looked.** That address is derived from the
+PASSPORT ID, which is public — printed in URLs, texted to parents, forwarded
+into group chats. Anyone holding a passport id could construct the account's
+email. Login was never the main risk (no password was ever set); **the reset
+flow was**: `forgot-password` would happily mint and store a reset token for an
+account nobody owns.
+
+Guarded at three entry points via `lib/auth/placeholder.ts`:
+
+- **login** — returns `Invalid credentials`, deliberately identical to "no such
+  account". Any other message would confirm that a given passport id maps to a
+  real student.
+- **forgot-password** — returns the same success message as every other branch,
+  so it stays non-enumerable, but mints nothing.
+- **check-email** — returns a registration prompt rather than the user record it
+  previously handed back. Different trade-off on purpose: this caller is most
+  likely a parent holding their own child's details.
+
+The check tests the flag AND the domain suffix, because getting it wrong fails
+open. A test pins the domain against `lib/import/commit.ts:273`, and another
+asserts a real address merely *containing* the domain is not caught — locking a
+genuine parent out is the failure on the other side.
+
+**Pre-existing and NOT fixed:** `check-email` still returns a full user record
+for any real email. That is an enumeration/disclosure issue of its own, outside
+this change.
+
+### 00:10 – 00:14 · Logging and CI
+
+`compiler.removeConsole` in production, **excluding `error` and `warn`**. Around
+thirty `console.log` calls remain, several in payment and messaging paths whose
+arguments include a parent's phone number and a rendered message body. But every
+catch block in the payment and job code reports through `error`/`warn` — silencing
+those would mean a failed settlement leaves no trace at all.
+
+Added `.github/workflows/ci.yml`: typecheck → test → build, ordered cheapest
+first so an obvious break fails in seconds rather than after a three-minute
+build. Build env vars are deliberately dummy values; CI must never hold
+credentials that can message a real parent or move real money.
+
+### 00:14 – 00:30 · Performance
+
+**Dependencies.** Found `mapbox-gl`, `react-router-dom`, `multer` and
+`next-connect` with **zero references** — Express-era and pre-Next leftovers. Also
+found `motion` AND `framer-motion` both installed: 40 files used framer-motion,
+one file used `motion/react`. Two copies of the same animation runtime for the
+sake of one import. Consolidated and removed all five.
+
+Worth being precise about the benefit: **the shared bundle did not move**. Unused
+packages were already tree-shaken out of it. The win is install size, build time
+and attack surface — not runtime bytes. Claiming otherwise would be wrong.
+
+**The real win was the admin dashboard.** `AdminPage` statically imported all
+fifteen tab panels, so an admin opening it downloaded the student table, event
+manager, fee ledger, branding studio and the entire super-admin console to look
+at one tab. Radix already unmounts inactive content — nothing was *rendering* —
+but a static import puts the module in the entry bundle whether it runs or not.
+
+| | Before | After |
+|---|---|---|
+| `/admin/dashboard` page | 114 kB | **14.7 kB** |
+| First Load JS | 511 kB | **309 kB** |
+
+`ssr: false` on each, because every panel is a client-only screen that fetches on
+mount — server-rendering a spinner then hydrating it is work with no output, and
+the page is behind a login so there is no crawler to serve.
+
+The overview panel is deliberately **not** split: it is the default tab, so
+splitting the one thing that always renders would only add a round trip and a
+spinner to first paint.
+
+Also enabled `optimizePackageImports` for the barrel-heavy packages
+(lucide-react, framer-motion, date-fns, the Radix primitives), AVIF/WebP image
+formats, and turned off `poweredByHeader`.
+
+### Assumptions taken
+
+1. **Cron at 15 minutes**, matching the Phase 2 design note. Every stage is
+   individually idempotent, so an overlapping tick cannot double-message.
+2. **`error` and `warn` survive production**, everything else is stripped.
+3. **Placeholder login returns the generic message**; registration paths get a
+   helpful one. Different audiences, different right answer.
+
+### Deliberately NOT done, with reasons
+
+- **Did not remove `@tanstack/react-query` from the root Providers.** It is the
+  largest remaining item in the 227 kB shared bundle, but it is used by eight
+  real components across events, landing and admin. Rewrapping each is a genuine
+  refactor on code that has never been run against a database — the wrong risk
+  to take blind.
+- **Did not add `revalidate` caching to `/[slug]`.** It would cut the per-request
+  Mongo query on public academy pages, but the branding studio I just built
+  promises changes "go live when you save". A five-minute cache would make that
+  promise false.
+- **Did not convert the three raw `<img>` tags** to `next/image`: one is a QR
+  data URI and the others are remote CDN images where the gain is marginal.
+
+### Open items / gaps flagged
+
+- **227 kB shared bundle remains the floor** for every route. react-query is the
+  main lever; see above for why it was left.
+- **Still nothing run against a live database or a browser.** Nine sessions.
+- **`check-email` still discloses user records** for real addresses.
+- The heaviest pages are now `/user/profile` (387 kB) and `/mgfc/trainer`
+  (380 kB) — both candidates for the same tab-splitting treatment.
+
+### Blockers
+
+Unchanged and all external: Meta template approval; the convenience-rate
+decision; who issues a tax invoice for which component.
+
+---
+
+## Session 12 — 2026-07-26 · First real run: four bugs from actual usage
+
+**Branch:** `main`
+**State at end of session:** staged, not committed. **439 tests passing**,
+`tsc --noEmit` clean, `next build` clean.
+
+The app was run against a real database for the first time. Every bug below came
+from that, and none of them were reachable by the test suite.
+
+### 1. Student import 500'd on `Academy validation failed`
+
+```
+timings.workingDays.0: `Mon` is not a valid enum value
+```
+
+`commit.ts` finished writing every student, then called `academy.save()` purely
+to append ids to the roster array. **Mongoose validates the ENTIRE document on
+save**, and academies created before the weekday enum existed hold `"Mon"`,
+`"Tue"`, `"Wed"`. A field the import never touches failed validation and 500'd
+the whole commit *after* the students had already been created.
+
+Two fixes:
+
+- **`academy.save()` → atomic `$addToSet`.** The only mutation was appending to
+  `students`, so that is all it should write. This also fixes a bug that was
+  always there: two concurrent imports each held a stale copy of the array, and
+  the second save silently discarded the first one's additions.
+- **A normalising setter on `workingDays`**, so any future save coerces rather
+  than rejects. It maps `Mon` → `monday` but deliberately does NOT accept
+  `sunflower` → `sunday`; this normalises, it does not silence.
+
+`scripts/normalize-working-days.js` repairs existing documents (dry-run by
+default). Raw collection access on purpose — loading through the model would run
+the very validation these documents fail.
+
+### 2. A failed import wedged the job forever
+
+`commitImportJob` sets `status = 'committing'` before doing any work and only
+clears it on success. Any throw in between left it stuck, so every retry answered
+**409 "currently being committed"** and the only recovery was editing the
+database by hand. Visible in the log as the 500 followed by two 409s.
+
+Added `releaseStuckCommit`, called from the route's catch. Safe after a partial
+run: rows already written are marked `created` and the commit loop skips them, so
+a retry finishes rather than duplicates.
+
+### 3. A completed payment stayed `pending` forever — no invoice
+
+The one that matters most. Session 7's note said:
+
+> *"No verify call afterwards, on purpose. The `payment.captured` webhook is the
+> authoritative settlement path."*
+
+That reasoning is still right, and the webhook is still authoritative. But it left
+`/pay/<passportId>` with **no settlement path at all** whenever the webhook cannot
+arrive — local development, an unconfigured deployment, or simply the delivery
+delay. Money taken, student shown as unpaid, no receipt number, no invoice.
+
+Added `POST /api/passport/[passportId]/pay/verify`, called from the checkout
+handler. **No login, and that is correct**: the Razorpay signature is an HMAC over
+`order_id|payment_id` keyed with a secret only Razorpay and this server hold, so a
+valid triple cannot be forged. That is a stronger proof than a session cookie,
+which only says who is asking. It cannot misdirect money either — `settlePayment`
+credits `payment.studentId` from the server-created order and ignores the caller
+entirely.
+
+Both paths share the same idempotent `settlePayment()`, so whichever lands second
+is a no-op. The success screen now links to the receipt, but only once the server
+has confirmed — a receipt link that 404s is worse than none.
+
+`scripts/reconcile-pending-payments.js` recovers payments already stuck this way:
+it asks Razorpay what actually happened and settles what Razorpay confirms as
+captured.
+
+### 4. `[ERROR] API Request Failed {}`
+
+The logger passed its wrapper object to `console.error`, and Next's dev overlay
+renders that as `{}` — so the status code, endpoint and server message were all
+present in the payload and all invisible. A log line that hides the one fact you
+opened it for is worse than none. Scalars are now folded into the message string.
+
+### Also fixed
+
+- **`summarise` was exported from `app/api/import/extract/route.ts`** and imported
+  by two sibling routes. Next 15 permits route modules to export only handlers and
+  config, so this failed typegen the moment `.next/types` regenerated. Moved to
+  `lib/import/summarise.ts`. A route file is an endpoint, not a utility module.
+- The `/pay` GET route's 500 now logs which passport and which error, and returns
+  a message a parent can act on rather than "Server error".
+
+### Not a bug
+
+`SyntaxError: Unexpected end of JSON input` on `/api/passport/.../pay`: there is
+no `JSON.parse` or `req.json()` anywhere in that route or page. It came from the
+dev server tripping over a truncated response mid-HMR — note the interleaved
+"✓ Compiled" lines — and cleared on its own.
+
+### Open
+
+- **Razorpay webhook is still not configured for local development.** The verify
+  call now covers it, but production needs the webhook pointed at
+  `/api/payments/webhook` regardless — it is the path that survives a closed tab.
+- Dev-server response times of 4–7 s per API call are cold-compile artifacts, not
+  a production signal.
+
+---
+
 ## Entry template — copy for the next session
 
 ```markdown

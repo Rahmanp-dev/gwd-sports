@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { adminMiddleware } from '@/lib/middleware/auth';
-import { getImportJobForAcademy, commitImportJob } from '@/lib/import/commit';
-import { summarise } from '../../extract/route';
+import {
+  getImportJobForAcademy,
+  commitImportJob,
+  releaseStuckCommit,
+} from '@/lib/import/commit';
+import { summarise } from '@/lib/import/summarise';
 
 interface RouteContext {
   params: Promise<{ jobId: string }>;
@@ -20,6 +24,9 @@ interface RouteContext {
  * Phase 2's welcome message consumes.
  */
 export async function POST(req: NextRequest, context: RouteContext) {
+  // Hoisted so the catch block can release it — see the comment there.
+  let job: Awaited<ReturnType<typeof getImportJobForAcademy>> = null;
+
   try {
     const auth = await adminMiddleware(req);
     if (auth?.error) {
@@ -28,7 +35,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
     await connectToDatabase();
 
     const { jobId } = await context.params;
-    const job = await getImportJobForAcademy(
+    job = await getImportJobForAcademy(
       jobId,
       auth.academyId,
       auth.user.role === 'gwd_super_admin'
@@ -87,6 +94,14 @@ export async function POST(req: NextRequest, context: RouteContext) {
     });
   } catch (error: any) {
     console.error('[import/commit]', error);
+
+    /**
+     * Unwedge the job before returning. Without this a failed commit left it in
+     * `committing` permanently, so every retry answered 409 and the only way
+     * out was editing the database by hand.
+     */
+    if (job) await releaseStuckCommit(job);
+
     return NextResponse.json(
       { success: false, message: error?.message || 'Import failed' },
       { status: 500 }

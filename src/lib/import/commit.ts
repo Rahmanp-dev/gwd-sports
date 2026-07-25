@@ -42,6 +42,9 @@ export async function commitImportJob(
   if (!academy) {
     throw new Error('Academy not found');
   }
+  // Where the roster stood before this run, so only what THIS import added is
+  // written back. See the atomic update after the loop.
+  const rosterLengthBefore = academy.students?.length ?? 0;
 
   job.status = 'committing';
   await job.save();
@@ -113,7 +116,28 @@ export async function commitImportJob(
     }
   }
 
-  await academy.save();
+  /**
+   * ATOMIC ROSTER APPEND — NOT `academy.save()`.
+   *
+   * This used to be a full document save, and it broke every import against a
+   * real academy. `save()` runs validation over the WHOLE document, so a legacy
+   * value in a field this code never touches — `timings.workingDays` holding
+   * "Mon" where the enum wants "monday" — failed validation and 500'd the
+   * entire commit AFTER every student had already been written. Students
+   * created, job marked failed, roster never updated.
+   *
+   * The only mutation here is appending user ids to `students`, so that is all
+   * this should write. `$addToSet` is also correct where `save()` was not: two
+   * imports running at once each held a stale copy of the array and the second
+   * save silently discarded the first one's additions.
+   */
+  const rosterAdditions = (academy.students ?? []).slice(rosterLengthBefore);
+  if (rosterAdditions.length > 0) {
+    await Academy.updateOne(
+      { _id: academy._id },
+      { $addToSet: { students: { $each: rosterAdditions } } }
+    );
+  }
 
   /**
    * Events are emitted AFTER all records are persisted, in one bulk write.
@@ -136,6 +160,31 @@ export async function commitImportJob(
   await job.save();
 
   return result;
+}
+
+/**
+ * Releases a job stuck in `committing`.
+ *
+ * `commitImportJob` sets that status before doing any work and only clears it
+ * on success, so ANY throw in between left the job wedged: every retry returned
+ * 409 "currently being committed" forever, and the owner's only recovery was a
+ * database edit. The capacity check already reset the status on its way out;
+ * unexpected failures did not.
+ *
+ * Safe to call after a partially successful run. Rows already written are
+ * marked `created` and the commit loop skips them, so a retry finishes the job
+ * rather than duplicating it.
+ */
+export async function releaseStuckCommit(job: IImportJob): Promise<void> {
+  if (job.status !== 'committing') return;
+  job.status = 'awaiting_review';
+  try {
+    await job.save();
+  } catch (err: any) {
+    // Nothing further to do — the caller is already handling a failure, and
+    // masking it with a second one helps nobody.
+    console.error('[import] could not release a stuck commit:', err?.message || err);
+  }
 }
 
 /** A row is committable only with all three required fields present. */

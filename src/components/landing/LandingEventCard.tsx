@@ -59,12 +59,12 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
 
   // Convert legacy color schemes to light theme equivalents
   const getLightGradient = (scheme?: string) => {
-    if (!scheme) return "from-blue-50 to-indigo-50 text-blue-600";
+    if (!scheme) return "from-[var(--brand-soft)] to-[var(--brand-soft)] text-[color:var(--brand)]";
     if (scheme.includes("amber") || scheme.includes("yellow")) return "from-amber-50 to-orange-50 text-amber-600";
     if (scheme.includes("green") || scheme.includes("emerald")) return "from-emerald-50 to-teal-50 text-emerald-600";
     if (scheme.includes("red") || scheme.includes("rose")) return "from-rose-50 to-red-50 text-rose-600";
     if (scheme.includes("purple") || scheme.includes("pink")) return "from-purple-50 to-fuchsia-50 text-purple-600";
-    return "from-blue-50 to-indigo-50 text-blue-600";
+    return "from-[var(--brand-soft)] to-[var(--brand-soft)] text-[color:var(--brand)]";
   };
   const lightStyle = getLightGradient(card.colorScheme);
 
@@ -78,7 +78,7 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
       className="group cursor-pointer"
       onClick={handleCardClick}
     >
-      <div className="relative bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-slate-100">
+      <div className="relative bg-white rounded-[var(--brand-radius)] overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-slate-100">
         <div className="grid lg:grid-cols-2 gap-0">
           {/* Image */}
           <div className="relative h-72 lg:h-auto overflow-hidden">
@@ -110,7 +110,7 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
             {/* Sport Badge */}
             <div className="absolute bottom-6 left-6">
               <Badge
-                className={`bg-blue-600 text-white text-xs px-3 py-1 capitalize font-medium`}
+                className={`bg-[var(--brand)] text-white text-xs px-3 py-1 capitalize font-medium`}
               >
                 {event.sport}
               </Badge>
@@ -119,7 +119,7 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
 
           {/* Content */}
           <div className="p-8 sm:p-10 flex flex-col justify-center bg-white">
-            <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-6 tracking-tight group-hover:text-blue-600 transition-colors font-display line-clamp-2">
+            <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-6 tracking-tight group-hover:text-[color:var(--brand)] transition-colors font-display line-clamp-2">
               {event.name}
             </h3>
 
@@ -186,9 +186,9 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
                   animate={{ opacity: 1, y: 0 }}
                   className="relative mt-2"
                 >
-                  <div className="relative bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                  <div className="relative bg-slate-50 border border-slate-200 rounded-[var(--brand-radius)] p-4">
                     <div className="flex items-center gap-2 mb-3">
-                      <Clock className="w-4 h-4 text-blue-500" />
+                      <Clock className="w-4 h-4 text-[color:var(--brand)]" />
                       <span className="text-slate-600 font-bold text-xs uppercase tracking-wider">
                         Registration Closes In
                       </span>
@@ -231,7 +231,7 @@ export const LandingEventCard: React.FC<LandingEventCardProps> = ({
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="bg-red-50 border border-red-100 rounded-2xl p-4"
+                  className="bg-red-50 border border-red-100 rounded-[var(--brand-radius)] p-4"
                 >
                   <div className="flex items-center gap-2 justify-center">
                     <Clock className="w-4 h-4 text-red-500" />

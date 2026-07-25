@@ -3,7 +3,7 @@ import { connectToDatabase } from '@/lib/db';
 import { adminMiddleware } from '@/lib/middleware/auth';
 import { getImportJobForAcademy } from '@/lib/import/commit';
 import { revalidateRow } from '@/lib/import/flags';
-import { summarise } from '../extract/route';
+import { summarise } from '@/lib/import/summarise';
 
 /**
  * Step 2 of the import wizard: read and edit the staged rows.

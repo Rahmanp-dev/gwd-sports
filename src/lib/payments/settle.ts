@@ -3,6 +3,7 @@ import { FeePayment, type IFeePayment } from '@/lib/models/FeePayment';
 import StudentProfile from '@/lib/models/Student';
 import { paiseToRupees } from './money';
 import { emitEvent } from '@/lib/events/emit';
+import { issueReceiptNumber } from './issueReceipt';
 
 export type SettlementSource = 'client_verify' | 'webhook' | 'manual_admin';
 
@@ -97,6 +98,18 @@ export async function settlePayment(params: {
       { $set: { settledAt: null, status: 'pending' } }
     ).catch(() => undefined);
     throw err;
+  }
+
+  /**
+   * Allocate the parent-facing receipt number, now that the money is credited
+   * and this attempt cannot be retried. Failure here must not fail the
+   * settlement: the parent has paid and their ledger is correct, and the
+   * receipt route allocates lazily on first view if this did not land.
+   */
+  try {
+    await issueReceiptNumber(String(claimed._id));
+  } catch (err: any) {
+    console.error('[settle] receipt numbering failed:', err?.message || err);
   }
 
   await emitEvent({

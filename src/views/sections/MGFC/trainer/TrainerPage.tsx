@@ -12,6 +12,9 @@ import { API_BASE_URL } from "@/utils/constants";
 import { authService } from "@/services/authService";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { logout } from "@/store/slices/authSlice";
+import { BatchRegister } from "@/components/user/trainer/BatchRegister";
+import { StudentDetail } from "@/components/user/trainer/StudentDetail";
+import { CATEGORY_DEFINITIONS } from "@/lib/performance/taxonomy";
 import {
   Calendar,
   Users,
@@ -150,7 +153,11 @@ export default function MGFCTrainerPage() {
     useState<DetailedStudent | null>(null);
   const [addPerformanceForm, setAddPerformanceForm] = useState({
     sport: "",
-    category: "",
+    // Phase 5: an evaluation is now (category, metric), not one free-text
+    // field — a technical drill and a match-play assessment are not
+    // comparable, so they are never averaged together.
+    categoryKey: "technical",
+    metric: "",
     score: "",
     maxScore: "100",
     remarks: "",
@@ -160,6 +167,8 @@ export default function MGFCTrainerPage() {
   const [editingPerformance, setEditingPerformance] = useState<any>(null);
 
   // Attendance functionality
+  // The full student view — performance, attendance, fees, kits, awards.
+  const [viewStudentId, setViewStudentId] = useState<string | null>(null);
   const [isAddAttendanceOpen, setIsAddAttendanceOpen] = useState(false);
   const [selectedStudentForAttendance, setSelectedStudentForAttendance] =
     useState<DetailedStudent | null>(null);
@@ -179,11 +188,11 @@ export default function MGFCTrainerPage() {
         });
         const data = await res.json();
         if (data.success && data.data?.performanceMetrics?.length) {
+          // These are now METRIC suggestions, not categories. The four
+          // categories are fixed in code (lib/performance/taxonomy.ts) so one
+          // academy's report stays comparable with another's — which a Passport
+          // that survives a transfer depends on.
           setPerformanceMetrics(data.data.performanceMetrics);
-          setAddPerformanceForm((prev) => ({
-            ...prev,
-            category: data.data.performanceMetrics[0],
-          }));
         }
       } catch (err) {
         console.error("Failed to load settings:", err);
@@ -274,7 +283,10 @@ export default function MGFCTrainerPage() {
     setSelectedStudentForPerformance(student);
     setAddPerformanceForm({
       sport: student.sports?.[0] || trainerSports?.[0] || "",
-      category: performanceMetrics[0] || "general",
+      // Defaults to technical: it is where an isolated skill drill belongs and
+      // is the most common assessment, so it is the least surprising default.
+      categoryKey: "technical",
+      metric: "",
       score: "",
       maxScore: "100",
       remarks: "",
@@ -299,7 +311,8 @@ export default function MGFCTrainerPage() {
           body: JSON.stringify({
             studentId: selectedStudentForPerformance.userId,
             sport: addPerformanceForm.sport,
-            category: addPerformanceForm.category,
+            categoryKey: addPerformanceForm.categoryKey,
+            metric: addPerformanceForm.metric,
             score: Number(addPerformanceForm.score),
             maxScore: Number(addPerformanceForm.maxScore),
             remarks: addPerformanceForm.remarks,
@@ -308,7 +321,14 @@ export default function MGFCTrainerPage() {
       );
       const data = await res.json();
       if (data.success) {
-        toast.success("Performance record added successfully!");
+        // An evaluation can cross an achievement threshold, and the parent gets
+        // a message when it does — worth telling the coach they caused that.
+        const awarded: string[] = data.data?.achievementsAwarded ?? [];
+        if (awarded.length > 0) {
+          toast.success(`Saved — ${awarded.join(", ")} unlocked!`);
+        } else {
+          toast.success("Performance record added successfully!");
+        }
         setIsAddPerformanceOpen(false);
       } else {
         toast.error(data.message || "Failed to add performance");
@@ -607,12 +627,20 @@ export default function MGFCTrainerPage() {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-3 bg-gray-800 border border-gray-700">
+          <TabsList className="grid w-full grid-cols-4 bg-gray-800 border border-gray-700">
             <TabsTrigger
               value="overview"
               className="data-[state=active]:bg-blue-600"
             >
               Overview
+            </TabsTrigger>
+            {/* First after Overview because it is the thing a coach opens this
+                page to do, most evenings. */}
+            <TabsTrigger
+              value="register"
+              className="data-[state=active]:bg-blue-600"
+            >
+              Register
             </TabsTrigger>
             <TabsTrigger
               value="students"
@@ -627,6 +655,21 @@ export default function MGFCTrainerPage() {
               Availability
             </TabsTrigger>
           </TabsList>
+
+          {/* Register Tab — the batch attendance checklist */}
+          <TabsContent value="register" className="space-y-6">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <ClipboardList className="h-5 w-5 text-blue-400" />
+                  Mark the register
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <BatchRegister />
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
@@ -991,7 +1034,10 @@ export default function MGFCTrainerPage() {
                               align="end"
                               className="bg-gray-800 border-gray-700 text-white min-w-[160px]"
                             >
-                              <DropdownMenuItem className="hover:bg-gray-700 cursor-pointer py-2">
+                              <DropdownMenuItem
+                                className="hover:bg-gray-700 cursor-pointer py-2"
+                                onClick={() => setViewStudentId(student.userId)}
+                              >
                                 <FileText className="mr-2 h-4 w-4 text-gray-400" />
                                 View Profile
                               </DropdownMenuItem>
@@ -1155,36 +1201,76 @@ export default function MGFCTrainerPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="category" className="text-gray-300">
-                  Metric / Category
+                <Label htmlFor="categoryKey" className="text-gray-300">
+                  Area of the game
                 </Label>
                 <select
-                  id="category"
+                  id="categoryKey"
                   required
-                  value={addPerformanceForm.category}
+                  value={addPerformanceForm.categoryKey}
                   onChange={(e) =>
                     setAddPerformanceForm((prev) => ({
                       ...prev,
-                      category: e.target.value,
+                      categoryKey: e.target.value,
+                      // Clear the metric: the suggestions below are per
+                      // category, and keeping a technical metric under match
+                      // play is exactly the mix-up this split prevents.
+                      metric: "",
                     }))
                   }
                   className="flex h-10 w-full items-center justify-between rounded-md border border-gray-700 bg-gray-800 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-white"
                 >
-                  {performanceMetrics.map((opt) => (
+                  {Object.values(CATEGORY_DEFINITIONS).map((definition) => (
                     <option
-                      key={opt}
-                      value={opt}
-                      className="bg-gray-800 text-white capitalize"
+                      key={definition.key}
+                      value={definition.key}
+                      className="bg-gray-800 text-white"
                     >
-                      {opt}
+                      {definition.label}
                     </option>
                   ))}
-                  {performanceMetrics.length === 0 && (
-                    <option value="general" className="bg-gray-800">
-                      General
-                    </option>
-                  )}
                 </select>
+                <p className="text-[11px] text-gray-500">
+                  {
+                    CATEGORY_DEFINITIONS[
+                      addPerformanceForm.categoryKey as keyof typeof CATEGORY_DEFINITIONS
+                    ]?.description
+                  }
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="metric" className="text-gray-300">
+                  What did you assess?
+                </Label>
+                <input
+                  id="metric"
+                  required
+                  list="metric-suggestions"
+                  value={addPerformanceForm.metric}
+                  onChange={(e) =>
+                    setAddPerformanceForm((prev) => ({
+                      ...prev,
+                      metric: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g. first touch"
+                  className="flex h-10 w-full rounded-md border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                {/* Suggestions, not a fixed list — metric vocabulary is local
+                    to an academy, unlike the four categories. */}
+                <datalist id="metric-suggestions">
+                  {(
+                    CATEGORY_DEFINITIONS[
+                      addPerformanceForm.categoryKey as keyof typeof CATEGORY_DEFINITIONS
+                    ]?.defaultMetrics ?? []
+                  ).map((suggestion) => (
+                    <option key={suggestion} value={suggestion} />
+                  ))}
+                  {performanceMetrics.map((custom) => (
+                    <option key={custom} value={custom} />
+                  ))}
+                </datalist>
               </div>
             </div>
 
@@ -1538,6 +1624,21 @@ export default function MGFCTrainerPage() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Full student view — the four P0 panels plus awards. */}
+      <Dialog
+        open={!!viewStudentId}
+        onOpenChange={(open) => {
+          if (!open) setViewStudentId(null);
+        }}
+      >
+        <DialogContent className="bg-gray-900 border-gray-700 text-white sm:max-w-[680px] max-h-[88vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-white">Student</DialogTitle>
+          </DialogHeader>
+          {viewStudentId && <StudentDetail studentUserId={viewStudentId} />}
         </DialogContent>
       </Dialog>
 

@@ -9,9 +9,9 @@ const stats = [
     value: 1000,
     suffix: "+",
     label: "Athletes Trained",
-    color: "from-blue-500 to-indigo-500",
-    bg: "bg-blue-50",
-    text: "text-blue-600",
+    color: "from-[var(--brand)] to-[var(--brand-strong)]",
+    bg: "bg-[var(--brand-soft)]",
+    text: "text-[color:var(--brand)]",
   },
   {
     icon: Trophy,
@@ -98,7 +98,7 @@ export default function StatsSection({ academy }: { academy?: any }) {
           repeat: Infinity,
           ease: "linear",
         }}
-        className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-blue-50/50 to-indigo-50/50 rounded-full blur-3xl opacity-60"
+        className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-[var(--brand-soft)]/50 to-[var(--brand-soft)]/50 rounded-full blur-3xl opacity-60"
       />
 
       <div className="relative max-w-7xl mx-auto">
@@ -112,7 +112,7 @@ export default function StatsSection({ academy }: { academy?: any }) {
         >
           <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-slate-900 mb-6 font-display tracking-tight">
             Numbers That{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand)] to-[var(--brand-strong)]">
               Speak Volumes
             </span>
           </h2>
@@ -130,12 +130,12 @@ export default function StatsSection({ academy }: { academy?: any }) {
               whileHover={{ y: -10 }}
               className="group relative"
             >
-              <div className="relative bg-white border border-slate-100 rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden text-center">
+              <div className="relative bg-white border border-slate-100 rounded-[var(--brand-radius)] p-8 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden text-center">
                 {/* Icon */}
                 <motion.div
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   transition={{ duration: 0.3 }}
-                  className={`w-16 h-16 mx-auto ${stat.bg} rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:shadow-md transition-all duration-300`}
+                  className={`w-16 h-16 mx-auto ${stat.bg} rounded-[var(--brand-radius)] flex items-center justify-center mb-6 shadow-sm group-hover:shadow-md transition-all duration-300`}
                 >
                   <stat.icon className={`w-8 h-8 ${stat.text}`} />
                 </motion.div>
@@ -154,7 +154,7 @@ export default function StatsSection({ academy }: { academy?: any }) {
 
                 {/* Glowing Background on Hover */}
                 <div
-                  className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-[0.03] transition-opacity duration-500 -z-10`}
+                  className={`absolute inset-0 rounded-[var(--brand-radius)] bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-[0.03] transition-opacity duration-500 -z-10`}
                 />
               </div>
             </motion.div>

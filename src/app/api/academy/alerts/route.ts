@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import { connectToDatabase } from '@/lib/db';
 import { adminMiddleware } from '@/lib/middleware/auth';
+import Academy from '@/lib/models/Academy';
 import OwnerAlert from '@/lib/models/OwnerAlert';
 
 /**
@@ -26,7 +27,8 @@ export async function GET(req: NextRequest) {
 
     const filter: Record<string, unknown> = {};
     // Tenant isolation: super admins see everything, owners see their own.
-    if (auth.user.role !== 'gwd_super_admin') {
+    const isSuperAdmin = auth.user.role === 'gwd_super_admin';
+    if (!isSuperAdmin) {
       if (!auth.academyId) {
         return NextResponse.json(
           { success: false, message: 'Your account is not linked to an academy.' },
@@ -34,13 +36,26 @@ export async function GET(req: NextRequest) {
         );
       }
       filter.academyId = auth.academyId;
+    } else {
+      // Narrowing to one tenant. Only honoured for a super admin — an academy
+      // admin's scope is fixed above and must not be overridable from a query
+      // string.
+      const academyId = searchParams.get('academyId');
+      if (academyId && academyId !== 'all' && mongoose.Types.ObjectId.isValid(academyId)) {
+        filter.academyId = academyId;
+      }
     }
     if (!includeResolved) filter.resolvedAt = null;
 
-    const alerts = await OwnerAlert.find(filter)
-      .sort({ severity: 1, createdAt: -1 })
-      .limit(limit)
-      .lean();
+    const alertQuery = OwnerAlert.find(filter).sort({ severity: 1, createdAt: -1 }).limit(limit);
+    // Without the academy name, a platform-wide feed is a list of student names
+    // with no way to tell which academy is being asked to act.
+    if (isSuperAdmin) alertQuery.populate({ path: 'academyId', select: 'name' });
+
+    const [alerts, academies] = await Promise.all([
+      alertQuery.lean(),
+      isSuperAdmin ? Academy.find({}).select('name').sort({ name: 1 }).lean() : [],
+    ]);
 
     const counts = {
       total: alerts.length,
@@ -51,7 +66,16 @@ export async function GET(req: NextRequest) {
       unacknowledged: alerts.filter((a: any) => !a.acknowledgedAt).length,
     };
 
-    return NextResponse.json({ success: true, data: { alerts, counts } });
+    return NextResponse.json({
+      success: true,
+      data: {
+        alerts,
+        counts,
+        academies: isSuperAdmin
+          ? (academies as any[]).map((a) => ({ _id: String(a._id), name: a.name }))
+          : null,
+      },
+    });
   } catch (error: any) {
     console.error('[academy/alerts]', error);
     return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });

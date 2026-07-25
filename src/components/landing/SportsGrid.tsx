@@ -56,8 +56,8 @@ export default function SportsGrid({ academy }: { academy?: any }) {
     <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
       {/* Premium Apple-style Light Background */}
       <div className="absolute inset-0 bg-slate-50">
-        <div className="absolute top-40 right-0 w-[30rem] h-[30rem] rounded-full bg-blue-50/50 blur-3xl" />
-        <div className="absolute bottom-40 left-0 w-[30rem] h-[30rem] rounded-full bg-indigo-50/50 blur-3xl" />
+        <div className="absolute top-40 right-0 w-[30rem] h-[30rem] rounded-full bg-[var(--brand-soft)]/50 blur-3xl" />
+        <div className="absolute bottom-40 left-0 w-[30rem] h-[30rem] rounded-full bg-[var(--brand-soft)]/50 blur-3xl" />
       </div>
 
       <div className="relative max-w-7xl mx-auto">
@@ -73,9 +73,9 @@ export default function SportsGrid({ academy }: { academy?: any }) {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-3 px-6 py-2 bg-blue-50 border border-blue-100 text-blue-600 rounded-full shadow-sm mb-8"
+            className="inline-flex items-center gap-3 px-6 py-2 bg-[var(--brand-soft)] border border-[color:var(--brand-soft)] text-[color:var(--brand)] rounded-full shadow-sm mb-8"
           >
-            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-[var(--brand)] animate-pulse" />
             <span className="text-sm font-semibold tracking-wider uppercase">
               Disciplines
             </span>
@@ -87,7 +87,7 @@ export default function SportsGrid({ academy }: { academy?: any }) {
             viewport={{ once: true }}
             className="text-4xl sm:text-5xl lg:text-7xl font-bold text-slate-900 mb-6 font-display tracking-tight"
           >
-            Master Your <span className="text-blue-600">Game</span>
+            Master Your <span className="text-[color:var(--brand)]">Game</span>
           </motion.h2>
 
           <motion.p
@@ -162,11 +162,11 @@ export default function SportsGrid({ academy }: { academy?: any }) {
           >
             <Link to="/user/auth" className="block h-full">
               <div className="relative h-[400px] rounded-[2rem] overflow-hidden bg-slate-900 border border-slate-800 flex flex-col items-center justify-center text-center p-8 transition-shadow duration-300 hover:shadow-2xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-900/50 via-slate-900 to-indigo-900/50" />
+                <div className="absolute inset-0 bg-gradient-to-br from-[var(--brand-strong)]/50 via-slate-900 to-[var(--brand-strong)]/50" />
                 
                 <div className="relative z-10">
                   <div className="w-20 h-20 mx-auto rounded-full bg-white/10 flex items-center justify-center mb-6 backdrop-blur-md group-hover:scale-110 group-hover:bg-white/20 transition-all duration-300">
-                    <Trophy className="w-10 h-10 text-blue-400" />
+                    <Trophy className="w-10 h-10 text-[color:var(--brand)]" />
                   </div>
                   <h3 className="text-3xl font-bold text-white mb-4 font-display tracking-tight">
                     Join The Academy
@@ -174,7 +174,7 @@ export default function SportsGrid({ academy }: { academy?: any }) {
                   <p className="text-slate-300 mb-8 max-w-[250px] mx-auto text-lg">
                     Begin your journey to greatness with professional coaching.
                   </p>
-                  <span className="inline-flex items-center gap-2 text-blue-400 font-semibold group-hover:text-blue-300 transition-colors">
+                  <span className="inline-flex items-center gap-2 text-[color:var(--brand)] font-semibold group-hover:text-[color:var(--brand-soft)] transition-colors">
                     Enroll Now <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
                   </span>
                 </div>

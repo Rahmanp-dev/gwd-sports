@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { User } from '@/lib/models/User';
 import { sendPasswordResetEmail } from '@/lib/email';
+import { isPlaceholderAccount } from '@/lib/auth/placeholder';
 import crypto from 'crypto';
 
 export async function POST(req: NextRequest) {
@@ -13,6 +14,20 @@ export async function POST(req: NextRequest) {
     const user = await User.findOne({ email: email.toLowerCase() });
     // Always return success to prevent email enumeration
     if (!user) return NextResponse.json({ success: true, message: 'If that email exists, a reset link has been sent.' });
+
+    /**
+     * THE PATH THIS GUARD EXISTS FOR. An imported student's address is derived
+     * from their PUBLIC passport id, so anyone holding that id can construct it
+     * and ask for a reset. Without this, a token would be minted and stored for
+     * an account nobody owns. Returns the same success message as every other
+     * branch, so it stays non-enumerable.
+     */
+    if (isPlaceholderAccount(user)) {
+      return NextResponse.json({
+        success: true,
+        message: 'If that email exists, a reset link has been sent.',
+      });
+    }
 
     const resetToken = crypto.randomBytes(32).toString('hex');
     const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');

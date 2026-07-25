@@ -2,7 +2,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BRAND_NAME } from "@/utils/constants";
+import { useBrand } from "@/hooks/useBrand";
 import {
   LayoutDashboard,
   Users,
@@ -16,25 +16,106 @@ import {
   LogOut,
   Settings,
   Palette,
+  MessagesSquare,
+  UploadCloud,
+  QrCode,
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { logout } from "@/store/slices/authSlice";
-import { UserManagement } from "@/components/admin/users/UserManagement";
-import { StudentManagement } from "@/components/admin/students/StudentManagement";
-import { EventManagement } from "@/components/admin/events/EventManagement";
-import { TrainerManagement } from "@/components/admin/trainers/TrainerManagement";
-import { AcademyManagement } from "@/components/admin/academies/AcademyManagement";
-import { LandingPageManagement } from "@/components/admin/landing/LandingPageManagement";
-import { FeesManagement } from "@/components/admin/fees/FeesManagement";
-import { KitsManagement } from "@/components/admin/kits/KitsManagement";
-import { SettingsManagement } from "@/components/admin/settings/SettingsManagement";
-import { AcademyBrandingSettings } from "@/components/admin/settings/AcademyBrandingSettings";
+import dynamic from "next/dynamic";
+import { Loader2 } from "lucide-react";
+
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * EVERY TAB IS CODE-SPLIT
+ * ════════════════════════════════════════════════════════════════════════════
+ *
+ * These fifteen panels used to be static imports. An admin opening the
+ * dashboard downloaded all of them — the student table, the event manager, the
+ * fee ledger, the branding studio, the whole super-admin console — to look at
+ * one tab. First Load JS for /admin/dashboard was 511 kB.
+ *
+ * Radix already unmounts inactive tab content, so nothing was RENDERING. The
+ * cost was purely that a static import puts the module in the entry bundle
+ * whether it runs or not.
+ *
+ * `ssr: false` because every one of these is a client-only screen that fetches
+ * on mount — server-rendering a spinner and then hydrating it is work with no
+ * output. This page is behind a login, so there is nothing to serve to a
+ * crawler either.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+const PanelFallback = () => (
+  <div className="flex items-center justify-center py-16">
+    <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
+  </div>
+);
+
+/** Every panel here takes no props, so this is deliberately not generic. */
+const lazyPanel = (
+  loader: () => Promise<{ default: React.ComponentType<Record<string, never>> }>,
+) => dynamic(loader, { loading: PanelFallback, ssr: false });
+
+const UserManagement = lazyPanel(() =>
+  import("@/components/admin/users/UserManagement").then((m) => ({ default: m.UserManagement })),
+);
+const StudentManagement = lazyPanel(() =>
+  import("@/components/admin/students/StudentManagement").then((m) => ({ default: m.StudentManagement })),
+);
+const EventManagement = lazyPanel(() =>
+  import("@/components/admin/events/EventManagement").then((m) => ({ default: m.EventManagement })),
+);
+const TrainerManagement = lazyPanel(() =>
+  import("@/components/admin/trainers/TrainerManagement").then((m) => ({ default: m.TrainerManagement })),
+);
+const LandingPageManagement = lazyPanel(() =>
+  import("@/components/admin/landing/LandingPageManagement").then((m) => ({ default: m.LandingPageManagement })),
+);
+const FeesManagement = lazyPanel(() =>
+  import("@/components/admin/fees/FeesManagement").then((m) => ({ default: m.FeesManagement })),
+);
+const KitsManagement = lazyPanel(() =>
+  import("@/components/admin/kits/KitsManagement").then((m) => ({ default: m.KitsManagement })),
+);
+const SettingsManagement = lazyPanel(() =>
+  import("@/components/admin/settings/SettingsManagement").then((m) => ({ default: m.SettingsManagement })),
+);
+const AcademyBrandingSettings = lazyPanel(() =>
+  import("@/components/admin/settings/AcademyBrandingSettings").then((m) => ({ default: m.AcademyBrandingSettings })),
+);
+const BrandingStudio = lazyPanel(() =>
+  import("@/components/admin/settings/BrandingStudio").then((m) => ({ default: m.BrandingStudio })),
+);
+const CommunicationCenter = lazyPanel(() =>
+  import("@/components/admin/messaging/CommunicationCenter").then((m) => ({ default: m.CommunicationCenter })),
+);
+const OnboardingCenter = lazyPanel(() =>
+  import("@/components/admin/import/OnboardingCenter").then((m) => ({ default: m.OnboardingCenter })),
+);
+const AttendanceCenter = lazyPanel(() =>
+  import("@/components/admin/attendance/AttendanceCenter").then((m) => ({ default: m.AttendanceCenter })),
+);
+
+/**
+ * The overview is the DEFAULT tab, so it is deliberately NOT lazy — splitting
+ * the one panel that always renders would only add a round trip and a spinner
+ * to the first paint.
+ */
 import { CommandCenter } from "@/components/admin/dashboard/CommandCenter";
-import SuperAdminDashboard from "@/views/admin/SuperAdminDashboard";
+
+/**
+ * Super admins never see the tabbed layout at all — this returns early below.
+ * Splitting it keeps the whole platform console out of an academy admin's
+ * bundle, which is the single largest component here.
+ */
+const SuperAdminDashboard = lazyPanel(() => import("@/views/admin/SuperAdminDashboard"));
 
 export default function AdminPage() {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
+  // The academy's own name, not the platform's — five branches will run under
+  // one deployment, so a build-time constant cannot be right for all of them.
+  const brand = useBrand();
 
   const handleLogout = () => {
     dispatch(logout());
@@ -50,7 +131,7 @@ export default function AdminPage() {
       <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">
-            {BRAND_NAME} Admin
+            {brand.name} Admin
           </h1>
           <div className="flex items-center gap-4">
             <div className="hidden md:block text-right">
@@ -94,6 +175,16 @@ export default function AdminPage() {
                 Students
               </TabsTrigger>
 
+              {/* Sits next to Students on purpose: importing a roster is a
+                  student-management job, not a settings job. */}
+              <TabsTrigger
+                value="import"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <UploadCloud className="h-4 w-4 mr-2" />
+                Import
+              </TabsTrigger>
+
               <TabsTrigger
                 value="trainers"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -135,6 +226,22 @@ export default function AdminPage() {
               </TabsTrigger>
 
               <TabsTrigger
+                value="checkin"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <QrCode className="h-4 w-4 mr-2" />
+                Check-in
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="comms"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <MessagesSquare className="h-4 w-4 mr-2" />
+                Comms
+              </TabsTrigger>
+
+              <TabsTrigger
                 value="branding"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
@@ -171,6 +278,15 @@ export default function AdminPage() {
             <Card>
               <CardContent className="p-6">
                 <StudentManagement />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Import Tab — bulk onboarding + parent activation */}
+          <TabsContent value="import">
+            <Card>
+              <CardContent className="p-6">
+                <OnboardingCenter />
               </CardContent>
             </Card>
           </TabsContent>
@@ -220,8 +336,31 @@ export default function AdminPage() {
             </Card>
           </TabsContent>
 
-          {/* Branding Tab */}
-          <TabsContent value="branding">
+          {/* Check-in Tab — batch schedules + the QR codes they drive */}
+          <TabsContent value="checkin">
+            <Card>
+              <CardContent className="p-6">
+                <AttendanceCenter />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Comms Tab — alert feed + message log */}
+          <TabsContent value="comms">
+            <Card>
+              <CardContent className="p-6">
+                <CommunicationCenter />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Branding Tab — look & feel first, then logo and fee schedule */}
+          <TabsContent value="branding" className="space-y-6">
+            <Card>
+              <CardContent className="p-6">
+                <BrandingStudio />
+              </CardContent>
+            </Card>
             <Card>
               <CardContent className="p-6">
                 <AcademyBrandingSettings />
@@ -243,7 +382,7 @@ export default function AdminPage() {
       {/* Footer */}
       <footer className="bg-white border-t mt-6 py-4">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} {BRAND_NAME} Admin. All rights reserved.
+          © {new Date().getFullYear()} {brand.name} Admin. All rights reserved.
         </div>
       </footer>
     </div>
