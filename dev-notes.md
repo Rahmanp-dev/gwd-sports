@@ -308,6 +308,230 @@ priority ordering.
 
 ---
 
+## Session 2 — 2026-07-25 · Phase 2 (WhatsApp communication engine)
+
+**Branch:** `feat/onboarding-and-payment-hardening` (continued)
+**State at end of session:** not committed, not pushed. **202 tests passing**
+(up from 97), `tsc --noEmit` clean, `next build` compiles in 29.7s.
+
+### 13:30 – 13:53 · Models + the pure scheduling core
+
+Built `OutboundMessage` (queue + scheduler + delivery ledger in one collection)
+and `OwnerAlert` (dashboard-only notifications, never sent to a parent).
+
+One collection serves as queue *and* delivery ledger deliberately: per-message
+sent/delivered/read/failed tracking was a hard requirement, so a durable row per
+message had to exist regardless. A separate queue would just be a second source
+of truth to keep in sync.
+
+Then `scheduling.ts` — **pure functions, no database, no clock of its own**.
+`now`, the candidates and the already-sent counts are all inputs. That was the
+key architectural choice: "a parent mutes us because we sent five messages in one
+day" cannot be reproduced by clicking around staging. It needs a simulated day,
+and only pure logic can be simulated.
+
+Rules implemented:
+1. Lower priority number wins: payment(1) > attendance(2) > achievement(3) >
+   broadcast(4).
+2. Daily budget per parent. Once spent, messages are **deferred — never dropped,
+   never sent anyway.**
+3. Budget buckets by the **parent's local day**, not UTC. A cap rolling over at
+   05:30 IST would hand every parent a double dose each morning.
+4. **Payment reminders get one reserved slot** on top of the shared budget.
+   Priority ordering alone cannot fix starvation, because the earlier
+   lower-priority messages were already sent before the reminder existed.
+5. Nothing sends during quiet hours (21:00–08:00 IST). A fee reminder at 03:00 is
+   a complaint, not a nudge.
+
+**✅ 13:53:54 — 29/29 scheduling tests passing.**
+
+### 13:53 – 13:56 · Template registry + variable validation
+
+Six Meta templates, with the **exact submission body text in comments** so they
+can be filed with Interakt immediately (this is the launch blocker).
+
+`gwd_fee_reminder_v1` serves all three parent-facing fee stages via a
+stage-specific opening line. Three near-identical templates would mean three Meta
+approvals and three chances of one stage silently breaking while the others pass.
+
+Validation hard-fails rather than sending on: a missing required variable, an
+unrendered `{{1}}`, and the literals `undefined` / `null` / `NaN` /
+`Invalid Date` / `[object Object]`. "Hi undefined, Rohan's fee of ₹NaN is due on
+Invalid Date" destroys trust in one message.
+
+**Cross-contamination guard** (`assertVariablesBelongTo`) — the requirement that
+a variable must never resolve to another student's data. Two independent
+assertions: any name variable must match this passport's student name, and
+**every** passport id appearing anywhere in any variable, including inside URLs,
+must be this passport's. The realistic bug it catches is an off-by-one in a bulk
+loop where sixty parents get sixty messages and one carries another child's
+payment link — money into the wrong ledger, and a parent who now knows we mix
+children up.
+
+**✅ 13:56:21 — 64/64 (scheduling + templates).**
+
+### 13:56 – 14:04 · Providers, worker, four triggers
+
+- `providers.ts` — `WhatsAppProvider` interface, `InteraktProvider`,
+  `NoopProvider`, `Msg91SmsProvider`. **Nothing outside that file may reference
+  Interakt.** BSPs are interchangeable resellers of the same Meta Cloud API;
+  switching should cost one file.
+- `enqueue.ts` / `send.ts` — validation runs at **both** enqueue and send time.
+  Enqueue-time fails loudly next to the offending code; send-time is the actual
+  gate, because a message can sit queued for hours while a student transfers or a
+  name is corrected.
+- `consumers.ts` — drains the event log. **`student.created` finally has its
+  consumer**, closing the Phase 1 interface. Also `attendance.created` (Phase 3
+  will produce it) and `payment.settled`.
+- `reminders.ts` — the T-5 / due / T+3 / T+7 / T+15 cadence.
+- `digest.ts` — Sunday weekly digest.
+- `/api/jobs/tick` — one cron entry point, secret-protected. Order is deliberate:
+  dispatch → reminders → digest → **send last**, so anything queued in this tick
+  goes out in the same tick rather than waiting 15 minutes.
+- `/api/webhooks/interakt` — delivery status callbacks, with monotonic status
+  (a late "sent" cannot overwrite a "read").
+
+**✅ 14:04:49 — 105/105 messaging tests.**
+**✅ 14:05:44 — 202/202 total, `tsc` clean.**
+**✅ `next build` — compiled successfully in 29.7s.** New routes:
+`/api/jobs/tick`, `/api/webhooks/interakt`, `/api/academy/alerts`.
+
+---
+
+### 🐞 Bug the tests caught — would have shifted the entire fee cadence by a day
+
+`daysBetween()` normalised both dates to **UTC** midnight. But due dates are
+constructed at **IST** local midnight, which is 18:30 UTC on the *previous* day.
+So every date boundary in the cadence was off by one: the "payment due today"
+message would have gone out **the day before the fee was actually due**, and
+every overdue stage with it.
+
+Ten reminder tests failed on this at 14:03:50. Fixed by normalising to local
+midnight with an explicit offset, threaded through `stageFor`,
+`currentCycleDueDate` and the alert `daysOverdue`. This is exactly the class of
+bug that is invisible in manual testing — everything looks plausible, just one
+day early, forever.
+
+---
+
+### The four triggers, as built
+
+| Trigger | Fires on | Priority | Notes |
+|---|---|---|---|
+| Welcome | `student.created` | 2 (attendance tier) | Intro + passport link + first payment link if a fee is due. Deliberately NOT payment tier, so it cannot consume the payment reserve. |
+| Attendance confirmation | `attendance.created` | 2 | "[Child] checked in at 5:02 PM ✅". Producer is Phase 3. Absences are **not** announced — that's a coach conversation. |
+| Weekly digest | Sunday, local | 3 | Attendance %, achievement, next fee date, passport link. Skipped entirely for a student with zero sessions: "0 of 0 sessions" reads worse than silence. |
+| Fee cadence | Daily sweep | 1 | T-5, due, T+3 to parent. T+3, T+7, T+15 to owner dashboard. |
+
+**Personalisation in bulk** is structural, not careful coding: each message's
+variables come from its own event payload (which Phase 1 denormalised for exactly
+this reason), and are then re-checked against the passport. Two siblings imported
+in one batch produce two events and two independent messages with no shared
+mutable state.
+
+**A payment cancels pending reminders.** `payment.settled` cancels queued
+`fee_*` messages for that student. Without it, a parent who pays on the due date
+still gets chased three days later — they have a receipt and we look broken.
+
+### The two rules that must not be "improved" later
+
+Both are commented at the code site in `reminders.ts`:
+
+1. **After T+3 the platform stops messaging the parent.** T+7 and T+15 have *no
+   parent-facing template at all* — a test asserts their absence. A fourth
+   automated chase is how a number gets blocked.
+2. **The system never restricts a student's access, attendance or passport for
+   non-payment.** T+15 raises a decision point and stops. `requiresOwnerDecision`
+   surfaces it; nothing acts on it. Any code that reads `OwnerAlert` to gate
+   access is a bug.
+
+### Frequency cap — the simulated day, as tested
+
+One parent, two children (siblings share one phone, so one budget), seven
+triggers across sequential cron ticks. Budget 3 + 1 payment reserve:
+
+| Tick | Trigger | Outcome |
+|---|---|---|
+| 07:30 | weekly digest | **deferred** — quiet hours → 08:00 |
+| 08:05 | weekly digest | **sent** (1/3) |
+| 10:00 | fee due today | **sent** (2/3) |
+| 17:00 | attendance ×2 (both kids) | one **sent** (3/3), one **deferred** → tomorrow 10:00 |
+| 18:00 | achievement badge | **deferred** — budget spent |
+| 19:00 | fee overdue T+3 | **sent** — uses the payment reserve (4/4) |
+| 19:30 | second payment message | **deferred** — reserve is finite, not a bypass |
+
+**7 triggers → 4 sends, 0 drops.** Every deferral carries a concrete future slot
+that is itself outside quiet hours.
+
+### Assumptions taken
+
+1. **Welcome message is priority 2, not 1.** It carries a payment link, which
+   argues for payment tier, but it is sent once per student in bulk on import day
+   when little competes — and putting it in payment tier would let it consume the
+   reserve meant for fee reminders. Revisit if welcomes start getting deferred.
+2. **Daily budget default 3 + 1 payment reserve.** Env-configurable. Chosen for a
+   realistic day: one attendance confirmation, one fee message, one digest.
+3. **Quiet hours 21:00–08:00 IST**, fixed +05:30 offset, no timezone library
+   (India has no DST, so a minute offset is exact).
+4. **One cron entry point at 15-minute cadence.** Every stage is individually
+   idempotent, so overlapping or retried ticks cannot double-message.
+5. **Absences are not messaged to parents.** Not in the brief either way; chose
+   silence because an automated "Rohan was marked absent" causes more arguments
+   than it resolves.
+
+### Open items / gaps flagged
+
+- **SMS fallback is interface-complete but cannot deliver.** MSG91 needs a
+  **DLT-registered template id** per message type under TRAI rules, and free-text
+  SMS is not deliverable to Indian numbers. No amount of code here fixes that —
+  it needs DLT registration first. The trigger path is complete and the fallback
+  row is created even with no provider, recorded as `skipped`, so the gap is
+  visible in the message log rather than silent.
+- **No Interakt credentials yet**, so the engine runs in no-op mode: everything
+  queues and schedules correctly, sends record as `skipped` with a reason (never
+  as failures, so dev doesn't see fake delivery errors).
+- **Interakt webhook auth is a shared URL token, not HMAC** — Interakt does not
+  sign payloads, so there is nothing to verify. **The webhook URL is therefore a
+  credential** and must not be logged or committed.
+- **Vercel Cron caveat:** `x-vercel-cron` is only trustworthy because Vercel
+  strips client-supplied copies at the edge. Behind any other proxy, use the
+  bearer secret. Noted at `lib/jobs/auth.ts`.
+- **No owner-facing UI for the alert feed yet** — `/api/academy/alerts` is built
+  and tenant-scoped, but nothing renders it. The T+7/T+15 nudges exist and are
+  queryable; the owner cannot see them in the dashboard until that's built.
+- **Message log UI** likewise not built. Delivery status is tracked per message
+  and queryable, but there's no screen for "why didn't this send?" beyond
+  `explainDecision()`.
+
+### 🚨 Blocker — now the ONLY thing between this code and working messages
+
+**Six WhatsApp templates need Meta approval via Interakt.** The exact body text
+to submit is in `src/lib/messaging/templates.ts`, and the list is asserted by a
+test so it cannot drift:
+
+```
+gwd_welcome_v1
+gwd_attendance_confirmation_v1
+gwd_weekly_digest_v1
+gwd_fee_reminder_v1          (serves T-5, due date and T+3)
+gwd_achievement_v1
+gwd_broadcast_v1
+```
+
+Plus `INTERAKT_API_KEY`, `INTERAKT_WEBHOOK_SECRET` and `CRON_SECRET` in the
+deployment environment. All three are documented in `.env.example`.
+
+The engine is otherwise complete and tested. Nothing further in the codebase
+gates delivery.
+
+### Next up
+
+Phase 3 — dual-mode attendance (parent QR self-check-in + coach one-click
+checklist), which produces the `attendance.created` event the consumer built here
+is already waiting on. `Batch.qrToken` was added in Phase 1 for this.
+
+---
+
 ## Entry template — copy for the next session
 
 ```markdown

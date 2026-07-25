@@ -53,9 +53,36 @@ const envSchema = z.object({
   RESEND_API_KEY: z.string().default(''),
   FROM_EMAIL: z.string().default('noreply@gwd.in'),
 
-  // SMS (MSG91)
+  // SMS (MSG91) — used as the WhatsApp delivery-failure fallback.
+  // NOTE: Indian transactional SMS requires a DLT-registered template per
+  // message type. Without MSG91_TEMPLATE_ID_GENERIC the fallback records as
+  // 'skipped' rather than sending.
   MSG91_API_KEY: z.string().default(''),
   MSG91_TEMPLATE_ID_OTP: z.string().default(''),
+  MSG91_TEMPLATE_ID_GENERIC: z.string().default(''),
+
+  /**
+   * WhatsApp via Interakt (BSP). Without INTERAKT_API_KEY the messaging engine
+   * still queues and schedules everything, but sends resolve to the no-op
+   * provider and are recorded as 'skipped' with a reason — never as failures.
+   *
+   * INTERAKT_WEBHOOK_SECRET authenticates delivery-status callbacks. Interakt
+   * does not sign its payloads, so this shared token IS the credential: the
+   * webhook URL must not be logged or shared.
+   */
+  INTERAKT_API_KEY: z.string().default(''),
+  INTERAKT_WEBHOOK_SECRET: z.string().default(''),
+
+  /** Authenticates /api/jobs/* cron endpoints. Required in production. */
+  CRON_SECRET: z.string().default(''),
+
+  // Messaging frequency cap and quiet hours. See lib/messaging/scheduling.ts.
+  GWD_DAILY_MESSAGE_BUDGET: z.coerce.number().default(3),
+  GWD_PAYMENT_MESSAGE_RESERVE: z.coerce.number().default(1),
+  GWD_QUIET_START_HOUR: z.coerce.number().default(21),
+  GWD_QUIET_END_HOUR: z.coerce.number().default(8),
+  GWD_PREFERRED_SEND_HOUR: z.coerce.number().default(10),
+  GWD_TZ_OFFSET_MINUTES: z.coerce.number().default(330),
 
   // Observability
   SENTRY_DSN: z.string().default(''),
