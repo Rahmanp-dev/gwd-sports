@@ -22,6 +22,10 @@ function welcomeVars(overrides: Record<string, unknown> = {}) {
     childName: 'Rohan Sharma',
     passportUrl: 'https://gwd.in/passport/GWD-7K2M9X',
     paymentLine: "This month's fee of ₹3,104.00 is due — pay here: https://gwd.in/pay/GWD-7K2M9X",
+    // Sixth parameter, added so a parent receives working sign-in details in
+    // the same message that carries their child's passport link.
+    loginLine:
+      'Sign in at https://gwd.in/user/auth — username gwd-7k2m9x@mastergrade.gwd.in, password k7mq2xrt9p. Please change it after your first sign-in.',
     ...overrides,
   };
 }

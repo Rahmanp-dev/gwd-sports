@@ -46,9 +46,17 @@ export interface TemplateDefinition {
  *
  *   {{5}}
  *
- * {{5}} carries either the payment line or a short neutral sentence, because
- * Meta templates cannot have conditionally-absent parameters — an empty
- * parameter is rejected. See renderWelcome().
+ *   {{6}}
+ *
+ * {{5}} carries either the payment line or a short neutral sentence, and {{6}}
+ * the sign-in line, because Meta templates cannot have conditionally-absent
+ * parameters — an empty parameter is rejected. See renderWelcomePaymentLine()
+ * and renderWelcomeLoginLine().
+ *
+ * ⚠️ {{6}} WAS ADDED AFTER THE ORIGINAL FIVE-PARAMETER VERSION WAS WRITTEN.
+ * If gwd_welcome_v1 has already been submitted to Meta, this is a different
+ * template and must be resubmitted — a parameter count mismatch is rejected at
+ * send time, not at approval time.
  */
 const welcome: TemplateDefinition = {
   key: 'welcome',
@@ -59,10 +67,24 @@ const welcome: TemplateDefinition = {
   // reserve — and must not be able to consume it.
   priority: MESSAGE_PRIORITY.ATTENDANCE,
   description: 'Sent once when a student record is created. Intro + passport link + first payment link if a fee is due.',
-  variableOrder: ['parentGreetingName', 'academyName', 'childName', 'passportUrl', 'paymentLine'],
-  required: ['parentGreetingName', 'academyName', 'childName', 'passportUrl', 'paymentLine'],
+  variableOrder: [
+    'parentGreetingName',
+    'academyName',
+    'childName',
+    'passportUrl',
+    'paymentLine',
+    'loginLine',
+  ],
+  required: [
+    'parentGreetingName',
+    'academyName',
+    'childName',
+    'passportUrl',
+    'paymentLine',
+    'loginLine',
+  ],
   plainText: (v) =>
-    `Hi ${v.parentGreetingName}! ${v.academyName} is now on GWD — ${v.childName}'s training, attendance and progress all in one place. View ${v.childName}'s Sports Passport: ${v.passportUrl} ${v.paymentLine}`,
+    `Hi ${v.parentGreetingName}! ${v.academyName} is now on GWD — ${v.childName}'s training, attendance and progress all in one place. View ${v.childName}'s Sports Passport: ${v.passportUrl} ${v.paymentLine} ${v.loginLine}`,
 };
 
 /**
@@ -381,6 +403,31 @@ export function renderWelcomePaymentLine(input: {
     return `This month's fee of ${input.amountFormatted} is due — pay here: ${input.paymentUrl}`;
   }
   return 'No fee is due right now — we will let you know when one is.';
+}
+
+/**
+ * The welcome message's sign-in line.
+ *
+ * Carries the credentials the import issued, so a parent can sign in and use QR
+ * check-in without anyone phoning them. Empty parameters are rejected by Meta,
+ * so the no-credentials case returns a sentence rather than "".
+ *
+ * Sent to the parent's own phone, which is the same channel the passport and
+ * payment links already travel on. The password is per-student and random (see
+ * generateImportPassword), so this message is not a key to anyone else's child.
+ */
+export function renderWelcomeLoginLine(input: {
+  loginEmail?: string | null;
+  loginPassword?: string | null;
+  loginUrl?: string | null;
+}): string {
+  if (input.loginEmail && input.loginPassword && input.loginUrl) {
+    return (
+      `Sign in at ${input.loginUrl} — username ${input.loginEmail}, ` +
+      `password ${input.loginPassword}. Please change it after your first sign-in.`
+    );
+  }
+  return 'Ask your academy for sign-in details when you need them.';
 }
 
 /** The weekly digest's achievement line, which is often empty in a quiet week. */

@@ -8,26 +8,30 @@
  * a synthetic address — `gwd-7k2m9x@import.gwd.in` — and are flagged
  * `isImportedPlaceholder: true`.
  *
- * THE HOLE THIS CLOSES, flagged in Session 1 and open until now:
+ * WHAT THIS FLAG MEANS: the address is synthetic and cannot receive mail. It
+ * does NOT mean "cannot log in" — the import issues each account a real, random
+ * password which the parent receives in their welcome message.
  *
- *  1. Those addresses are DERIVED FROM THE PASSPORT ID, which is public — it is
- *     printed in URLs, texted to parents and forwarded. Anyone holding a
- *     passport id can construct the account's email address.
- *  2. Nothing prevented running "forgot password" against one. On a deployment
- *     with email configured, that sends a working reset link for an account the
- *     attacker does not own — to a mailbox on a domain that may not even exist,
- *     but the token is minted and stored regardless.
- *  3. A placeholder has no password anybody chose, so login was never the main
- *     risk. The reset flow was.
+ * WHAT IT GATES: the email-based recovery flows, and only those.
  *
- * These accounts are placeholders for a RECORD, not credentials for a person.
- * A parent who wants real access registers properly and gets a real account.
- * Until then, no authentication path may treat one as a login.
+ *  1. The address is DERIVED FROM THE PASSPORT ID, which is public — printed on
+ *     the passport page, texted to parents, forwarded into group chats. Anyone
+ *     holding a passport id can construct it.
+ *  2. Nothing prevented running "forgot password" against one. That mints and
+ *     stores a working reset token for an account the requester does not own,
+ *     addressed to a mailbox that does not exist.
+ *  3. Login is safe because it is protected by the password itself, like any
+ *     other account. Password RESET is not, because it bypasses the password.
  * ════════════════════════════════════════════════════════════════════════════
  */
 
-/** The synthetic domain minted by lib/import/commit.ts. */
+/**
+ * Synthetic addresses live under a `.gwd.in` subdomain — historically
+ * `@import.gwd.in`, now `@<academy-slug>.gwd.in` so a parent reading their
+ * credentials sees their own academy. Both are matched.
+ */
 export const IMPORT_PLACEHOLDER_DOMAIN = '@import.gwd.in';
+export const IMPORT_PLACEHOLDER_SUFFIX = '.gwd.in';
 
 export interface PlaceholderCheckable {
   isImportedPlaceholder?: boolean | null;
@@ -42,9 +46,14 @@ export interface PlaceholderCheckable {
 export function isPlaceholderAccount(user: PlaceholderCheckable | null | undefined): boolean {
   if (!user) return false;
   if (user.isImportedPlaceholder === true) return true;
-  return String(user.email ?? '')
-    .toLowerCase()
-    .endsWith(IMPORT_PLACEHOLDER_DOMAIN);
+
+  const email = String(user.email ?? '').toLowerCase();
+  if (email.endsWith(IMPORT_PLACEHOLDER_DOMAIN)) return true;
+
+  // Academy-branded variants: `<passport>@<slug>.gwd.in`. Only the host part is
+  // considered, so a real address like `someone@notgwd.in` is untouched.
+  const host = email.slice(email.lastIndexOf('@') + 1);
+  return Boolean(host) && host !== 'gwd.in' && host.endsWith(IMPORT_PLACEHOLDER_SUFFIX);
 }
 
 /**

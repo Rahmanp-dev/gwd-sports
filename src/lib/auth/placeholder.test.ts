@@ -29,6 +29,18 @@ describe('isPlaceholderAccount', () => {
     expect(isPlaceholderAccount({ email: 'GWD-7K2M9X@IMPORT.GWD.IN' })).toBe(true);
   });
 
+  it('catches the academy-branded variants', () => {
+    // Imports now mint `<passport>@<academy-slug>.gwd.in` so a parent reading
+    // their credentials sees their own academy rather than the word "import".
+    expect(isPlaceholderAccount({ email: 'gwd-7k2m9x@mastergrade.gwd.in' })).toBe(true);
+    expect(isPlaceholderAccount({ email: 'gwd-7k2m9x@mgfc-mumbai.gwd.in' })).toBe(true);
+  });
+
+  it('does not catch a real address at gwd.in itself', () => {
+    // Staff mailboxes on the bare domain are genuine and must keep working.
+    expect(isPlaceholderAccount({ email: 'coach@gwd.in' })).toBe(false);
+  });
+
   it('leaves real accounts alone', () => {
     expect(isPlaceholderAccount({ email: 'meera@gmail.com' })).toBe(false);
     expect(isPlaceholderAccount({ isImportedPlaceholder: false, email: 'meera@gmail.com' })).toBe(

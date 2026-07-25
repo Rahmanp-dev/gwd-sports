@@ -26,7 +26,13 @@ export interface IUser extends Document {
    * reset would be sent to an unroutable address, and treating one as a real
    * account misleads support into thinking the parent has credentials.
    */
+  /** The email is synthetic and cannot receive mail. Gates email-based recovery. */
   isImportedPlaceholder?: boolean;
+  /**
+   * Signed in with a password the academy issued at import rather than one the
+   * parent chose. Prompts a change on first login.
+   */
+  mustChangePassword?: boolean;
   lastLogin?: Date;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
@@ -91,6 +97,10 @@ const UserSchema = new Schema<IUser>({
     default: true
   },
   isImportedPlaceholder: {
+    type: Boolean,
+    default: false
+  },
+  mustChangePassword: {
     type: Boolean,
     default: false
   },

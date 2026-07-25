@@ -40,6 +40,7 @@ import {
 import Footer from "@/components/landing/Footer";
 import { toast } from "sonner";
 import FeesManagement from "./tabs/FeesManagement";
+import { CheckInCard } from "@/components/user/student/CheckInCard";
 
 export default function MGFCStudentPage() {
   const navigate = useNavigate();
@@ -557,6 +558,10 @@ export default function MGFCStudentPage() {
 
           {/* Attendance Tab */}
           <TabsContent value="attendance" className="space-y-6">
+            {/* First thing in the tab: the reason a student opens it during a
+                session is to check in, not to read history. */}
+            <CheckInCard />
+
             <motion.div
               initial="hidden"
               animate="visible"

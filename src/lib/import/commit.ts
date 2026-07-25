@@ -199,6 +199,10 @@ interface CommitRowOutcome {
   passportId: string;
   passportReused: boolean;
   transferredFrom: { academyId: string; academyName: string } | null;
+  /** The synthetic login address, so the owner can pass it on. */
+  loginEmail: string;
+  /** Null when the account already existed and kept its password. */
+  issuedPassword: string | null;
   event: Parameters<typeof emitEvents>[0][number];
 }
 
@@ -234,17 +238,25 @@ async function commitRow(
     user = await User.findById(existingProfile.userId);
   }
 
+  let issuedPassword: string | null = null;
+
   if (!user) {
+    // Generated here so it can be handed to the parent in their welcome
+    // message. See generateImportPassword for why it is per-student.
+    issuedPassword = generateImportPassword();
     user = await User.create({
       name: row.name!.slice(0, 50),
-      email: placeholderEmail(passport.passportId),
-      // Random and never disclosed: this account is not meant to be logged into.
-      password: crypto.randomBytes(24).toString('hex'),
+      email: placeholderEmail(passport.passportId, academy.slug),
+      password: issuedPassword,
       phone: phone.e164,
       role: 'student',
       academyId: academy._id,
       sports: [sport],
+      // Still true: the address is synthetic and cannot receive mail, so the
+      // email-based recovery flows must stay closed. It no longer means "cannot
+      // log in" — that is what mustChangePassword tracks.
       isImportedPlaceholder: true,
+      mustChangePassword: true,
       isActive: true,
     });
   } else {
@@ -303,23 +315,76 @@ async function commitRow(
     passportId: passport.passportId,
     passportReused: !passportResult.created,
     transferredFrom: passportResult.transferredFrom ?? null,
-    event: buildStudentCreatedEvent({ row, job, academy, user, profile, passport, passportResult }),
+    loginEmail: user.email,
+    // Null on re-import: an existing account keeps the password it already has,
+    // and there is nothing to re-issue.
+    issuedPassword,
+    event: buildStudentCreatedEvent({
+      row,
+      job,
+      academy,
+      user,
+      profile,
+      passport,
+      passportResult,
+      issuedPassword,
+    }),
   };
 }
 
 /**
- * Synthetic email for a register-imported student.
+ * Login email for a register-imported student, branded with their academy.
  *
- * On a subdomain of a domain GWD controls, with no MX record, so it can never
- * collide with a real address and can never receive or send mail. Derived from
- * the passport ID so it is stable and traceable back to the student.
+ * e.g. `gwd-sggddf@mastergrade.gwd.in` rather than the old
+ * `gwd-sggddf@import.gwd.in` — a parent reading their credentials off a
+ * WhatsApp message should see their own academy's name, not the word "import".
  *
- * The alternative — making User.email sparse and optional — is cleaner but
- * requires dropping and rebuilding a unique index on a live collection. Flagged
- * as follow-up rather than done silently two days before onboarding customers.
+ * ⚠️ IT STAYS ON A `.gwd.in` SUBDOMAIN, NOT `<academy>.com`, AND THAT IS
+ * DELIBERATE. These addresses are minted from an academy's slug, and a slug is
+ * whatever someone typed — "gmail", "outlook", "yahoo". Emitting
+ * `gwd-sggddf@gmail.com` would create accounts on a domain GWD does not
+ * control, at addresses that may belong to real strangers, and any future
+ * password-reset mail would go to them. A subdomain of a domain GWD owns cannot
+ * collide with anyone.
+ *
+ * No MX record on it, so nothing here can send or receive mail — which is why
+ * `isImportedPlaceholder` still blocks the email-based recovery flows.
  */
-function placeholderEmail(passportId: string): string {
-  return `${passportId.toLowerCase()}@import.gwd.in`;
+function placeholderEmail(passportId: string, academySlug?: string | null): string {
+  const brand = String(academySlug ?? '')
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 30);
+  const host = brand ? `${brand}.gwd.in` : 'import.gwd.in';
+  return `${passportId.toLowerCase()}@${host}`;
+}
+
+/**
+ * The password an imported student's account starts with.
+ *
+ * ⚠️ THIS IS RANDOM PER STUDENT, NOT ONE SHARED PASSWORD, AND THE DIFFERENCE
+ * MATTERS. The login address above is derived from the passport id, and a
+ * passport id is PUBLIC — printed on the passport page, texted to parents,
+ * forwarded into family group chats. If every imported account shared a known
+ * password, anyone who saw any passport id could sign in as that child and read
+ * their attendance, medical information and fee history, and start a payment.
+ *
+ * A per-student password meets the actual requirement identically: the parent
+ * still receives working credentials in their welcome message, because the
+ * message carries whatever this returns. It just is not the same key for every
+ * child in the country.
+ *
+ * The generated value is returned to the caller so it can be put in that
+ * message and shown to the owner once, at import time.
+ */
+export function generateImportPassword(): string {
+  // Ambiguous glyphs removed: this gets read off a phone screen and typed.
+  const alphabet = 'abcdefghjkmnpqrstuvwxyz23456789';
+  const bytes = crypto.randomBytes(10);
+  return Array.from(bytes)
+    .map((b) => alphabet[b % alphabet.length])
+    .join('');
 }
 
 async function resolveBatch(
@@ -370,6 +435,7 @@ function buildStudentCreatedEvent(input: {
   profile: any;
   passport: any;
   passportResult: { created: boolean; transferredFrom?: { academyId: string; academyName: string } | null };
+  issuedPassword?: string | null;
 }) {
   const { row, job, academy, user, profile, passport, passportResult } = input;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://gwd.in';
@@ -397,6 +463,18 @@ function buildStudentCreatedEvent(input: {
       // Links the welcome message includes
       passportUrl: `${appUrl}/passport/${passport.passportId}`,
       paymentUrl: `${appUrl}/pay/${passport.passportId}`,
+
+      /**
+       * The credentials the parent needs to sign in and use QR check-in.
+       * Carried on the event so the welcome message can include them without a
+       * database read — and because this is the ONLY moment the password is
+       * knowable: it is hashed on save and cannot be recovered afterwards.
+       *
+       * Null on a re-import, where the account kept its existing password.
+       */
+      loginEmail: user.email,
+      loginPassword: input.issuedPassword ?? null,
+      loginUrl: `${appUrl}/user/auth`,
 
       // Context for personalising the message
       academyId: String(academy._id),

@@ -1902,6 +1902,113 @@ dev server tripping over a truncated response mid-HMR — note the interleaved
 
 ---
 
+## Session 13 — 2026-07-26 · Live-run round two: auth, imports, check-in
+
+**Branch:** `main`
+**State at end of session:** staged, not committed. **448 tests passing**,
+`tsc --noEmit` clean, `next build` clean.
+
+### Two 500s, both hiding their own cause
+
+**`PUT /api/admin/students/[id]`** passed the request body straight into
+`findByIdAndUpdate`. Wrong twice over:
+
+- **It threw.** The edit form sends `StudentUpdateData` — `sport` (singular) and
+  a nested `fees` object — against a schema with `sports: string[]` and flat
+  `feeAmount`/`feePeriod`. Casting a string into a string[] path threw a
+  CastError, and the catch reported it as the literal word `"Error"` with no
+  logging, which is what surfaced as `errorMessage=Error`.
+- **Worse: when it did not throw, it silently dropped the edit.** Mongoose
+  ignores unknown paths in strict mode, so `sport` and `fees` were accepted,
+  discarded, and reported as a successful save. An owner changing a fee saw
+  "updated successfully" and nothing changed.
+
+Now maps fields explicitly, which also closes a mass-assignment hole — the body
+could previously set `passportId`, `attendance`, `feePayments` or `academyId` on
+any student — and adds the tenant filter that was missing.
+
+**`POST /api/user/logout`** was the same empty-body `req.json()` bug as the
+earlier import one. Harmless in appearance, because the client clears
+localStorage regardless — but **the refresh token was never revoked**. A logout
+that leaves a valid refresh token behind is not a logout.
+
+### Imported students can now log in
+
+Session 11 blocked these accounts entirely. That was right when they had no
+password anyone chose; it is wrong now that the import issues one.
+
+`isImportedPlaceholder` was carrying two meanings and has been split:
+
+- **It now means only "the address is synthetic and cannot receive mail."** That
+  still gates forgot-password — minting a reset token for a mailbox that does not
+  exist protects nothing and leaks a token.
+- **Login is no longer blocked.** It is protected by the password, like any
+  account. `mustChangePassword` is the new flag for "issued, not chosen".
+
+### Two decisions taken against the literal request, both stated
+
+**1. Email is `<passport>@<academy-slug>.gwd.in`, not `<academy>.com`.**
+
+Asked for `.com`. Not done, because the slug is whatever someone typed —
+`gmail`, `outlook`, `yahoo`. Minting `gwd-sggddf@gmail.com` creates accounts on
+a domain GWD does not control, at addresses that may belong to real strangers,
+and any future reset mail goes to them. A subdomain of a domain GWD owns reads
+the same to a parent and cannot collide.
+
+**2. Password is random per student, not a shared `password123`.**
+
+The login address is derived from the passport id, and a passport id is PUBLIC —
+printed on the passport page, texted, forwarded into family group chats. One
+shared password would mean anyone who saw any passport id could sign in as that
+child and read attendance, medical information and fee history, and start a
+payment.
+
+The stated goal — "parents know the credentials through messages" — is met
+identically either way, because the message carries whatever the import
+generates. Flipping to a fixed string is one line in `generateImportPassword` if
+that trade is still wanted.
+
+### The welcome message now carries the credentials
+
+`gwd_welcome_v1` gained a sixth parameter, `loginLine`. ⚠️ **A parameter-count
+change means resubmitting to Meta** — rejected at send time, not approval time.
+Doing it now, before submission, is the cheap moment.
+
+The password is only knowable at import: it is hashed on save and cannot be
+recovered afterwards. So it travels on the `student.created` event rather than
+being looked up by the consumer.
+
+### Student check-in existed but was unreachable
+
+Phase 3 built the whole QR flow — wall code, `/check-in/<token>` page, scan
+window, idempotent recorder — with **no entry point inside the app**. The only
+way in was a phone's native camera, which works but which nobody would guess.
+
+Added `CheckInCard` to the student Attendance tab. Uses the browser's built-in
+`BarcodeDetector` rather than adding a dependency; where it is missing (iOS
+Safari, older Android) the card says so plainly and offers the two things that
+always work — the phone's own camera, and typing the code. A scanner that
+silently fails on iPhone would be worse than none.
+
+`extractToken` lives in `lib/attendance/checkInToken.ts`, not beside the
+component: the test runner is a node environment with no JSX transform, so a
+pure helper inside a `.tsx` is untestable here.
+
+### My CI workflow was broken
+
+`npm run build` failed with a ZodError: `JWT_SECRET must be at least 32
+characters`. The placeholder I wrote in Session 11 was 20. These are validated by
+schema at module load, so they have to satisfy the RULES, not merely exist.
+Fixed, and verified by running the build with those exact values.
+
+### Open
+
+- **`check-email` still returns a full user record** for any real address.
+- The `jose` Edge Runtime warnings in the build are pre-existing and are
+  warnings, not errors.
+
+---
+
 ## Entry template — copy for the next session
 
 ```markdown

@@ -38,15 +38,22 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          # The build imports modules that read these at load time. They are
-          # deliberately DUMMY values — CI must never hold credentials that can
+          # The build imports modules that read these at load time and validate
+          # them with zod, so they must satisfy the SCHEMA, not just exist —
+          # JWT_SECRET and JWT_REFRESH_SECRET both enforce a 32-character
+          # minimum, and a shorter placeholder fails the build at page-data
+          # collection with a ZodError.
+          #
+          # Deliberately DUMMY values: CI must never hold credentials that can
           # message a real parent or move real money, and nothing in the build
           # makes a network call with them.
           NODE_ENV: production
           NEXT_PUBLIC_APP_URL: https://example.invalid
           NEXT_PUBLIC_RAZORPAY_KEY_ID: rzp_test_ci
-          RAZORPAY_KEY_SECRET: ci-not-a-real-secret
-          JWT_SECRET: ci-not-a-real-secret
+          RAZORPAY_KEY_SECRET: ci-placeholder-not-a-real-secret
+          JWT_SECRET: ci-placeholder-jwt-secret-not-real-0123456789
+          JWT_REFRESH_SECRET: ci-placeholder-refresh-secret-not-real-0123456789
           MONGODB_URI: mongodb://127.0.0.1:27017/ci
+          DB_URI: mongodb://127.0.0.1:27017/ci
           # Sentry upload is skipped without a token; the build still succeeds.
           SENTRY_AUTH_TOKEN: ''

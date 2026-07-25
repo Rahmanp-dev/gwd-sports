@@ -1,6 +1,6 @@
 import DomainEvent, { type IDomainEvent } from '@/lib/models/DomainEvent';
 import { enqueueMessage, cancelQueuedMessages } from './enqueue';
-import { renderWelcomePaymentLine } from './templates';
+import { renderWelcomePaymentLine, renderWelcomeLoginLine } from './templates';
 import { formatInr } from '@/lib/payments/money';
 
 /**
@@ -178,6 +178,14 @@ async function handleStudentCreated(event: IDomainEvent): Promise<HandleOutcome>
       childName: p.studentName,
       passportUrl: p.passportUrl,
       paymentLine,
+      // The credentials the import issued. Only knowable at import time — the
+      // password is hashed on save and cannot be recovered afterwards — so it
+      // travels on the event rather than being looked up here.
+      loginLine: renderWelcomeLoginLine({
+        loginEmail: p.loginEmail,
+        loginPassword: p.loginPassword,
+        loginUrl: p.loginUrl,
+      }),
     },
   });
 
