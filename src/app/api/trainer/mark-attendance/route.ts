@@ -17,8 +17,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Invalid student ID' }, { status: 400 });
     }
 
-    const student = await StudentProfile.findOne({ userId: studentId });
+    /**
+     * TENANT ISOLATION: scope the lookup to the caller's academy.
+     *
+     * This previously looked up the profile by userId alone, so a coach at
+     * academy A could mark attendance for a student at academy B just by
+     * supplying their id — a cross-tenant write. Super admins are exempt.
+     */
+    const studentFilter: Record<string, unknown> = { userId: studentId };
+    if (auth.user.role !== 'gwd_super_admin') {
+      if (!auth.academyId) {
+        return NextResponse.json(
+          { success: false, message: 'No academy assigned to your account' },
+          { status: 403 }
+        );
+      }
+      studentFilter.academyId = auth.academyId;
+    }
+
+    const student = await StudentProfile.findOne(studentFilter);
     if (!student) {
+      // Deliberately indistinguishable from "does not exist" so this cannot be
+      // used to probe which students belong to other academies.
       return NextResponse.json({ success: false, message: 'Student not found' }, { status: 404 });
     }
 

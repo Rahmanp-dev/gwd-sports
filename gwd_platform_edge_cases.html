@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GWD Platform — Edge Cases & Adoption Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#f2f2f2;color:#1a1a1a;font-size:13px;min-height:100vh;padding:24px}
+h1{font-size:20px;font-weight:600;color:#1a1a1a;margin-bottom:4px}
+.sub{font-size:13px;color:#777;margin-bottom:16px;line-height:1.6}
+.urgent{background:#1a1a1a;border-left:4px solid #dc2626;border-radius:10px;padding:16px 18px;margin-bottom:20px}
+.urgent-label{font-size:9px;font-weight:700;letter-spacing:.1em;color:#f87171;text-transform:uppercase;margin-bottom:6px}
+.urgent-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:6px}
+.urgent p{font-size:12px;color:#ccc;line-height:1.7}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.tab{padding:7px 16px;border:0.5px solid #ddd;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;background:#fff;color:#555;transition:all .15s;font-family:inherit}
+.tab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.panel{display:none}.panel.active{display:block}
+.sl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#aaa;margin:18px 0 10px}
+.sl:first-child{margin-top:0}
+.card{background:#fff;border:0.5px solid #e0e0e0;border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.card.crit{border-left:3px solid #dc2626}
+.card.high{border-left:3px solid #ea580c}
+.card.med{border-left:3px solid #ca8a04}
+.card.low{border-left:3px solid #0284c7}
+.card.green{border-left:3px solid #059669}
+.card.purple{border-left:3px solid #7c3aed}
+.ct{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:5px;display:flex;align-items:center;gap:8px}
+.card p{font-size:12px;color:#555;line-height:1.65;margin-bottom:4px}
+.fix{font-size:12px;color:#1a1a1a;background:#f6f6f6;border-radius:6px;padding:8px 10px;margin-top:6px;line-height:1.6}
+.fix b{color:#059669}
+.tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em}
+.tag-crit{background:#fde8e8;color:#dc2626}
+.tag-high{background:#ffedd5;color:#ea580c}
+.tag-med{background:#fef9c3;color:#a16207}
+.tag-low{background:#e3f2fd;color:#0284c7}
+.seq{display:flex;gap:0;margin-bottom:8px}
+.sn{background:#1a1a1a;color:#fff;width:28px;min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;border-radius:8px 0 0 8px;align-self:flex-start}
+.sb{flex:1;padding:10px 14px;background:#fff;border:0.5px solid #e0e0e0;border-left:none;border-radius:0 8px 8px 0}
+.st{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:3px}
+.sd{font-size:12px;color:#555;line-height:1.6}
+.matrix{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:14px}
+.matrix th{padding:8px 10px;background:#1a1a1a;color:#fff;font-size:10px;text-align:left;font-weight:600;letter-spacing:.03em}
+.matrix td{padding:9px 10px;border-top:0.5px solid #eee;vertical-align:top}
+.matrix tr:nth-child(even){background:#fafafa}
+.channel-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:12px;display:inline-block}
+.cb-wa{background:#dcf8e8;color:#128c4a}
+.cb-sms{background:#e3f2fd;color:#1565c0}
+.cb-email{background:#f3e5f5;color:#7c3aed}
+.cb-dash{background:#fef3c7;color:#92400e}
+.alert{padding:12px 14px;border-radius:8px;font-size:12px;line-height:1.7;margin-bottom:12px}
+.alert.green{background:#f0faf4;border:0.5px solid #a8d5b8;color:#1a4a2e}
+.alert.blue{background:#e3f2fd;border:0.5px solid #90caf9;color:#1a3a6b}
+.alert.gold{background:#fef9e7;border:0.5px solid #f0d060;color:#5a4000}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+@media(max-width:600px){.g2{grid-template-columns:1fr}}
+.mono{font-family:'Courier New',monospace;font-size:11px;background:#f0f0f0;padding:1px 5px;border-radius:3px}
+</style>
+</head>
+<body>
+
+<h1>GWD Platform — Edge Cases & Adoption Architecture</h1>
+<p class="sub">Payment flow edge cases, bulk onboarding mechanics, parent retention design, and the communication engine that ties it all together.</p>
+
+<div class="urgent">
+  <div class="urgent-label">⚠ Resolve before scaling the payment flow further</div>
+  <div class="urgent-title">Route auto-split may not be lawful for most of your academies yet</div>
+  <p>The flow in your screenshot — parent pays ₹3,075, Razorpay Route auto-splits ₹3,000 to the academy and ₹75 to GWD/Razorpay — relies on automatic split-settlement. Per RBI's Payment Aggregator Directions (Sept 2025), this is only permitted for merchants with domestic annual turnover above ₹40 lakh. Most 40–80 student academies (₹12–38L/year) sit under that line. Confirm with Razorpay or payments counsel whether your founding cohort needs a different settlement mechanism before this scales past pilot volume.</p>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="nav('pay',this)">Payment Edge Cases</button>
+  <button class="tab" onclick="nav('onboard',this)">Onboarding & Bulk Import</button>
+  <button class="tab" onclick="nav('sticky',this)">Parent Stickiness</button>
+  <button class="tab" onclick="nav('comms',this)">Communication Engine</button>
+</div>
+
+<!-- PAYMENT EDGE CASES -->
+<div id="pg-pay" class="panel active">
+
+  <div class="sl">Critical — resolve first</div>
+  <div class="card crit">
+    <div class="ct">Refund and cancellation clawback <span class="tag tag-crit">Critical</span></div>
+    <p>Parent needs a refund after academy (₹3,000) and GWD (₹13.50) have already been settled. Your margin per transaction is razor-thin — one unhandled refund can wipe out the margin from 5+ other transactions.</p>
+    <div class="fix"><b>Fix:</b> Razorpay Route supports linked refunds that automatically reverse the split proportionally. Confirm this is configured — don't build a manual clawback process as your primary path.</div>
+  </div>
+  <div class="card crit">
+    <div class="ct">Academy crosses the ₹40L threshold mid-year <span class="tag tag-crit">Critical</span></div>
+    <p>As academies grow, some will cross the merchant turnover line during the year — the eligible settlement mechanism can change underneath a live account.</p>
+    <div class="fix"><b>Fix:</b> Build an internal quarterly turnover check per academy. Flag any academy approaching ₹35L for reclassification before they cross, not after.</div>
+  </div>
+
+  <div class="sl">High priority</div>
+  <div class="card high">
+    <div class="ct">Failed UPI AutoPay / mandate retry <span class="tag tag-high">High</span></div>
+    <p>Insufficient balance, bank server downtime, or mandate expiry are common in India — not rare edge cases. A failed auto-debit with no retry logic silently breaks the monthly cycle.</p>
+    <div class="fix"><b>Fix:</b> Auto-retry on Day+1 and Day+3. If both fail, fall back to a manual payment link sent via WhatsApp rather than waiting for the next billing cycle.</div>
+  </div>
+  <div class="card high">
+    <div class="ct">Off-platform cash leakage <span class="tag tag-high">High</span></div>
+    <p>An academy owner under pressure from a price-sensitive parent may quietly accept cash instead of routing through GWD, bypassing your fee entirely.</p>
+    <div class="fix"><b>Fix:</b> Tie functional benefits — passport updates, digital receipt, attendance QR unlock — to platform payment specifically, so paying off-platform visibly degrades the parent's own experience, not just GWD's revenue.</div>
+  </div>
+  <div class="card high">
+    <div class="ct">Fee amount changes mid-cycle <span class="tag tag-high">High</span></div>
+    <p>Academy raises fees or a student moves to a higher batch. UPI AutoPay mandates are fixed-amount — the existing mandate doesn't auto-adjust.</p>
+    <div class="fix"><b>Fix:</b> Any fee change triggers automatic mandate cancellation + a re-authorization request sent immediately via WhatsApp, with a clear one-line explanation of what changed.</div>
+  </div>
+
+  <div class="sl">Medium priority</div>
+  <div class="card med">
+    <div class="ct">Multiple children, one parent <span class="tag tag-med">Medium</span></div>
+    <p>Same parent phone/UPI paying for two children — possibly at different academies. Reconciliation must stay per-student, not per-parent.</p>
+    <div class="fix"><b>Fix:</b> Every payment link and mandate is scoped to a single Passport ID, never a parent account. A parent can hold multiple links, but each is independently trackable.</div>
+  </div>
+  <div class="card med">
+    <div class="ct">Multi-sport / multi-batch fee bundling <span class="tag tag-med">Medium</span></div>
+    <p>A student in both cricket and swimming at one academy may have two fee lines. Bundled vs. separate transactions changes how your 2.5% and placement fee calculations apply.</p>
+    <div class="fix"><b>Fix:</b> Default to one consolidated monthly charge per student per academy, itemized internally, so your commission math stays simple and auditable.</div>
+  </div>
+  <div class="card med">
+    <div class="ct">Rounding on odd fee amounts <span class="tag tag-med">Medium</span></div>
+    <p>2.5% of ₹2,750 or ₹3,333 produces non-round numbers, inviting "why is it ₹3,068.75" support queries.</p>
+    <div class="fix"><b>Fix:</b> Round the final parent-facing total up to the nearest rupee, disclosed as policy in the payment page footer.</div>
+  </div>
+
+  <div class="sl">Lower priority — design for later</div>
+  <div class="card low">
+    <div class="ct">Chargebacks / bank-initiated disputes <span class="tag tag-low">Low, but plan ahead</span></div>
+    <p>Rare early on, but GWD sits as the facilitator between parent and academy — a real dispute-response workflow will eventually be needed.</p>
+    <div class="fix"><b>Fix:</b> Razorpay handles first-line dispute intake; document an internal escalation owner (likely your co-founder) before volume makes this urgent.</div>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div id="pg-onboard" class="panel">
+  <div class="sl">The bulk import flow — from register to activated parent</div>
+
+  <div class="seq">
+    <div class="sn">1</div>
+    <div class="sb"><div class="st">Owner onboarding session (White Glove)</div><div class="sd">A GWD team member sits with the owner in person or on a call. This is not self-serve for the first cohort — the friction of "figure it out yourself" is exactly what kills adoption at this stage.</div></div>
+  </div>
+  <div class="seq">
+    <div class="sn">2</div>
+    <div class="sb"><div class="st">Bulk student import — pick the fastest path for that owner</div><div class="sd">Register photo → OCR extraction, WhatsApp-forwarded list → auto-parsed, or CSV upload for tech-comfortable owners. All 40–100 students in within the hour, not spread across days.</div></div>
+  </div>
+  <div class="seq">
+    <div class="sn">3</div>
+    <div class="sb"><div class="st">Instant automated welcome burst — this is the "put into effect" moment</div><div class="sd">The moment a student record with a parent number is created, an automated WhatsApp fires immediately — not manually sent by the owner one by one. Owner should never be the bottleneck for activating 50 parents.</div></div>
+  </div>
+  <div class="seq">
+    <div class="sn">4</div>
+    <div class="sb"><div class="st">Welcome message does three jobs in one send</div><div class="sd">Introduces GWD in one line, shows the child's new Passport link, and includes the first payment link if a fee is currently due — combining onboarding and first monetization in a single touchpoint.</div></div>
+  </div>
+  <div class="seq">
+    <div class="sn">5</div>
+    <div class="sb"><div class="st">Owner gets an activation dashboard, not a blind database</div><div class="sd">A simple view: how many of 50 parents have clicked their link vs. still dormant. The owner personally chases stragglers — automation gets you 80%, the owner's relationship gets the last 20%.</div></div>
+  </div>
+
+  <div class="alert blue">Keep the minimum viable student record to <b>name, phone, sport</b> only on Day 1. Everything else — DOB, batch, fee amount, photo — gets filled progressively. A long form at import time is where bulk onboarding quietly dies.</div>
+</div>
+
+<!-- PARENT STICKINESS -->
+<div id="pg-sticky" class="panel">
+  <div class="sl">Making it feel reliable — daily and weekly touchpoints</div>
+  <div class="card green">
+    <div class="ct">QR check-in → instant parent notification</div>
+    <p>Every coach scan triggers an automatic WhatsApp: "Rohan checked in at 5:00 PM ✅". This is your highest-frequency touchpoint — daily — and it taps a real emotional need: parents want to know their child arrived safely, not just that attendance was logged for admin purposes.</p>
+  </div>
+  <div class="card green">
+    <div class="ct">Weekly progress digest</div>
+    <p>Every Sunday evening: attendance %, any achievement, upcoming fee due date, one link to the full passport. Reinforces value even in weeks with no major event — this is what prevents the app from feeling forgotten between milestones.</p>
+  </div>
+  <div class="card green">
+    <div class="ct">Payment convenience as a behavioral lock-in</div>
+    <p>Once a parent has set up UPI AutoPay once, switching back to manual cash payment now has higher friction than staying. Default behavior is sticky — lean into "set it once, never think about it again" in your messaging.</p>
+  </div>
+
+  <div class="sl">Making it feel luxury — perception design</div>
+  <div class="g2">
+    <div class="card purple"><div class="ct">Visual polish on the passport page</div><p>The public passport and profile pages must look premium — not a generic admin dashboard. This is the single page most likely to be screenshotted and shared.</p></div>
+    <div class="card purple"><div class="ct">Proactive, not reactive, communication</div><p>"Rohan's monthly report is ready" arriving unprompted feels like a service. A parent having to log in and dig for it feels like a chore.</div></div>
+  </div>
+  <div class="g2">
+    <div class="card purple"><div class="ct">Exclusivity signaling</div><p>"Founding Academy," "GWD Verified" badges make a parent feel their child is part of something selective, not just a row in a database.</p></div>
+    <div class="card purple"><div class="ct">Shareable achievement cards</div><p>Auto-generated cards for milestones, sent straight to WhatsApp Status/Instagram. This is distribution and retention in the same motion — sharing publicly commits the parent to caring about the platform.</p></div>
+  </div>
+
+  <div class="alert gold"><b>Reliability is earned in the small failures, not the big features.</b> A payment receipt that's ever wrong, or an "absent" mark when the child was actually present, destroys trust faster than any feature can rebuild it. Build a coach-side same-day correction flow for attendance errors — this is a small technical feature with an outsized trust impact.</div>
+</div>
+
+<!-- COMMUNICATION ENGINE -->
+<div id="pg-comms" class="panel">
+  <div class="sl">Channel hierarchy</div>
+  <div class="card">
+    <p><span class="channel-badge cb-wa">WhatsApp</span> Primary channel — ~98%+ open rates in India. Already have Interakt BSP integration. All time-sensitive and personal messages go here first.</p>
+    <p style="margin-top:8px"><span class="channel-badge cb-sms">SMS</span> Fallback only — for WhatsApp delivery failures or numbers not on WhatsApp.</p>
+    <p style="margin-top:8px"><span class="channel-badge cb-email">Email</span> Tertiary — formal receipts and records, especially given GST/TCS reporting obligations. Most parents won't check it regularly, but it matters for paper trail.</p>
+    <p style="margin-top:8px"><span class="channel-badge cb-dash">Dashboard</span> Owner-facing only — activation status, overdue flags, never sent directly to parents as a "channel."</p>
+  </div>
+
+  <div class="sl">Fee reminder cadence — parent-facing, not academy subscription billing</div>
+  <table class="matrix">
+    <tr><th>Timing</th><th>Trigger</th><th>Channel</th><th>Tone</th></tr>
+    <tr><td>T-5 days</td><td>Fee due in 5 days</td><td><span class="channel-badge cb-wa">WhatsApp</span></td><td>Friendly, includes universal payment link</td></tr>
+    <tr><td>Due date</td><td>Fee due today</td><td><span class="channel-badge cb-wa">WhatsApp</span></td><td>Direct reminder, same link</td></tr>
+    <tr><td>T+3 days</td><td>Overdue</td><td><span class="channel-badge cb-wa">WhatsApp</span> + <span class="channel-badge cb-dash">Dashboard</span></td><td>Parent reminder + owner dashboard flag</td></tr>
+    <tr><td>T+7 days</td><td>Still overdue</td><td><span class="channel-badge cb-dash">Dashboard</span></td><td>Owner nudged to personally follow up — human layer, not another automated message to the parent</td></tr>
+    <tr><td>T+15 days</td><td>Significantly overdue</td><td>Owner decision</td><td>Access restriction is the <b>owner's</b> call, not automatic — blocking a child from practice over a late fee is a relationship decision, not a system rule</td></tr>
+  </table>
+  <div class="alert blue">Note the difference from academy-side subscription billing (which can be firmer and automated, since it's B2B). Parent fee reminders touch a child's participation directly — keep the automation soft and put the final enforcement call in the owner's hands, not the platform's.</div>
+
+  <div class="sl">Universal payment link — one link, reused every month</div>
+  <div class="card">
+    <p>Every student gets one stable link: <span class="mono">gwdpay.in/[passport_id]</span>. It always reflects the current cycle's amount due, so parents bookmark it once instead of hunting for "this month's link" in chat history. After payment, the same link flips to a receipt/status view — "Paid ✅ Next due: [date]."</p>
+  </div>
+
+  <div class="sl">Frequency capping — don't let this become the reason they mute you</div>
+  <div class="card">
+    <p>A parent getting attendance + payment reminder + achievement + broadcast + survey in one day will mute the number — and once muted, every future message (including the ones that matter) goes unseen.</p>
+    <div class="fix"><b>Fix:</b> Set a daily message budget per parent with priority order — payment due > attendance > achievement > general broadcast. Lower-priority messages get delayed or batched rather than sent regardless.</div>
+  </div>
+</div>
+
+<script>
+function nav(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pg-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

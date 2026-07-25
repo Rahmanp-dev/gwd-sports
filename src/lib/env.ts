@@ -32,6 +32,23 @@ const envSchema = z.object({
   RAZORPAY_KEY_ID: z.string().default(""),
   RAZORPAY_KEY_SECRET: z.string().default(""),
 
+  /**
+   * Required for server-side payment settlement. Without it every Razorpay
+   * webhook is rejected, which means a payment is only recorded if the parent's
+   * browser makes it back to /verify-payment. Set this in production.
+   */
+  RAZORPAY_WEBHOOK_SECRET: z.string().default(""),
+
+  /**
+   * Fee split rates in basis points. See src/lib/payments/money.ts.
+   * GWD_GATEWAY_RATE_BPS: 236 = 2.36% (Razorpay 2% + 18% GST, no input tax
+   * credit claimed). Set to 200 if GWD is GST-registered and reclaims the GST.
+   * GWD_MARGIN_RATE_BPS: platform-wide default; an academy's own
+   * platformFeePercent overrides it per tenant.
+   */
+  GWD_GATEWAY_RATE_BPS: z.coerce.number().default(236),
+  GWD_MARGIN_RATE_BPS: z.coerce.number().default(100),
+
   // Email (Resend)
   RESEND_API_KEY: z.string().default(''),
   FROM_EMAIL: z.string().default('noreply@gwd.in'),

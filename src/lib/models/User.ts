@@ -13,6 +13,20 @@ export interface IUser extends Document {
   academyId?: mongoose.Types.ObjectId;
   refreshTokens?: string[];
   isActive: boolean;
+  /**
+   * True for accounts created by bulk import from a paper register.
+   *
+   * Such a student has no email address and no password — the schema requires
+   * both, so a synthetic address on a domain we control is generated and the
+   * password is random and never disclosed. The account exists solely to satisfy
+   * the StudentProfile → User reference; the parent interacts with the platform
+   * through their Passport link and phone-based OTP, never through this login.
+   *
+   * Login, forgot-password and email flows MUST skip these accounts: a password
+   * reset would be sent to an unroutable address, and treating one as a real
+   * account misleads support into thinking the parent has credentials.
+   */
+  isImportedPlaceholder?: boolean;
   lastLogin?: Date;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
@@ -75,6 +89,10 @@ const UserSchema = new Schema<IUser>({
   isActive: {
     type: Boolean,
     default: true
+  },
+  isImportedPlaceholder: {
+    type: Boolean,
+    default: false
   },
   lastLogin: {
     type: Date,

@@ -38,9 +38,50 @@ export interface IStudentProfile extends Document {
   academyId?: mongoose.Types.ObjectId;
   trainers: mongoose.Types.ObjectId[];
   enrollmentDate?: Date;
+
+  /**
+   * Link to the student's global Passport. The Passport is the permanent
+   * identity; this profile is the academy-scoped enrolment record. One passport
+   * may point at a series of these over time as the student moves academies.
+   */
+  passportId?: string;
+
+  /**
+   * PARENT IDENTITY.
+   *
+   * The system previously had no parent concept at all — a parent's number lived
+   * only on the student's own User record or buried in medicalInfo's emergency
+   * contact. Every parent-facing feature needs this: WhatsApp messaging, the QR
+   * check-in that resolves "which of my children are in this batch", and
+   * duplicate detection at import.
+   *
+   * parentPhoneE164 is the normalised lookup key (see src/lib/phone.ts) and is
+   * indexed. parentPhone keeps whatever the owner originally typed, for display
+   * and for resolving disputes about what was entered.
+   */
+  parentName?: string;
+  parentPhone?: string;
+  parentPhoneE164?: string;
+
+  /** The batch this student trains in. Phase 3 attendance is per batch session. */
+  batchId?: mongoose.Types.ObjectId;
+
+  /** Provenance: which bulk import created this record, if any. */
+  importJobId?: mongoose.Types.ObjectId;
   feePayments: IFeePayment[];
   totalFeesPaid: number;
   outstandingFees: number;
+
+  /**
+   * The fee for THIS student, in rupees, per `feePeriod`. Academies commonly
+   * charge different students different amounts (siblings, scholarships,
+   * legacy rates), so a single academy-wide figure is not sufficient.
+   * When unset, the academy's published fee schedule applies.
+   */
+  feeAmount?: number;
+  feePeriod?: 'monthly' | 'quarterly' | 'halfYearly' | 'yearly';
+  /** Day of month the fee falls due. Drives Phase 2's reminder cadence. */
+  feeDueDayOfMonth?: number;
   attendance: IAttendance[];
   kits: Types.DocumentArray<IKit>;
   performance: IPerformance[];
@@ -80,6 +121,31 @@ const StudentProfileSchema = new Schema<IStudentProfile>({
     type: Date,
     default: null
   },
+  passportId: {
+    type: String,
+    trim: true,
+    uppercase: true
+  },
+  parentName: {
+    type: String,
+    trim: true
+  },
+  parentPhone: {
+    type: String,
+    trim: true
+  },
+  parentPhoneE164: {
+    type: String,
+    trim: true
+  },
+  batchId: {
+    type: Schema.Types.ObjectId,
+    ref: "Batch"
+  },
+  importJobId: {
+    type: Schema.Types.ObjectId,
+    ref: "ImportJob"
+  },
   feePayments: [{
     amount: {
       type: Number,
@@ -114,6 +180,21 @@ const StudentProfileSchema = new Schema<IStudentProfile>({
     type: Number,
     default: 0,
     min: 0
+  },
+  feeAmount: {
+    type: Number,
+    min: 0
+  },
+  feePeriod: {
+    type: String,
+    enum: ["monthly", "quarterly", "halfYearly", "yearly"],
+    default: "monthly"
+  },
+  feeDueDayOfMonth: {
+    type: Number,
+    min: 1,
+    max: 28, // Capped at 28 so every month has the day — no Feb 30th problem.
+    default: 5
   },
   attendance: [{
     date: {
@@ -246,6 +327,12 @@ const StudentProfileSchema = new Schema<IStudentProfile>({
 StudentProfileSchema.index({ academyId: 1 });
 StudentProfileSchema.index({ trainers: 1 });
 StudentProfileSchema.index({ isActive: 1 });
+StudentProfileSchema.index({ passportId: 1 });
+// The QR check-in lookup: a parent's children within one academy/batch.
+StudentProfileSchema.index({ academyId: 1, parentPhoneE164: 1 });
+StudentProfileSchema.index({ batchId: 1, isActive: 1 });
+// Duplicate-phone detection during import.
+StudentProfileSchema.index({ parentPhoneE164: 1 });
 
 export const StudentProfile = mongoose.models.StudentProfile || mongoose.model<IStudentProfile>("StudentProfile", StudentProfileSchema);
 

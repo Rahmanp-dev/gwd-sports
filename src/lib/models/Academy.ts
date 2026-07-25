@@ -45,6 +45,13 @@ export interface IAcademy extends Document {
   ownerId: mongoose.Types.ObjectId;
   slug: string;
   rzp_account?: string;
+  /**
+   * Which settlement mechanism pays this academy. See src/lib/payments/settlement.ts
+   * for why this is a per-academy field and not a global constant — Route
+   * auto-split may not be lawfully available below a turnover threshold.
+   * When unset, the strategy is inferred from the presence of rzp_account.
+   */
+  settlementStrategy?: string;
   theme: {
     primaryColor: string;
     accentColor: string;
@@ -206,6 +213,10 @@ const AcademySchema = new Schema<IAcademy>({
   },
   rzp_account: {
     type: String
+  },
+  settlementStrategy: {
+    type: String,
+    enum: ['razorpay_route_auto_split', 'collect_and_manual_payout'],
   },
   theme: {
     primaryColor: { type: String, default: '#7c3aed' },
