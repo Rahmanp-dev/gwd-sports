@@ -1,14 +1,31 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+
+  "//": [
+    "Vercel Hobby permits ONE cron run per day, so this is a daily safety net —",
+    "not the real schedule. The engine is designed around a 15-minute tick, and",
+    "on a daily-only cadence an attendance confirmation could arrive up to 24",
+    "hours after the child was marked present, which is worse than not sending",
+    "it. Nothing here is idempotency-sensitive: every stage self-guards, so a",
+    "daily run overlapping the 15-minute one is harmless.",
+    "",
+    "The 15-minute tick runs from .github/workflows/cron.yml, which is free and",
+    "authenticates with CRON_SECRET. See that file for the GCP migration path.",
+    "",
+    "maxDuration is 60 because Hobby caps Node functions there. Raise it on",
+    "Pro or GCP, where a large queue may take longer to drain."
+  ],
+
   "crons": [
     {
       "path": "/api/jobs/tick",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 3 * * *"
     }
   ],
+
   "functions": {
     "src/app/api/jobs/tick/route.ts": {
-      "maxDuration": 300
+      "maxDuration": 60
     }
   }
 }

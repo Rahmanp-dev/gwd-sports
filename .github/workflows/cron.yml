@@ -1,0 +1,89 @@
+name: Job tick
+
+# ═══════════════════════════════════════════════════════════════════════════
+# THE 15-MINUTE TICK, RUN FOR FREE
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# Vercel's Hobby plan allows one cron run per day. The messaging engine is built
+# around a 15-minute cadence — on a daily schedule an attendance confirmation
+# could reach a parent a full day after their child trained, which is worse than
+# not sending it at all.
+#
+# GitHub Actions schedules are free and unlimited on public repos (and generous
+# on private ones), and `lib/jobs/auth.ts` already accepts a bearer secret for
+# exactly this — the header path was written for "external cron, Railway,
+# GitHub Actions".
+#
+# ⚠️ HONEST LIMITATIONS OF THIS ARRANGEMENT:
+#
+#   • GitHub's scheduler is BEST-EFFORT. Runs are frequently delayed by 5-15
+#     minutes under load, and occasionally skipped entirely. Fine for testing
+#     and acceptable early on, because every stage is idempotent and the next
+#     tick catches up. Not something to run a business on for long.
+#   • Scheduled workflows are DISABLED automatically after 60 days with no
+#     commits to the repo.
+#   • It burns Actions minutes on private repos (a few seconds per run, but
+#     ~2,900 runs a month).
+#
+# ═══ WHEN YOU MOVE TO GCP ═══
+#
+# Delete this file and use Cloud Scheduler, which is the right tool and has a
+# free tier of 3 jobs:
+#
+#   gcloud scheduler jobs create http gwd-job-tick \
+#     --schedule="*/15 * * * *" \
+#     --uri="https://<your-app>/api/jobs/tick" \
+#     --http-method=POST \
+#     --headers="Authorization=Bearer $CRON_SECRET" \
+#     --attempt-deadline=300s \
+#     --location=asia-south1
+#
+# Nothing in the application changes — the endpoint and its auth are the same.
+# ═══════════════════════════════════════════════════════════════════════════
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  # So you can fire one by hand from the Actions tab while testing.
+  workflow_dispatch:
+
+# Never let two ticks overlap. They are individually idempotent so it would be
+# safe, but a queued backlog of runs helps nobody.
+concurrency:
+  group: job-tick
+  cancel-in-progress: false
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Hit the job endpoint
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${APP_URL:-}" ] || [ -z "${CRON_SECRET:-}" ]; then
+            echo "::error::APP_URL and CRON_SECRET must be set as repository secrets."
+            echo "Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+
+          # --fail-with-body so a non-2xx exits non-zero AND still prints what
+          # the server said. Without the body, a failed tick is just a number.
+          response=$(curl --silent --show-error --fail-with-body \
+            --max-time 120 \
+            --request POST "${APP_URL}/api/jobs/tick" \
+            --header "Authorization: Bearer ${CRON_SECRET}" \
+            --header "Content-Type: application/json")
+
+          echo "$response"
+
+          # The endpoint answers 200 with { success: false } for partial
+          # failures, so the HTTP status alone is not the whole verdict.
+          if echo "$response" | grep -q '"success":false'; then
+            echo "::warning::Tick completed but reported a failure — see the body above."
+          fi

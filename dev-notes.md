@@ -2001,6 +2001,41 @@ characters`. The placeholder I wrote in Session 11 was 20. These are validated b
 schema at module load, so they have to satisfy the RULES, not merely exist.
 Fixed, and verified by running the build with those exact values.
 
+### Cron on a free plan
+
+Vercel Hobby allows **one cron run per day**, so `*/15 * * * *` was rejected.
+A daily cadence is not a smaller version of the design — it is a broken one: an
+attendance confirmation could reach a parent a full day after their child
+trained, which is worse than not sending it.
+
+Split into two:
+
+- **`vercel.json` → `0 3 * * *`**, a daily safety net that is valid on Hobby.
+- **`.github/workflows/cron.yml` → `*/15 * * * *`**, the real tick. Free, and
+  `lib/jobs/auth.ts` already accepted a bearer secret for exactly this — the
+  header path was written for "external cron, Railway, GitHub Actions", so no
+  application change was needed.
+
+Running both is safe: every stage self-guards, so an overlapping tick cannot
+double-message.
+
+**Honest limits of the GitHub Actions arrangement**, documented in the workflow:
+its scheduler is best-effort and routinely runs 5–15 minutes late, occasionally
+skips, and disables itself after 60 days without a commit. Fine for testing,
+not something to run a business on.
+
+**GCP migration** is a Cloud Scheduler job (free tier: 3 jobs) hitting the same
+endpoint with the same header — the exact command is in the workflow header.
+Nothing in the application changes.
+
+Also dropped `maxDuration` from 300 to 60: Hobby caps Node functions there. And
+removed a `//` comment key from inside the `functions` block — Vercel validates
+that object against a strict schema and an unknown key would have failed the
+deploy.
+
+**Needs setting before the tick works:** repository secrets `APP_URL` and
+`CRON_SECRET`, and the same `CRON_SECRET` in the Vercel environment.
+
 ### Open
 
 - **`check-email` still returns a full user record** for any real address.
