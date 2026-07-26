@@ -38,6 +38,13 @@ export interface IHomepageSections {
   testimonials: boolean;
   gallery: boolean;
   stats: boolean;
+  /**
+   * Order the owner has dragged sections into. Each value is one of the five
+   * section keys above. Missing keys are appended after the list in their
+   * default order, so a document written before this field existed shows the
+   * original order rather than hiding sections.
+   */
+  order?: string[];
 }
 
 export interface IAcademy extends Document {
@@ -92,9 +99,34 @@ export interface IAcademy extends Document {
      */
     fontPreset?: 'sans' | 'editorial' | 'rounded';
     /** Page surface treatment. See BACKGROUND_STYLES in lib/branding/palette.ts. */
-    backgroundStyle?: 'light' | 'soft' | 'gradient' | 'dark';
+    backgroundStyle?: 'light' | 'soft' | 'gradient' | 'dark' | 'slate' | 'vivid' | 'midnight';
     /** Explicit page colour. Overrides the derived surface; text stays computed. */
     backgroundColor?: string;
+    /** Hero logo presentation. See BrandingDraft in AcademyBrandingEditor. */
+    logoScale?: number;
+    logoShape?: 'square' | 'rounded' | 'circle';
+    logoAlign?: 'left' | 'center' | 'right';
+    logoFit?: 'contain' | 'cover';
+    /**
+     * Backdrop blur over hero media, 0–20px. One value drives BOTH web and
+     * mobile — they previously used different hardcoded blurs, so an owner
+     * approving the desktop look shipped something different to phones.
+     */
+    heroBlur?: number;
+    /** Dark scrim strength over hero media, 0–100. */
+    heroOverlay?: number;
+    /**
+     * Page density. 'compact' tightens vertical rhythm for content-heavy
+     * academies; 'spacious' (default) opens it up for a premium feel.
+     * Drives --section-py and --content-gap CSS variables.
+     */
+    density?: 'compact' | 'spacious';
+    /**
+     * Which section key uses --accent instead of --brand as its focal colour.
+     * A single highlighted section, not a free-for-all — designers create a
+     * focal point by using a contrasting colour ONCE.
+     */
+    accentSection?: string;
     /**
      * Overrides the platform's demo discipline cards (Football/Basketball/
      * Racing League/...) on the public page. Empty means "derive from real
@@ -217,6 +249,19 @@ const AcademySchema = new Schema<IAcademy>({
       type: Number,
       required: true,
       min: [0, 'Yearly fee cannot be negative']
+    },
+    /**
+     * Day of month fees fall due, academy-wide. Drives the T-5 / due-date /
+     * T+3 reminder cadence in lib/messaging/reminders.ts.
+     *
+     * Capped at 28 for the same reason as the per-student field: every month
+     * has a 28th, so a due day can never fall into a month that lacks it.
+     */
+    dueDayOfMonth: {
+      type: Number,
+      min: [1, 'Due day must be between 1 and 28'],
+      max: [28, 'Due day must be between 1 and 28'],
+      default: 5
     }
   },
   contactInfo: {
@@ -334,11 +379,17 @@ const AcademySchema = new Schema<IAcademy>({
     },
     backgroundStyle: {
       type: String,
-      enum: ['light', 'soft', 'gradient', 'dark'],
+      enum: ['light', 'soft', 'gradient', 'dark', 'slate', 'vivid', 'midnight'],
       default: 'light'
     },
     /** Empty means "derive the surface from the brand colour". */
     backgroundColor: { type: String, default: '' },
+    logoScale: { type: Number, default: 100, min: 40, max: 220 },
+    logoShape: { type: String, enum: ['square', 'rounded', 'circle'], default: 'rounded' },
+    logoAlign: { type: String, enum: ['left', 'center', 'right'], default: 'center' },
+    logoFit: { type: String, enum: ['contain', 'cover'], default: 'contain' },
+    heroBlur: { type: Number, default: 3, min: 0, max: 20 },
+    heroOverlay: { type: Number, default: 55, min: 0, max: 100 },
     programs: [{
       id: { type: String, required: true },
       label: { type: String, required: true },
@@ -355,12 +406,19 @@ const AcademySchema = new Schema<IAcademy>({
       url: { type: String, required: true },
       caption: { type: String }
     }],
+    density: {
+      type: String,
+      enum: ['compact', 'spacious'],
+      default: 'spacious'
+    },
+    accentSection: { type: String, default: '' },
     sections: {
       programs: { type: Boolean, default: true },
       achievements: { type: Boolean, default: true },
       testimonials: { type: Boolean, default: true },
       gallery: { type: Boolean, default: true },
-      stats: { type: Boolean, default: true }
+      stats: { type: Boolean, default: true },
+      order: [{ type: String }]
     }
   },
   platformFeePercent: {

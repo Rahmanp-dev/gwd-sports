@@ -77,7 +77,7 @@ export default function SportsGrid({ academy }: { academy?: any }) {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-3xl sm:text-5xl lg:text-6xl font-bold text-slate-900 mb-4 sm:mb-6 font-display tracking-tight"
+            className="text-3xl sm:text-5xl lg:text-6xl font-bold  mb-4 sm:mb-6 font-display tracking-tight"
           >
             Master Your <span className="text-[color:var(--brand)]">Game</span>
           </motion.h2>

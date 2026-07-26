@@ -49,10 +49,16 @@ export default function HeroOverlay({ city, academyCount, sportsCount }: HeroOve
         </motion.p>
 
         <motion.div variants={itemVariants} className="flex flex-wrap gap-2 md:gap-3 mb-3 md:mb-4 pointer-events-auto">
-          <button className="flex items-center justify-center gap-2.5 bg-[#FF1744] hover:bg-[#ff2d55] text-white rounded-full px-4 md:px-6 py-2 md:py-3 text-[12px] md:text-[13px] font-semibold tracking-[0.02em] shadow-[0_4px_16px_rgba(255,23,68,0.2)] hover:shadow-[0_6px_24px_rgba(255,23,68,0.35)] transition-all group">
+          {/* Goes to the onboarding section further down the page, which is
+              where an academy owner actually learns how to join and finds the
+              phone/WhatsApp/email. It was previously an inert <button>. */}
+          <a
+            href="#onboard"
+            className="flex items-center justify-center gap-2.5 bg-[#FF1744] hover:bg-[#ff2d55] text-white rounded-full px-4 md:px-6 py-2 md:py-3 text-[12px] md:text-[13px] font-semibold tracking-[0.02em] shadow-[0_4px_16px_rgba(255,23,68,0.2)] hover:shadow-[0_6px_24px_rgba(255,23,68,0.35)] transition-all group"
+          >
             Join the Ecosystem
             <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/12 text-white group-hover:bg-white group-hover:text-[#FF1744] group-hover:rotate-45 transition-all">⊕</span>
-          </button>
+          </a>
           <button className="flex items-center justify-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.06] text-[#F0F0F0] hover:text-[#FF1744] border border-white/[0.08] hover:border-[#FF1744]/40 rounded-full px-4 md:px-6 py-2 md:py-3 text-[12px] md:text-[13px] font-semibold tracking-[0.02em] transition-all group">
             Watch Demo
             <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/12 text-white group-hover:bg-[#FF1744]/15 group-hover:text-[#FF1744] group-hover:scale-110 transition-all">▶</span>
@@ -67,11 +73,33 @@ export default function HeroOverlay({ city, academyCount, sportsCount }: HeroOve
       {/* HUD stats strip (Bottom Left) */}
       <HudStrip academyCount={academyCount} sportsCount={sportsCount} city={city} />
 
-      {/* Scroll indicator (Right Center) */}
-      <div className="absolute right-10 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2">
+      {/* Scroll indicator — vertical on desktop, where there is side room. */}
+      <div className="absolute right-10 top-1/2 hidden -translate-y-1/2 flex-col items-center gap-2 md:flex">
         <span className="writing-vertical-rl text-[10px] text-[#444455] tracking-[0.2em] uppercase">SCROLL</span>
         <div className="w-3 h-3 border-r-[1.5px] border-b-[1.5px] border-[#444455] rotate-45 animate-[scrollBounce_2s_infinite]" />
       </div>
+
+      {/**
+       * Mobile scroll cue, centred under the HUD.
+       *
+       * The desktop indicator is pinned to the right edge and hidden below
+       * `md`, so on a phone — where the map fills the screen with no visible
+       * edge of the content beneath — there was nothing at all telling the
+       * reader the page continues.
+       */}
+      <button
+        type="button"
+        onClick={() =>
+          window.scrollTo({ top: window.innerHeight * 0.95, behavior: 'smooth' })
+        }
+        aria-label="Scroll down to see more"
+        className="pointer-events-auto absolute bottom-3 left-1/2 flex -translate-x-1/2 flex-col items-center gap-0.5 text-[#8b8b99] transition-colors hover:text-white md:hidden"
+      >
+        <span className="text-[9px] font-semibold uppercase tracking-[0.2em]">
+          Scroll down
+        </span>
+        <span className="h-2.5 w-2.5 rotate-45 border-b-[1.5px] border-r-[1.5px] border-current animate-[scrollBounce_2s_infinite]" />
+      </button>
     </div>
   );
 }

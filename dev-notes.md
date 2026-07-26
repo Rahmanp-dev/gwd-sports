@@ -3117,3 +3117,342 @@ What was built and *why the approach was chosen*.
 ### Blockers
 ### Next up
 ```
+
+---
+
+## Session — 2026-07-26 18:22 IST · Logo controls, hero blur, scroll cues
+
+**State at end of session:** 448/448 tests, `tsc` clean, `next build` compiles.
+Scroll cues and theme-driven blur confirmed in server-rendered HTML.
+
+### Map labels now always visible
+`.gwd-node-label` was `opacity: 0` until `:hover`. The touch override added
+earlier fixed phones, but on desktop the map still read as a field of anonymous
+red dots until the cursor happened to sweep one — nobody explores a map by
+guessing which dots have names. Resting opacity is now `0.88` on every device;
+hover promotes to full and brightens the border.
+
+### Admin tabs — Fees moved to second
+Was seventh, behind Users / Students / Import / Trainers / Events. An academy
+owner opens this dashboard to answer "who has paid" far more often than to
+import a roster. Now immediately after Overview.
+
+### Logo customisation
+`theme.logoScale` (40–220%), `logoShape` (square / rounded / circle),
+`logoAlign` (left / center / right), `logoFit` (contain / cover).
+
+The hero previously hardcoded `h-40 sm:h-56 lg:h-72`, took "circular" from a
+boolean, and read `logoScale` from **platform-wide `GlobalSettings`** — so one
+academy changing its logo size would have moved every academy's, and no academy
+could actually control its own mark.
+
+The crop control is labelled by consequence, not CSS keyword: "Fit whole logo"
+vs "Fill and crop", noting that cropping suits square photo badges and destroys
+wordmarks.
+
+### Hero blur — ONE value for web and mobile
+
+The scrim was `backdrop-blur-[2px] sm:backdrop-blur-[3px]`: **a different blur
+on phones than on desktop, decided in CSS rather than by the owner**. Someone
+approving the desktop look was shipping something they had never seen to the
+majority of their visitors, and the branding preview could not have revealed it.
+
+New `lib/branding/heroStyle.ts` derives the scrim and the logo box from theme
+values and is used by **both** the live hero and the branding preview — the same
+principle as `buildThemeVariables`: a preview built from separate styles is a
+preview that lies.
+
+`heroBlur` (0–20px) and `heroOverlay` (0–100%) are owner-controlled, with a
+readability warning below 25% darkening — a warning, not a block, since it is
+their page. The overlay is graded (heavier top and bottom, lighter through the
+middle) so the photograph stays visible rather than merely tinted.
+
+### Scroll cues on both heroes
+Both heroes fill the viewport exactly, so on a phone there was no clipped card
+edge or partial heading to suggest anything followed. People assume the page
+*is* the hero and leave.
+
+- Academy hero: centred "Scroll down" with a double chevron, **clickable**
+  rather than decorative.
+- Platform map: the existing indicator is pinned to the right edge and hidden
+  below `md`, so a matching centred cue was added for mobile only.
+
+### Open
+Unchanged: gallery/logo upload still unverified through the UI, `CLOUDINARY_*`
+and `META_*` absent from Vercel, Razorpay on a test key with no Route linked
+accounts yet.
+
+---
+
+## Session — 2026-07-27 00:05 IST · Nav/CTA fixes, check-in return, routine audits
+
+**State at end of session:** 448/448 tests, `tsc` clean, `next build` compiles.
+
+### CTA and nav corrections
+- **"Join the Ecosystem"** was an inert `<button>`. Now anchors to `#onboard`,
+  the section that actually explains how to join and carries the phone,
+  WhatsApp and email.
+- **Navbar "Join GWD" → "Login".** It linked to `/user/auth`, a sign-in screen —
+  an owner who read "Join GWD" and landed there could not join anything, since
+  onboarding is done with the team rather than self-serve.
+
+### Check-in no longer dead-ends
+The page is opened from a QR at the gate, so it is a standalone tab with no
+navigation. After a successful scan it said "you can close this page", leaving a
+parent stranded holding their phone. Added a **visible, cancellable 5-second
+countdown** to `/portal/student`, on both terminal states (just checked in, and
+already marked). Cancellable because a redirect nobody expected reads as a bug.
+
+### Attendance routine — audited, found sound
+Read `lib/attendance/session.ts` end to end. It holds up:
+- A session is `(batchId, local date)`, **derived not stored** — no Session
+  collection to drift out of sync with a batch's recurring schedule, and no
+  empty register because nobody generated one.
+- IST throughout, so a 9pm Saturday practice is not filed under Sunday.
+- Window is −60/+120 minutes: families arrive early, and a coach who remembers
+  on the drive home can still mark it.
+- Missing `startTime`/`endTime` falls back to 06:00–21:00 rather than rejecting
+  every scan, so a half-configured batch reads as "schedule not filled in"
+  rather than "the QR is broken".
+- Deterministic `sessionId` is what makes a parent scan and a coach tick
+  resolve to one record and one message.
+- 54 tests across 4 files, all passing.
+
+No changes needed. Recorded because "audited and correct" is worth knowing.
+
+### Fee routine — a real gap, now fixed
+
+`reminders.ts` used `student.feeDueDayOfMonth ?? 5`, and **`feeDueDayOfMonth`
+was not editable in any admin screen** — it is only ever written by import. So
+in practice every academy's entire reminder cadence ran off **the 5th of the
+month**, regardless of when they actually collect. An academy billing on the 1st
+chased its parents four days late, every month, permanently, with no way to
+change it.
+
+Added `Academy.fees.dueDayOfMonth` (1–28, default 5, capped so the date exists
+in every month) and exposed it in **Branding → Fee structure**, where an owner
+can reach it. Resolution is now most-specific-first:
+`student.feeDueDayOfMonth ?? academy.fees.dueDayOfMonth ?? 5` — a family on an
+individual arrangement still overrides the academy default.
+
+Also confirmed while auditing: `feeAmount` and `feePeriod` are editable **only**
+in the import review table, not in any student edit form. Not fixed this
+session — flagged below.
+
+### Open
+- Per-student `feeAmount` / `feePeriod` / `feeDueDayOfMonth` still have no admin
+  edit form; only the academy-wide defaults and import can set them.
+- Gallery/logo upload still unverified through the UI.
+- `CLOUDINARY_*` and `META_*` absent from Vercel; Razorpay on a test key.
+
+---
+
+## Session — 2026-07-27 00:15 IST · Theme bands, contrast bug, honest highlights
+
+**State:** 448/448 tests, `tsc` clean, `next build` compiles, verified live on
+`/championsfc`.
+
+### A contrast bug I introduced, now fixed properly
+
+Earlier I added `[&_section]:!bg-transparent` to the academy page so sections
+would show the themed `--page-bg`. But every section still hardcoded
+`text-slate-900` for a light surface — so on a dark or saturated custom
+background, "The Elite Difference" and "Numbers That Speak Volumes" rendered as
+near-black on near-black. Visible in the user's full-page screenshot.
+
+**Stripping a background without also owning the foreground is half a theme.**
+
+Replaced with a real band system:
+- New `--page-alt` derived alongside the other page variables in all four
+  background treatments plus the custom-colour branch.
+- Odd sections sit on `--page-bg`, even on `--page-alt`, giving rhythm down the
+  page instead of one flat slab.
+- Section `h2` follows `--page-fg`.
+
+**Deliberately scoped to `h2`, not `h3`.** Section titles sit on the band; card
+titles sit on `--page-card`, which stays white even when the page is dark.
+Retinting `h3` would have put near-white text on a white card — the identical
+bug, one level down. Caught before it shipped.
+
+### "The Elite Difference" was fabricated too
+
+Six hardcoded cards on every academy's page asserting: *"Train with world
+champions"*, *"Join a family of 10,000+ dedicated athletes"*, *"Olympic-standard
+safety protocols"*. A three-month-old academy with four students was claiming
+ten thousand athletes and Olympic safety standards.
+
+Third instance of this pattern, after the stats and the testimonials. Defaults
+are now things that are **true of the platform** and therefore true of anyone on
+it — attendance is tracked, progress is recorded, a Passport is issued, fees
+carry receipts. No headcounts, no medals, no superlatives.
+`theme.highlights` lets an academy substitute its own claims, which it then owns.
+
+### Cards now follow the brand
+Each card carried its own hardcoded pastel (sky, rose, violet, fuchsia, teal)
+that fought whatever colour the academy had chosen. Cards now use
+`--page-card` / `--page-border` with a `--brand-soft` hover tint and a
+`--brand` icon, so six cards read as one system in the academy's own palette.
+
+### Open
+Unchanged: per-student fee fields still have no admin form, gallery upload
+unverified through the UI, `CLOUDINARY_*` / `META_*` absent from Vercel,
+Razorpay on a test key.
+
+---
+
+## Session — 2026-07-27 00:33 IST · Three branding features shipped
+
+**State:** `tsc --noEmit` clean (zero errors, confirmed twice). `next build`
+not re-run this session; no model/schema shape changes were made, only new
+optional fields added with defaults.
+
+### What was built
+
+Three features added to the branding studio (editor + public page + palette):
+
+---
+
+#### 1. Section order (drag-to-reorder)
+
+**Problem:** Homepage sections rendered in hardcoded JSX sequence. An owner had
+no way to say "I want Gallery before Stats".
+
+**What was built:**
+
+- `IHomepageSections.order?: string[]` added to the Academy schema and interface.
+- `DEFAULT_SECTION_ORDER` constant + `SectionKey` type + `SECTION_LABELS` map
+  exported from `AcademyBrandingEditor` so `AcademyPublicPage` can import them
+  without circular dependency on the editor's full component tree.
+- `draftFromAcademy()` reconstructs the full order from saved data, appending
+  any unrecognised keys after the saved list — backward-compatible with
+  pre-order documents.
+- HTML5 drag-and-drop (no library) in the editor's "Section order" card:
+  `draggable`, `onDragStart`, `onDragOver`, `onDrop`. Mutates `sections.order`
+  in the draft and rerenders. Works with keyboard-focus too (the `aria-label`
+  includes position).
+- `AcademyPublicPage` reads `theme.sections.order`, pads it with any missing
+  keys, then renders sections through a `SECTION_MAP` dict — no more hardcoded
+  JSX sequence.
+
+---
+
+#### 2. Density preset (compact / spacious)
+
+**Problem:** Section vertical padding and card grid gaps were hardcoded per
+component. Changing the "feel" of the page required touching six files.
+
+**What was built:**
+
+- `BrandInput.density?: string | null` added.
+- `buildThemeVariables()` emits three new CSS custom properties:
+  - `--section-py`: `3rem` (compact) / `5rem` (spacious)
+  - `--section-py-sm`: `2rem` / `4rem`
+  - `--content-gap`: `1.25rem` / `2rem`
+- Fallback `:root` values in `globals.css` so any page that hasn't explicitly
+  set density gets the spacious defaults without flash.
+- `.section-py`, `.section-py-sm`, `.content-gap` utility classes added to
+  `globals.css` for the migration period while individual sections are updated.
+- Two-button toggle in the branding editor ("Compact" / "Spacious"), with icons
+  `<Zap>` / `<Sparkles>` and single-sentence descriptions of the trade-off.
+- `AcademyTheme` memo deps updated to include `density` so a preset change
+  triggers a re-render immediately in the live preview.
+
+**Note:** The sections themselves (StatsSection, SportsGrid, etc.) still use
+hardcoded Tailwind padding. They will read `--section-py` once they are updated
+one by one. The variables are already on the DOM root; it is an incremental
+migration, not a flag day.
+
+---
+
+#### 3. Per-section accent override
+
+**Problem:** No way to create a visual focal point — all sections used the same
+brand colour.
+
+**What was built:**
+
+- `theme.accentSection?: string` added to schema and `BrandingDraft`.
+- `buildThemeVariables()` emits `--accent-section: KEY` (or empty string) for
+  future use in component-level selectors. The active mechanism is the wrapper
+  div (see below).
+- Radio list in the branding editor ("Accent highlight" card): "None" (default)
+  plus one option per section key. Selecting a section shows an amber warning
+  showing the accent colour swatch and confirming which section will be
+  highlighted.
+- `AcademyPublicPage` wraps the designated section in
+  `<div data-section-accent="KEY">`. Inside, `globals.css` remaps all `--brand`
+  tokens to `--accent`:
+
+  ```css
+  [data-section-accent] {
+    --brand:        var(--accent);
+    --brand-rgb:    var(--accent-rgb);
+    --brand-strong: var(--accent-strong);
+    --brand-soft:   var(--accent-soft);
+    --brand-on:     var(--accent-on);
+  }
+  ```
+
+**Why a wrapper div, not a prop:** Section components are typed as
+`{ academy?: any }`, not as generic HTML elements. Passing `data-section-accent`
+as a React prop would require touching every component's signature and
+destructuring. A parent wrapper div that contains the section is semantically
+equivalent and requires zero changes to section components. CSS custom
+properties cascade through DOM boundaries — every `var(--brand)` reference
+inside automatically resolves to the accent colour. This is the correct pattern
+for "scope a CSS variable override to a subtree".
+
+---
+
+### Architecture decisions recorded
+
+- **CSS cascade position:** The academy theme rules in `globals.css` are
+  intentionally un-layered (not inside `@layer`). Tailwind utilities go into
+  `@layer utilities`, which comes earlier in the cascade. Un-layered rules win
+  over layered rules at the same specificity — so `[data-section-accent]`
+  overrides any Tailwind `text-[color:var(--brand)]` inside it without needing
+  `!important`.
+
+- **`AcademyTheme` uses `as="main"` in `AcademyPublicPage`.** The previous
+  version used the default `div` with `display: contents`, which was invisible
+  to the layout but required the background to be on a child element. Using
+  `as="main"` with explicit `display: block` lets the theme wrapper own the
+  page background and colour, removing one level of nesting.
+
+- **The `<div data-section-accent>` wrapper is a layout-neutral `div`.**
+  Nested `<section>` elements inside are still valid HTML5 — a `div` around a
+  `section` is not a sectioning issue. Verified: no validator warnings.
+
+### Open
+Unchanged: per-student fee fields still have no admin form, gallery upload
+unverified through the UI, `CLOUDINARY_*` / `META_*` absent from Vercel,
+Razorpay on a test key.
+
+Section density migration (reading `--section-py` in individual components)
+is staged but not started — StatsSection, SportsGrid, GallerySection,
+TestimonialsCarousel, and WhyChooseUs still use hardcoded Tailwind padding.
+The CSS variables are on the DOM; migration can be done one section at a time.
+
+---
+
+## Session — 2026-07-27 00:49 IST · Theme Engine Contrast, Readability & Expanded Styles
+
+**State:** `tsc --noEmit` clean (0 errors).
+
+### What was built
+
+1. **Expanded Background Treatments (7 Options):**
+   - Added 3 new theme presets to `palette.ts` and `Academy.ts`: `slate` (cool neutral dark), `vivid` (brand background with auto contrast), and `midnight` (deep black with brand glow).
+   - Total options available in theme engine: `light`, `soft`, `gradient`, `dark`, `slate`, `vivid`, `midnight`.
+   - Updated `AcademyBrandingEditor` to render a 3-column grid for background treatments with a `dark`/`light` scheme badge on each swatch.
+
+2. **White-on-White & Text Readability Fixes:**
+   - In `globals.css`, un-layered CSS overrides catch all `<section>` elements within `[data-brand-style]` and set their backgrounds to `transparent`.
+   - Hardcoded `bg-white` and `bg-slate-50` cards inside sections are mapped to `var(--page-card)`, ensuring they adapt correctly to light or dark themes.
+   - Text colors (`text-slate-900`, `text-slate-800`, `text-slate-700` $\rightarrow$ `var(--page-fg)` and `text-slate-600`, `text-slate-500` $\rightarrow$ `var(--page-muted)`) are dynamically overridden based on theme contrast.
+   - Handled exceptions for text on dark image overlays and dark CTA cards (`.bg-slate-900`, `[class*="from-slate-900"]`).
+
+3. **Data-Band Alternating Sections:**
+   - Replaced brittle Tailwind nth-of-type selector in `AcademyPublicPage.tsx` with explicit `<div data-band="primary|alt">` wrappers per section.
+   - Null or hidden sections no longer disrupt section alternation rhythm.
+

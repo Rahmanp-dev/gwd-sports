@@ -54,10 +54,10 @@ You will need, *from the academy owner*:
 
 Razorpay verifies the bank details by penny-drop. **This can take a day.**
 
-When it succeeds you get an account id shaped like `acc\_XXXXXXXXXXXXXX`.
+When it succeeds you get an account id shaped like `acc\\\_XXXXXXXXXXXXXX`.
 **Copy it.** That single string is all this platform needs.
 
-> \*\*Get this right the first time.\*\* A wrong IFSC means settlements silently
+> \\\*\\\*Get this right the first time.\\\*\\\* A wrong IFSC means settlements silently
 > fail days later, after parents have already paid. Confirm the bank details
 > against a cancelled cheque or a bank statement, not a WhatsApp message.
 
@@ -66,14 +66,14 @@ When it succeeds you get an account id shaped like `acc\_XXXXXXXXXXXXXX`.
 Each academy document has a settlement field the payment code already reads.
 As **super admin**, edit each academy and set:
 
-* `rzp\_account` → `acc\_XXXXXXXXXXXXXX` (from step 2)
-* `settlementStrategy` → `razorpay\_route\_auto\_split`
-*(the only other valid value is `collect\_and\_manual\_payout` — that is the
+* `rzp\\\_account` → `acc\\\_XXXXXXXXXXXXXX` (from step 2)
+* `settlementStrategy` → `razorpay\\\_route\\\_auto\\\_split`
+*(the only other valid value is `collect\\\_and\\\_manual\\\_payout` — that is the
 fallback where everything lands in your account and you pay academies by
 hand)*
 * `platformFeePercent` → your margin for that academy (e.g. `1.0` for 1%)
 
-You can leave `settlementStrategy` unset: when `rzp\_account` is present the
+You can leave `settlementStrategy` unset: when `rzp\\\_account` is present the
 code infers auto-split. Setting it explicitly is clearer and is what the
 settlement tests assert against.
 
@@ -81,8 +81,8 @@ The split maths lives in `src/lib/payments/money.ts` and is unit-tested. It
 computes the gateway fee, your margin and the academy's net **in paise**, so
 there is no floating-point drift on money.
 
-> If `rzp\_account` is empty, the code falls back to taking the full amount into
-> your account. That is the correct safe behaviour — but it means \*you\* owe the
+> If `rzp\\\_account` is empty, the code falls back to taking the full amount into
+> your account. That is the correct safe behaviour — but it means \\\*you\\\* owe the
 > academy their share manually. Do not launch an academy in that state.
 
 ## Step 4 — Register the webhook
@@ -119,22 +119,22 @@ Set these in **Vercel → Project → Settings → Environment Variables**, and 
 your local `.env.local` for testing:
 
 ```
-RAZORPAY\_KEY\_SECRET=<from Razorpay → Settings → API Keys>
-NEXT\_PUBLIC\_RAZORPAY\_KEY\_ID=rzp\_live\_XXXXXXXX
-RAZORPAY\_WEBHOOK\_SECRET=<the secret you invented in step 4>
+RAZORPAY\\\_KEY\\\_SECRET=<from Razorpay → Settings → API Keys>
+NEXT\\\_PUBLIC\\\_RAZORPAY\\\_KEY\\\_ID=rzp\\\_live\\\_XXXXXXXX
+RAZORPAY\\\_WEBHOOK\\\_SECRET=<the secret you invented in step 4>
 ```
 
-**Check the key prefix.** `rzp\_test\_…` takes fake money. `rzp\_live\_…` takes real
+**Check the key prefix.** `rzp\\\_test\\\_…` takes fake money. `rzp\\\_live\\\_…` takes real
 money. You are currently on a **test** key.
 
 Also confirm the fee split rates (defaults are in `src/lib/env.ts`):
 
 ```
-GWD\_GATEWAY\_RATE\_BPS=236   # 2.36% = Razorpay 2% + 18% GST, no input tax credit
-GWD\_MARGIN\_RATE\_BPS=100    # 1% platform default; per-academy value overrides it
+GWD\\\_GATEWAY\\\_RATE\\\_BPS=236   # 2.36% = Razorpay 2% + 18% GST, no input tax credit
+GWD\\\_MARGIN\\\_RATE\\\_BPS=100    # 1% platform default; per-academy value overrides it
 ```
 
-> Set `GWD\_GATEWAY\_RATE\_BPS=200` \*\*only if\*\* GWD is GST-registered and actually
+> Set `GWD\\\_GATEWAY\\\_RATE\\\_BPS=200` \\\*\\\*only if\\\*\\\* GWD is GST-registered and actually
 > reclaims the input tax credit. If you are not sure, leave it at 236 — the
 > conservative value means you never under-collect.
 
@@ -211,17 +211,17 @@ production — your messages will silently stop the next morning.
 4. Also **Add Assets** → **WhatsApp Accounts** → pick your WABA → **Full control**
 5. Click **Generate New Token** → select your app → tick scopes:
 
-   * `whatsapp\_business\_messaging`
-   * `whatsapp\_business\_management`
+   * `whatsapp\\\_business\\\_messaging`
+   * `whatsapp\\\_business\\\_management`
 6. Set expiry to **Never**. Copy the token — **it is shown once.**
 
 ## Step 5 — Environment variables
 
 ```
-META\_WHATSAPP\_ACCESS\_TOKEN=<system user token from step 4>
-META\_WHATSAPP\_PHONE\_NUMBER\_ID=<numeric id from step 3>
-META\_WHATSAPP\_VERIFY\_TOKEN=<any random string you invent>
-META\_APP\_SECRET=<App Dashboard → Settings → Basic → App Secret>
+META\\\_WHATSAPP\\\_ACCESS\\\_TOKEN=<system user token from step 4>
+META\\\_WHATSAPP\\\_PHONE\\\_NUMBER\\\_ID=<numeric id from step 3>
+META\\\_WHATSAPP\\\_VERIFY\\\_TOKEN=<any random string you invent>
+META\\\_APP\\\_SECRET=<App Dashboard → Settings → Basic → App Secret>
 ```
 
 ## Step 6 — Register the webhook
@@ -229,7 +229,7 @@ META\_APP\_SECRET=<App Dashboard → Settings → Basic → App Secret>
 App Dashboard → **WhatsApp** → **Configuration** → **Webhook** → *Edit*.
 
 * **Callback URL:** `https://sports.gwdglobal.in/api/webhooks/meta`
-* **Verify token:** the same `META\_WHATSAPP\_VERIFY\_TOKEN` you set above.
+* **Verify token:** the same `META\\\_WHATSAPP\\\_VERIFY\\\_TOKEN` you set above.
 * Click **Verify and save.** Meta calls your endpoint once and expects the
 challenge echoed back — the code handles this.
 * Then **Manage** → subscribe to the **`messages`** field. This is what carries
@@ -251,13 +251,13 @@ is cheaper and has better delivery for transactional messages). Language:
 
 |Template name|Body|
 |-|-|
-|`gwd\_welcome\_v1`|6 variables — intro, passport link, payment line, login line|
-|`gwd\_attendance\_confirmation\_v1`|`{{1}} checked in at {{2}} ✅ — {{3}}`|
-|`gwd\_weekly\_digest\_v1`|6 variables — weekly attendance + progress summary|
-|`gwd\_fee\_reminder\_v1`|5 variables — one template serves T-5, due-date and T+3|
-|`gwd\_payment\_receipt\_v1`|5 variables — payment confirmation + receipt link|
-|`gwd\_achievement\_v1`|4 variables — badge earned + passport link|
-|`gwd\_broadcast\_v1`|2 variables — owner announcement|
+|`gwd\\\_welcome\\\_v1`|6 variables — intro, passport link, payment line, login line|
+|`gwd\\\_attendance\\\_confirmation\\\_v1`|`{{1}} checked in at {{2}} ✅ — {{3}}`|
+|`gwd\\\_weekly\\\_digest\\\_v1`|6 variables — weekly attendance + progress summary|
+|`gwd\\\_fee\\\_reminder\\\_v1`|5 variables — one template serves T-5, due-date and T+3|
+|`gwd\\\_payment\\\_receipt\\\_v1`|5 variables — payment confirmation + receipt link|
+|`gwd\\\_achievement\\\_v1`|4 variables — badge earned + passport link|
+|`gwd\\\_broadcast\\\_v1`|2 variables — owner announcement|
 
 **The exact body text for each is written in the comment block above its
 definition in `src/lib/messaging/templates.ts`.** Copy it from there verbatim —
@@ -300,7 +300,7 @@ logo, colours, typeface, background, disciplines, and — critically — the
 5. Hand each owner their login. When they sign in, the **setup checklist** on
 their dashboard tells them what is still missing before parents can pay.
 
-Then set `rzp\_account` and `settlementStrategy: route` on each (Part 1, step 3).
+Then set `rzp\\\_account` and `settlementStrategy: route` on each (Part 1, step 3).
 
 \---
 
@@ -308,33 +308,33 @@ Then set `rzp\_account` and `settlementStrategy: route` on each (Part 1, step 3)
 
 ```
 # Money
-RAZORPAY\_KEY\_SECRET=
-NEXT\_PUBLIC\_RAZORPAY\_KEY\_ID=rzp\_live\_...
-RAZORPAY\_WEBHOOK\_SECRET=
-GWD\_GATEWAY\_RATE\_BPS=236
-GWD\_MARGIN\_RATE\_BPS=100
+RAZORPAY\\\_KEY\\\_SECRET=
+NEXT\\\_PUBLIC\\\_RAZORPAY\\\_KEY\\\_ID=rzp\\\_live\\\_...
+RAZORPAY\\\_WEBHOOK\\\_SECRET=
+GWD\\\_GATEWAY\\\_RATE\\\_BPS=236
+GWD\\\_MARGIN\\\_RATE\\\_BPS=100
 
 # WhatsApp
-META\_WHATSAPP\_ACCESS\_TOKEN=
-META\_WHATSAPP\_PHONE\_NUMBER\_ID=
-META\_WHATSAPP\_VERIFY\_TOKEN=
-META\_APP\_SECRET=
+META\\\_WHATSAPP\\\_ACCESS\\\_TOKEN=
+META\\\_WHATSAPP\\\_PHONE\\\_NUMBER\\\_ID=
+META\\\_WHATSAPP\\\_VERIFY\\\_TOKEN=
+META\\\_APP\\\_SECRET=
 
 # Images (logo + gallery uploads return 503 without these)
-CLOUDINARY\_CLOUD\_NAME=
-CLOUDINARY\_API\_KEY=
-CLOUDINARY\_API\_SECRET=
+CLOUDINARY\\\_CLOUD\\\_NAME=
+CLOUDINARY\\\_API\\\_KEY=
+CLOUDINARY\\\_API\\\_SECRET=
 
 # Scheduled jobs (attendance confirmations, fee reminders)
-CRON\_SECRET=
-NEXT\_PUBLIC\_APP\_URL=https://sports.gwdglobal.in
+CRON\\\_SECRET=
+NEXT\\\_PUBLIC\\\_APP\\\_URL=https://sports.gwdglobal.in
 
 # Super admin seed
-SUPER\_ADMIN\_EMAIL=
-SUPER\_ADMIN\_PASSWORD=
+SUPER\\\_ADMIN\\\_EMAIL=
+SUPER\\\_ADMIN\\\_PASSWORD=
 ```
 
-`CRON\_SECRET` must also be set as a **GitHub repository secret**, along with
-`APP\_URL`, for `.github/workflows/cron.yml` to drive the 15-minute tick that
+`CRON\\\_SECRET` must also be set as a **GitHub repository secret**, along with
+`APP\\\_URL`, for `.github/workflows/cron.yml` to drive the 15-minute tick that
 sends scheduled messages.
 

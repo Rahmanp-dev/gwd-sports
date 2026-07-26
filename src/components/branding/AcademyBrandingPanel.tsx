@@ -40,6 +40,8 @@ export const AcademyBrandingPanel: React.FC = () => {
   const [savedDraft, setSavedDraft] = useState<BrandingDraft | null>(null);
   const [fees, setFees] = useState<AcademyFees>(EMPTY_FEES);
   const [savedFees, setSavedFees] = useState<AcademyFees>(EMPTY_FEES);
+  const [dueDay, setDueDay] = useState<number>(5);
+  const [savedDueDay, setSavedDueDay] = useState<number>(5);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -62,6 +64,9 @@ export const AcademyBrandingPanel: React.FC = () => {
         setDraft(next);
         setSavedDraft(next);
         const nextFees = { ...EMPTY_FEES, ...(found.fees ?? {}) };
+        const nextDue = Number((found.fees as any)?.dueDayOfMonth) || 5;
+        setDueDay(nextDue);
+        setSavedDueDay(nextDue);
         setFees(nextFees);
         setSavedFees(nextFees);
       }
@@ -79,7 +84,8 @@ export const AcademyBrandingPanel: React.FC = () => {
   const dirty =
     savedDraft !== null &&
     (JSON.stringify(savedDraft) !== JSON.stringify(draft) ||
-      JSON.stringify(savedFees) !== JSON.stringify(fees));
+      JSON.stringify(savedFees) !== JSON.stringify(fees) ||
+      savedDueDay !== dueDay);
 
   const save = async () => {
     if (!academyId) return;
@@ -94,10 +100,12 @@ export const AcademyBrandingPanel: React.FC = () => {
           "fees.quarterly": fees.quarterly,
           "fees.halfYearly": fees.halfYearly,
           "fees.yearly": fees.yearly,
+          "fees.dueDayOfMonth": dueDay,
         } as any,
       );
       setSavedDraft(draft);
       setSavedFees(fees);
+      setSavedDueDay(dueDay);
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 2500);
       toastUtils.success("Saved", "Your homepage has been updated.");
@@ -148,6 +156,7 @@ export const AcademyBrandingPanel: React.FC = () => {
               onClick={() => {
                 if (savedDraft) setDraft(savedDraft);
                 setFees(savedFees);
+                setDueDay(savedDueDay);
               }}
             >
               <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Discard
@@ -217,6 +226,35 @@ export const AcademyBrandingPanel: React.FC = () => {
                 />
               </div>
             ))}
+          </div>
+
+          {/**
+           * The day the reminder cadence pivots on.
+           *
+           * Reminders fire five days before this date, on it, and three days
+           * after. It was hardcoded to the 5th for every academy on the
+           * platform with no way to change it, so an academy that collects on
+           * the 1st was chasing its parents four days late every month.
+           */}
+          <div className="border-t border-slate-100 pt-4">
+            <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+              Fees due on day
+            </label>
+            <div className="flex items-center gap-3">
+              <Input
+                type="number"
+                min={1}
+                max={28}
+                value={dueDay}
+                disabled={saving}
+                onChange={(e) => setDueDay(Number(e.target.value) || 1)}
+                className="w-24"
+              />
+              <p className="text-[11px] leading-relaxed text-slate-400">
+                of each month. Parents are reminded 5 days before, on the day,
+                and 3 days after. Maximum 28, so the date exists in every month.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>

@@ -33,7 +33,7 @@ export default function GallerySection({ academy }: { academy?: any }) {
               Gallery
             </span>
           </div>
-          <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 font-display tracking-tight">
+          <h2 className="text-4xl sm:text-5xl font-bold  font-display tracking-tight" style={{ color: "var(--page-fg)" }}>
             Inside{" "}
             <span className="text-[color:var(--brand)]">
               {academy?.name || "our academy"}

@@ -2,8 +2,13 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import { BRAND_NAME, API_BASE_URL, IMAGE_BASE_URL } from "@/utils/constants";
+import {
+  heroScrimStyle,
+  heroLogoStyle,
+  heroLogoAlignClass,
+} from "@/lib/branding/heroStyle";
 import axios from "axios";
 
 export default function HeroSection({ academy }: { academy?: any }) {
@@ -158,13 +163,7 @@ export default function HeroSection({ academy }: { academy?: any }) {
          * without softening the headline itself — the text sits above this
          * layer, so it stays sharp while the media behind it recedes.
          */}
-        <div
-          className="absolute inset-0 backdrop-blur-[2px] sm:backdrop-blur-[3px]"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(2,6,23,0.55) 0%, rgba(2,6,23,0.35) 45%, rgba(2,6,23,0.72) 100%)",
-          }}
-        />
+        <div className="absolute inset-0" style={heroScrimStyle(academy?.theme ?? {})} />
 
         <motion.div
           initial={{ opacity: 0 }}
@@ -282,7 +281,9 @@ export default function HeroSection({ academy }: { academy?: any }) {
                   : 30,
             }}
             transition={{ duration: 1.2, delay: 1.8 }}
-            className={`flex justify-center ${logoUrl && logoAlignment === "top_left" ? "mt-24 sm:mt-0" : ""}`}
+            className={`flex ${heroLogoAlignClass(academy?.theme ?? {})} ${
+              logoUrl && logoAlignment === "top_left" ? "mt-24 sm:mt-0" : ""
+            }`}
           >
             {logoUrl && logoAlignment === "middle" ? (
               <img
@@ -291,12 +292,17 @@ export default function HeroSection({ academy }: { academy?: any }) {
                     ? logoUrl
                     : `${IMAGE_BASE_URL}${logoUrl}`
                 }
-                alt="Brand Logo"
-                className={`h-40 sm:h-56 lg:h-72 drop-shadow-2xl ${logoIsCircular ? "rounded-full object-cover aspect-square" : "object-contain"}`}
-                style={{
-                  transform: `scale(${logoScale / 100})`,
-                  transformOrigin: "center center",
-                }}
+                alt={`${brandName} logo`}
+                /**
+                 * Size, shape and crop all come from the academy's own theme
+                 * now, via the same helper the branding preview uses — this
+                 * used to be a fixed `h-40 sm:h-56 lg:h-72` with a boolean
+                 * "circular" flag and a scale read from platform-wide
+                 * GlobalSettings, so an academy could not actually control how
+                 * its own mark was presented.
+                 */
+                className="drop-shadow-2xl"
+                style={heroLogoStyle(academy?.theme ?? {})}
               />
             ) : (
               /**
@@ -407,6 +413,35 @@ export default function HeroSection({ academy }: { academy?: any }) {
           </div>
         </div>
       </div>
+
+      {/**
+       * Scroll cue — same on phones and desktop.
+       *
+       * The hero fills the viewport exactly, so on a phone there is no visual
+       * hint that anything follows it: no clipped card edge, no partial
+       * heading. People assume the page is the hero and leave. This says
+       * otherwise, and is clickable rather than decorative.
+       */}
+      <button
+        type="button"
+        onClick={() =>
+          window.scrollTo({ top: window.innerHeight * 0.92, behavior: "smooth" })
+        }
+        aria-label="Scroll down to see more"
+        className="group absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-1 text-white/70 transition-colors hover:text-white"
+      >
+        <span className="text-[10px] font-semibold uppercase tracking-[0.22em] drop-shadow-[0_1px_6px_rgba(0,0,0,0.8)]">
+          Scroll down
+        </span>
+        <motion.span
+          animate={{ y: [0, 5, 0] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          className="flex flex-col items-center leading-none"
+        >
+          <ChevronDown className="h-4 w-4 drop-shadow-[0_1px_6px_rgba(0,0,0,0.8)]" />
+          <ChevronDown className="-mt-2 h-4 w-4 opacity-50 drop-shadow-[0_1px_6px_rgba(0,0,0,0.8)]" />
+        </motion.span>
+      </button>
     </section>
   );
 }

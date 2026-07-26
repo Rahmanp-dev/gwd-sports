@@ -612,7 +612,18 @@ body {
   flex-direction: column;
   align-items: center;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
-  opacity: 0;
+  /**
+   * ALWAYS VISIBLE, on every device.
+   *
+   * This was `opacity: 0` until `:hover`. On a phone that meant never — there
+   * is no hover — and even on desktop it meant the map read as a field of
+   * anonymous red dots until you happened to sweep the cursor over one. Nobody
+   * explores a map by guessing which dots have names.
+   *
+   * Resting state is slightly dimmed so a dense cluster does not shout; hover
+   * still promotes the one you are pointing at.
+   */
+  opacity: 0.88;
   transition: opacity 0.2s ease, transform 0.2s ease;
   z-index: 10;
 }
@@ -620,6 +631,7 @@ body {
 .gwd-node:hover .gwd-node-label {
   opacity: 1;
   transform: translateX(-50%) translateY(-4px);
+  border-color: rgba(255, 23, 68, 0.75);
 }
 
 /**
@@ -701,5 +713,228 @@ body {
   border-radius: 50%;
   border: 1.5px solid rgba(255, 23, 68, 0.45);
   animation: gwdPulse 2.8s infinite;
+}
+
+/* ── Section alternating bands (data-band wrappers set by AcademyPublicPage) */
+/*
+ * AcademyPublicPage wraps each section in <div data-band="primary|alt">.
+ * These rules give the band its background colour. The <section> element
+ * itself is transparent (see academy theme block below) — so the band colour
+ * shows through from the wrapper.
+ *
+ * data-band="primary" → --page-bg  (the page's main surface)
+ * data-band="alt"     → --page-alt (the alternating tinted surface)
+ *
+ * Both use `position: relative` so sections with `absolute` decorative
+ * elements can escape the flow correctly.
+ */
+[data-band="primary"] {
+  background: var(--page-bg, #ffffff);
+  position: relative;
+}
+
+[data-band="alt"] {
+  background: var(--page-alt, #f8fafc);
+  position: relative;
+}
+
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * ACADEMY PUBLIC PAGE — THEME SYSTEM
+ * ════════════════════════════════════════════════════════════════════════════
+ *
+ * These rules are intentionally UN-LAYERED. Tailwind utilities sit inside
+ * @layer utilities, which comes BEFORE un-layered rules in the cascade, so
+ * these rules beat any Tailwind utility at equal specificity — without
+ * !important and without specificity wars.
+ *
+ * Four concerns handled here:
+ *
+ *   1. SECTION BACKGROUNDS — force all <section> elements to transparent
+ *      inside the academy theme wrapper so the page's --page-bg / --page-alt
+ *      shows through. Individual sections previously hardcoded bg-white which
+ *      caused white-on-white on dark themes.
+ *
+ *   2. CARD BACKGROUNDS — remap bg-white / bg-slate-50 cards inside sections
+ *      to --page-card, which is always computed to contrast against --page-fg.
+ *
+ *   3. TEXT CONTRAST — remap hardcoded text-slate-{500..900} inside sections
+ *      to --page-fg (headings) and --page-muted (body) so they stay readable
+ *      on any background treatment.
+ *
+ *   4. PER-SECTION ACCENT OVERRIDE — [data-section-accent] remaps all --brand
+ *      tokens to --accent, turning that single section into a visual focal
+ *      point without touching any component.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+
+/* ── 1. Section backgrounds: let the page band show through ─────────────── */
+
+/*
+ * The root element has data-brand-style set by AcademyTheme.
+ * Every <section> inside it overrode the page background with hardcoded
+ * bg-white or bg-slate-50. We reset that here.
+ *
+ * The doubled attribute selector ([data-brand-style][data-brand-style]) raises
+ * specificity above [0,1,0] to [0,2,0] so it beats a single-class Tailwind
+ * rule like .bg-white at [0,1,0].
+ */
+[data-brand-style][data-brand-style] section {
+  background-color: transparent;
+  background-image: none;
+}
+
+/*
+ * The absolute-positioned decorative blob divs that some sections place as
+ * their "background" (e.g., SportsGrid's Apple-style blur orbs) should also
+ * be transparent — they supply the brand-tinted blobs themselves via
+ * bg-[var(--brand-soft)] which already reads the theme correctly.
+ */
+[data-brand-style][data-brand-style] section > .absolute.inset-0 {
+  background: transparent;
+}
+
+/* ── 2. Card backgrounds: use --page-card, not hardcoded white ──────────── */
+
+/*
+ * Cards inside sections are identified as bordered white divs. We remap them
+ * to --page-card which the palette derives to always contrast against --page-fg.
+ * On dark themes --page-card is the slightly lighter dark surface; on light
+ * themes it's white. This is a zero-JS fix.
+ *
+ * Specificity: [data-brand-style] section .bg-white = [0,1,1,0]. Enough to
+ * beat Tailwind's .bg-white [0,1,0] without !important.
+ */
+[data-brand-style] section .bg-white {
+  background-color: var(--page-card) !important;
+}
+
+[data-brand-style] section .bg-slate-50 {
+  background-color: var(--page-card) !important;
+}
+
+/* Border colour: hardcoded slate tones → theme border token */
+[data-brand-style] section .border-slate-100,
+[data-brand-style] section .border-slate-200 {
+  border-color: var(--page-border) !important;
+}
+
+/* ── 3. Text contrast: hardcoded slate → theme tokens ───────────────────── */
+
+/*
+ * Scope: only inside <section> so platform UI (navbars, modals) is untouched.
+ *
+ * Rule of thumb:
+ *   text-slate-700 / text-slate-800 / text-slate-900  → --page-fg  (headings)
+ *   text-slate-500 / text-slate-600                   → --page-muted (body)
+ */
+[data-brand-style] section .text-slate-900,
+[data-brand-style] section .text-slate-800,
+[data-brand-style] section .text-slate-700 {
+  color: var(--page-fg) !important;
+}
+
+[data-brand-style] section .text-slate-600,
+[data-brand-style] section .text-slate-500 {
+  color: var(--page-muted) !important;
+}
+
+/*
+ * Exception: text that sits on a dark (non-page) background inside a section
+ * — e.g. the dark "Join The Academy" CTA card in SportsGrid, the gradient
+ * photo overlay in discipline cards — must keep its hardcoded white. We
+ * identify those by their own dark background.
+ */
+[data-brand-style] section .bg-slate-900 .text-slate-900,
+[data-brand-style] section .bg-slate-900 .text-slate-800,
+[data-brand-style] section .bg-slate-900 .text-slate-700,
+[data-brand-style] section [class*="from-slate-900"] .text-slate-300,
+[data-brand-style] section [class*="from-slate-900"] .text-slate-400 {
+  /* let these keep their own colour — they're on dark regardless of theme */
+  color: unset !important;
+}
+
+/*
+ * WhyChooseUs card floating number decorations sit on --page-card, which on
+ * light is white so text-slate-50 is invisible. On dark it's the dark surface
+ * so text-slate-50 works fine. Remap to a theme-relative opacity instead.
+ */
+[data-brand-style] section .text-slate-50 {
+  color: color-mix(in srgb, var(--page-fg) 8%, transparent) !important;
+}
+
+/* ── 4. Per-section accent override ─────────────────────────────────────── */
+
+/*
+ * AcademyPublicPage wraps the designated accent section in
+ * <div data-section-accent="KEY">. Inside, every --brand reference pivots to
+ * --accent — buttons, gradients, icon colours, stat bars — with zero changes
+ * inside the section components.
+ *
+ * Additionally, we give the accent section a subtle gradient band so it reads
+ * as visually distinct even before the colour swap is obvious.
+ */
+[data-section-accent] {
+  --brand:        var(--accent);
+  --brand-rgb:    var(--accent-rgb);
+  --brand-strong: var(--accent-strong);
+  --brand-soft:   var(--accent-soft);
+  --brand-on:     var(--accent-on);
+}
+
+/* Subtle gradient overlay on the accent band — brand-soft into transparent */
+[data-section-accent] section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgb(var(--accent-rgb) / 0.06) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── 5. Density defaults (fallback before buildThemeVariables() runs) ────── */
+
+:root {
+  --section-py:    5rem;
+  --section-py-sm: 4rem;
+  --content-gap:   2rem;
+}
+
+.section-py    { padding-block: var(--section-py,    5rem); }
+.section-py-sm { padding-block: var(--section-py-sm, 4rem); }
+.content-gap   { gap: var(--content-gap, 2rem); }
+
+/* ── 6. Alternating section band classes ────────────────────────────────── */
+
+.section-band {
+  background: var(--page-bg, #ffffff);
+  color:      var(--page-fg, #0f172a);
+}
+
+.section-band-alt {
+  background: var(--page-alt, #f8fafc);
+  color:      var(--page-fg, #0f172a);
+}
+
+.section-card {
+  background:   var(--page-card,   #ffffff);
+  color:        var(--page-fg,     #0f172a);
+  border-color: var(--page-border, #e2e8f0);
+}
+
+/* ── 7. Scheme-aware pill / badge overrides inside sections ─────────────── */
+
+/*
+ * The "Why ChampionsFC" pill is styled inline-flex bg-white border-slate-200.
+ * On a dark page the bg-white rule above turns it into --page-card (dark
+ * surface), but the border stays slate-200 = light. We remap it above (rule 2)
+ * so border-color also follows --page-border. This rule handles the text inside.
+ */
+[data-brand-style][data-page-scheme="dark"] section .text-slate-600 {
+  color: var(--page-muted) !important;
 }
 

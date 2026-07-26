@@ -166,7 +166,7 @@ export default function StatsSection({ academy }: { academy?: any }) {
           transition={{ duration: 0.8 }}
           className="text-center mb-10 sm:mb-16"
         >
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-slate-900 mb-4 sm:mb-6 font-display tracking-tight">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold  mb-4 sm:mb-6 font-display tracking-tight" style={{ color: "var(--page-fg)" }}>
             Numbers That{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand)] to-[var(--brand-strong)]">
               Speak Volumes

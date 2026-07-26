@@ -164,6 +164,17 @@ export default function AdminPage() {
                 Overview
               </TabsTrigger>
 
+              {/* Money second, immediately after Overview. An academy owner
+                  opens this dashboard to answer "who has paid" far more often
+                  than to manage users or import a roster. */}
+              <TabsTrigger
+                value="fees"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <CreditCard className="h-4 w-4 mr-2" />
+                Fees
+              </TabsTrigger>
+
               <TabsTrigger
                 value="users"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -214,13 +225,6 @@ export default function AdminPage() {
                 Landing Page
               </TabsTrigger>
 
-              <TabsTrigger
-                value="fees"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-              >
-                <CreditCard className="h-4 w-4 mr-2" />
-                Fees
-              </TabsTrigger>
 
               <TabsTrigger
                 value="kits"

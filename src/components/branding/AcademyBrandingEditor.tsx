@@ -7,9 +7,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import {
   AlertTriangle,
+  AlignCenter,
+  AlignLeft,
+  AlignRight,
   Contrast,
   GripVertical,
   Image as ImageIcon,
+  LayoutDashboard,
   Loader2,
   Palette,
   Plus,
@@ -19,6 +23,7 @@ import {
   Type,
   Upload,
   X,
+  Zap,
 } from "lucide-react";
 import {
   BACKGROUND_STYLES,
@@ -45,6 +50,11 @@ import type {
 } from "@/services/academyService";
 import { uploadGalleryImage, uploadLogo } from "@/services/settingsService";
 import { toastUtils } from "@/utils/toast";
+import {
+  heroLogoAlignClass,
+  heroLogoStyle,
+  heroScrimStyle,
+} from "@/lib/branding/heroStyle";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -83,12 +93,22 @@ export interface BrandingDraft {
   fontPreset: FontPreset;
   backgroundStyle: BackgroundStyle;
   backgroundColor: string;
+  logoScale: number;
+  logoShape: "square" | "rounded" | "circle";
+  logoAlign: "left" | "center" | "right";
+  logoFit: "contain" | "cover";
+  heroBlur: number;
+  heroOverlay: number;
   tagline: string;
   logoUrl: string;
   programs: AcademyProgram[];
   testimonials: AcademyTestimonial[];
   gallery: AcademyGalleryItem[];
   achievements: string[];
+  /** Vertical rhythm preset: compact tightens sections, spacious opens them. */
+  density: "compact" | "spacious";
+  /** Key of the section that uses --accent instead of --brand as focal colour. */
+  accentSection: string;
   sections: AcademyHomepageSections;
 }
 
@@ -98,6 +118,26 @@ export const DEFAULT_SECTIONS: AcademyHomepageSections = {
   testimonials: true,
   gallery: true,
   stats: true,
+  order: ['programs', 'stats', 'achievements', 'gallery', 'testimonials'],
+};
+
+/** The canonical section ordering used as a fallback when `order` is absent. */
+export const DEFAULT_SECTION_ORDER = [
+  'programs',
+  'stats',
+  'achievements',
+  'gallery',
+  'testimonials',
+] as const;
+
+export type SectionKey = (typeof DEFAULT_SECTION_ORDER)[number];
+
+export const SECTION_LABELS: Record<SectionKey, string> = {
+  programs: 'Disciplines',
+  stats: 'Stats strip',
+  achievements: 'Achievements',
+  gallery: 'Photo gallery',
+  testimonials: 'Testimonials',
 };
 
 export function defaultBrandingDraft(): BrandingDraft {
@@ -108,12 +148,20 @@ export function defaultBrandingDraft(): BrandingDraft {
     fontPreset: "sans",
     backgroundStyle: "light",
     backgroundColor: "",
+    logoScale: 100,
+    logoShape: "rounded",
+    logoAlign: "center",
+    logoFit: "contain",
+    heroBlur: 3,
+    heroOverlay: 55,
     tagline: "",
     logoUrl: "",
     programs: [],
     testimonials: [],
     gallery: [],
     achievements: [],
+    density: "spacious",
+    accentSection: "",
     sections: { ...DEFAULT_SECTIONS },
   };
 }
@@ -125,6 +173,13 @@ export function draftFromAcademy(academy?: Partial<Academy> | null): BrandingDra
   const base = defaultBrandingDraft();
   if (!theme) return { ...base, achievements: academy?.achievements ?? [] };
 
+  // Reconstruct order from saved data, appending any keys not yet present.
+  const savedOrder: string[] = theme.sections?.order ?? [];
+  const fullOrder = [
+    ...savedOrder.filter((k) => DEFAULT_SECTION_ORDER.includes(k as SectionKey)),
+    ...DEFAULT_SECTION_ORDER.filter((k) => !savedOrder.includes(k)),
+  ];
+
   return {
     primaryColor: theme.primaryColor || base.primaryColor,
     accentColor: theme.accentColor || base.accentColor,
@@ -134,13 +189,25 @@ export function draftFromAcademy(academy?: Partial<Academy> | null): BrandingDra
       ? theme.backgroundStyle
       : base.backgroundStyle,
     backgroundColor: theme.backgroundColor ?? "",
+    logoScale: theme.logoScale ?? 100,
+    logoShape: theme.logoShape ?? "rounded",
+    logoAlign: theme.logoAlign ?? "center",
+    logoFit: theme.logoFit ?? "contain",
+    heroBlur: theme.heroBlur ?? 3,
+    heroOverlay: theme.heroOverlay ?? 55,
     tagline: theme.tagline ?? "",
     logoUrl: theme.logoUrl ?? "",
     programs: theme.programs ?? [],
     testimonials: theme.testimonials ?? [],
     gallery: theme.gallery ?? [],
     achievements: academy?.achievements ?? [],
-    sections: { ...DEFAULT_SECTIONS, ...(theme.sections ?? {}) },
+    density: (theme.density === 'compact' || theme.density === 'spacious') ? theme.density : 'spacious',
+    accentSection: theme.accentSection ?? "",
+    sections: {
+      ...DEFAULT_SECTIONS,
+      ...(theme.sections ?? {}),
+      order: fullOrder,
+    },
   };
 }
 
@@ -160,11 +227,19 @@ export function draftToThemeUpdate(draft: BrandingDraft): Record<string, unknown
     "theme.fontPreset": draft.fontPreset,
     "theme.backgroundStyle": draft.backgroundStyle,
     "theme.backgroundColor": draft.backgroundColor,
+    "theme.logoScale": draft.logoScale,
+    "theme.logoShape": draft.logoShape,
+    "theme.logoAlign": draft.logoAlign,
+    "theme.logoFit": draft.logoFit,
+    "theme.heroBlur": draft.heroBlur,
+    "theme.heroOverlay": draft.heroOverlay,
     "theme.tagline": draft.tagline,
     "theme.logoUrl": draft.logoUrl,
     "theme.programs": draft.programs,
     "theme.testimonials": draft.testimonials,
     "theme.gallery": draft.gallery,
+    "theme.density": draft.density,
+    "theme.accentSection": draft.accentSection,
     "theme.sections": draft.sections,
     achievements: draft.achievements,
   };
@@ -375,6 +450,132 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
               PNG or SVG with a transparent background works best. Max 5MB.
             </p>
 
+            {/* ── Logo presentation ─────────────────────────────────────── */}
+            {value.logoUrl ? (
+              <div className="space-y-3 border-t border-slate-100 pt-4">
+                <div>
+                  <div className="mb-1 flex items-center justify-between">
+                    <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                      Size
+                    </label>
+                    <span className="font-mono text-[11px] text-slate-500">
+                      {value.logoScale}%
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={40}
+                    max={220}
+                    step={5}
+                    disabled={disabled}
+                    value={value.logoScale}
+                    onChange={(e) => patch({ logoScale: Number(e.target.value) })}
+                    className="w-full accent-slate-900"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                      Shape
+                    </label>
+                    <div className="flex gap-1">
+                      {(["square", "rounded", "circle"] as const).map((shape) => (
+                        <button
+                          key={shape}
+                          type="button"
+                          disabled={disabled}
+                          onClick={() => patch({ logoShape: shape })}
+                          title={shape}
+                          className={`flex h-9 flex-1 items-center justify-center border transition-colors ${
+                            value.logoShape === shape
+                              ? "border-slate-900 bg-slate-900 text-white"
+                              : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                          }`}
+                          style={{
+                            borderRadius:
+                              shape === "circle" ? "999px" : shape === "rounded" ? "10px" : "2px",
+                          }}
+                        >
+                          <span
+                            className="h-4 w-4 border-2 border-current"
+                            style={{
+                              borderRadius:
+                                shape === "circle" ? "999px" : shape === "rounded" ? "4px" : "0",
+                            }}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                      Position
+                    </label>
+                    <div className="flex gap-1">
+                      {(
+                        [
+                          ["left", AlignLeft],
+                          ["center", AlignCenter],
+                          ["right", AlignRight],
+                        ] as const
+                      ).map(([align, Icon]) => (
+                        <button
+                          key={align}
+                          type="button"
+                          disabled={disabled}
+                          onClick={() => patch({ logoAlign: align })}
+                          title={align}
+                          className={`flex h-9 flex-1 items-center justify-center rounded-md border transition-colors ${
+                            value.logoAlign === align
+                              ? "border-slate-900 bg-slate-900 text-white"
+                              : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                          }`}
+                        >
+                          <Icon className="h-4 w-4" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                    Crop
+                  </label>
+                  <div className="flex gap-1">
+                    {(
+                      [
+                        ["contain", "Fit whole logo"],
+                        ["cover", "Fill and crop"],
+                      ] as const
+                    ).map(([fit, label]) => (
+                      <button
+                        key={fit}
+                        type="button"
+                        disabled={disabled}
+                        onClick={() => patch({ logoFit: fit })}
+                        className={`flex-1 rounded-md border px-2 py-2 text-[11px] font-semibold transition-colors ${
+                          value.logoFit === fit
+                            ? "border-slate-900 bg-slate-900 text-white"
+                            : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  {/* "Fill and crop" trims edges — fine for a photo mark,
+                      destructive for a wordmark, so say which is which. */}
+                  <p className="mt-1.5 text-[11px] leading-relaxed text-slate-400">
+                    Use “Fit whole logo” for wordmarks. “Fill and crop” suits
+                    square photo badges but trims the edges.
+                  </p>
+                </div>
+              </div>
+            ) : null}
+
             <Input
               value={value.tagline}
               maxLength={100}
@@ -531,13 +732,14 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
             <SectionLabel icon={<Palette className="h-3 w-3" />}>
               Page background
             </SectionLabel>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {(Object.keys(BACKGROUND_STYLES) as BackgroundStyle[]).map((key) => {
                 const preset = BACKGROUND_STYLES[key];
                 const active = value.backgroundStyle === key;
                 // Swatch built from the same function the page uses, so the
                 // chip is literally the surface that will ship.
                 const swatch = buildThemeVariables({ ...value, backgroundStyle: key });
+                const isDark = swatch["--page-scheme"] === "dark";
                 return (
                   <button
                     key={key}
@@ -551,18 +753,28 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
                     }`}
                   >
                     <span
-                      className="mb-1.5 flex h-10 w-full items-center justify-center rounded border border-slate-200/70 text-[10px] font-bold"
+                      className="relative mb-1.5 flex h-9 w-full items-center justify-center rounded border border-slate-200/70 text-[10px] font-bold overflow-hidden"
                       style={{
                         background: swatch["--page-bg"],
                         color: swatch["--page-fg"],
                       }}
                     >
                       Aa
+                      {/* Dark/light badge */}
+                      <span
+                        className="absolute bottom-0.5 right-0.5 rounded-full px-1 py-px text-[8px] font-bold leading-none"
+                        style={{
+                          background: isDark ? "#1e293b" : "#f1f5f9",
+                          color: isDark ? "#94a3b8" : "#64748b",
+                        }}
+                      >
+                        {isDark ? "dark" : "light"}
+                      </span>
                     </span>
-                    <span className="block text-[11px] font-semibold text-slate-700">
+                    <span className="block text-[10px] font-semibold text-slate-700">
                       {preset.label}
                     </span>
-                    <span className="mt-0.5 block text-[10px] leading-snug text-slate-400">
+                    <span className="mt-0.5 block text-[9px] leading-snug text-slate-400">
                       {preset.description}
                     </span>
                   </button>
@@ -611,6 +823,71 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
           </CardContent>
         </Card>
 
+        {/* Hero media treatment */}
+        <Card className="border-0 shadow-sm">
+          <CardContent className="space-y-4 p-5">
+            <SectionLabel icon={<Sparkles className="h-3 w-3" />}>
+              Hero photo &amp; video
+            </SectionLabel>
+            <p className="text-[11px] leading-relaxed text-slate-400">
+              How your header image or video sits behind your name. One setting
+              controls phones and desktop together, so what you approve here is
+              what everyone sees.
+            </p>
+
+            <div>
+              <div className="mb-1 flex items-center justify-between">
+                <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  Blur
+                </label>
+                <span className="font-mono text-[11px] text-slate-500">
+                  {value.heroBlur}px
+                </span>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={20}
+                step={1}
+                disabled={disabled}
+                value={value.heroBlur}
+                onChange={(e) => patch({ heroBlur: Number(e.target.value) })}
+                className="w-full accent-slate-900"
+              />
+            </div>
+
+            <div>
+              <div className="mb-1 flex items-center justify-between">
+                <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  Darkening
+                </label>
+                <span className="font-mono text-[11px] text-slate-500">
+                  {value.heroOverlay}%
+                </span>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                step={5}
+                disabled={disabled}
+                value={value.heroOverlay}
+                onChange={(e) => patch({ heroOverlay: Number(e.target.value) })}
+                className="w-full accent-slate-900"
+              />
+              {/* Below ~25% a white headline starts to lose against a bright
+                  photo. Warned, not blocked — it is their page. */}
+              {value.heroOverlay < 25 && (
+                <p className="mt-1.5 flex items-start gap-1.5 text-[11px] leading-relaxed text-amber-600">
+                  <AlertTriangle className="mt-0.5 h-3 w-3 flex-shrink-0" />
+                  Your academy name may be hard to read over a bright photo at
+                  this level.
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Typeface */}
         <Card className="border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
@@ -652,40 +929,196 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
           </CardContent>
         </Card>
 
-        {/* Homepage sections */}
+        {/* ── Density ──────────────────────────────────────────────────── */}
+        {/*
+         * Two options: compact and spacious. The difference is --section-py
+         * (section vertical padding) and --content-gap (card grid gap).
+         * These are read by every section via CSS variables, so changing this
+         * single setting rescales the whole page at once.
+         */}
         <Card className="border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
-            <SectionLabel icon={<GripVertical className="h-3 w-3" />}>
-              Homepage sections
-            </SectionLabel>
+            <SectionLabel icon={<LayoutDashboard className="h-3 w-3" />}>Layout density</SectionLabel>
             <p className="text-[11px] leading-relaxed text-slate-400">
-              Turn off anything you have nothing to show yet — an empty section
-              looks worse than no section.
+              Compact suits academies with a lot to show; spacious suits a
+              premium or elite club page.
             </p>
-            <div className="space-y-1">
+            <div className="grid grid-cols-2 gap-2">
               {(
                 [
-                  ["programs", "Disciplines"],
-                  ["stats", "Stats strip"],
-                  ["achievements", "Achievements"],
-                  ["gallery", "Photo gallery"],
-                  ["testimonials", "Testimonials"],
+                  [
+                    "compact",
+                    "Compact",
+                    "Tighter sections — more content above the fold",
+                  ],
+                  [
+                    "spacious",
+                    "Spacious",
+                    "Generous breathing room — premium, unhurried feel",
+                  ],
                 ] as const
-              ).map(([key, label]) => (
+              ).map(([key, label, desc]) => {
+                const active = value.density === key;
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => patch({ density: key })}
+                    className={`rounded-lg border p-3 text-left transition-all ${
+                      active
+                        ? "border-slate-900 bg-slate-50 ring-2 ring-slate-900/10"
+                        : "border-slate-200 hover:border-slate-300"
+                    }`}
+                  >
+                    <span
+                      className="mb-1.5 flex flex-col items-start gap-0.5"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        {key === "compact" ? (
+                          <Zap className="h-3.5 w-3.5 text-slate-600" />
+                        ) : (
+                          <Sparkles className="h-3.5 w-3.5 text-slate-600" />
+                        )}
+                        <span className="text-sm font-semibold text-slate-800">
+                          {label}
+                        </span>
+                      </span>
+                    </span>
+                    <span className="mt-1 block text-[10px] leading-snug text-slate-400">
+                      {desc}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* ── Per-section accent override ────────────────────────────── */}
+        {/*
+         * ONE section can trade --brand for --accent as its focal colour.
+         * A single contrasting section is how designers create a focal point;
+         * every section in accent would be noise. Selecting "None" clears it.
+         */}
+        <Card className="border-0 shadow-sm">
+          <CardContent className="space-y-3 p-5">
+            <SectionLabel icon={<Zap className="h-3 w-3" />}>Accent highlight</SectionLabel>
+            <p className="text-[11px] leading-relaxed text-slate-400">
+              One section can use your accent colour instead of your main brand
+              colour — like a spotlight in a show. Pick wisely: only one.
+            </p>
+            <div className="space-y-1">
+              <label
+                className="flex cursor-pointer items-center justify-between rounded-lg px-2 py-2 hover:bg-slate-50"
+              >
+                <span className="text-sm text-slate-700">None</span>
+                <input
+                  type="radio"
+                  name="accentSection"
+                  value=""
+                  disabled={disabled}
+                  checked={value.accentSection === ""}
+                  onChange={() => patch({ accentSection: "" })}
+                  className="accent-slate-900"
+                />
+              </label>
+              {DEFAULT_SECTION_ORDER.map((key) => (
                 <label
                   key={key}
                   className="flex cursor-pointer items-center justify-between rounded-lg px-2 py-2 hover:bg-slate-50"
                 >
-                  <span className="text-sm text-slate-700">{label}</span>
-                  <Switch
-                    checked={value.sections[key]}
+                  <span className="text-sm text-slate-700">
+                    {SECTION_LABELS[key]}
+                  </span>
+                  <input
+                    type="radio"
+                    name="accentSection"
+                    value={key}
                     disabled={disabled}
-                    onCheckedChange={(checked) =>
-                      patch({ sections: { ...value.sections, [key]: checked } })
-                    }
+                    checked={value.accentSection === key}
+                    onChange={() => patch({ accentSection: key })}
+                    className="accent-slate-900"
                   />
                 </label>
               ))}
+            </div>
+            {value.accentSection && (
+              <p className="mt-1 flex items-center gap-1.5 text-[11px] text-amber-600">
+                <AlertTriangle className="h-3 w-3 flex-shrink-0" />
+                {SECTION_LABELS[value.accentSection as SectionKey] ?? value.accentSection}{" "}
+                will use your accent colour{" "}
+                <span
+                  className="inline-block h-3 w-3 rounded-sm border border-slate-200"
+                  style={{ background: value.accentColor }}
+                />{" "}
+                as its focal colour.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* ── Section order drag-to-reorder ─────────────────────────────── */}
+        {/*
+         * HTML5 drag-and-drop: no library needed. The `draggable` attribute on
+         * each row is enough. The order is stored in sections.order[] and
+         * consumed by AcademyPublicPage, which renders sections in that order
+         * rather than the hardcoded JSX sequence. Hidden sections stay hidden.
+         */}
+        <Card className="border-0 shadow-sm">
+          <CardContent className="space-y-3 p-5">
+            <SectionLabel icon={<GripVertical className="h-3 w-3" />}>
+              Section order
+            </SectionLabel>
+            <p className="text-[11px] leading-relaxed text-slate-400">
+              Drag rows to reorder sections on your homepage. Disabled sections
+              are still hidden regardless of position.
+            </p>
+            <div className="space-y-1.5" role="list" aria-label="Section order">
+              {(value.sections.order ?? DEFAULT_SECTION_ORDER).map((key, index) => {
+                const label = SECTION_LABELS[key as SectionKey] ?? key;
+                const enabled = value.sections[key as SectionKey];
+                return (
+                  <div
+                    key={key}
+                    role="listitem"
+                    draggable={!disabled}
+                    aria-label={`${label}, position ${index + 1}`}
+                    onDragStart={(e) => {
+                      e.dataTransfer.effectAllowed = "move";
+                      e.dataTransfer.setData("text/plain", String(index));
+                    }}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      const from = Number(e.dataTransfer.getData("text/plain"));
+                      const to = index;
+                      if (from === to) return;
+                      const order = [
+                        ...(value.sections.order ?? DEFAULT_SECTION_ORDER),
+                      ];
+                      const [moved] = order.splice(from, 1);
+                      order.splice(to, 0, moved);
+                      patch({ sections: { ...value.sections, order } });
+                    }}
+                    className={`flex select-none items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors ${
+                      disabled ? "cursor-not-allowed opacity-50" : "cursor-grab hover:bg-slate-50 active:cursor-grabbing"
+                    } ${
+                      enabled
+                        ? "border-slate-200 bg-white"
+                        : "border-dashed border-slate-200 bg-slate-50/60 opacity-60"
+                    }`}
+                  >
+                    <GripVertical className="h-4 w-4 flex-shrink-0 text-slate-300" />
+                    <span className="flex-1 text-sm text-slate-700">{label}</span>
+                    {!enabled && (
+                      <span className="rounded-sm bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-400">
+                        hidden
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
@@ -1015,14 +1448,28 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
             />
             <div className="relative">
               {value.logoUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  loading="lazy"
-                  decoding="async"
-                  src={value.logoUrl}
-                  alt=""
-                  className="mx-auto mb-3 h-12 object-contain"
-                />
+                <div className={`mb-3 flex ${heroLogoAlignClass(value)}`}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    loading="lazy"
+                    decoding="async"
+                    src={value.logoUrl}
+                    alt=""
+                    /**
+                     * Same shape/crop/alignment helper the live page uses, at a
+                     * third the height because this preview panel is far
+                     * shorter than a real hero. Proportion, corner shape and
+                     * crop stay exact — only the absolute size is scaled.
+                     */
+                    style={{
+                      ...heroLogoStyle(value),
+                      height: `${Math.max(24, Math.round((88 * value.logoScale) / 100 / 2.6))}px`,
+                      width: value.logoFit === "cover"
+                        ? `${Math.max(24, Math.round((88 * value.logoScale) / 100 / 2.6))}px`
+                        : "auto",
+                    }}
+                  />
+                </div>
               )}
               <p
                 className="text-3xl font-extrabold tracking-tight"

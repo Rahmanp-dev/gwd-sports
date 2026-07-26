@@ -44,6 +44,8 @@ export interface AcademyHomepageSections {
   testimonials: boolean;
   gallery: boolean;
   stats: boolean;
+  /** Owner-controlled display order; keys from the five fields above. */
+  order?: string[];
 }
 
 export interface AcademyTheme {
@@ -54,8 +56,19 @@ export interface AcademyTheme {
   tagline?: string;
   style?: "bold" | "classic" | "minimal";
   fontPreset?: "sans" | "editorial" | "rounded";
-  backgroundStyle?: "light" | "soft" | "gradient" | "dark";
+  backgroundStyle?: 'light' | 'soft' | 'gradient' | 'dark' | 'slate' | 'vivid' | 'midnight';
   backgroundColor?: string;
+  logoScale?: number;
+  logoShape?: "square" | "rounded" | "circle";
+  logoAlign?: "left" | "center" | "right";
+  logoFit?: "contain" | "cover";
+  /** One blur value for web AND mobile — see the hero media block. */
+  heroBlur?: number;
+  heroOverlay?: number;
+  /** 'compact' tightens vertical rhythm; 'spacious' (default) opens it up. */
+  density?: 'compact' | 'spacious';
+  /** Which section key uses --accent as its focal colour instead of --brand. */
+  accentSection?: string;
   programs?: AcademyProgram[];
   testimonials?: AcademyTestimonial[];
   gallery?: AcademyGalleryItem[];

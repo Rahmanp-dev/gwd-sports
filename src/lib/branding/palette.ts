@@ -1,61 +1,39 @@
 /**
- * ════════════════════════════════════════════════════════════════════════════
- * DERIVING A USABLE PALETTE FROM ONE COLOUR AN OWNER PICKED
- * ════════════════════════════════════════════════════════════════════════════
+ * Reads the palette's current `BrandInput.backgroundStyle` and emits
+ * the correct CSS variables for it. Used by both `buildThemeVariables`
+ * (which imports this) and tests.
  *
- * An academy owner picks a brand colour from a colour picker. They do not pick
- * a hover state, a tint for section backgrounds, a border shade, or — the one
- * that actually breaks — a text colour that stays readable on top of it.
- *
- * THE FAILURE THIS PREVENTS: the previous implementation put white text on
- * `primaryColor` and hardcoded it. An academy whose brand is yellow, lime or
- * pale cyan got white-on-yellow, which is somewhere between hard to read and
- * invisible. Nobody notices in code review because the reviewer's academy is
- * blue. So the foreground is COMPUTED from WCAG relative luminance, not chosen.
- *
- * Everything here is pure and synchronous. It runs on the server to inline
- * theme variables into the page, and in the browser for the live preview in the
- * branding studio — the two must produce identical output or the preview lies.
- * ════════════════════════════════════════════════════════════════════════════
+ * This is the file that owns ALL page-surface decisions: background, text,
+ * card, muted, border, and the alternating band. An owner who picks a custom
+ * colour still gets the text colour computed from it — that is the whole
+ * safety property.
  */
 
-export interface Rgb {
-  r: number;
-  g: number;
-  b: number;
-}
+/** ── Primitive colour ops ─────────────────────────────────────────── */
 
-/** The platform default, used whenever an academy has not chosen one. */
-export const DEFAULT_PRIMARY = '#7c3aed';
-export const DEFAULT_ACCENT = '#c8971a';
+export interface Rgb { r: number; g: number; b: number }
 
-/**
- * Parses #rgb, #rrggbb, with or without the hash. Returns null rather than
- * throwing: this runs on user input from a colour field, and a half-typed hex
- * should render the previous colour, not crash a public page.
- */
-export function parseHex(input: string | null | undefined): Rgb | null {
-  if (!input) return null;
-  const hex = String(input).trim().replace(/^#/, '');
+const clamp = (v: number) => Math.max(0, Math.min(255, Math.round(v)));
 
-  if (/^[0-9a-f]{3}$/i.test(hex)) {
-    return {
-      r: parseInt(hex[0] + hex[0], 16),
-      g: parseInt(hex[1] + hex[1], 16),
-      b: parseInt(hex[2] + hex[2], 16),
-    };
+export function parseHex(hex?: string | null): Rgb | null {
+  if (!hex) return null;
+  const s = hex.replace('#', '').trim();
+  if (s.length === 3) {
+    const [r, g, b] = s.split('').map((c) => parseInt(c + c, 16));
+    return { r, g, b };
   }
-  if (/^[0-9a-f]{6}$/i.test(hex)) {
+  if (s.length === 6) {
     return {
-      r: parseInt(hex.slice(0, 2), 16),
-      g: parseInt(hex.slice(2, 4), 16),
-      b: parseInt(hex.slice(4, 6), 16),
+      r: parseInt(s.slice(0, 2), 16),
+      g: parseInt(s.slice(2, 4), 16),
+      b: parseInt(s.slice(4, 6), 16),
     };
   }
   return null;
 }
 
-const clamp = (value: number) => Math.max(0, Math.min(255, Math.round(value)));
+export const DEFAULT_PRIMARY = '#1e40af';
+export const DEFAULT_ACCENT  = '#f59e0b';
 
 export function toHex({ r, g, b }: Rgb): string {
   const part = (value: number) => clamp(value).toString(16).padStart(2, '0');
@@ -84,7 +62,7 @@ export function relativeLuminance({ r, g, b }: Rgb): number {
 /** WCAG contrast ratio, 1 (identical) to 21 (black on white). */
 export function contrastRatio(a: Rgb, b: Rgb): number {
   const lighter = Math.max(relativeLuminance(a), relativeLuminance(b));
-  const darker = Math.min(relativeLuminance(a), relativeLuminance(b));
+  const darker  = Math.min(relativeLuminance(a), relativeLuminance(b));
   return (lighter + 0.05) / (darker + 0.05);
 }
 
@@ -153,12 +131,6 @@ export function darken(color: Rgb, amount: number): Rgb {
  * ════════════════════════════════════════════════════════════════════════════
  * "FEEL" — three presets, not a pile of sliders
  * ════════════════════════════════════════════════════════════════════════════
- *
- * An owner asked for control over how the page feels. Exposing every knob
- * (radius, shadow, spacing, saturation) guarantees pages that look broken;
- * exposing nothing was the status quo. Three coherent presets is the useful
- * middle — each is a set of choices that work together, chosen by someone who
- * has seen a page built from them.
  */
 export type BrandStyle = 'bold' | 'classic' | 'minimal';
 
@@ -194,10 +166,7 @@ export function isBrandStyle(value: unknown): value is BrandStyle {
 }
 
 /**
- * Font pairing, same "presets not sliders" reasoning as BRAND_STYLES above:
- * an owner picking a heading font and a body font independently is how you
- * get a page that looks like a ransom note. Three pairings that are already
- * known to work together.
+ * Font pairing — same "presets not sliders" reasoning.
  */
 export type FontPreset = 'sans' | 'editorial' | 'rounded';
 
@@ -209,19 +178,19 @@ export const FONT_PRESETS: Record<
     label: 'Modern',
     description: 'DM Sans throughout. Clean and platform-consistent.',
     heading: "'DM Sans', system-ui, -apple-system, sans-serif",
-    body: "'DM Sans', system-ui, -apple-system, sans-serif",
+    body:    "'DM Sans', system-ui, -apple-system, sans-serif",
   },
   editorial: {
     label: 'Editorial',
     description: 'Playfair Display headings over DM Sans body copy. Suits established clubs.',
     heading: "'Playfair Display', Georgia, serif",
-    body: "'DM Sans', system-ui, -apple-system, sans-serif",
+    body:    "'DM Sans', system-ui, -apple-system, sans-serif",
   },
   rounded: {
     label: 'Friendly',
     description: 'Poppins headings, rounder and energetic. Suits youth academies.',
     heading: "'Poppins', system-ui, -apple-system, sans-serif",
-    body: "'DM Sans', system-ui, -apple-system, sans-serif",
+    body:    "'DM Sans', system-ui, -apple-system, sans-serif",
   },
 };
 
@@ -230,14 +199,30 @@ export function isFontPreset(value: unknown): value is FontPreset {
 }
 
 /**
- * Page background treatment.
+ * ════════════════════════════════════════════════════════════════════════════
+ * BACKGROUND TREATMENTS — seven named options, not a free picker
+ * ════════════════════════════════════════════════════════════════════════════
  *
- * Kept as named treatments rather than a free background colour picker for the
- * same reason as the foreground: an owner who picks a background independently
- * of their text colour produces an unreadable page. Each of these derives its
- * surface AND its text colour together, so the pairing is always legible.
+ * Four original + three new:
+ *   light     — Plain white. Photos and colour do the talking.
+ *   soft      — Barely-there brand wash. Warmer than white.
+ *   gradient  — Gentle brand-to-white fade.
+ *   dark      — Near-black, brand-tinted. Premium, high-contrast.
+ *   slate     — Neutral cool dark slate. No brand tint. Minimal/pro.
+ *   vivid     — Brand colour AS the background. High energy, bold.
+ *   midnight  — Deep black with brand accent glow. Maximum drama.
+ *
+ * Each treatment owns BOTH the surface AND the text derived from it, so they
+ * cannot disagree. An owner cannot accidentally produce black-on-black.
  */
-export type BackgroundStyle = 'light' | 'soft' | 'gradient' | 'dark';
+export type BackgroundStyle =
+  | 'light'
+  | 'soft'
+  | 'gradient'
+  | 'dark'
+  | 'slate'
+  | 'vivid'
+  | 'midnight';
 
 export const BACKGROUND_STYLES: Record<
   BackgroundStyle,
@@ -259,11 +244,29 @@ export const BACKGROUND_STYLES: Record<
     label: 'Dark',
     description: 'Near-black with light text. High contrast, premium feel.',
   },
+  slate: {
+    label: 'Slate',
+    description: 'Cool neutral dark. No brand tint — for a minimal, pro look.',
+  },
+  vivid: {
+    label: 'Vivid',
+    description: 'Your brand colour as the page background. Bold and energetic.',
+  },
+  midnight: {
+    label: 'Midnight',
+    description: 'Near-black with a subtle brand glow. Maximum drama.',
+  },
 };
 
 export function isBackgroundStyle(value: unknown): value is BackgroundStyle {
   return (
-    value === 'light' || value === 'soft' || value === 'gradient' || value === 'dark'
+    value === 'light'   ||
+    value === 'soft'    ||
+    value === 'gradient'||
+    value === 'dark'    ||
+    value === 'slate'   ||
+    value === 'vivid'   ||
+    value === 'midnight'
   );
 }
 
@@ -276,13 +279,25 @@ export interface BrandInput {
   /**
    * Optional explicit page background colour.
    *
-   * The four `backgroundStyle` treatments derive their surface from the brand
+   * The named `backgroundStyle` treatments derive their surface from the brand
    * colour, which keeps things readable but gives an owner no way to say
    * "cream", or "this exact navy". When set, this overrides the derived
    * surface — and the TEXT colour is still computed from it, so an owner
    * cannot accidentally produce black-on-black.
    */
   backgroundColor?: string | null;
+  /**
+   * Page density. 'compact' tightens section padding and card gap;
+   * 'spacious' (default) keeps the generous vertical rhythm that suits
+   * premium-feeling pages. Drives --section-py and --content-gap.
+   */
+  density?: string | null;
+  /**
+   * Which section key uses --accent instead of --brand as its focal colour.
+   * Emitted as --accent-section on the root; AcademyPublicPage wraps the
+   * section in <div data-section-accent> and globals.css does the swap.
+   */
+  accentSection?: string | null;
 }
 
 /**
@@ -296,36 +311,44 @@ export interface BrandInput {
  */
 export function buildThemeVariables(input: BrandInput): Record<string, string> {
   const primary = parseHex(input.primaryColor) ?? parseHex(DEFAULT_PRIMARY)!;
-  const accent = parseHex(input.accentColor) ?? parseHex(DEFAULT_ACCENT)!;
-  const style = isBrandStyle(input.style) ? input.style : 'classic';
-  const preset = BRAND_STYLES[style];
-  const fontPreset = isFontPreset(input.fontPreset) ? input.fontPreset : 'sans';
-  const fonts = FONT_PRESETS[fontPreset];
+  const accent  = parseHex(input.accentColor)  ?? parseHex(DEFAULT_ACCENT)!;
+  const style   = isBrandStyle(input.style)    ? input.style    : 'classic';
+  const preset  = BRAND_STYLES[style];
+  const fp      = isFontPreset(input.fontPreset) ? input.fontPreset : 'sans';
+  const fonts   = FONT_PRESETS[fp];
 
   const onPrimary = readableOn(primary);
-  const onAccent = readableOn(accent);
+  const onAccent  = readableOn(accent);
+
+  const isCompact = input.density === 'compact';
 
   return {
-    '--brand': toHex(primary),
-    '--brand-rgb': toRgbChannels(primary),
-    // Hover/pressed. Darkened rather than opacity-shifted so it stays opaque
-    // over photographs, which the hero section is full of.
+    '--brand':        toHex(primary),
+    '--brand-rgb':    toRgbChannels(primary),
     '--brand-strong': toHex(darken(primary, 0.18)),
-    '--brand-soft': toHex(lighten(primary, preset.tint)),
+    '--brand-soft':   toHex(lighten(primary, preset.tint)),
     '--brand-border': toHex(lighten(primary, 0.75)),
-    '--brand-on': toHex(onPrimary),
+    '--brand-on':     toHex(onPrimary),
 
-    '--accent': toHex(accent),
-    '--accent-rgb': toRgbChannels(accent),
+    '--accent':        toHex(accent),
+    '--accent-rgb':    toRgbChannels(accent),
     '--accent-strong': toHex(darken(accent, 0.18)),
-    '--accent-soft': toHex(lighten(accent, preset.tint)),
-    '--accent-on': toHex(onAccent),
+    '--accent-soft':   toHex(lighten(accent, preset.tint)),
+    '--accent-on':     toHex(onAccent),
 
     '--brand-radius': preset.radius,
     '--brand-shadow': preset.shadow,
 
     '--font-heading': fonts.heading,
-    '--font-body': fonts.body,
+    '--font-body':    fonts.body,
+
+    // Density
+    '--section-py':    isCompact ? '3rem' : '5rem',
+    '--section-py-sm': isCompact ? '2rem' : '4rem',
+    '--content-gap':   isCompact ? '1.25rem' : '2rem',
+
+    // Accent section key (consumed by [data-section-accent] in globals.css)
+    '--accent-section': input.accentSection ?? '',
 
     ...backgroundVariables(primary, input.backgroundStyle, input.backgroundColor),
   };
@@ -334,10 +357,16 @@ export function buildThemeVariables(input: BrandInput): Record<string, string> {
 /**
  * Surface and text colour, derived together so they cannot disagree.
  *
- * `--page-bg` may be a gradient, so it is applied via `background`, never
- * `background-color`. `--page-fg`, `--page-muted` and `--page-card` follow from
- * whichever surface was chosen — that is the whole point of pairing them here
- * rather than letting an owner pick a background and hope.
+ * ALL seven treatments are handled here. Key variables emitted:
+ *   --page-bg      page background (may be a gradient string)
+ *   --page-surface slightly lifted from --page-bg
+ *   --page-card    card background — always readable against its own text
+ *   --page-fg      primary text — always passes WCAG AA against --page-bg
+ *   --page-muted   secondary text — slightly dimmer but still readable
+ *   --page-border  subtle border colour
+ *   --page-alt     alternating band — adjacent sections stay distinct
+ *   --page-scheme  'dark' | 'light' — consumed by CSS prefers-color-scheme
+ *                  overrides and also by components that need to know.
  */
 function backgroundVariables(
   primary: Rgb,
@@ -346,78 +375,146 @@ function backgroundVariables(
 ): Record<string, string> {
   const style = isBackgroundStyle(requested) ? requested : 'light';
 
-  /**
-   * An explicit colour wins over the derived treatment — but the text colour
-   * is still COMPUTED from it via readableOn(), never chosen by the owner.
-   * That is the whole safety property: any background they pick stays legible,
-   * including a gradient built from it.
-   */
+  // Custom colour wins over the named treatment.
   const custom = parseHex(customColor);
   if (custom) {
-    const onCustom = readableOn(custom);
-    const isDarkSurface = relativeLuminance(custom) < 0.4;
+    const onCustom      = readableOn(custom);
+    const isDark        = relativeLuminance(custom) < 0.4;
+    const cardSurface   = isDark ? lighten(custom, 0.1) : WHITE;
+    const altSurface    = isDark ? lighten(custom, 0.06) : darken(custom, 0.035);
+
+    // When gradient style AND custom colour: gradient from custom into a
+    // shifted version of itself.
+    const bgValue =
+      style === 'gradient'
+        ? `linear-gradient(160deg, ${toHex(custom)} 0%, ${toHex(
+            isDark ? darken(custom, 0.35) : lighten(custom, 0.55),
+          )} 100%)`
+        : toHex(custom);
+
     return {
-      '--page-bg':
-        style === 'gradient'
-          ? `linear-gradient(180deg, ${toHex(custom)} 0%, ${toHex(
-              isDarkSurface ? darken(custom, 0.35) : lighten(custom, 0.55),
-            )} 100%)`
-          : toHex(custom),
-      // Cards lift off a dark surface and stay white on a light one, so text
-      // inside a card is always readable regardless of the chosen colour.
-      '--page-surface': isDarkSurface ? toHex(lighten(custom, 0.1)) : '#ffffff',
-      '--page-card': isDarkSurface ? toHex(lighten(custom, 0.14)) : '#ffffff',
-      '--page-fg': toHex(onCustom),
-      '--page-muted': isDarkSurface ? '#a1a1aa' : '#64748b',
-      '--page-border': toHex(
-        isDarkSurface ? lighten(custom, 0.2) : darken(custom, 0.08),
-      ),
+      '--page-bg':      bgValue,
+      '--page-surface': toHex(isDark ? lighten(custom, 0.08) : WHITE),
+      '--page-card':    toHex(cardSurface),
+      '--page-fg':      toHex(onCustom),
+      '--page-muted':   isDark ? '#94a3b8' : '#64748b',
+      '--page-border':  toHex(isDark ? lighten(custom, 0.2) : darken(custom, 0.08)),
+      '--page-alt':     toHex(altSurface),
+      '--page-scheme':  isDark ? 'dark' : 'light',
     };
   }
 
+  // ── Named treatments ────────────────────────────────────────────────────
+
   if (style === 'dark') {
-    // Not pure black: a near-black tinted toward the brand reads as designed.
     const surface = darken(mix(primary, INK, 0.88), 0.55);
+    return darkSurface(surface);
+  }
+
+  if (style === 'slate') {
+    // Neutral cool dark — deliberate contrast with brand-tinted dark.
+    const slate = { r: 15, g: 23, b: 42 } as Rgb;   // #0f172a
     return {
-      '--page-bg': toHex(surface),
-      '--page-surface': toHex(lighten(surface, 0.08)),
-      '--page-card': toHex(lighten(surface, 0.12)),
-      '--page-fg': '#f8fafc',
-      '--page-muted': '#94a3b8',
-      '--page-border': toHex(lighten(surface, 0.2)),
+      '--page-bg':      '#0f172a',
+      '--page-surface': '#1e293b',
+      '--page-card':    '#1e293b',
+      '--page-fg':      '#f8fafc',
+      '--page-muted':   '#94a3b8',
+      '--page-border':  '#334155',
+      '--page-alt':     '#162032',
+      '--page-scheme':  'dark',
+    };
+  }
+
+  if (style === 'midnight') {
+    // Near-black with brand colour as a glow/accent, not a surface.
+    const surface = darken(mix(primary, INK, 0.96), 0.6);
+    return {
+      '--page-bg':      '#050811',
+      '--page-surface': '#0a0f1e',
+      '--page-card':    '#0d1426',
+      '--page-fg':      '#f1f5f9',
+      '--page-muted':   '#64748b',
+      '--page-border':  toHex(lighten(surface, 0.18)),
+      '--page-alt':     '#080c18',
+      '--page-scheme':  'dark',
+    };
+  }
+
+  if (style === 'vivid') {
+    // Brand colour IS the page. Always use the readable foreground.
+    const onBrand = readableOn(primary);
+    const isDark  = relativeLuminance(primary) < 0.4;
+    // Card lifts above the vivid surface — slightly lighter/darker depending on brightness.
+    const card = isDark ? lighten(primary, 0.12) : darken(primary, 0.08);
+    return {
+      '--page-bg':      toHex(primary),
+      '--page-surface': toHex(isDark ? lighten(primary, 0.06) : darken(primary, 0.04)),
+      '--page-card':    toHex(card),
+      '--page-fg':      toHex(onBrand),
+      '--page-muted':   isDark
+        ? toHex(lighten(primary, 0.45))
+        : toHex(darken(primary, 0.35)),
+      '--page-border':  toHex(isDark ? lighten(primary, 0.2) : darken(primary, 0.15)),
+      '--page-alt':     toHex(isDark ? lighten(primary, 0.08) : darken(primary, 0.06)),
+      '--page-scheme':  isDark ? 'dark' : 'light',
     };
   }
 
   if (style === 'gradient') {
     const top = lighten(primary, 0.9);
     return {
-      '--page-bg': `linear-gradient(180deg, ${toHex(top)} 0%, #ffffff 60%)`,
+      '--page-bg':      `linear-gradient(160deg, ${toHex(top)} 0%, #ffffff 60%)`,
       '--page-surface': '#ffffff',
-      '--page-card': '#ffffff',
-      '--page-fg': toHex(INK),
-      '--page-muted': '#64748b',
-      '--page-border': '#e2e8f0',
+      '--page-card':    '#ffffff',
+      '--page-fg':      toHex(INK),
+      '--page-muted':   '#64748b',
+      '--page-border':  '#e2e8f0',
+      '--page-alt':     '#f8fafc',
+      '--page-scheme':  'light',
     };
   }
 
   if (style === 'soft') {
     return {
-      '--page-bg': toHex(lighten(primary, 0.95)),
+      '--page-bg':      toHex(lighten(primary, 0.95)),
       '--page-surface': '#ffffff',
-      '--page-card': '#ffffff',
-      '--page-fg': toHex(INK),
-      '--page-muted': '#64748b',
-      '--page-border': '#e2e8f0',
+      '--page-card':    '#ffffff',
+      '--page-fg':      toHex(INK),
+      '--page-muted':   '#64748b',
+      '--page-border':  '#e2e8f0',
+      '--page-alt':     '#f8fafc',
+      '--page-scheme':  'light',
     };
   }
 
+  // light (default)
   return {
-    '--page-bg': '#ffffff',
+    '--page-bg':      '#ffffff',
     '--page-surface': '#ffffff',
-    '--page-card': '#ffffff',
-    '--page-fg': toHex(INK),
-    '--page-muted': '#64748b',
-    '--page-border': '#e2e8f0',
+    '--page-card':    '#ffffff',
+    '--page-fg':      toHex(INK),
+    '--page-muted':   '#64748b',
+    '--page-border':  '#e2e8f0',
+    '--page-alt':     '#f8fafc',
+    '--page-scheme':  'light',
+  };
+}
+
+/**
+ * Shared dark-surface derivation for `dark` and callers that need a brand-
+ * tinted dark surface (e.g., custom colours with low luminance).
+ */
+function darkSurface(surface: Rgb): Record<string, string> {
+  return {
+    '--page-bg':      toHex(surface),
+    '--page-surface': toHex(lighten(surface, 0.08)),
+    '--page-card':    toHex(lighten(surface, 0.12)),
+    '--page-fg':      '#f8fafc',
+    '--page-muted':   '#94a3b8',
+    '--page-border':  toHex(lighten(surface, 0.2)),
+    '--page-alt':     toHex(lighten(surface, 0.05)),
+    '--page-scheme':  'dark',
   };
 }
 

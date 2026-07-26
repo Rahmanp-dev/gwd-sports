@@ -106,7 +106,23 @@ export async function runReminderTick(
       continue;
     }
 
-    const dueDate = currentCycleDueDate(now, student.feeDueDayOfMonth ?? 5, config);
+    /**
+     * Due day resolution, most specific first.
+     *
+     * This was `student.feeDueDayOfMonth ?? 5` — a hardcoded 5th of the month
+     * for every academy on the platform, and the per-student field was not
+     * editable in any admin screen, so in practice EVERY reminder cadence ran
+     * on the 5th whether or not that was when the academy actually collected.
+     * An academy billing on the 1st chased its parents four days late, every
+     * month, with no way to change it.
+     *
+     * The academy-level setting is the one an owner can actually reach
+     * (Branding → Fee structure); the per-student value still wins where it is
+     * set, for a family on an individual arrangement.
+     */
+    const dueDay =
+      student.feeDueDayOfMonth ?? (academy as any)?.fees?.dueDayOfMonth ?? 5;
+    const dueDate = currentCycleDueDate(now, dueDay, config);
     const stage = stageFor(now, dueDate, config.timezoneOffsetMinutes);
     if (!stage) {
       result.skipped++;

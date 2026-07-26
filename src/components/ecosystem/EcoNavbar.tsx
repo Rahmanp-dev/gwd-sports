@@ -46,11 +46,20 @@ export default function EcoNavbar() {
         <a href="/rankings" className="hover:text-white transition-colors">Rankings</a>
       </div>
 
+      {/**
+       * "Login", not "Join GWD".
+       *
+       * This links to /user/auth, which is a sign-in screen — an academy owner
+       * who read "Join GWD" and landed there could not join anything, because
+       * onboarding is done with the team rather than self-serve. Joining is the
+       * hero CTA and the onboarding section; this is for people who already
+       * have an account.
+       */}
       <a
         href="/user/auth"
         className="flex-shrink-0 whitespace-nowrap border border-[#FF1744]/60 bg-[#FF1744]/10 hover:bg-[#FF1744] text-[#FF1744] hover:text-white px-4 sm:px-5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 shadow-[0_0_12px_rgba(255,23,68,0.2)]"
       >
-        Join GWD
+        Login
       </a>
     </motion.nav>
   );

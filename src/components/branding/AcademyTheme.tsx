@@ -42,6 +42,9 @@ export function AcademyTheme({
       theme?.style,
       theme?.fontPreset,
       theme?.backgroundStyle,
+      theme?.backgroundColor,
+      theme?.density,
+      theme?.accentSection,
     ],
   );
 
@@ -56,6 +59,7 @@ export function AcademyTheme({
       }
       className={className ?? "contents"}
       data-brand-style={theme?.style ?? "classic"}
+      data-page-scheme={variables["--page-scheme"] ?? "light"}
     >
       {children}
     </Tag>
