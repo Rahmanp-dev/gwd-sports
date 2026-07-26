@@ -24,20 +24,36 @@ export function AcademyTheme({
   children,
   as: Tag = "div",
   className,
+  style,
 }: {
   theme?: BrandInput | null;
   children: React.ReactNode;
   as?: React.ElementType;
   className?: string;
+  /** Merged AFTER the theme variables, so a caller can consume one — e.g.
+   *  `background: var(--page-bg)` — on the very element that defines it. */
+  style?: React.CSSProperties;
 }) {
   const variables = React.useMemo(
     () => buildThemeVariables(theme ?? {}),
-    [theme?.primaryColor, theme?.accentColor, theme?.style, theme?.fontPreset],
+    [
+      theme?.primaryColor,
+      theme?.accentColor,
+      theme?.style,
+      theme?.fontPreset,
+      theme?.backgroundStyle,
+    ],
   );
 
   return (
     <Tag
-      style={{ ...variables, fontFamily: variables["--font-body"] } as React.CSSProperties}
+      style={
+        {
+          ...variables,
+          fontFamily: variables["--font-body"],
+          ...style,
+        } as React.CSSProperties
+      }
       className={className ?? "contents"}
       data-brand-style={theme?.style ?? "classic"}
     >

@@ -126,7 +126,7 @@ export default function PayFeesPage() {
 
             if (verifyResult.success) {
               toast.success("Payment successful! Receipt generated.");
-              navigate("/mgfc/student");
+              navigate("/portal/student");
             } else {
               toast.error(
                 verifyResult.message || "Payment verification failed.",

@@ -2396,6 +2396,146 @@ None outstanding. Visual confirmation still owed — see below.
 
 ---
 
+## Session — 2026-07-26 05:21 IST · Pre-launch blockers from real usage
+
+**State at end of session:** not committed. 448/448 tests, `tsc` clean,
+`next build` compiles. Driven by bugs the user hit in the live app.
+
+### Logout 500 — and the same latent bug on login
+
+`removeRefreshToken` did `filter()` + `this.save()`. **`save()` revalidates the
+entire document**, so any legacy value anywhere on a user made logout throw a
+500 — the token was then never revoked, which means it was not really a logout.
+Exactly the failure mode already documented for `timings.workingDays`.
+
+Replaced with an atomic `$pull`. **`addRefreshToken` had the identical bug and
+runs on every login** — one bad legacy field would have locked that user out
+entirely. Also switched to `$push`. Neither now triggers document validation.
+
+### The trainer account: users were being created half-formed
+
+`POST /api/admin/users` created a `User` and **nothing else**. Every trainer
+surface reads the *profile*, not the user, so a coach added from the Users tab:
+
+- saw "No Trainer Profile Found" instead of a dashboard;
+- could never be added to a batch (`/api/trainer/batches` filters
+  `coaches: userId`), so never got an attendance register;
+- did not appear in the admin's trainer list, which is built from
+  `TrainerProfile.aggregate`.
+
+The student case is worse: `resolveAmountDue` throws "Student profile not
+found" before reaching the fee schedule, so such a student **cannot be charged
+at all**.
+
+New `lib/auth/ensureRoleProfile.ts`, called from two places on purpose: at user
+creation so new accounts are whole, and lazily on `GET /api/{trainer,student}/
+profile` so the accounts **already broken in production repair themselves** on
+next login rather than needing manual re-creation. Idempotent via the unique
+`userId` index; duplicate-key is treated as success; failures log but never
+block the caller.
+
+### Student QR scanner "missing" — it was hidden on most browsers
+
+The scanner relied solely on `BarcodeDetector`, which exists on Android Chrome
+and essentially nowhere else — **not iOS Safari, not Firefox, and not Chrome on
+Windows**, which is what the user was testing on. On those the component
+deliberately hid the camera button and printed "this browser can't scan",
+so the feature looked absent.
+
+Added `jsqr` (pure JS, no deps) as a second tier: native `BarcodeDetector` when
+present, otherwise decode video frames on a canvas. jsQR is dynamically
+imported so it is not shipped to browsers that do not need it, and the sampled
+frame is capped at 640px wide because decoding full 1080p frames every tick
+stutters badly on mid-range Android. **The camera button is now always shown.**
+
+### Branding: background and gradient options
+
+New `theme.backgroundStyle` — `light` / `soft` / `gradient` / `dark`. Emitted
+as `--page-bg`, `--page-fg`, `--page-muted`, `--page-card`, `--page-border`
+from the same `buildThemeVariables`.
+
+Surface and text colour are derived **together**, deliberately, rather than
+offering a free background-colour picker: an owner choosing a background
+independently of their text colour produces an unreadable page, which is the
+same reasoning already behind `readableOn()`.
+
+`--page-bg` may hold a gradient, so it is applied via `background`, never
+`background-color`. `AcademyTheme` gained a `style` prop so the element
+defining the variables can also consume one.
+
+Note while wiring the preview: cards sitting on `--brand-soft` keep dark ink,
+because that tint stays light in every background treatment — using
+`--page-fg` there would have made them invisible in dark mode.
+
+### Mobile
+
+- **Landing navbar overflowed its own pill** (visible in the user's screenshot:
+  nav links colliding with the wordmark, "Join GWD" cut off). Links now hide
+  below `sm`; wordmark and CTA get `flex-shrink-0` and always fit.
+- Added a global `overflow-x: clip` guard on `html, body`. **`clip`, not
+  `hidden`** — `hidden` makes the element a scroll container and silently
+  breaks every `position: sticky` descendant, including the branding editor's
+  preview pane.
+
+### Nothing told an owner their academy was unusable
+
+A deployed academy starts with all four fees at 0, and `resolveAmountDue`
+requires **above** zero, so every parent payment failed — with no indication to
+the owner. The first person to find out would have been a customer.
+
+New `SetupChecklist` on the admin dashboard states the **consequence**, not the
+task ("parents trying to pay online get an error", not "set your fees"). Covers
+fees, at least one batch, and logo/tagline. Hides itself entirely once done, so
+it cannot become furniture. `AdminPage`'s tabs are now controlled so its "Fix"
+links can jump straight to the right tab.
+
+### `check-email` PII
+
+Unauthenticated, and returned the whole user document — name, email, phone,
+role, academyId, active status. On a platform holding children's data, guessing
+an address yielded a child's name and a contact number. (No password hash: that
+is `select: false` and stripped in `toJSON`.)
+
+Now projected to `_id` and `name`, the minimum the registration flow needs.
+
+**Near-miss worth recording:** the first projection dropped `email` and
+`isImportedPlaceholder`, which `isPlaceholderAccount()` reads. It **fails
+open**, so that would have silently reopened the passport-id enumeration hole
+that guard was written to close. Both are now selected server-side and neither
+is returned.
+
+Residual, stated not hidden: existence of an address and its first name are
+still confirmable. The fix is per-IP rate limiting on this route — the
+`RATE_LIMIT_*` env vars already exist — not trimming further.
+
+### `/mgfc/*` → `/portal/*`
+
+Every academy's coaches and students landed on the slug of one demo academy.
+Data was correctly tenant-scoped so nothing leaked, but a paying customer's
+staff saw a competitor's name in the address bar.
+
+Six routes moved to neutral `/portal/*`; the old paths are **permanent
+redirects, not deletions**, because those URLs are in browser histories and
+already-sent messages. `/portal` added to middleware `RESERVED_PATHS` so it can
+never be shadowed by an academy slug.
+
+### Open items / gaps flagged
+- **Still nothing visually verified.** Same as the previous session: the
+  Browser pane is not displayed, so all of the above is verified by `tsc`,
+  448 tests and `next build` only.
+- `jsqr` added as a dependency — needs `npm install` wherever this deploys.
+- The super-admin academy list shows apparent duplicates (Champions FC /
+  ChampionsFC, Master Grid / MasterGrade) with two rows sharing ID
+  `6a61cfe0`. Not investigated; may be seed residue or a real key collision,
+  worth a look before onboarding.
+- Env still unset: `RAZORPAY_WEBHOOK_SECRET`, `CLOUDINARY_*`, `CRON_SECRET`,
+  `RESEND_API_KEY`, `INTERAKT_API_KEY`. Razorpay is still on a **test** key.
+
+### Next up
+Visual + real-device pass; then the Razorpay live-mode checklist.
+
+---
+
 ## Entry template — copy for the next session
 
 ```markdown

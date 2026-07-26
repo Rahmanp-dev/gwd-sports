@@ -1,5 +1,7 @@
 "use client";
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SetupChecklist } from "@/components/admin/dashboard/SetupChecklist";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useBrand } from "@/hooks/useBrand";
@@ -110,6 +112,8 @@ const SuperAdminDashboard = lazyPanel(() => import("@/views/admin/SuperAdminDash
 export default function AdminPage() {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
+  // Controlled so the setup checklist's "Fix" links can jump to the right tab.
+  const [activeTab, setActiveTab] = useState("dashboard");
   // The academy's own name, not the platform's — five branches will run under
   // one deployment, so a build-time constant cannot be right for all of them.
   const brand = useBrand();
@@ -145,7 +149,11 @@ export default function AdminPage() {
 
       {/* Main content */}
       <main className="container mx-auto px-4 py-6">
-          <Tabs defaultValue="dashboard" className="space-y-6">
+          {/* States the consequence of anything still unconfigured — the fee
+              schedule in particular, without which parents cannot pay at all. */}
+          <SetupChecklist onNavigate={setActiveTab} />
+
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <div className="bg-white p-2 rounded-lg shadow-sm overflow-x-auto">
             <TabsList className="h-auto justify-start gap-2">
               <TabsTrigger

@@ -276,7 +276,7 @@ export default function StudentCreate() {
       );
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      navigate("/mgfc/student", { replace: true });
+      navigate("/portal/student", { replace: true });
     } catch (error: any) {
       console.error("Registration error:", error);
       toast.dismiss();

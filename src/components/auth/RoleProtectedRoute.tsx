@@ -7,8 +7,8 @@ import { useAppSelector } from "@/store";
 export type AppRole = "student" | "trainer" | "admin" | "gwd_super_admin" | "user";
 
 const ROLE_HOME: Record<string, string> = {
-  student: "/mgfc/student",
-  trainer: "/mgfc/trainer",
+  student: "/portal/student",
+  trainer: "/portal/trainer",
   admin: "/admin/dashboard",
   gwd_super_admin: "/admin/dashboard",
   user: "/user/profile",

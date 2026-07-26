@@ -48,7 +48,7 @@ export default function StudentComplete() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!stateEmail && !stateUser) {
-    return <Navigate to="/mgfc/student/register" replace />;
+    return <Navigate to="/portal/student/register" replace />;
   }
 
   if (!isAuthenticated || !token || !user) {
@@ -66,7 +66,7 @@ export default function StudentComplete() {
               className="w-full"
               onClick={() =>
                 navigate("/user/auth", {
-                  state: { email: stateEmail || stateUser?.email, from: "/mgfc/student/register/complete" },
+                  state: { email: stateEmail || stateUser?.email, from: "/portal/student/register/complete" },
                 })
               }
             >
@@ -117,7 +117,7 @@ export default function StudentComplete() {
       );
 
       toast.success("Student profile created! Welcome to MGFC.");
-      navigate("/mgfc/student", { replace: true });
+      navigate("/portal/student", { replace: true });
     } catch (err: any) {
       toast.error(err.message || "Could not complete registration");
     } finally {

@@ -21,15 +21,18 @@ import {
   X,
 } from "lucide-react";
 import {
+  BACKGROUND_STYLES,
   BRAND_STYLES,
   DEFAULT_ACCENT,
   DEFAULT_PRIMARY,
   FONT_PRESETS,
   assessContrast,
   buildThemeVariables,
+  isBackgroundStyle,
   isBrandStyle,
   isFontPreset,
   parseHex,
+  type BackgroundStyle,
   type BrandStyle,
   type FontPreset,
 } from "@/lib/branding/palette";
@@ -78,6 +81,7 @@ export interface BrandingDraft {
   accentColor: string;
   style: BrandStyle;
   fontPreset: FontPreset;
+  backgroundStyle: BackgroundStyle;
   tagline: string;
   logoUrl: string;
   programs: AcademyProgram[];
@@ -101,6 +105,7 @@ export function defaultBrandingDraft(): BrandingDraft {
     accentColor: DEFAULT_ACCENT,
     style: "classic",
     fontPreset: "sans",
+    backgroundStyle: "light",
     tagline: "",
     logoUrl: "",
     programs: [],
@@ -123,6 +128,9 @@ export function draftFromAcademy(academy?: Partial<Academy> | null): BrandingDra
     accentColor: theme.accentColor || base.accentColor,
     style: isBrandStyle(theme.style) ? theme.style : base.style,
     fontPreset: isFontPreset(theme.fontPreset) ? theme.fontPreset : base.fontPreset,
+    backgroundStyle: isBackgroundStyle(theme.backgroundStyle)
+      ? theme.backgroundStyle
+      : base.backgroundStyle,
     tagline: theme.tagline ?? "",
     logoUrl: theme.logoUrl ?? "",
     programs: theme.programs ?? [],
@@ -147,6 +155,7 @@ export function draftToThemeUpdate(draft: BrandingDraft): Record<string, unknown
     "theme.accentColor": draft.accentColor,
     "theme.style": draft.style,
     "theme.fontPreset": draft.fontPreset,
+    "theme.backgroundStyle": draft.backgroundStyle,
     "theme.tagline": draft.tagline,
     "theme.logoUrl": draft.logoUrl,
     "theme.programs": draft.programs,
@@ -502,6 +511,53 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
                       <span className="block text-[11px] leading-snug text-slate-500">
                         {preset.description}
                       </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Background */}
+        <Card className="border-0 shadow-sm">
+          <CardContent className="space-y-3 p-5">
+            <SectionLabel icon={<Palette className="h-3 w-3" />}>
+              Page background
+            </SectionLabel>
+            <div className="grid grid-cols-2 gap-2">
+              {(Object.keys(BACKGROUND_STYLES) as BackgroundStyle[]).map((key) => {
+                const preset = BACKGROUND_STYLES[key];
+                const active = value.backgroundStyle === key;
+                // Swatch built from the same function the page uses, so the
+                // chip is literally the surface that will ship.
+                const swatch = buildThemeVariables({ ...value, backgroundStyle: key });
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => patch({ backgroundStyle: key })}
+                    className={`rounded-lg border p-2 text-left transition-all ${
+                      active
+                        ? "border-slate-900 ring-2 ring-slate-900/10"
+                        : "border-slate-200 hover:border-slate-300"
+                    }`}
+                  >
+                    <span
+                      className="mb-1.5 flex h-10 w-full items-center justify-center rounded border border-slate-200/70 text-[10px] font-bold"
+                      style={{
+                        background: swatch["--page-bg"],
+                        color: swatch["--page-fg"],
+                      }}
+                    >
+                      Aa
+                    </span>
+                    <span className="block text-[11px] font-semibold text-slate-700">
+                      {preset.label}
+                    </span>
+                    <span className="mt-0.5 block text-[10px] leading-snug text-slate-400">
+                      {preset.description}
                     </span>
                   </button>
                 );
@@ -895,11 +951,17 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
           Live preview
         </p>
         <div
-          style={variables as React.CSSProperties}
-          className="overflow-hidden rounded-xl border border-slate-200 bg-white lg:sticky lg:top-4"
+          style={
+            {
+              ...variables,
+              background: variables["--page-bg"],
+              color: variables["--page-fg"],
+            } as React.CSSProperties
+          }
+          className="overflow-hidden rounded-xl border border-slate-200 lg:sticky lg:top-4"
         >
           {/* Hero */}
-          <div className="relative overflow-hidden bg-slate-50 px-6 py-12 text-center">
+          <div className="relative overflow-hidden px-6 py-12 text-center">
             <div
               className="absolute -right-16 -top-16 h-48 w-48 rounded-full blur-3xl"
               style={{ background: "rgb(var(--brand-rgb) / 0.18)" }}
@@ -914,8 +976,11 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
                 />
               )}
               <p
-                className="text-3xl font-extrabold tracking-tight text-slate-900"
-                style={{ fontFamily: "var(--font-heading)" }}
+                className="text-3xl font-extrabold tracking-tight"
+                style={{
+                  color: "var(--page-fg)",
+                  fontFamily: "var(--font-heading)",
+                }}
               >
                 {academyName.split(" ")[0]}{" "}
                 <span style={{ color: "var(--brand)" }}>
@@ -923,8 +988,11 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
                 </span>
               </p>
               <p
-                className="mt-1.5 text-sm text-slate-500"
-                style={{ fontFamily: "var(--font-body)" }}
+                className="mt-1.5 text-sm"
+                style={{
+                  color: "var(--page-muted)",
+                  fontFamily: "var(--font-body)",
+                }}
               >
                 {value.tagline || "Where Legends Are Born"}
               </p>
@@ -958,6 +1026,8 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
                   }}
                 >
                   <div className="mb-2 text-lg">{program.emoji || "🏅"}</div>
+                  {/* These sit on --brand-soft, which is a light tint whatever
+                      the page background is, so they keep dark ink. */}
                   <p
                     className="text-xs font-bold text-slate-800"
                     style={{ fontFamily: "var(--font-heading)" }}
@@ -1052,6 +1122,8 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
                       borderRadius: "var(--brand-radius)",
                     }}
                   >
+                    {/* On --brand-soft, which stays light in every background
+                        treatment, so dark ink rather than --page-fg. */}
                     <p className="text-xs italic leading-relaxed text-slate-700">
                       “{testimonial.quote}”
                     </p>

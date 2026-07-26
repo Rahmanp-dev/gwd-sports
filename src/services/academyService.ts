@@ -54,6 +54,7 @@ export interface AcademyTheme {
   tagline?: string;
   style?: "bold" | "classic" | "minimal";
   fontPreset?: "sans" | "editorial" | "rounded";
+  backgroundStyle?: "light" | "soft" | "gradient" | "dark";
   programs?: AcademyProgram[];
   testimonials?: AcademyTestimonial[];
   gallery?: AcademyGalleryItem[];

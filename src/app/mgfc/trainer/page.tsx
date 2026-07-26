@@ -1,12 +1,16 @@
-export const dynamic = "force-dynamic";
+import { redirect } from "next/navigation";
 
-import MGFCTrainerPage from "@/views/sections/MGFC/trainer/TrainerPage";
-import { RoleProtectedRoute } from "@/components/auth/RoleProtectedRoute";
-
+/**
+ * Moved to /portal.
+ *
+ * Every academy's coaches and students used to land on /mgfc/* — the slug of
+ * one specific demo academy (Master Grid FC). The data underneath was always
+ * correctly scoped to the signed-in user's own academy, so nothing leaked, but
+ * a paying customer's staff saw a competitor's name in their address bar.
+ *
+ * Kept as a permanent redirect rather than deleted: these URLs are in people's
+ * browser history and in already-sent messages.
+ */
 export default function Page() {
-  return (
-    <RoleProtectedRoute allowedRoles={["trainer"]}>
-      <MGFCTrainerPage />
-    </RoleProtectedRoute>
-  );
+  redirect("/portal/trainer");
 }

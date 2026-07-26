@@ -21,11 +21,16 @@ import { extractToken } from "@/lib/attendance/checkInToken";
  * native camera, which works but which nobody would guess, so the feature was
  * effectively invisible to the people it was built for.
  *
- * NO NEW DEPENDENCY. Scanning uses the browser's built-in `BarcodeDetector`,
- * which Android Chrome has and which covers most parents here. Where it is
- * missing — iOS Safari, older Android — the card says so plainly and offers the
- * two things that always work: the phone's own camera app, and typing the code.
- * A scanner that silently fails on iPhone would be worse than no scanner.
+ * SCANNING WORKS EVERYWHERE, IN TWO TIERS. It previously relied solely on the
+ * browser's built-in `BarcodeDetector`. That covers Android Chrome — and
+ * nothing else. iOS Safari, Firefox and Chrome on Windows have no such API, so
+ * on those the card hid the camera button entirely and told the reader to go
+ * use a different app. For most people testing this, the scanner simply did not
+ * appear to exist.
+ *
+ * So: `BarcodeDetector` when the browser has it (native, fastest, no download),
+ * and jsQR decoding video frames on a canvas everywhere else. The camera button
+ * is now always offered, because the camera always works.
  *
  * The student's login IS the identity. The code only says which batch; the
  * account says which child — which is why one photographed code cannot check in
@@ -47,11 +52,9 @@ export function CheckInCard() {
   const [starting, setStarting] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const rafRef = useRef<number | null>(null);
-
-  const supportsScanner =
-    typeof window !== "undefined" && typeof window.BarcodeDetector === "function";
 
   const stopCamera = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -87,16 +90,53 @@ export function CheckInCard() {
         videoRef.current.srcObject = stream;
         await videoRef.current.play().catch(() => undefined);
 
-        const detector = new window.BarcodeDetector({ formats: ["qr_code"] });
+        const native =
+          typeof window.BarcodeDetector === "function"
+            ? new window.BarcodeDetector({ formats: ["qr_code"] })
+            : null;
+
+        /**
+         * jsQR is loaded on demand, and only on browsers without the native
+         * detector — no reason to ship a decoder to Android Chrome, which
+         * already has one built in.
+         */
+        const decode = native
+          ? async (): Promise<string | null> => {
+              const codes = await native.detect(videoRef.current!);
+              return codes[0]?.rawValue ?? null;
+            }
+          : await (async () => {
+              const jsQR = (await import("jsqr")).default;
+              return async (): Promise<string | null> => {
+                const video = videoRef.current;
+                const canvas = canvasRef.current;
+                if (!video || !canvas || !video.videoWidth) return null;
+
+                // Cap the sampled frame: decoding a full 1080p frame every tick
+                // makes a mid-range Android phone stutter badly.
+                const scale = Math.min(1, 640 / video.videoWidth);
+                canvas.width = Math.round(video.videoWidth * scale);
+                canvas.height = Math.round(video.videoHeight * scale);
+
+                const ctx = canvas.getContext("2d", { willReadFrequently: true });
+                if (!ctx) return null;
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                const { data, width, height } = ctx.getImageData(
+                  0, 0, canvas.width, canvas.height,
+                );
+                return jsQR(data, width, height, {
+                  inversionAttempts: "dontInvert",
+                })?.data ?? null;
+              };
+            })();
 
         const tick = async () => {
           if (!videoRef.current || !streamRef.current) return;
           try {
-            const codes = await detector.detect(videoRef.current);
-            for (const code of codes) {
-              const token = extractToken(code.rawValue ?? "");
-              if (token) return go(token);
-            }
+            const raw = await decode();
+            const token = raw ? extractToken(raw) : null;
+            if (token) return go(token);
           } catch {
             // A single failed frame is normal while focusing. Keep going.
           }
@@ -161,6 +201,8 @@ export function CheckInCard() {
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <div className="h-36 w-36 rounded-lg border-2 border-white/70" />
             </div>
+            {/* Offscreen scratch surface the jsQR path samples frames into. */}
+            <canvas ref={canvasRef} className="hidden" />
           </div>
           <p className="mt-2 text-center text-[11px] text-gray-500">
             Point at the code. It will check you in by itself.
@@ -204,28 +246,20 @@ export function CheckInCard() {
         </form>
       ) : (
         <div className="mt-4 space-y-2">
-          {supportsScanner ? (
-            <Button
-              onClick={startScanning}
-              disabled={starting}
-              className="w-full bg-green-600 hover:bg-green-700"
-            >
-              {starting ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Camera className="mr-2 h-4 w-4" />
-              )}
-              Scan the code
-            </Button>
-          ) : (
-            // Honest rather than broken: this browser cannot scan in-page, so
-            // say what does work instead of showing a button that fails.
-            <p className="rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2.5 text-xs leading-relaxed text-gray-400">
-              This browser can't scan inside the app. Open your phone's camera
-              and point it at the code — it will bring you straight here. Or
-              type the code below.
-            </p>
-          )}
+          {/* Always offered now — the jsQR fallback means every browser can
+              scan, so there is no case where this button would not work. */}
+          <Button
+            onClick={startScanning}
+            disabled={starting}
+            className="w-full bg-green-600 hover:bg-green-700"
+          >
+            {starting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Camera className="mr-2 h-4 w-4" />
+            )}
+            Scan the code
+          </Button>
 
           <Button
             variant="outline"

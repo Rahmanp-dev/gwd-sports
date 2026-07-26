@@ -165,7 +165,7 @@ export default function FeesManagement() {
           <Button
             className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto shadow-lg shadow-green-600/20"
             onClick={() =>
-              navigate("/mgfc/student/pay-fees", {
+              navigate("/portal/student/pay-fees", {
                 state: { amount: outstandingFees },
               })
             }

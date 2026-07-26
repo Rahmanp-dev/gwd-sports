@@ -29,7 +29,8 @@ export default function AcademyPublicPage({ academy }: { academy: any }) {
   return (
     <AcademyTheme
       theme={academy?.theme}
-      className="relative bg-white overflow-hidden"
+      className="relative overflow-hidden [&_section]:!bg-transparent"
+      style={{ background: "var(--page-bg)", color: "var(--page-fg)" }}
     >
       <HeroSection academy={academy} />
       <SportsGrid academy={academy} />

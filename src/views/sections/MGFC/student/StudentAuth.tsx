@@ -69,7 +69,7 @@ export default function StudentRegister() {
         if (message === "User not found") {
           toast.success("Hi there! Let's create your account.");
           await new Promise((resolve) => setTimeout(resolve, 2000));
-          navigate("/mgfc/student/register/create", { state: { email } });
+          navigate("/portal/student/register/create", { state: { email } });
         }
         // Existing User - Has no profile OR incomplete profile - create Student Profile
         else if (
@@ -82,7 +82,7 @@ export default function StudentRegister() {
               `Welcome ${response.data.user.name}! Let's create your student profile.`,
             );
             await new Promise((resolve) => setTimeout(resolve, 2000));
-            navigate("/mgfc/student/register/complete", {
+            navigate("/portal/student/register/complete", {
               state: { email, user: response.data.user },
             });
           }

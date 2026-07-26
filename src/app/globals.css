@@ -191,6 +191,23 @@ html {
   scroll-behavior: smooth;
 }
 
+/**
+ * Safety net against sideways scroll on phones.
+ *
+ * `clip`, not `hidden`: `overflow-x: hidden` turns the element into a scroll
+ * container, which silently breaks every `position: sticky` descendant — and
+ * the branding editor's preview pane relies on one. `clip` cuts the overflow
+ * without that side effect.
+ *
+ * This is a net, not a licence: a section wide enough to trigger it is still a
+ * layout bug and should be fixed where it happens.
+ */
+html,
+body {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

@@ -229,11 +229,50 @@ export function isFontPreset(value: unknown): value is FontPreset {
   return value === 'sans' || value === 'editorial' || value === 'rounded';
 }
 
+/**
+ * Page background treatment.
+ *
+ * Kept as named treatments rather than a free background colour picker for the
+ * same reason as the foreground: an owner who picks a background independently
+ * of their text colour produces an unreadable page. Each of these derives its
+ * surface AND its text colour together, so the pairing is always legible.
+ */
+export type BackgroundStyle = 'light' | 'soft' | 'gradient' | 'dark';
+
+export const BACKGROUND_STYLES: Record<
+  BackgroundStyle,
+  { label: string; description: string }
+> = {
+  light: {
+    label: 'White',
+    description: 'Plain white. Photographs and colour do the talking.',
+  },
+  soft: {
+    label: 'Soft tint',
+    description: 'A barely-there wash of your brand colour. Warmer than white.',
+  },
+  gradient: {
+    label: 'Gradient',
+    description: 'A gentle fade from your brand colour into white.',
+  },
+  dark: {
+    label: 'Dark',
+    description: 'Near-black with light text. High contrast, premium feel.',
+  },
+};
+
+export function isBackgroundStyle(value: unknown): value is BackgroundStyle {
+  return (
+    value === 'light' || value === 'soft' || value === 'gradient' || value === 'dark'
+  );
+}
+
 export interface BrandInput {
   primaryColor?: string | null;
   accentColor?: string | null;
   style?: string | null;
   fontPreset?: string | null;
+  backgroundStyle?: string | null;
 }
 
 /**
@@ -277,6 +316,68 @@ export function buildThemeVariables(input: BrandInput): Record<string, string> {
 
     '--font-heading': fonts.heading,
     '--font-body': fonts.body,
+
+    ...backgroundVariables(primary, input.backgroundStyle),
+  };
+}
+
+/**
+ * Surface and text colour, derived together so they cannot disagree.
+ *
+ * `--page-bg` may be a gradient, so it is applied via `background`, never
+ * `background-color`. `--page-fg`, `--page-muted` and `--page-card` follow from
+ * whichever surface was chosen — that is the whole point of pairing them here
+ * rather than letting an owner pick a background and hope.
+ */
+function backgroundVariables(
+  primary: Rgb,
+  requested: string | null | undefined,
+): Record<string, string> {
+  const style = isBackgroundStyle(requested) ? requested : 'light';
+
+  if (style === 'dark') {
+    // Not pure black: a near-black tinted toward the brand reads as designed.
+    const surface = darken(mix(primary, INK, 0.88), 0.55);
+    return {
+      '--page-bg': toHex(surface),
+      '--page-surface': toHex(lighten(surface, 0.08)),
+      '--page-card': toHex(lighten(surface, 0.12)),
+      '--page-fg': '#f8fafc',
+      '--page-muted': '#94a3b8',
+      '--page-border': toHex(lighten(surface, 0.2)),
+    };
+  }
+
+  if (style === 'gradient') {
+    const top = lighten(primary, 0.9);
+    return {
+      '--page-bg': `linear-gradient(180deg, ${toHex(top)} 0%, #ffffff 60%)`,
+      '--page-surface': '#ffffff',
+      '--page-card': '#ffffff',
+      '--page-fg': toHex(INK),
+      '--page-muted': '#64748b',
+      '--page-border': '#e2e8f0',
+    };
+  }
+
+  if (style === 'soft') {
+    return {
+      '--page-bg': toHex(lighten(primary, 0.95)),
+      '--page-surface': '#ffffff',
+      '--page-card': '#ffffff',
+      '--page-fg': toHex(INK),
+      '--page-muted': '#64748b',
+      '--page-border': '#e2e8f0',
+    };
+  }
+
+  return {
+    '--page-bg': '#ffffff',
+    '--page-surface': '#ffffff',
+    '--page-card': '#ffffff',
+    '--page-fg': toHex(INK),
+    '--page-muted': '#64748b',
+    '--page-border': '#e2e8f0',
   };
 }
 

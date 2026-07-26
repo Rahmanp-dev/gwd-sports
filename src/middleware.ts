@@ -11,7 +11,7 @@ const ADMIN = ['/admin'];
 const RESERVED_PATHS = [
   '/login', '/register', '/about', '/contact', '/gallery', '/events',
   '/privacy-policy', '/terms-and-conditions', '/programs', '/user',
-  '/passport', '/rankings', '/not-found', '/mgfc'
+  '/passport', '/rankings', '/not-found', '/mgfc', '/portal'
 ];
 
 export async function middleware(req: NextRequest) {

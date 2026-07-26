@@ -145,16 +145,38 @@ UserSchema.methods.comparePassword = async function(candidatePassword: string): 
 };
 
 // Method to add refresh token
+/**
+ * Atomic `$push` for the same reason as removeRefreshToken below: this runs on
+ * every login, and a `save()` here means one legacy field anywhere on the user
+ * document locks that person out entirely with a 500.
+ */
 UserSchema.methods.addRefreshToken = async function(token: string): Promise<void> {
+  await (this.constructor as mongoose.Model<IUser>).updateOne(
+    { _id: this._id },
+    { $push: { refreshTokens: token } }
+  );
   this.refreshTokens = this.refreshTokens || [];
   this.refreshTokens.push(token);
-  await this.save();
 };
 
 // Method to remove refresh token
+/**
+ * Atomic `$pull`, NOT `filter()` + `save()`.
+ *
+ * `save()` revalidates the ENTIRE document. Any legacy value anywhere on a user
+ * written before a validator existed therefore made logout throw a 500, even
+ * though revoking a token has nothing to do with the offending field. This is
+ * the same failure that took student imports down via `timings.workingDays`.
+ *
+ * `updateOne` touches one array and skips document validation, so signing out
+ * cannot be blocked by unrelated legacy data.
+ */
 UserSchema.methods.removeRefreshToken = async function(token: string): Promise<void> {
+  await (this.constructor as mongoose.Model<IUser>).updateOne(
+    { _id: this._id },
+    { $pull: { refreshTokens: token } }
+  );
   this.refreshTokens = this.refreshTokens?.filter((t: string) => t !== token) || [];
-  await this.save();
 };
 
 // Performance index for multi-tenant queries

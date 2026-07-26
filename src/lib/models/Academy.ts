@@ -91,6 +91,8 @@ export interface IAcademy extends Document {
      * See FONT_PRESETS in lib/branding/palette.ts.
      */
     fontPreset?: 'sans' | 'editorial' | 'rounded';
+    /** Page surface treatment. See BACKGROUND_STYLES in lib/branding/palette.ts. */
+    backgroundStyle?: 'light' | 'soft' | 'gradient' | 'dark';
     /**
      * Overrides the platform's demo discipline cards (Football/Basketball/
      * Racing League/...) on the public page. Empty means "derive from real
@@ -327,6 +329,11 @@ const AcademySchema = new Schema<IAcademy>({
       type: String,
       enum: ['sans', 'editorial', 'rounded'],
       default: 'sans'
+    },
+    backgroundStyle: {
+      type: String,
+      enum: ['light', 'soft', 'gradient', 'dark'],
+      default: 'light'
     },
     programs: [{
       id: { type: String, required: true },

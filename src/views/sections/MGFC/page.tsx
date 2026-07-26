@@ -34,7 +34,7 @@ export default function MGFCPage() {
         accentColor="from-amber-400 to-yellow-500"
         ctaText="Join MGFC"
         secondaryCtaText="Book Trial"
-        onCtaClick={() => navigate("/mgfc/student/register")}
+        onCtaClick={() => navigate("/portal/student/register")}
       />
 
       <StatsSection />

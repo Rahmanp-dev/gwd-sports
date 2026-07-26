@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 import { connectToDatabase } from '@/lib/db';
 import { adminMiddleware } from '@/lib/middleware/auth';
 import User from '@/lib/models/User';
+import { ensureRoleProfile } from '@/lib/auth/ensureRoleProfile';
 
 export async function GET(req: NextRequest) {
   try {
@@ -72,6 +74,19 @@ export async function POST(req: NextRequest) {
 
     const user = new User(data);
     await user.save();
+
+    /**
+     * A trainer or student is not usable until their profile row exists —
+     * batches, attendance and fee resolution all read the profile, not the
+     * user. See lib/auth/ensureRoleProfile.ts.
+     */
+    await ensureRoleProfile({
+      userId: user._id as mongoose.Types.ObjectId,
+      role: user.role,
+      academyId: user.academyId ?? null,
+      sports: Array.isArray(data.sports) ? data.sports : [],
+    });
+
     return NextResponse.json({ success: true, data: { user } }, { status: 201 });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
