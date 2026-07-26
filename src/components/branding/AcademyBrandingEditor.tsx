@@ -11,17 +11,23 @@ import {
   AlignLeft,
   AlignRight,
   Contrast,
+  Globe,
   GripVertical,
   Image as ImageIcon,
   LayoutDashboard,
   Loader2,
+  Mail,
+  MapPin,
   Palette,
+  Phone,
   Plus,
   Quote,
+  Share2,
   Sparkles,
   Trophy,
   Type,
   Upload,
+  Video,
   X,
   Zap,
 } from "lucide-react";
@@ -48,7 +54,7 @@ import type {
   AcademyProgram,
   AcademyTestimonial,
 } from "@/services/academyService";
-import { uploadGalleryImage, uploadLogo } from "@/services/settingsService";
+import { uploadGalleryImage, uploadHeroImages, uploadLogo, uploadVideo } from "@/services/settingsService";
 import { toastUtils } from "@/utils/toast";
 import {
   heroLogoAlignClass,
@@ -99,6 +105,9 @@ export interface BrandingDraft {
   logoFit: "contain" | "cover";
   heroBlur: number;
   heroOverlay: number;
+  heroMode: "video" | "carousel";
+  heroVideoUrl: string;
+  heroImages: string[];
   tagline: string;
   logoUrl: string;
   programs: AcademyProgram[];
@@ -110,6 +119,17 @@ export interface BrandingDraft {
   /** Key of the section that uses --accent instead of --brand as focal colour. */
   accentSection: string;
   sections: AcademyHomepageSections;
+  footer: {
+    phone: string;
+    email: string;
+    address: string;
+    aboutText: string;
+    facebookUrl: string;
+    instagramUrl: string;
+    twitterUrl: string;
+    youtubeUrl: string;
+    copyrightText: string;
+  };
 }
 
 export const DEFAULT_SECTIONS: AcademyHomepageSections = {
@@ -154,6 +174,9 @@ export function defaultBrandingDraft(): BrandingDraft {
     logoFit: "contain",
     heroBlur: 3,
     heroOverlay: 55,
+    heroMode: "video",
+    heroVideoUrl: "",
+    heroImages: [],
     tagline: "",
     logoUrl: "",
     programs: [],
@@ -163,6 +186,17 @@ export function defaultBrandingDraft(): BrandingDraft {
     density: "spacious",
     accentSection: "",
     sections: { ...DEFAULT_SECTIONS },
+    footer: {
+      phone: "",
+      email: "",
+      address: "",
+      aboutText: "",
+      facebookUrl: "",
+      instagramUrl: "",
+      twitterUrl: "",
+      youtubeUrl: "",
+      copyrightText: "",
+    },
   };
 }
 
@@ -195,6 +229,9 @@ export function draftFromAcademy(academy?: Partial<Academy> | null): BrandingDra
     logoFit: theme.logoFit ?? "contain",
     heroBlur: theme.heroBlur ?? 3,
     heroOverlay: theme.heroOverlay ?? 55,
+    heroMode: (theme.heroMode === "carousel" ? "carousel" : "video"),
+    heroVideoUrl: theme.heroVideoUrl ?? "",
+    heroImages: theme.heroImages ?? [],
     tagline: theme.tagline ?? "",
     logoUrl: theme.logoUrl ?? "",
     programs: theme.programs ?? [],
@@ -207,6 +244,17 @@ export function draftFromAcademy(academy?: Partial<Academy> | null): BrandingDra
       ...DEFAULT_SECTIONS,
       ...(theme.sections ?? {}),
       order: fullOrder,
+    },
+    footer: {
+      phone: theme.footer?.phone ?? "",
+      email: theme.footer?.email ?? "",
+      address: theme.footer?.address ?? "",
+      aboutText: theme.footer?.aboutText ?? "",
+      facebookUrl: theme.footer?.facebookUrl ?? "",
+      instagramUrl: theme.footer?.instagramUrl ?? "",
+      twitterUrl: theme.footer?.twitterUrl ?? "",
+      youtubeUrl: theme.footer?.youtubeUrl ?? "",
+      copyrightText: theme.footer?.copyrightText ?? "",
     },
   };
 }
@@ -233,6 +281,9 @@ export function draftToThemeUpdate(draft: BrandingDraft): Record<string, unknown
     "theme.logoFit": draft.logoFit,
     "theme.heroBlur": draft.heroBlur,
     "theme.heroOverlay": draft.heroOverlay,
+    "theme.heroMode": draft.heroMode,
+    "theme.heroVideoUrl": draft.heroVideoUrl,
+    "theme.heroImages": draft.heroImages,
     "theme.tagline": draft.tagline,
     "theme.logoUrl": draft.logoUrl,
     "theme.programs": draft.programs,
@@ -241,6 +292,7 @@ export function draftToThemeUpdate(draft: BrandingDraft): Record<string, unknown
     "theme.density": draft.density,
     "theme.accentSection": draft.accentSection,
     "theme.sections": draft.sections,
+    "theme.footer": draft.footer,
     achievements: draft.achievements,
   };
 }
@@ -312,7 +364,12 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
 }) => {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [uploadingHeroImages, setUploadingHeroImages] = useState(false);
+
   const galleryInputRef = useRef<HTMLInputElement>(null);
+  const heroVideoInputRef = useRef<HTMLInputElement>(null);
+  const heroImagesInputRef = useRef<HTMLInputElement>(null);
 
   const patch = useCallback(
     (partial: Partial<BrandingDraft>) => onChange({ ...value, ...partial }),
@@ -320,6 +377,44 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
   );
 
   // ── Uploads ────────────────────────────────────────────────────────────
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingVideo(true);
+    try {
+      const url = await uploadVideo(file);
+      patch({ heroVideoUrl: url });
+      toastUtils.success("Hero video uploaded successfully");
+    } catch (err: any) {
+      toastUtils.error(
+        "Video upload failed",
+        err?.response?.data?.message || "Could not upload video."
+      );
+    } finally {
+      setUploadingVideo(false);
+      e.target.value = "";
+    }
+  };
+
+  const handleHeroImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    setUploadingHeroImages(true);
+    try {
+      const urls = await uploadHeroImages(files);
+      patch({ heroImages: [...value.heroImages, ...urls] });
+      toastUtils.success(`${urls.length} carousel image(s) uploaded`);
+    } catch (err: any) {
+      toastUtils.error(
+        "Carousel images upload failed",
+        err?.response?.data?.message || "Could not upload images."
+      );
+    } finally {
+      setUploadingHeroImages(false);
+      e.target.value = "";
+    }
+  };
+
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -830,10 +925,167 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
               Hero photo &amp; video
             </SectionLabel>
             <p className="text-[11px] leading-relaxed text-slate-400">
-              How your header image or video sits behind your name. One setting
-              controls phones and desktop together, so what you approve here is
-              what everyone sees.
+              Control the background of your hero section. Choose between a
+              playing video background or an animated carousel of photos.
             </p>
+
+            {/* Mode Selector */}
+            <div>
+              <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                Background Mode
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => patch({ heroMode: "video" })}
+                  className={`flex items-center justify-center gap-2 rounded-lg border py-2 px-3 text-xs font-semibold transition-all ${
+                    value.heroMode === "video"
+                      ? "border-slate-900 bg-slate-900 text-white"
+                      : "border-slate-200 text-slate-700 hover:border-slate-300"
+                  }`}
+                >
+                  <Video className="h-3.5 w-3.5" />
+                  Video Mode
+                </button>
+                <button
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => patch({ heroMode: "carousel" })}
+                  className={`flex items-center justify-center gap-2 rounded-lg border py-2 px-3 text-xs font-semibold transition-all ${
+                    value.heroMode === "carousel"
+                      ? "border-slate-900 bg-slate-900 text-white"
+                      : "border-slate-200 text-slate-700 hover:border-slate-300"
+                  }`}
+                >
+                  <ImageIcon className="h-3.5 w-3.5" />
+                  Image Carousel
+                </button>
+              </div>
+            </div>
+
+            {/* Video Settings */}
+            {value.heroMode === "video" && (
+              <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/50 p-3">
+                <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  Custom Video URL (MP4 / WebM)
+                </label>
+                <div className="flex gap-2">
+                  <Input
+                    value={value.heroVideoUrl}
+                    disabled={disabled}
+                    placeholder="/videos/landing.webm or https://..."
+                    onChange={(e) => patch({ heroVideoUrl: e.target.value })}
+                    className="h-9 font-mono text-xs bg-white"
+                  />
+                  {value.heroVideoUrl ? (
+                    <button
+                      type="button"
+                      disabled={disabled}
+                      onClick={() => patch({ heroVideoUrl: "" })}
+                      className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  ) : null}
+                </div>
+
+                <div className="pt-1">
+                  <input
+                    ref={heroVideoInputRef}
+                    type="file"
+                    accept="video/*"
+                    className="hidden"
+                    disabled={disabled || uploadingVideo}
+                    onChange={handleVideoUpload}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={disabled || uploadingVideo}
+                    onClick={() => heroVideoInputRef.current?.click()}
+                    className="w-full bg-white"
+                  >
+                    {uploadingVideo ? (
+                      <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Upload className="mr-1.5 h-3.5 w-3.5" />
+                    )}
+                    {uploadingVideo ? "Uploading video…" : "Upload video file"}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Carousel Settings */}
+            {value.heroMode === "carousel" && (
+              <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/50 p-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                    Hero Slide Images
+                  </label>
+                  <span className="text-[11px] font-medium text-slate-500">
+                    {value.heroImages.length} image(s)
+                  </span>
+                </div>
+
+                {value.heroImages.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2">
+                    {value.heroImages.map((imgUrl, i) => (
+                      <div
+                        key={i}
+                        className="group relative h-16 w-full overflow-hidden rounded-lg border border-slate-200 bg-black"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={imgUrl}
+                          alt={`Slide ${i + 1}`}
+                          className="h-full w-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          disabled={disabled}
+                          onClick={() =>
+                            patch({
+                              heroImages: value.heroImages.filter((_, idx) => idx !== i),
+                            })
+                          }
+                          className="absolute right-1 top-1 rounded-full bg-red-500 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <input
+                  ref={heroImagesInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  disabled={disabled || uploadingHeroImages}
+                  onChange={handleHeroImagesUpload}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={disabled || uploadingHeroImages}
+                  onClick={() => heroImagesInputRef.current?.click()}
+                  className="w-full bg-white"
+                >
+                  {uploadingHeroImages ? (
+                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Plus className="mr-1.5 h-3.5 w-3.5" />
+                  )}
+                  {uploadingHeroImages ? "Uploading..." : "Add carousel photos"}
+                </Button>
+              </div>
+            )}
 
             <div>
               <div className="mb-1 flex items-center justify-between">
@@ -875,8 +1127,6 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
                 onChange={(e) => patch({ heroOverlay: Number(e.target.value) })}
                 className="w-full accent-slate-900"
               />
-              {/* Below ~25% a white headline starts to lose against a bright
-                  photo. Warned, not blocked — it is their page. */}
               {value.heroOverlay < 25 && (
                 <p className="mt-1.5 flex items-start gap-1.5 text-[11px] leading-relaxed text-amber-600">
                   <AlertTriangle className="mt-0.5 h-3 w-3 flex-shrink-0" />
@@ -1119,6 +1369,156 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
                   </div>
                 );
               })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* ── Footer & Contact Details ──────────────────────────────── */}
+        <Card className="border-0 shadow-sm">
+          <CardContent className="space-y-4 p-5">
+            <SectionLabel icon={<Share2 className="h-3 w-3" />}>
+              Footer &amp; Contact info
+            </SectionLabel>
+            <p className="text-[11px] leading-relaxed text-slate-400">
+              Customize the contact information, footer tagline, social media links,
+              and copyright text displayed in your academy&apos;s page footer.
+            </p>
+
+            <div className="space-y-3">
+              <div>
+                <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  Phone Number
+                </label>
+                <div className="flex gap-2">
+                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-slate-400">
+                    <Phone className="h-4 w-4" />
+                  </span>
+                  <Input
+                    value={value.footer?.phone ?? ""}
+                    disabled={disabled}
+                    placeholder="+91 98765-43210"
+                    onChange={(e) =>
+                      patch({ footer: { ...value.footer, phone: e.target.value } })
+                    }
+                    className="h-9 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  Email Address
+                </label>
+                <div className="flex gap-2">
+                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-slate-400">
+                    <Mail className="h-4 w-4" />
+                  </span>
+                  <Input
+                    value={value.footer?.email ?? ""}
+                    disabled={disabled}
+                    placeholder="contact@youracademy.com"
+                    onChange={(e) =>
+                      patch({ footer: { ...value.footer, email: e.target.value } })
+                    }
+                    className="h-9 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  Address / City
+                </label>
+                <div className="flex gap-2">
+                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-slate-400">
+                    <MapPin className="h-4 w-4" />
+                  </span>
+                  <Input
+                    value={value.footer?.address ?? ""}
+                    disabled={disabled}
+                    placeholder="Koramangala, Bangalore"
+                    onChange={(e) =>
+                      patch({ footer: { ...value.footer, address: e.target.value } })
+                    }
+                    className="h-9 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  Footer Blurb / About Text
+                </label>
+                <Textarea
+                  value={value.footer?.aboutText ?? ""}
+                  disabled={disabled}
+                  rows={2}
+                  placeholder="Short description of your academy shown in the footer..."
+                  onChange={(e) =>
+                    patch({ footer: { ...value.footer, aboutText: e.target.value } })
+                  }
+                  className="text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  Copyright Notice
+                </label>
+                <Input
+                  value={value.footer?.copyrightText ?? ""}
+                  disabled={disabled}
+                  placeholder="© 2026 Your Academy. All Rights Reserved."
+                  onChange={(e) =>
+                    patch({ footer: { ...value.footer, copyrightText: e.target.value } })
+                  }
+                  className="h-9 text-xs"
+                />
+              </div>
+
+              <div className="border-t border-slate-100 pt-3">
+                <label className="mb-2 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  Social Media Handles &amp; Links
+                </label>
+                <div className="space-y-2">
+                  <Input
+                    value={value.footer?.facebookUrl ?? ""}
+                    disabled={disabled}
+                    placeholder="Facebook URL (https://facebook.com/...)"
+                    onChange={(e) =>
+                      patch({ footer: { ...value.footer, facebookUrl: e.target.value } })
+                    }
+                    className="h-8 text-xs"
+                  />
+                  <Input
+                    value={value.footer?.instagramUrl ?? ""}
+                    disabled={disabled}
+                    placeholder="Instagram URL (https://instagram.com/...)"
+                    onChange={(e) =>
+                      patch({ footer: { ...value.footer, instagramUrl: e.target.value } })
+                    }
+                    className="h-8 text-xs"
+                  />
+                  <Input
+                    value={value.footer?.twitterUrl ?? ""}
+                    disabled={disabled}
+                    placeholder="Twitter/X URL (https://x.com/...)"
+                    onChange={(e) =>
+                      patch({ footer: { ...value.footer, twitterUrl: e.target.value } })
+                    }
+                    className="h-8 text-xs"
+                  />
+                  <Input
+                    value={value.footer?.youtubeUrl ?? ""}
+                    disabled={disabled}
+                    placeholder="YouTube Channel URL (https://youtube.com/...)"
+                    onChange={(e) =>
+                      patch({ footer: { ...value.footer, youtubeUrl: e.target.value } })
+                    }
+                    className="h-8 text-xs"
+                  />
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -1638,6 +2038,33 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
                 ))}
             </div>
           )}
+          {/* Footer Preview */}
+          <div
+            className="border-t p-4 text-[10px] space-y-2"
+            style={{
+              background: "var(--page-card)",
+              borderColor: "var(--page-border)",
+              color: "var(--page-fg)",
+            }}
+          >
+            <div className="flex justify-between items-start gap-2">
+              <div>
+                <p className="font-bold text-xs font-display">{academyName}</p>
+                <p className="opacity-70 text-[9px] mt-0.5 max-w-[180px]">
+                  {value.footer?.aboutText || value.tagline || "Where Legends Are Born"}
+                </p>
+              </div>
+              <div className="text-right opacity-80 text-[9px] space-y-0.5">
+                <p>📞 {value.footer?.phone || "+91 91235-56789"}</p>
+                <p>✉️ {value.footer?.email || "contact@academy.com"}</p>
+                <p>📍 {value.footer?.address || "Hyderabad"}</p>
+              </div>
+            </div>
+            <div className="border-t pt-2 flex justify-between items-center opacity-60 text-[8px]" style={{ borderColor: "var(--page-border)" }}>
+              <p>{value.footer?.copyrightText || `© ${new Date().getFullYear()} ${academyName}`}</p>
+              <p>Powered by GWD Sports</p>
+            </div>
+          </div>
         </div>
 
         <p className="mt-2 flex items-start gap-1.5 text-[11px] leading-relaxed text-slate-400">

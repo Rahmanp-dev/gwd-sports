@@ -78,3 +78,12 @@ export const uploadGalleryImage = async (file: File): Promise<string> => {
   const response = await apiService.post("/upload/image", formData, MULTIPART);
   return (response as any).data.url;
 };
+
+export const uploadVideo = async (file: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("folder", "videos");
+
+  const response = await apiService.post("/upload/image", formData, MULTIPART);
+  return (response as any).data.url;
+};

@@ -3456,3 +3456,26 @@ The CSS variables are on the DOM; migration can be done one section at a time.
    - Replaced brittle Tailwind nth-of-type selector in `AcademyPublicPage.tsx` with explicit `<div data-band="primary|alt">` wrappers per section.
    - Null or hidden sections no longer disrupt section alternation rhythm.
 
+---
+
+## Session — 2026-07-27 01:00 IST · Hero Overlay, Scrim & Logo Shape Fixes
+
+**State:** `tsc --noEmit` clean (0 errors), committed & pushed (`84316c81`).
+
+### What was fixed
+
+1. **Eliminated Washed-Out White Veil:**
+   - Removed duplicate `bg-gradient-to-br from-white/60...` overlay in `HeroSection.tsx` that sat on top of `heroScrimStyle`.
+   - Hero background imagery now renders with dramatic, high-contrast dark scrim overlay & backdrop blur (`heroBlur` and `heroOverlay`).
+
+2. **Unified Logo Presentation (Shape, Fit, Crop, Scale & Alignment):**
+   - Fixed state overrides in `HeroSection.tsx` that hardcoded `logoIsCircular = false` and `logoAlignment = top_left`.
+   - Now respects `heroLogoStyle(theme)` (`logoScale`, `logoShape` circle/rounded/square, `logoFit` cover/contain) and `heroLogoAlignClass(theme)` (left, center, right) directly from the academy theme.
+
+3. **High-Impact Aesthetics & Local/Prod Fallbacks:**
+   - **Headline (`h1`):** High contrast white text with glowing brand gradient text for second word (`bg-gradient-to-r from-[var(--brand)] via-[var(--accent)] to-[var(--brand-strong)]`), with drop shadows.
+   - **Tagline:** High contrast `text-slate-200/90` with shadow.
+   - **CTA Button:** Glassmorphic brand gradient CTA with hover scale and glow shadows.
+   - **Local Server Fallback:** Guaranteed `mediaLoaded` state and fallback gradient so hero sections never freeze at `opacity: 0` locally or in production.
+
+

@@ -91,6 +91,8 @@ export interface IAcademy extends Document {
     accentColor: string;
     logoUrl: string;
     heroImages: string[];
+    heroMode?: 'video' | 'carousel';
+    heroVideoUrl?: string;
     tagline: string;
     style?: 'bold' | 'classic' | 'minimal';
     /**
@@ -115,6 +117,17 @@ export interface IAcademy extends Document {
     heroBlur?: number;
     /** Dark scrim strength over hero media, 0–100. */
     heroOverlay?: number;
+    footer?: {
+      phone?: string;
+      email?: string;
+      address?: string;
+      aboutText?: string;
+      facebookUrl?: string;
+      instagramUrl?: string;
+      twitterUrl?: string;
+      youtubeUrl?: string;
+      copyrightText?: string;
+    };
     /**
      * Page density. 'compact' tightens vertical rhythm for content-heavy
      * academies; 'spacious' (default) opens it up for a premium feel.
@@ -390,6 +403,19 @@ const AcademySchema = new Schema<IAcademy>({
     logoFit: { type: String, enum: ['contain', 'cover'], default: 'contain' },
     heroBlur: { type: Number, default: 3, min: 0, max: 20 },
     heroOverlay: { type: Number, default: 55, min: 0, max: 100 },
+    heroMode: { type: String, enum: ['video', 'carousel'], default: 'video' },
+    heroVideoUrl: { type: String, default: '' },
+    footer: {
+      phone: { type: String, default: '' },
+      email: { type: String, default: '' },
+      address: { type: String, default: '' },
+      aboutText: { type: String, default: '' },
+      facebookUrl: { type: String, default: '' },
+      instagramUrl: { type: String, default: '' },
+      twitterUrl: { type: String, default: '' },
+      youtubeUrl: { type: String, default: '' },
+      copyrightText: { type: String, default: '' },
+    },
     programs: [{
       id: { type: String, required: true },
       label: { type: String, required: true },

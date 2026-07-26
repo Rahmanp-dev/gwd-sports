@@ -65,6 +65,19 @@ export interface AcademyTheme {
   /** One blur value for web AND mobile — see the hero media block. */
   heroBlur?: number;
   heroOverlay?: number;
+  heroMode?: 'video' | 'carousel';
+  heroVideoUrl?: string;
+  footer?: {
+    phone?: string;
+    email?: string;
+    address?: string;
+    aboutText?: string;
+    facebookUrl?: string;
+    instagramUrl?: string;
+    twitterUrl?: string;
+    youtubeUrl?: string;
+    copyrightText?: string;
+  };
   /** 'compact' tightens vertical rhythm; 'spacious' (default) opens it up. */
   density?: 'compact' | 'spacious';
   /** Which section key uses --accent as its focal colour instead of --brand. */

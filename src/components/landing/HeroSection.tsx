@@ -24,13 +24,14 @@ export default function HeroSection({ academy }: { academy?: any }) {
   const tagline = theme?.tagline || "Where Legends Are Born";
   const brandName = academy?.name || BRAND_NAME;
 
+  const videoSrc = theme?.heroVideoUrl || "/videos/landing.webm";
+
   useEffect(() => {
     if (academy) {
+      const mode = theme?.heroMode || (theme?.heroImages && theme.heroImages.length > 0 ? "carousel" : "video");
+      setHeroMode(mode);
       if (theme?.heroImages && theme.heroImages.length > 0) {
         setHeroImages(theme.heroImages);
-        setHeroMode("carousel");
-      } else {
-        setHeroMode("video");
       }
       setMediaLoaded(true);
       return;
@@ -52,7 +53,7 @@ export default function HeroSection({ academy }: { academy?: any }) {
       }
     };
     fetchSettings();
-  }, [academy, theme?.heroImages]);
+  }, [academy, theme?.heroImages, theme?.heroMode, theme?.heroVideoUrl]);
 
   // Carousel auto-advance interval
   useEffect(() => {
@@ -80,6 +81,7 @@ export default function HeroSection({ academy }: { academy?: any }) {
       <div className="absolute inset-0 z-0">
         {heroMode === "video" && !videoFailed ? (
           <video
+            key={videoSrc}
             autoPlay
             muted
             loop
@@ -90,7 +92,8 @@ export default function HeroSection({ academy }: { academy?: any }) {
             onError={() => setVideoFailed(true)}
             className="w-full h-full object-cover"
           >
-            <source src="/videos/landing.webm" type="video/webm" />
+            <source src={videoSrc} type="video/webm" />
+            <source src={videoSrc} type="video/mp4" />
           </video>
         ) : (
           <AnimatePresence mode="wait">
