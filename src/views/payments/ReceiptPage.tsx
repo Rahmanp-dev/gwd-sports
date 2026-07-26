@@ -234,7 +234,7 @@ export function ReceiptPage({ paymentId }: { paymentId: string }) {
           <img
             src="/gwdlogo.png"
             alt="GWD Sports"
-            className="mt-0.5 h-7 w-auto flex-shrink-0 opacity-70 print:opacity-100"
+            className="mt-0.5 h-12 w-auto flex-shrink-0 opacity-80 print:opacity-100"
           />
           <div>
             <p className="text-[10px] leading-relaxed text-slate-400">

@@ -21,6 +21,28 @@ export default function Footer({ academy }: { academy?: any }) {
   const email = academy?.contactInfo?.email || `hello@${brandName.toLowerCase().replace(/\s/g, "")}.com`;
   const location = academy?.location || "Hyderabad";
 
+  /**
+   * Authored disciplines first, then the academy's real `sports[]` — the same
+   * resolution order SportsGrid uses, so the footer and the page above it can
+   * never disagree about what this academy teaches.
+   */
+  const footerSports: string[] = (
+    academy?.theme?.programs?.length
+      ? academy.theme.programs.map((p: any) => p.label)
+      : (academy?.sports ?? [])
+  )
+    .filter(Boolean)
+    .map((s: string) => String(s).charAt(0).toUpperCase() + String(s).slice(1))
+    .slice(0, 6);
+
+  /** "Building legends since 2010" was true of nobody. Use the real year. */
+  const established = academy?.establishedYear;
+  const blurb = academy?.description
+    ? String(academy.description).slice(0, 140)
+    : established
+      ? `Training athletes in ${location} since ${established}.`
+      : `Training athletes in ${location}.`;
+
   return (
     <footer className="relative bg-white text-slate-600 border-t border-slate-200 overflow-hidden">
       {/* Subtle Background Pattern */}
@@ -46,7 +68,7 @@ export default function Footer({ academy }: { academy?: any }) {
             </h3>
             <div className="w-16 h-1 bg-gradient-to-r from-[var(--brand)] to-[var(--brand-strong)] mb-6 rounded-full" />
             <p className="text-slate-500 mb-8 leading-relaxed font-medium">
-              Building legends since 2010. Where champions train and achieve greatness.
+              {blurb}
             </p>
 
             {/* Social */}
@@ -106,26 +128,31 @@ export default function Footer({ academy }: { academy?: any }) {
             <h4 className="text-xl font-bold mb-8 text-slate-900 font-display">
               Our Sports
             </h4>
+            {/**
+             * Real sports, not the platform's demo list.
+             *
+             * This was hardcoded to Football / Basketball / Racing League /
+             * Model UN / Galaxy Events on EVERY academy's footer, linking to
+             * the platform's own showcase pages. MasterGrade teaches cricket,
+             * football and badminton — so its own footer advertised three
+             * sports it does not offer and sent its visitors to a different
+             * academy's page. Same bug as the disciplines grid above, which was
+             * fixed; this copy of it was missed.
+             */}
             <ul className="space-y-4">
-              {(
-                [
-                  { label: "Football", href: "/programs/football" },
-                  { label: "Basketball", href: "/programs/basketball" },
-                  { label: "Racing League", href: "/programs/racing-league" },
-                  { label: "Model United Nations", href: "/programs/mun" },
-                  { label: "Galaxy Events", href: "/programs/galaxy-events" },
-                ] as { label: string; href: string }[]
-              ).map((sport) => (
-                <li key={sport.label}>
-                  <Link
-                    to={sport.href}
-                    className="text-slate-500 hover:text-[color:var(--brand)] transition-colors font-medium flex items-center gap-2 group"
-                  >
-                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-[color:var(--brand)] transition-colors" />
-                    {sport.label}
-                  </Link>
+              {footerSports.map((sport) => (
+                <li key={sport}>
+                  <span className="text-slate-500 font-medium flex items-center gap-2">
+                    <ChevronRight className="w-4 h-4 text-slate-300" />
+                    {sport}
+                  </span>
                 </li>
               ))}
+              {footerSports.length === 0 && (
+                <li className="text-sm text-slate-400">
+                  Programmes are being added.
+                </li>
+              )}
             </ul>
           </motion.div>
 
@@ -170,9 +197,27 @@ export default function Footer({ academy }: { academy?: any }) {
           transition={{ delay: 0.4 }}
           className="pt-8 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-6"
         >
-          <p className="text-slate-500 font-medium text-sm">
-            © {new Date().getFullYear()} {brandName}. All Rights Reserved.
-          </p>
+          <div className="flex flex-col items-center gap-2 sm:items-start">
+            <p className="text-slate-500 font-medium text-sm">
+              © {new Date().getFullYear()} {brandName}. All Rights Reserved.
+            </p>
+            {/**
+             * GWD's identity on an academy's page belongs HERE and only here.
+             * The page above is the academy's brand and must stay that way, but
+             * a parent handing over money is entitled to know which platform is
+             * processing it — and it is the same disclosure the receipt makes.
+             */}
+            {academy ? (
+              <a
+                href="https://sports.gwdglobal.in"
+                className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-slate-600"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/gwdlogo.png" alt="" className="h-4 w-auto opacity-60" />
+                Powered by GWD Sports Ecosystem
+              </a>
+            ) : null}
+          </div>
           <div className="flex gap-8">
             <Link
               to="/contact"

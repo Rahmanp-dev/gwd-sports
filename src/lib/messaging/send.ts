@@ -234,7 +234,7 @@ async function sendOne(
 
     const providerResult = await provider.sendTemplate({
       toPhoneE164: claimed.recipientPhone,
-      templateName: template.interaktTemplateName,
+      templateName: template.templateName,
       languageCode: template.languageCode,
       bodyValues: rendered.variables,
       plainText: rendered.plainText,

@@ -52,32 +52,56 @@ export interface WhatsAppProvider {
 }
 
 // ---------------------------------------------------------------------------
-// Interakt
+// Meta WhatsApp Cloud API (direct — no BSP reseller)
 // ---------------------------------------------------------------------------
 
-const INTERAKT_ENDPOINT = 'https://api.interakt.ai/v1/public/message/';
+/**
+ * Pinned API version, deliberately.
+ *
+ * Graph API versions are deprecated on a rolling ~2-year schedule and the
+ * unversioned URL follows the newest, which means Meta could change the request
+ * shape under us without a deploy on our side. Bump this on purpose, having
+ * read the changelog — never implicitly.
+ */
+const META_GRAPH_VERSION = 'v21.0';
 
 /**
- * Interakt's public message API.
+ * Meta's WhatsApp Cloud API, talking to Meta directly rather than through a
+ * BSP reseller.
  *
- * Auth is `Authorization: Basic <API_KEY>` where the key is ALREADY base64 —
- * Interakt issues it pre-encoded, so encoding it again is the classic
- * first-integration failure and produces a confusing 401.
+ * Auth is `Authorization: Bearer <token>`. Use a **System User** token from
+ * Business Settings, not the temporary 24-hour token the App Dashboard shows
+ * on the getting-started panel — that one expires overnight and produces a
+ * baffling 401 the next morning.
  *
- * Interakt wants the country code and the subscriber number as separate fields
- * rather than a single E.164 string.
+ * Meta wants the recipient as digits with country code and NO leading `+`
+ * ("919876543210"). It accepts the `+` form too, but the digit form is what the
+ * docs specify and what the status webhook echoes back.
+ *
+ * Template parameters are positional and must exactly match the number of
+ * `{{n}}` placeholders in the approved template body. A mismatch is a permanent
+ * 400 (`132000`), never a transient one — retrying it just burns quota.
  */
-export class InteraktProvider implements WhatsAppProvider {
-  name = 'interakt';
+export class MetaCloudProvider implements WhatsAppProvider {
+  name = 'meta_cloud';
 
   isConfigured(): boolean {
-    return Boolean(process.env.INTERAKT_API_KEY);
+    return Boolean(
+      process.env.META_WHATSAPP_ACCESS_TOKEN && process.env.META_WHATSAPP_PHONE_NUMBER_ID
+    );
   }
 
   async sendTemplate(params: SendTemplateParams): Promise<ProviderSendResult> {
-    const apiKey = process.env.INTERAKT_API_KEY;
-    if (!apiKey) {
-      return { outcome: 'not_configured', retryable: false, error: 'INTERAKT_API_KEY is not set' };
+    const token = process.env.META_WHATSAPP_ACCESS_TOKEN;
+    const phoneNumberId = process.env.META_WHATSAPP_PHONE_NUMBER_ID;
+
+    if (!token || !phoneNumberId) {
+      return {
+        outcome: 'not_configured',
+        retryable: false,
+        error:
+          'META_WHATSAPP_ACCESS_TOKEN and META_WHATSAPP_PHONE_NUMBER_ID are required',
+      };
     }
 
     let national: string;
@@ -93,31 +117,47 @@ export class InteraktProvider implements WhatsAppProvider {
 
     let response: Response;
     try {
-      response = await fetch(INTERAKT_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          Authorization: `Basic ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          countryCode: '+91',
-          phoneNumber: national,
-          type: 'Template',
-          template: {
-            name: params.templateName,
-            languageCode: params.languageCode,
-            bodyValues: params.bodyValues,
+      response = await fetch(
+        `https://graph.facebook.com/${META_GRAPH_VERSION}/${phoneNumberId}/messages`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
-        }),
-        // A hung BSP request must not hold a cron worker open indefinitely.
-        signal: AbortSignal.timeout(15_000),
-      });
+          body: JSON.stringify({
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to: `91${national}`,
+            type: 'template',
+            template: {
+              name: params.templateName,
+              language: { code: params.languageCode },
+              // Body-only components: none of our templates carry header media
+              // or buttons with variables. Sending an empty `components` array
+              // for a template with no placeholders is also valid.
+              components: params.bodyValues.length
+                ? [
+                    {
+                      type: 'body',
+                      parameters: params.bodyValues.map((text) => ({
+                        type: 'text',
+                        text,
+                      })),
+                    },
+                  ]
+                : [],
+            },
+          }),
+          // A hung request must not hold a cron worker open indefinitely.
+          signal: AbortSignal.timeout(15_000),
+        }
+      );
     } catch (err: any) {
-      // Network error or timeout — worth retrying.
       return {
         outcome: 'transient_failure',
         retryable: true,
-        error: `Interakt request failed: ${err?.message || err}`,
+        error: `Meta request failed: ${err?.message || err}`,
       };
     }
 
@@ -129,25 +169,38 @@ export class InteraktProvider implements WhatsAppProvider {
       body = { raw: bodyText.slice(0, 300) };
     }
 
-    if (response.ok && body?.result !== false) {
+    if (response.ok && body?.messages?.[0]?.id) {
       return {
+        // `wamid.…` — this is what the status webhook correlates against.
         outcome: 'accepted',
-        providerMessageId: body?.id ?? body?.messageId ?? null,
+        providerMessageId: body.messages[0].id,
         retryable: false,
       };
     }
 
-    // 429 and 5xx are worth retrying; 4xx generally is not. An unapproved
-    // template or a number not on WhatsApp will never succeed on retry, and
-    // treating it as retryable delays the SMS fallback that could still land.
-    const retryable = response.status === 429 || response.status >= 500;
+    /**
+     * Meta puts a numeric `code` in the error body that is far more reliable
+     * than the HTTP status for deciding retryability:
+     *   4 / 80007  — application or account rate limit  → retry
+     *   131048     — per-number send limit reached       → retry
+     *   131056     — pair rate limit                     → retry
+     *   132xxx     — template problems (missing, param mismatch, not approved)
+     *   131026     — recipient is not on WhatsApp
+     * The 132xxx and 131026 families never succeed on retry.
+     */
+    const code = Number(body?.error?.code);
+    const retryableCodes = new Set([4, 80007, 131048, 131056, 131000]);
+    const retryable =
+      retryableCodes.has(code) || response.status === 429 || response.status >= 500;
 
     return {
       outcome: retryable ? 'transient_failure' : 'rejected',
       retryable,
       error:
-        `Interakt returned ${response.status}: ` +
-        (body?.message ?? body?.error ?? bodyText.slice(0, 300) ?? 'no detail'),
+        `Meta returned ${response.status}` +
+        (code ? ` (code ${code})` : '') +
+        ': ' +
+        (body?.error?.message ?? bodyText.slice(0, 300) ?? 'no detail'),
     };
   }
 }
@@ -157,8 +210,7 @@ export class InteraktProvider implements WhatsAppProvider {
 // ---------------------------------------------------------------------------
 
 /**
- * Used when no BSP is configured — which is the state of this deployment right
- * now, since there are no Interakt credentials yet.
+ * Used when no WhatsApp credentials are configured.
  *
  * It logs and reports `not_configured` rather than throwing, so the rest of the
  * engine can be exercised end to end in development and messages accumulate as
@@ -179,7 +231,9 @@ export class NoopProvider implements WhatsAppProvider {
     return {
       outcome: 'not_configured',
       retryable: false,
-      error: 'No WhatsApp provider configured (INTERAKT_API_KEY missing)',
+      error:
+        'No WhatsApp provider configured (META_WHATSAPP_ACCESS_TOKEN / ' +
+        'META_WHATSAPP_PHONE_NUMBER_ID missing)',
     };
   }
 }
@@ -287,8 +341,8 @@ export function __setProvidersForTesting(
 export function resolveWhatsAppProvider(): WhatsAppProvider {
   if (whatsappOverride) return whatsappOverride;
 
-  const interakt = new InteraktProvider();
-  if (interakt.isConfigured()) return interakt;
+  const meta = new MetaCloudProvider();
+  if (meta.isConfigured()) return meta;
 
   return new NoopProvider();
 }

@@ -27,35 +27,39 @@ export default function HeroOverlay({ city, academyCount, sportsCount }: HeroOve
     <div className="absolute inset-0 pointer-events-none">
       {/* Hero Content (Top Left) */}
       <motion.div
-        className="absolute top-[120px] left-6 md:left-14 max-w-lg"
+        className="absolute top-[88px] md:top-[120px] left-5 right-5 md:left-14 md:right-auto max-w-lg"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        <motion.div variants={itemVariants} className="text-[#FF1744] text-[10px] tracking-[0.2em] font-medium uppercase mb-4">
+        <motion.div variants={itemVariants} className="text-[#FF1744] text-[9px] md:text-[10px] tracking-[0.2em] font-medium uppercase mb-2 md:mb-4">
           GWD SPORTS ECOSYSTEM
         </motion.div>
 
-        <motion.h1 variants={itemVariants} className="text-4xl md:text-[52px] font-['DM_Sans',sans-serif] font-extrabold leading-[1.15] text-white mb-4 tracking-tight">
+        {/* Smaller on a phone on purpose: this sits on top of the live map,
+            and at the old 4xl the headline plus buttons covered most of it.
+            The map is the point of the page — the copy should frame it, not
+            bury it. */}
+        <motion.h1 variants={itemVariants} className="text-[28px] md:text-[52px] font-['DM_Sans',sans-serif] font-extrabold leading-[1.1] text-white mb-2 md:mb-4 tracking-tight">
           {city}&apos;s<br />Sports Grid
         </motion.h1>
 
-        <motion.p variants={itemVariants} className="text-[#888899] text-base leading-[1.6] mb-8">
+        <motion.p variants={itemVariants} className="text-[#888899] text-[13px] md:text-base leading-[1.5] md:leading-[1.6] mb-4 md:mb-8">
           Every academy. Every student. One living ecosystem.
         </motion.p>
 
-        <motion.div variants={itemVariants} className="flex flex-wrap gap-3 mb-4 pointer-events-auto">
-          <button className="flex items-center justify-center gap-2.5 bg-[#FF1744] hover:bg-[#ff2d55] text-white rounded-full px-6 py-3 text-[13px] font-semibold tracking-[0.02em] shadow-[0_4px_16px_rgba(255,23,68,0.2)] hover:shadow-[0_6px_24px_rgba(255,23,68,0.35)] transition-all group">
+        <motion.div variants={itemVariants} className="flex flex-wrap gap-2 md:gap-3 mb-3 md:mb-4 pointer-events-auto">
+          <button className="flex items-center justify-center gap-2.5 bg-[#FF1744] hover:bg-[#ff2d55] text-white rounded-full px-4 md:px-6 py-2 md:py-3 text-[12px] md:text-[13px] font-semibold tracking-[0.02em] shadow-[0_4px_16px_rgba(255,23,68,0.2)] hover:shadow-[0_6px_24px_rgba(255,23,68,0.35)] transition-all group">
             Join the Ecosystem
             <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/12 text-white group-hover:bg-white group-hover:text-[#FF1744] group-hover:rotate-45 transition-all">⊕</span>
           </button>
-          <button className="flex items-center justify-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.06] text-[#F0F0F0] hover:text-[#FF1744] border border-white/[0.08] hover:border-[#FF1744]/40 rounded-full px-6 py-3 text-[13px] font-semibold tracking-[0.02em] transition-all group">
+          <button className="flex items-center justify-center gap-2.5 bg-white/[0.03] hover:bg-white/[0.06] text-[#F0F0F0] hover:text-[#FF1744] border border-white/[0.08] hover:border-[#FF1744]/40 rounded-full px-4 md:px-6 py-2 md:py-3 text-[12px] md:text-[13px] font-semibold tracking-[0.02em] transition-all group">
             Watch Demo
             <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/12 text-white group-hover:bg-[#FF1744]/15 group-hover:text-[#FF1744] group-hover:scale-110 transition-all">▶</span>
           </button>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="text-[12px] text-[#555566]">
+        <motion.div variants={itemVariants} className="text-[11px] md:text-[12px] text-[#555566]">
           {academyCount} academies live · {city} · Est. 2025
         </motion.div>
       </motion.div>
@@ -74,8 +78,19 @@ export default function HeroOverlay({ city, academyCount, sportsCount }: HeroOve
 
 /* ── HUD stat strip (bottom-left) ── */
 function HudStrip({ academyCount, sportsCount, city }: { academyCount: number; sportsCount: number; city: string }) {
-  const displayAcad = academyCount || 20;
-  const displaySports = sportsCount || 7;
+  /**
+   * Real counts, or nothing.
+   *
+   * These used to fall back to `|| 20` and `|| 7` — so an empty or failed API
+   * response advertised "20 academies live, 7 sports" on the public homepage.
+   * That is a fabricated claim about the size of the business, shown to the
+   * academies and parents being asked to trust it, and it is the same mistake
+   * as the invented testimonials that used to sit further down this page.
+   *
+   * Zero is a true statement. Twenty is not.
+   */
+  const displayAcad = Number.isFinite(academyCount) ? academyCount : 0;
+  const displaySports = Number.isFinite(sportsCount) ? sportsCount : 0;
   const displayCity = (city && city.length >= 3 ? city : 'Hyderabad').slice(0, 3).toUpperCase();
   const [acadVal, acadRef] = useCountUp(displayAcad, 2000);
   const [sportVal, sportRef] = useCountUp(displaySports, 2000);
@@ -112,7 +127,30 @@ function useCountUp(end: number, duration = 2000) {
 
   useEffect(() => {
     if (end === undefined || end === null) return;
-    const target = end || 0;
+    const target = Number.isFinite(end) ? end : 0;
+
+    /**
+     * THE NUMBER MUST NEVER BE STUCK AT ZERO.
+     *
+     * requestAnimationFrame does not fire in a background tab, and browsers
+     * throttle or suspend it under low-power mode. This animation started at 0
+     * and only reached `target` by running frames — so a visitor who opened the
+     * page in a background tab and switched to it later saw a permanent "0
+     * ACADEMIES LIVE". The headline count beside it said 2. The animation is
+     * decoration; the number is a fact, and the fact has to survive the
+     * decoration failing.
+     *
+     * Also honours prefers-reduced-motion, which is what that setting is for.
+     */
+    const reduceMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+    if (reduceMotion || document.visibilityState !== 'visible') {
+      setVal(target);
+      return;
+    }
+
     let startTimestamp: number | null = null;
     let animationFrameId: number;
 
@@ -127,7 +165,14 @@ function useCountUp(end: number, duration = 2000) {
     };
 
     animationFrameId = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(animationFrameId);
+
+    // Belt and braces: if frames never arrive, land on the real number anyway.
+    const settle = setTimeout(() => setVal(target), duration + 300);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      clearTimeout(settle);
+    };
   }, [end, duration]);
 
   return [val, ref] as const;

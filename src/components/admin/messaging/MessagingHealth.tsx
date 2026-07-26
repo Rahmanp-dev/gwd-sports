@@ -312,7 +312,7 @@ export function MessagingHealth() {
               <p className="mt-1 text-xs leading-relaxed text-slate-500">
                 Approval status cannot be read back through the API, so this is
                 the list to submit — not the list that has been accepted.
-                Confirm each in the Interakt console.
+                Confirm each in the Meta WhatsApp Manager.
               </p>
             </div>
             <div className="flex flex-wrap gap-1.5">

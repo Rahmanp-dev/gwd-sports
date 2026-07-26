@@ -71,16 +71,26 @@ const envSchema = z.object({
   MSG91_TEMPLATE_ID_GENERIC: z.string().default(''),
 
   /**
-   * WhatsApp via Interakt (BSP). Without INTERAKT_API_KEY the messaging engine
-   * still queues and schedules everything, but sends resolve to the no-op
-   * provider and are recorded as 'skipped' with a reason — never as failures.
+   * WhatsApp via Meta's Cloud API, direct — no BSP reseller in between.
+   * Without these the messaging engine still queues and schedules everything,
+   * but sends resolve to the no-op provider and are recorded as 'skipped' with
+   * a reason — never as failures.
    *
-   * INTERAKT_WEBHOOK_SECRET authenticates delivery-status callbacks. Interakt
-   * does not sign its payloads, so this shared token IS the credential: the
-   * webhook URL must not be logged or shared.
+   * META_WHATSAPP_ACCESS_TOKEN — a **System User** token from Business
+   *   Settings. The token shown on the App Dashboard's getting-started panel
+   *   expires in 24 hours and must not be used in production.
+   * META_WHATSAPP_PHONE_NUMBER_ID — the numeric id of the sending number, NOT
+   *   the phone number itself and NOT the WhatsApp Business Account id.
+   * META_WHATSAPP_VERIFY_TOKEN — a string you invent; Meta echoes it back once
+   *   during webhook setup to prove you own the endpoint.
+   * META_APP_SECRET — signs every webhook delivery (X-Hub-Signature-256).
+   *   Unlike a shared-token scheme, this verifies the PAYLOAD, so the webhook
+   *   URL itself is not a credential.
    */
-  INTERAKT_API_KEY: z.string().default(''),
-  INTERAKT_WEBHOOK_SECRET: z.string().default(''),
+  META_WHATSAPP_ACCESS_TOKEN: z.string().default(''),
+  META_WHATSAPP_PHONE_NUMBER_ID: z.string().default(''),
+  META_WHATSAPP_VERIFY_TOKEN: z.string().default(''),
+  META_APP_SECRET: z.string().default(''),
 
   /** Authenticates /api/jobs/* cron endpoints. Required in production. */
   CRON_SECRET: z.string().default(''),

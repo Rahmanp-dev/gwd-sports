@@ -42,35 +42,61 @@ export async function GET(req: NextRequest) {
     const monthlyMap: Record<string, { collected: number; pending: number; overdue: number }> = {};
     const dailyMap: Record<string, number> = {};
 
+    /**
+     * ════════════════════════════════════════════════════════════════════════
+     * AN ACADEMY'S LEDGER SHOWS WHAT REACHES THE ACADEMY
+     * ════════════════════════════════════════════════════════════════════════
+     *
+     * `amount` is what the PARENT paid: coaching fee + the convenience fee GWD
+     * charges for processing the payment. Reporting that as an academy's
+     * revenue overstates it by money they never receive and cannot bank, and
+     * it will not reconcile against their settlement statement.
+     *
+     * So an academy admin sees `academyAmountPaise` — their portion. A super
+     * admin keeps seeing the gross, because platform GMV genuinely is the total
+     * that moved, and the platform's own cut is reported separately below.
+     *
+     * Falls back to `amount` when the paise columns are absent: rows written
+     * before the split existed have no separate academy figure, and for offline
+     * payments the two are equal by definition (no gateway, no margin).
+     * ════════════════════════════════════════════════════════════════════════
+     */
+    const amountFor = (p: any): number => {
+      if (isSuperAdmin) return p.amount || 0;
+      if (typeof p.academyAmountPaise === 'number') return p.academyAmountPaise / 100;
+      return p.baseAmount ?? p.amount ?? 0;
+    };
+
     payments.forEach((p: any) => {
       const pDate = new Date(p.createdAt || p.paymentDate);
       const mKey = `${pDate.getFullYear()}-${String(pDate.getMonth() + 1).padStart(2, '0')}`;
       const dKey = pDate.toISOString().split('T')[0];
+      const value = amountFor(p);
 
       if (!monthlyMap[mKey]) monthlyMap[mKey] = { collected: 0, pending: 0, overdue: 0 };
 
       if (p.status === 'success') {
-        lifetimeRevenue += p.amount || 0;
+        lifetimeRevenue += value;
         lifetimePlatformFee += p.platformFee || 0;
         lifetimeCount++;
         successCount++;
 
-        if (pDate >= startOfThisMonth) monthlyRevenue += p.amount || 0;
-        else if (pDate >= startOfLastMonth && pDate < startOfThisMonth) lastMonthRevenue += p.amount || 0;
+        if (pDate >= startOfThisMonth) monthlyRevenue += value;
+        else if (pDate >= startOfLastMonth && pDate < startOfThisMonth) lastMonthRevenue += value;
 
-        if (pDate >= startOfThisQuarter) quarterRevenue += p.amount || 0;
-        else if (pDate >= startOfLastQuarter && pDate < startOfThisQuarter) lastQuarterRevenue += p.amount || 0;
+        if (pDate >= startOfThisQuarter) quarterRevenue += value;
+        else if (pDate >= startOfLastQuarter && pDate < startOfThisQuarter) lastQuarterRevenue += value;
 
-        monthlyMap[mKey].collected += p.amount || 0;
-        dailyMap[dKey] = (dailyMap[dKey] || 0) + (p.amount || 0);
+        monthlyMap[mKey].collected += value;
+        dailyMap[dKey] = (dailyMap[dKey] || 0) + value;
       } else if (p.status === 'pending') {
-        pendingRevenue += p.amount || 0;
+        pendingRevenue += value;
         pendingCount++;
-        monthlyMap[mKey].pending += p.amount || 0;
+        monthlyMap[mKey].pending += value;
       } else if (p.status === 'failed') {
-        failedRevenue += p.amount || 0;
+        failedRevenue += value;
         failedCount++;
-        monthlyMap[mKey].overdue += p.amount || 0;
+        monthlyMap[mKey].overdue += value;
       }
     });
 
@@ -128,10 +154,21 @@ export async function GET(req: NextRequest) {
       amount: dailyMap[d]
     }));
 
-    // 5. Top Payers
+    // 5. Top Payers — same net-vs-gross rule as `amountFor` above, expressed
+    // in the aggregation pipeline. Without this a family's "total paid" here
+    // would not match the sum of their own receipts on the academy's ledger.
+    const topPayerAmount = isSuperAdmin
+      ? '$amount'
+      : {
+          $ifNull: [
+            { $divide: ['$academyAmountPaise', 100] },
+            { $ifNull: ['$baseAmount', '$amount'] },
+          ],
+        };
+
     const topPayersAgg = await FeePayment.aggregate([
       { $match: { status: 'success', ...tenantFilter } },
-      { $group: { _id: '$studentId', totalPaid: { $sum: '$amount' }, paymentsCount: { $sum: 1 } } },
+      { $group: { _id: '$studentId', totalPaid: { $sum: topPayerAmount }, paymentsCount: { $sum: 1 } } },
       { $sort: { totalPaid: -1 } },
       { $limit: 5 }
     ]);

@@ -5,8 +5,8 @@ import { MESSAGE_PRIORITY } from '@/lib/models/OutboundMessage';
  * WHATSAPP TEMPLATE REGISTRY
  * ════════════════════════════════════════════════════════════════════════════
  *
- * Every template here must be SUBMITTED TO AND APPROVED BY META through Interakt
- * before a single message can be delivered. The `interaktTemplateName` and the
+ * Every template here must be SUBMITTED TO AND APPROVED BY META in WhatsApp Manager
+ * before a single message can be delivered. The `templateName` and the
  * placeholder count must match the approved template exactly, or the send is
  * rejected at the provider.
  *
@@ -23,8 +23,8 @@ export class TemplateValidationError extends Error {}
 
 export interface TemplateDefinition {
   key: string;
-  /** Must match the Meta-approved template name registered in Interakt. */
-  interaktTemplateName: string;
+  /** Must match the Meta-approved template name registered in WhatsApp Manager. */
+  templateName: string;
   languageCode: string;
   priority: number;
   description: string;
@@ -60,7 +60,7 @@ export interface TemplateDefinition {
  */
 const welcome: TemplateDefinition = {
   key: 'welcome',
-  interaktTemplateName: 'gwd_welcome_v1',
+  templateName: 'gwd_welcome_v1',
   languageCode: 'en',
   // Tier 2 rather than payment tier: a welcome is sent once per student, in bulk
   // on import day when little else competes, so it does not need the payment
@@ -95,7 +95,7 @@ const welcome: TemplateDefinition = {
  */
 const attendanceConfirmation: TemplateDefinition = {
   key: 'attendance_confirmation',
-  interaktTemplateName: 'gwd_attendance_confirmation_v1',
+  templateName: 'gwd_attendance_confirmation_v1',
   languageCode: 'en',
   priority: MESSAGE_PRIORITY.ATTENDANCE,
   description: 'Fires on attendance.created. The highest-frequency touchpoint — a parent wants to know their child arrived safely.',
@@ -117,7 +117,7 @@ const attendanceConfirmation: TemplateDefinition = {
  */
 const weeklyDigest: TemplateDefinition = {
   key: 'weekly_digest',
-  interaktTemplateName: 'gwd_weekly_digest_v1',
+  templateName: 'gwd_weekly_digest_v1',
   languageCode: 'en',
   priority: MESSAGE_PRIORITY.ACHIEVEMENT,
   description: 'Scheduled Sunday evening, per student. Attendance %, any achievement, upcoming fee date, passport link.',
@@ -151,7 +151,7 @@ const weeklyDigest: TemplateDefinition = {
 function feeReminderTemplate(key: string, description: string): TemplateDefinition {
   return {
     key,
-    interaktTemplateName: 'gwd_fee_reminder_v1',
+    templateName: 'gwd_fee_reminder_v1',
     languageCode: 'en',
     priority: MESSAGE_PRIORITY.PAYMENT,
     description,
@@ -171,7 +171,7 @@ function feeReminderTemplate(key: string, description: string): TemplateDefiniti
  */
 const achievement: TemplateDefinition = {
   key: 'achievement',
-  interaktTemplateName: 'gwd_achievement_v1',
+  templateName: 'gwd_achievement_v1',
   languageCode: 'en',
   priority: MESSAGE_PRIORITY.ACHIEVEMENT,
   description: 'A milestone or badge. Shareable — this is distribution and retention in one motion.',
@@ -190,7 +190,7 @@ const achievement: TemplateDefinition = {
  */
 const broadcast: TemplateDefinition = {
   key: 'broadcast',
-  interaktTemplateName: 'gwd_broadcast_v1',
+  templateName: 'gwd_broadcast_v1',
   languageCode: 'en',
   priority: MESSAGE_PRIORITY.BROADCAST,
   description: 'Owner-composed announcement. Lowest priority — always yields to everything else.',
@@ -199,8 +199,40 @@ const broadcast: TemplateDefinition = {
   plainText: (v) => `${v.messageBody} — ${v.academyName}`,
 };
 
+/**
+ * SUBMIT TO META AS: gwd_payment_receipt_v1  (category: UTILITY)
+ *
+ *   ✅ Payment received — thank you!
+ *
+ *   {{1}} · {{2}}
+ *   Amount: {{3}}
+ *   Receipt no: {{4}}
+ *
+ *   Your receipt: {{5}}
+ *
+ * The amount shown is what the PARENT paid, which is the figure on their bank
+ * statement — the academy/convenience split is itemised on the receipt page
+ * behind {{5}} and would only confuse a WhatsApp confirmation.
+ */
+const paymentReceipt: TemplateDefinition = {
+  key: 'payment_receipt',
+  templateName: 'gwd_payment_receipt_v1',
+  languageCode: 'en',
+  // Payment tier: this is the confirmation a parent actively waits for after
+  // handing over money. It must never be dropped by the daily frequency cap.
+  priority: MESSAGE_PRIORITY.PAYMENT,
+  description:
+    'Sent when a payment settles. Confirms receipt and links the printable receipt.',
+  variableOrder: ['childName', 'academyName', 'amount', 'receiptNumber', 'receiptUrl'],
+  required: ['childName', 'academyName', 'amount', 'receiptUrl'],
+  plainText: (v) =>
+    `✅ Payment received — thank you! ${v.childName} · ${v.academyName}. ` +
+    `Amount: ${v.amount}. Receipt no: ${v.receiptNumber}. Your receipt: ${v.receiptUrl}`,
+};
+
 export const TEMPLATES: Record<string, TemplateDefinition> = {
   welcome,
+  payment_receipt: paymentReceipt,
   attendance_confirmation: attendanceConfirmation,
   weekly_digest: weeklyDigest,
   fee_reminder_t5: feeReminderTemplate(
@@ -228,8 +260,8 @@ export function getTemplate(key: string): TemplateDefinition {
 }
 
 /** Every distinct Meta template name that must be approved before launch. */
-export function requiredInteraktTemplateNames(): string[] {
-  return [...new Set(Object.values(TEMPLATES).map((t) => t.interaktTemplateName))].sort();
+export function requiredTemplateNames(): string[] {
+  return [...new Set(Object.values(TEMPLATES).map((t) => t.templateName))].sort();
 }
 
 // ---------------------------------------------------------------------------

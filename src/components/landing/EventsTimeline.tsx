@@ -25,7 +25,7 @@ export default function EventsTimeline({ academy }: { academy?: any }) {
 
   if (isLoading) {
     return (
-      <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-slate-50">
+      <section className="relative py-16 md:py-32 px-4 sm:px-6 lg:px-8 bg-slate-50">
         <div className="flex justify-center items-center min-h-[400px]">
           <LoadingSpinner />
         </div>
@@ -38,7 +38,7 @@ export default function EventsTimeline({ academy }: { academy?: any }) {
   }
 
   return (
-    <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-slate-50 overflow-hidden">
+    <section className="relative py-16 md:py-32 px-4 sm:px-6 lg:px-8 bg-slate-50 overflow-hidden">
       {/* Animated Background */}
       <motion.div
         animate={{

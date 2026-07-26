@@ -250,7 +250,7 @@ export default function HeroSection({ academy }: { academy?: any }) {
                 }}
               />
             ) : (
-              <h1 className="text-7xl sm:text-8xl lg:text-[140px] font-black text-slate-900 uppercase leading-[0.9] tracking-tighter font-display flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+              <h1 className="text-[44px] sm:text-8xl lg:text-[140px] font-black text-slate-900 uppercase leading-[0.9] tracking-tighter font-display flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
                 {brandFirstPart}
                 {brandSecondPart && (
                   <motion.span

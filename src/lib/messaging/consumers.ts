@@ -289,11 +289,21 @@ async function handleAchievementCreated(event: IDomainEvent): Promise<HandleOutc
 }
 
 /**
- * A payment landing cancels any queued fee reminders for that student.
+ * A settled payment does two things.
  *
- * Without this, a parent who pays on the due date still receives the T+3 overdue
- * chase three days later. They have a receipt; we look broken. This is the kind
- * of small failure that costs more trust than a missing feature.
+ * FIRST, it cancels any queued fee reminders for that student. Without this, a
+ * parent who pays on the due date still receives the T+3 overdue chase three
+ * days later. They have a receipt; we look broken. This is the kind of small
+ * failure that costs more trust than a missing feature.
+ *
+ * SECOND, it confirms the payment. Handing money over and receiving nothing is
+ * the single most anxious moment in the whole flow — especially on a passport
+ * link, where the payer may have no account and no other way to check. The
+ * cancellation alone used to be all this did.
+ *
+ * Cancellation runs FIRST and unconditionally: a missing phone number or
+ * receipt URL must never leave a stale overdue reminder queued against a
+ * student who has actually paid.
  */
 async function handlePaymentSettled(event: IDomainEvent): Promise<HandleOutcome> {
   const p = event.payload as Record<string, any>;
@@ -309,10 +319,43 @@ async function handlePaymentSettled(event: IDomainEvent): Promise<HandleOutcome>
     reason: 'Fee was paid before this reminder was sent.',
   });
 
-  return {
-    status: 'skipped',
-    reason: `Payment settled — cancelled ${cancelled} pending fee reminder(s).`,
-  };
+  if (!p.parentPhone) {
+    return {
+      status: 'skipped',
+      reason: `Payment settled — cancelled ${cancelled} reminder(s); no parent phone to confirm to.`,
+    };
+  }
+  if (!p.receiptUrl) {
+    return {
+      status: 'skipped',
+      reason: `Payment settled — cancelled ${cancelled} reminder(s); no receipt URL to link.`,
+    };
+  }
+
+  const enqueued = await enqueueMessage({
+    templateKey: 'payment_receipt',
+    recipientPhone: p.parentPhone,
+    recipientName: p.parentName ?? null,
+    academyId: p.academyId ?? event.academyId,
+    passportId,
+    studentUserId: p.studentUserId ?? null,
+    sourceEventId: event._id as any,
+    /**
+     * Keyed on the payment, not the student. Settlement can be reported twice —
+     * once by the browser returning to /verify-payment and once by the webhook —
+     * and a parent must not be thanked twice for one payment.
+     */
+    dedupeKey: `payment_receipt:${p.feePaymentId ?? passportId}`,
+    variables: {
+      childName: p.studentName ?? 'Your child',
+      academyName: p.academyName ?? 'your academy',
+      amount: p.amountFormatted ?? formatInr(Number(p.parentTotalPaise ?? 0)),
+      receiptNumber: p.receiptNumber ?? '—',
+      receiptUrl: p.receiptUrl,
+    },
+  });
+
+  return toOutcome(enqueued);
 }
 
 function toOutcome(

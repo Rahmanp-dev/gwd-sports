@@ -176,7 +176,7 @@ export function PassportPage({ passportId }: { passportId: string }) {
         <img
           src="/gwdlogo.png"
           alt="GWD Sports"
-          className="mx-auto mb-5 h-6 w-auto opacity-90"
+          className="mx-auto mb-5 h-10 w-auto opacity-95"
         />
         <div className="mx-auto flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-white/20 bg-slate-700">
           {data.photoUrl ? (

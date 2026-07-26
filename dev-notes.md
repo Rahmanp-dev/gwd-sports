@@ -2536,7 +2536,297 @@ Visual + real-device pass; then the Razorpay live-mode checklist.
 
 ---
 
-## Entry template — copy for the next session
+## Session — 2026-07-26 07:26 IST · Money correctness, Meta migration, go-live guide
+
+**State at end of session:** not committed. 448/448 tests, `tsc` clean,
+`next build` compiles. **Partial** — the user gave ~17 items; 8 landed, 9 did
+not. See "Not done" at the end.
+
+### Academy ledgers were overstating revenue
+
+`finance-analytics` summed `p.amount` — what the PARENT paid, i.e. coaching fee
+**plus** the GWD convenience fee. An academy's dashboard therefore reported
+revenue including money they never receive and cannot bank, and it would not
+reconcile against their settlement statement.
+
+Added `amountFor()`: an academy admin now sees `academyAmountPaise`; a super
+admin still sees gross, because platform GMV genuinely is the total that moved.
+Falls back to `baseAmount`/`amount` for rows written before the split existed
+and for offline payments where the two are equal by definition.
+
+The Top Payers aggregation had the same bug and is fixed the same way in the
+pipeline — otherwise a family's "total paid" would not have matched the sum of
+their own receipts on the same screen.
+
+### Owner dashboards were leaking platform-wide counts
+
+`admin/dashboard` filtered everything by tenant **except** two lines:
+`Academy.countDocuments()` and its `isActive` twin. So an academy owner's own
+dashboard reported how many academies exist on the whole platform — other
+tenants' business information, on a screen that is otherwise entirely their own
+data. That is the "2 academies" the user spotted. Now scoped to `_id` for
+non-super-admins.
+
+### Interakt → Meta WhatsApp Cloud API
+
+The BSP abstraction held up exactly as its header comment promised: the swap
+was one file plus a webhook.
+
+- New `MetaCloudProvider`. Graph version **pinned** (`v21.0`) rather than
+  unversioned, so Meta cannot change the request shape under us without a
+  deliberate bump.
+- Retryability is decided on Meta's numeric error `code`, not the HTTP status —
+  `132xxx` (template problems) and `131026` (not on WhatsApp) never succeed on
+  retry, and treating them as transient would burn quota and delay the SMS
+  fallback.
+- New `/api/webhooks/meta` with **both** methods: `GET` for the one-time
+  verification handshake (must return the challenge as **plain text**, not
+  JSON — the usual reason setup fails), and `POST` for status events.
+- Signature verification runs over the **raw request body**. Parsing first and
+  re-serialising produces different bytes and fails every check.
+- Security is genuinely better than what it replaced: Interakt did not sign
+  payloads, so its shared token made the URL itself a credential. Meta signs
+  with HMAC-SHA256, so the URL is not sensitive.
+- Interakt webhook deleted; all references renamed. `interaktTemplateName` →
+  `templateName`.
+
+### WhatsApp payment receipts — the gap behind "receipts sent to whatsapp"
+
+`payment.settled` only ever **cancelled** queued fee reminders. It never
+confirmed anything, so handing over money produced silence — worst on a
+passport link, where the payer may have no account and no other way to check.
+
+- New `gwd_payment_receipt_v1` template (7th requiring Meta approval; the
+  registry test caught the omission, which is what that test is for).
+- `handlePaymentSettled` now enqueues a confirmation. Cancellation runs
+  **first and unconditionally** — a missing phone number must never leave a
+  stale overdue reminder queued against someone who has paid.
+- Deduped on `feePaymentId`, not student: settlement is reported twice by
+  design (browser + webhook) and a parent must not be thanked twice.
+- `settle.ts` had to be enriched — it emitted no `parentPhone`, `passportId` or
+  `receiptUrl`, so the consumer would have skipped silently, which looks
+  identical to "messaging is off". New `loadReceiptContext()` is best-effort:
+  a failed lookup must never roll back money that has already moved.
+
+### Smaller fixes
+- GWD logo enlarged on the receipt (h-7 → h-12) and passport (h-6 → h-10).
+- **Login page had no logo at all on mobile** — the branding panel carrying it
+  is `hidden lg:flex`. Added one to the form side for phones, where most
+  parents actually sign in.
+- Ecosystem hero shrunk on mobile (28px headline, tighter buttons/padding) so
+  the map underneath is visible. It is the point of that page.
+
+### Written deliverable
+`docs/GO-LIVE-SETUP.md` — Razorpay Route and Meta WhatsApp, step by step,
+including the two things most likely to cost real money: Route activation takes
+1–3 days of review (do it first), and a missing Razorpay webhook means a closed
+browser tab = money taken, never recorded.
+
+**Caught while writing it:** the guide initially said to set
+`settlementStrategy: route`. The actual enum is
+`razorpay_route_auto_split` | `collect_and_manual_payout`. Verified against the
+model and corrected — a wrong value there would have failed validation at the
+worst moment.
+
+### Not done — 9 of the user's ~17 items
+Stated plainly rather than quietly dropped:
+1. Student dashboard payment receipts + history view
+2. Tabs on student/trainer dashboards to cut scrolling
+3. Theme applied to student/trainer dashboard *content* (only chrome so far)
+4. Per-academy landing page mobile font/theme responsiveness
+5. Gradient/font-colour customisation beyond the four background presets
+6. Academy landing page footer — academy data + GWD identity
+7. Main landing page: logo, flywheel section, footer notes
+8. Discovery map panels syncing to real academy data
+9. Registration gating (owner-adds-students instead of public signup)
+
+Item 9 is a **product decision, not a task** — it changes who can get into the
+product. The user asked me to "think of it with better reasoning", and that
+deserves a real answer rather than a silent implementation.
+
+### Open items / gaps flagged
+- Still **nothing visually verified** — three sessions running. All of the
+  above is `tsc` + 448 tests + `next build`.
+- `jsqr` (previous session) and no new deps this session.
+- Env still unset: all `META_*`, `RAZORPAY_WEBHOOK_SECRET`, `CLOUDINARY_*`,
+  `CRON_SECRET`. Razorpay still on a **test** key.
+
+### Next up
+The 9 items above, then a real-device pass.
+
+---
+
+## Session — 2026-07-26 13:15 IST · The browser pass (verification gap CLOSED)
+
+**State at end of session:** not committed. 448/448 tests, `tsc` clean,
+`next build` compiles. **This is the first session where the running app was
+actually inspected** rather than only type-checked.
+
+### How, given screenshots still fail
+
+The Browser pane is still not displayed, so `computer{screenshot}` times out.
+But `javascript_tool`, `get_page_text` and `read_page` all work without
+compositing — so the audit was done by **measuring the live DOM** instead of
+looking at it: element rects against the viewport, computed font sizes, tap
+target heights, resolved CSS custom properties. For layout questions that is
+more reliable than eyeballing a picture, because it produces numbers.
+
+Server-rendered HTML was also fetched with `curl` as an independent check —
+which mattered, see the false alarm below.
+
+### What the browser found that three sessions of type-checking did not
+
+**1. Fabricated statistics on every academy's public page.**
+`StatsSection` was four hardcoded constants — "1000+ Athletes Trained",
+"25+ Championships", "98% Success Rate", "10+ Years Excellence" — plus a
+"#1 Rated Sports Academy" badge. Rendered identically for every tenant. A
+brand-new academy with four students was advertising a thousand athletes and a
+98% success rate to parents deciding whether to trust it.
+
+"98% Success Rate" is not placeholder copy. It is a measurable claim, it was
+false, and it sat on a page asking families for money. Now every figure derives
+from that academy's own record (students, achievements, disciplines, years
+since `establishedYear`), any figure that cannot be derived is omitted, and the
+section removes itself entirely if nothing is derivable. The "#1 Rated" badge is
+deleted outright — they cannot all be number one and there is no rating system
+behind it. A `GWD Founding Academy` badge shows instead, and only when true.
+
+**2. A second copy of the demo-sports bug, in the footer.**
+`SportsGrid` was fixed two sessions ago. `Footer` had its own hardcoded list —
+Football / Basketball / Racing League / Model UN / Galaxy Events — linking to
+the platform's showcase pages. So MasterGrade, which teaches **cricket,
+football and badminton**, advertised three sports it does not offer and sent its
+own visitors to a different academy's page. Now resolves through the same order
+as SportsGrid, so the two can never disagree.
+
+Also replaced "Building legends since 2010" (true of nobody) with the academy's
+real description or `establishedYear`.
+
+**3. The HUD counter could sit permanently at zero.**
+`useCountUp` animated 0 → target via `requestAnimationFrame`. rAF does not fire
+in a background tab. A visitor who opened the page in a background tab and
+switched to it later saw "0 ACADEMIES LIVE" beside a headline saying "2
+academies live". Confirmed live: with `document.visibilityState === 'hidden'`
+the strip read 0; after the fix it reads the real 2 and 3. Now honours
+`prefers-reduced-motion`, sets the value immediately when not visible, and has a
+timeout backstop so a failed animation cannot eat the number.
+
+**4. A fake fallback in the same component:** `academyCount || 20` and
+`sportsCount || 7`, so an empty API response advertised "20 academies, 7 sports"
+on the homepage. Zero is a true statement; twenty is not.
+
+**5. Mobile spacing measured, not guessed.** `py-32` = 128px top *and* bottom
+per section, on a 375px screen, across six sections — over 1,500px of pure
+padding. Halved below `md`. The academy hero `h1` measured **72px** on mobile;
+now 44px. Verified 44px live afterwards.
+
+### False alarm, recorded because it nearly caused a wrong "done"
+
+The console showed `footerSports is not defined` and `stats is not defined`
+after the edits. These were **stale HMR snapshots from mid-edit states** — the
+MCP console buffer retains history across `location.reload()`, so re-reading it
+kept returning the old errors. Nearly reported a working page as broken.
+
+Settled it by fetching the server-rendered HTML directly:
+`grep -c "98%|#1 Rated|Athletes Trained|Racing League"` → **0**, with Cricket
+and Badminton present. Independent of the browser's buffer, and definitive.
+
+Lesson worth keeping: a console buffer is history, not state. Verify rendered
+output, not logged output.
+
+### Verified live (375px and desktop, MasterGrade)
+- No horizontal page overflow at either width.
+- Theme engine resolving on the academy page: `--brand: #ff1744`,
+  `--page-bg`, `--page-fg`, `--font-heading: DM Sans`.
+- Body and headings both DM Sans.
+- Footer lists Cricket / Football / Badminton — the real sports.
+- "Powered by GWD Sports Ecosystem" present in the academy footer.
+- Zero fabricated claims in server-rendered HTML.
+
+### Still not done
+The remaining items from the previous session's list — student dashboard
+receipts/history, dashboard tabs, theme on dashboard *content*, deeper
+gradient/font-colour control, main landing page logo + flywheel, discovery map
+panel sync, and the registration-gating product decision.
+
+### Open
+- Screenshots still unavailable (pane not displayed). Layout is verified
+  numerically, not visually — a genuine aesthetic review still needs a human.
+- Env unset: all `META_*`, `RAZORPAY_WEBHOOK_SECRET`, `CLOUDINARY_*`,
+  `CRON_SECRET`. Razorpay still on a **test** key.
+
+---
+
+## Session — 2026-07-26 07:49 IST · Readiness audit: is it launch-ready?
+
+Asked directly whether the platform is ready for real customers. Audited rather
+than answered from memory. **It is not**, and the reasons are almost entirely
+outside the code.
+
+### Code state: good
+448/448 tests, `tsc --noEmit` clean, `next build` compiles. Three sessions of
+correctness work landed — payments split, tenant scoping, Meta migration,
+fabricated-content removal, mobile layout.
+
+### What is actually blocking launch
+
+**1. 27 files uncommitted.** Everything from the last three sessions exists only
+on the working disk — not committed, not pushed, not deployed. A disk failure
+loses the Meta migration, the ledger fix and the fabricated-stats removal.
+`main` is in sync with `origin/main`, which means **none of it is live**.
+
+*(User is committing these themselves.)*
+
+**2. Every credential missing.** Verified against `.env.local`:
+
+| Missing | Consequence today |
+|---|---|
+| `RAZORPAY_WEBHOOK_SECRET` | Payment taken, never recorded if the tab closes |
+| Razorpay **test** key (`rzp_test_…`) | No real money can move at all |
+| `META_WHATSAPP_ACCESS_TOKEN` | |
+| `META_WHATSAPP_PHONE_NUMBER_ID` | Zero WhatsApp — no receipts, no reminders |
+| `META_APP_SECRET` | |
+| `CLOUDINARY_CLOUD_NAME` | Logo and gallery uploads return 503 |
+| `CRON_SECRET` | Scheduled messages never fire |
+
+Every one of these fails *quietly and by design* — the code records `skipped`
+or returns 503 rather than throwing. That is correct behaviour but it means an
+unconfigured deployment looks healthy while doing nothing.
+
+**3. Seven WhatsApp templates unsubmitted.** Meta must approve each before a
+single message sends. List is in `requiredTemplateNames()`; exact body text per
+template is in the comment above each definition in
+`src/lib/messaging/templates.ts`.
+
+**4. Nobody has looked at it.** Layout is verified numerically — widths, font
+sizes, overflow, computed colours — which caught real bugs. But "does this look
+right" is not a measurement.
+
+### Razorpay Route — ACTIVATED
+
+User confirms Route is now active on the account. That removes the long pole:
+it was the one item with a 1–3 day external review and it is done.
+
+**Next Route steps are therefore unblocked** (see `docs/GO-LIVE-SETUP.md`
+Part 1, steps 2–4):
+1. Create one **linked account** per academy (penny-drop bank verification,
+   ~1 day) → yields `acc_XXXXXXXXXXXXXX`.
+2. Set `rzp_account` + `settlementStrategy: razorpay_route_auto_split` +
+   `platformFeePercent` on each academy record.
+3. Register the payments webhook and set `RAZORPAY_WEBHOOK_SECRET`.
+
+`docs/GO-LIVE-SETUP.md` updated to mark step 1 done.
+
+### Still-open feature work (user's own list)
+Student dashboard receipts + history · tabs on student/trainer dashboards ·
+theme applied to dashboard *content* · deeper gradient/font-colour control ·
+main landing page logo + flywheel · discovery map panel data sync ·
+registration-gating decision (raised as a product question, awaiting a call).
+
+### Next up
+Commit + push (user), then linked accounts → env vars → Meta templates → a
+single real ₹10 payment end to end with the split verified in the Razorpay
+dashboard.
 
 ```markdown
 ## Session N — YYYY-MM-DD · <what this session covered>

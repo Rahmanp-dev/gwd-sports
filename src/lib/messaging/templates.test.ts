@@ -3,7 +3,7 @@ import {
   validateAndRender,
   assertVariablesBelongTo,
   getTemplate,
-  requiredInteraktTemplateNames,
+  requiredTemplateNames,
   renderWelcomePaymentLine,
   renderAchievementLine,
   renderFeeOpeningLine,
@@ -62,13 +62,14 @@ describe('template registry', () => {
   });
 
   it('lists the distinct Meta template names needing approval', () => {
-    // This list is the launch checklist: every one needs Meta approval via
-    // Interakt before a single message can be delivered.
-    expect(requiredInteraktTemplateNames()).toEqual([
+    // This list is the launch checklist: every one needs Meta approval in
+    // WhatsApp Manager before a single message can be delivered.
+    expect(requiredTemplateNames()).toEqual([
       'gwd_achievement_v1',
       'gwd_attendance_confirmation_v1',
       'gwd_broadcast_v1',
       'gwd_fee_reminder_v1',
+      'gwd_payment_receipt_v1',
       'gwd_weekly_digest_v1',
       'gwd_welcome_v1',
     ]);
@@ -77,9 +78,9 @@ describe('template registry', () => {
   it('reuses one approved template across all three fee stages', () => {
     // Three near-identical templates would mean three Meta approvals and three
     // chances of one stage silently breaking while the others pass.
-    const name = getTemplate('fee_reminder_t5').interaktTemplateName;
-    expect(getTemplate('fee_due_today').interaktTemplateName).toBe(name);
-    expect(getTemplate('fee_overdue_3').interaktTemplateName).toBe(name);
+    const name = getTemplate('fee_reminder_t5').templateName;
+    expect(getTemplate('fee_due_today').templateName).toBe(name);
+    expect(getTemplate('fee_overdue_3').templateName).toBe(name);
   });
 
   it('rejects an unknown template key', () => {

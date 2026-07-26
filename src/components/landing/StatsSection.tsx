@@ -3,44 +3,95 @@ import React from "react";
 import { motion, useInView } from "framer-motion";
 import { Trophy, Users, Target, Award } from "lucide-react";
 
-const stats = [
-  {
-    icon: Users,
-    value: 1000,
-    suffix: "+",
-    label: "Athletes Trained",
-    color: "from-[var(--brand)] to-[var(--brand-strong)]",
-    bg: "bg-[var(--brand-soft)]",
-    text: "text-[color:var(--brand)]",
-  },
-  {
-    icon: Trophy,
-    value: 25,
-    suffix: "+",
-    label: "Championships",
-    color: "from-amber-400 to-yellow-500",
-    bg: "bg-amber-50",
-    text: "text-amber-600",
-  },
-  {
-    icon: Target,
-    value: 98,
-    suffix: "%",
-    label: "Success Rate",
-    color: "from-emerald-400 to-green-500",
-    bg: "bg-emerald-50",
-    text: "text-emerald-600",
-  },
-  {
-    icon: Award,
-    value: 10,
-    suffix: "+",
-    label: "Years Excellence",
-    color: "from-purple-500 to-fuchsia-500",
-    bg: "bg-purple-50",
-    text: "text-purple-600",
-  },
-];
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * EVERY NUMBER HERE MUST BE TRUE OF THIS ACADEMY
+ * ════════════════════════════════════════════════════════════════════════════
+ *
+ * This section was four hardcoded constants — "1000+ Athletes Trained",
+ * "25+ Championships", "98% Success Rate", "10+ Years Excellence" — plus a
+ * "#1 Rated Sports Academy" badge, rendered identically on EVERY academy's
+ * public page. A brand-new academy with four students advertised a thousand
+ * athletes and a 98% success rate to the parents deciding whether to trust it.
+ *
+ * "98% Success Rate" is not a placeholder. It is a measurable claim, it was
+ * false, and it sat on a page asking families for money.
+ *
+ * Now every figure is derived from that academy's own record, and any figure
+ * that cannot be derived is not shown. If nothing can be derived, the whole
+ * section removes itself — same rule as the disciplines grid and testimonials.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+interface DerivedStat {
+  icon: React.ElementType;
+  value: number;
+  suffix: string;
+  label: string;
+  color: string;
+  bg: string;
+  text: string;
+}
+
+function deriveStats(academy?: any): DerivedStat[] {
+  const out: DerivedStat[] = [];
+
+  const students = Array.isArray(academy?.students) ? academy.students.length : 0;
+  if (students > 0) {
+    out.push({
+      icon: Users,
+      value: students,
+      suffix: "",
+      label: students === 1 ? "Athlete Training" : "Athletes Training",
+      color: "from-[var(--brand)] to-[var(--brand-strong)]",
+      bg: "bg-[var(--brand-soft)]",
+      text: "text-[color:var(--brand)]",
+    });
+  }
+
+  const achievements = Array.isArray(academy?.achievements)
+    ? academy.achievements.filter(Boolean).length
+    : 0;
+  if (achievements > 0) {
+    out.push({
+      icon: Trophy,
+      value: achievements,
+      suffix: "",
+      label: achievements === 1 ? "Achievement" : "Achievements",
+      color: "from-amber-400 to-yellow-500",
+      bg: "bg-amber-50",
+      text: "text-amber-600",
+    });
+  }
+
+  const sports = Array.isArray(academy?.sports) ? academy.sports.length : 0;
+  if (sports > 0) {
+    out.push({
+      icon: Target,
+      value: sports,
+      suffix: "",
+      label: sports === 1 ? "Discipline" : "Disciplines",
+      color: "from-emerald-400 to-green-500",
+      bg: "bg-emerald-50",
+      text: "text-emerald-600",
+    });
+  }
+
+  const year = Number(academy?.establishedYear);
+  const years = Number.isFinite(year) && year > 1900 ? new Date().getFullYear() - year : 0;
+  if (years > 0) {
+    out.push({
+      icon: Award,
+      value: years,
+      suffix: years === 1 ? " yr" : " yrs",
+      label: "Coaching Experience",
+      color: "from-purple-500 to-fuchsia-500",
+      bg: "bg-purple-50",
+      text: "text-purple-600",
+    });
+  }
+
+  return out;
+}
 
 interface AnimatedCounterProps {
   value: number;
@@ -85,10 +136,13 @@ function AnimatedCounter({ value, suffix }: AnimatedCounterProps) {
 }
 
 export default function StatsSection({ academy }: { academy?: any }) {
-  if (academy?.theme?.sections?.stats === false) return null;
+  const stats = deriveStats(academy);
+
+  // Owner switched it off, or this academy has nothing true to put here yet.
+  if (academy?.theme?.sections?.stats === false || stats.length === 0) return null;
 
   return (
-    <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
+    <section className="relative py-16 md:py-32 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
       {/* Animated Background */}
       <motion.div
         animate={{
@@ -163,21 +217,28 @@ export default function StatsSection({ academy }: { academy?: any }) {
           ))}
         </div>
 
-        {/* Floating Achievement Badge */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-20 text-center"
-        >
-          <div className="inline-flex items-center gap-3 px-8 py-4 bg-white border border-slate-200 text-slate-800 rounded-full shadow-md hover:shadow-lg transition-all">
-            <Trophy className="w-6 h-6 text-amber-500" />
-            <span className="text-lg font-bold font-display tracking-wide">
-              #1 Rated Sports Academy
-            </span>
-          </div>
-        </motion.div>
+        {/**
+         * The "#1 Rated Sports Academy" badge that sat here has been removed
+         * outright. It appeared on every academy's page, they cannot all be
+         * number one, and there is no rating system behind it to appeal to.
+         * A verified badge belongs here later — one that means something.
+         */}
+        {academy?.gwdFoundingAcademy ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="mt-16 text-center"
+          >
+            <div className="inline-flex items-center gap-3 px-8 py-4 bg-white border border-slate-200 text-slate-800 rounded-full shadow-md">
+              <Trophy className="w-6 h-6 text-amber-500" />
+              <span className="text-lg font-bold font-display tracking-wide">
+                GWD Founding Academy
+              </span>
+            </div>
+          </motion.div>
+        ) : null}
       </div>
     </section>
   );

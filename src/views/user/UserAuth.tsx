@@ -242,6 +242,12 @@ export default function UserAuth() {
           {/* Left Side - Branding */}
           <div className="hidden lg:flex flex-col justify-center h-full p-12 bg-slate-50 border-r border-slate-100">
             <div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/gwdlogo.png"
+                alt="GWD Sports"
+                className="mb-6 h-14 w-auto"
+              />
               <h1 className="text-4xl font-bold text-slate-900 mb-4 font-display tracking-tight">
                 Welcome to{" "}
                 <span className="text-blue-600">
@@ -301,6 +307,15 @@ export default function UserAuth() {
           {/* Right Side - Auth Form */}
           <div className="p-8 sm:p-12 w-full max-w-md mx-auto lg:max-w-none">
             <div className="text-center mb-8">
+              {/* The branding panel beside this is `hidden lg:flex`, so on a
+                  phone — where most parents sign in — nothing identified the
+                  platform at all without this. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/gwdlogo.png"
+                alt="GWD Sports"
+                className="mx-auto mb-5 h-12 w-auto lg:hidden"
+              />
               <h2 className="text-2xl font-bold text-slate-900 font-display">
                 {activeTab === "login" ? "Welcome Back" : "Create Account"}
               </h2>

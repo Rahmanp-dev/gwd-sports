@@ -3,7 +3,7 @@ import { connectToDatabase } from '@/lib/db';
 import { adminMiddleware } from '@/lib/middleware/auth';
 import OutboundMessage from '@/lib/models/OutboundMessage';
 import { resolveWhatsAppProvider, resolveSmsProvider } from '@/lib/messaging/providers';
-import { requiredInteraktTemplateNames } from '@/lib/messaging/templates';
+import { requiredTemplateNames } from '@/lib/messaging/templates';
 import { configFromEnv } from '@/lib/messaging/scheduling';
 
 /**
@@ -17,7 +17,7 @@ import { configFromEnv } from '@/lib/messaging/scheduling';
  * "nothing has gone out yet and here is the reason".
  *
  * The reason is almost never in the code. It is Meta template approval and API
- * credentials — work that happens in the Interakt console, not here.
+ * credentials — work that happens in the Meta WhatsApp Manager, not here.
  */
 
 /** Anything still 'sending' this long has been abandoned by a dead worker. */
@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
 
     const whatsapp = resolveWhatsAppProvider();
     const sms = resolveSmsProvider();
-    // NoopProvider is what resolves when INTERAKT_API_KEY is absent. Naming the
+    // NoopProvider is what resolves when the Meta credentials are absent. Naming the
     // check off the provider rather than reading the env var directly keeps this
     // honest if a second BSP is ever added.
     const whatsappConnected = whatsapp.name !== 'noop';
@@ -105,10 +105,10 @@ export async function GET(req: NextRequest) {
         id: 'no_whatsapp_provider',
         title: 'WhatsApp provider is not connected',
         detail:
-          'INTERAKT_API_KEY is not set in this environment, so the engine is running in no-op ' +
+          'META_WHATSAPP_ACCESS_TOKEN is not set in this environment, so the engine is running in no-op ' +
           'mode. Messages are still being built, validated and queued correctly — they are ' +
           'recorded as "skipped" at the point of sending, not as failures.',
-        owner: 'Set INTERAKT_API_KEY in the deployment environment.',
+        owner: 'Set META_WHATSAPP_ACCESS_TOKEN and META_WHATSAPP_PHONE_NUMBER_ID in the deployment environment.',
       });
     }
 
@@ -121,8 +121,8 @@ export async function GET(req: NextRequest) {
       detail:
         'Meta requires every template to be approved before it can be sent to a parent. ' +
         'Approval status cannot be read back through the API, so this list is what must be ' +
-        'submitted, not what has been accepted — confirm each one in the Interakt console.',
-      owner: requiredInteraktTemplateNames().join(', '),
+        'submitted, not what has been accepted — confirm each one in the Meta WhatsApp Manager.',
+      owner: requiredTemplateNames().join(', '),
     });
 
     if (stuck > 0) {
@@ -161,7 +161,7 @@ export async function GET(req: NextRequest) {
           lastSentAt: (lastSent as any)?.sentAt ?? null,
           everDelivered,
         },
-        requiredTemplates: requiredInteraktTemplateNames(),
+        requiredTemplates: requiredTemplateNames(),
         blockers,
         schedulingConfig: {
           dailyBudget: config.dailyBudget,

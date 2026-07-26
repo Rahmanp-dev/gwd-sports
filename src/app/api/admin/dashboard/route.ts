@@ -105,9 +105,22 @@ export async function GET(req: NextRequest) {
       studentCount: t.students?.length || 0
     })).sort((a: any, b: any) => b.studentCount - a.studentCount);
 
-    // 4. ACADEMIES
-    const academiesTotal = await Academy.countDocuments();
-    const academiesActive = await Academy.countDocuments({ isActive: true });
+    /**
+     * 4. ACADEMIES
+     *
+     * These two were the only unfiltered counts on this route, so an academy
+     * owner's own dashboard reported the number of academies on the ENTIRE
+     * platform — "2 academies" on a screen that is otherwise all their data.
+     * That is other tenants' business information, and it is meaningless to
+     * the person reading it.
+     *
+     * A super admin gets the platform count, because for them it IS their
+     * dashboard. An academy admin gets their own academy: always 1, and 1 or 0
+     * active depending on whether they are suspended.
+     */
+    const academyScope = (!isSuperAdmin && academyObjectId) ? { _id: academyObjectId } : {};
+    const academiesTotal = await Academy.countDocuments(academyScope);
+    const academiesActive = await Academy.countDocuments({ isActive: true, ...academyScope });
 
     // 5. ATTENDANCE & DROP-OFF
     const allStudents = await StudentProfile.find({ isActive: true, ...tenantFilter }).select('attendance userId').populate('userId', 'name').lean();
