@@ -2044,6 +2044,358 @@ deploy.
 
 ---
 
+## Session — 2026-07-26 03:40 IST · Prod outage, superadmin creds, trainer/branding audit
+
+**State at end of session:** not committed. Tests 448/448 passing, `tsc --noEmit` clean.
+
+### 03:40 · Prod-breaking bug: winston tried to `mkdir logs/` on Vercel
+
+`src/lib/logger.ts` constructed `winston.transports.File` at **module load
+time**, and Vercel's filesystem is read-only outside `/tmp`. `src/lib/db.ts`
+imports this logger and is itself imported by nearly every API route and the
+`[slug]` academy page, so the throw took down `/api/user/login`,
+`/api/academy/discover`, and page rendering sitewide — this is what the user
+saw as `ENOENT: no such file or directory, mkdir 'logs'` on every route.
+
+**Fix:** file transports now only attach when `!process.env.VERCEL` (Vercel
+sets this automatically). Production keeps the Console transport only, which
+is exactly what Vercel's Logs tab was already showing. Nothing reads the log
+files back anywhere in the codebase, so this loses no functionality in prod.
+
+### 03:40 · Superadmin credentials hardcoded and inconsistent across two scripts
+
+`scripts/seed.ts` and root `seed_superadmin.js` both hardcoded
+`superadmin@gwd.in`, but with **different passwords** (`GwdAdmin123!` vs
+`password123`) — whichever script ran most recently silently won, which is
+the likely explanation for login attempts failing with credentials that
+"should" have worked.
+
+**Fix:** added `SUPER_ADMIN_EMAIL` / `SUPER_ADMIN_PASSWORD` to
+`src/lib/env.ts` (defaults preserve current behavior). Both scripts now read
+from env instead of literals; `seed_superadmin.js` also now loads
+`.env.local` and respects `DB_URI` instead of a hardcoded
+`mongodb://localhost:27017`. `scripts/seed.ts`'s superadmin branch now
+**resets** the password on re-run instead of no-op'ing when the account
+already exists, so re-running seed after changing the env var actually takes
+effect.
+
+**Important:** setting `SUPER_ADMIN_PASSWORD` in Vercel's env does **not**
+change an existing account's password by itself — a seed script must be run
+against that database with the new value for it to take effect. Prod DB
+credential rotation is still a manual step.
+
+### 03:40 · Architecture audit (Explore agent) ahead of the branding/UX overhaul ask
+
+Dispatched a read-only research pass to ground a large incoming feature list
+before touching anything. Findings, since they'll shape that work:
+
+- **No per-academy trainer/student routing exists.** Every trainer/student,
+  regardless of academy, lands on the same hardcoded `/mgfc/trainer` /
+  `/mgfc/student` URLs (`RoleProtectedRoute.tsx` `ROLE_HOME` map). The
+  components underneath are **not** hardcoded to MGFC data — they correctly
+  fetch and scope to the signed-in user's real academy via JWT — but the URL
+  and the fixed blue/green gradient chrome around it is a branding artifact
+  that reads as "wrong academy" even though the data isn't leaking.
+- **Bug fixed:** `TrainerPage.tsx` derived its academy-name badge from the
+  raw populated `academyId` object instead of `.name`, so
+  `typeof academyName === "string"` was always false and the badge never
+  rendered for any trainer, ever. Also found the `TrainerProfile` interface
+  mistyped `academyId` as `string | null` when the API actually populates it.
+- **Bug fixed:** `useBrand.ts` read `academy.branding?.logoUrl`, a field that
+  doesn't exist on the schema (it's `academy.theme.logoUrl`) — the admin
+  dashboard header logo was always blank regardless of what an owner
+  uploaded.
+- **QR/attendance is not missing code** — `BatchRegister.tsx` (trainer
+  one-tap register) and the batch-attendance API are generic, tenant-scoped,
+  and complete. If a trainer sees no attendance option, the actual cause is
+  no `Batch` document exists yet for their academy, or they were never added
+  to a batch's `coaches[]` — not a broken feature. Worth improving the empty
+  state to say this explicitly instead of a bare "not assigned" message.
+- **Fee structure is correctly wired end-to-end**, contrary to the worry it
+  might not reflect: `Academy.fees.*` → `resolveAmountDue()` →
+  `createFeeOrder()` is one shared path used by both authenticated and
+  passport-link payments. It only fails (409 `NoFeeConfiguredError`) if a
+  newly onboarded academy hasn't filled in Fee Structure yet, which is
+  intentional per the code's own comments (previously it fabricated ₹500).
+- **Cash/offline "mark paid" already has a backend** —
+  `recordOfflinePayment()` in `src/lib/payments/offline.ts`, wired to
+  `/api/payments/pay` and `/api/student/pay-fees` — but **no UI anywhere
+  calls it**. This is the actual gap for the "let an owner mark cash
+  received" ask: build the button/form, not the backend.
+- **Branding/theming is three diverged surfaces**, not one: the superadmin's
+  academy onboarding/edit form (`AcademyForm.tsx`) has **no branding fields
+  at all** (no logo, color, tagline, style); the owner's own dashboard has
+  two separate components (`BrandingStudio.tsx` and
+  `AcademyBrandingSettings.tsx`) stacked in the same tab, overlapping on
+  `theme.primaryColor`/`theme.tagline`. Also: `Academy.theme` and the
+  separate `GlobalSettings` model both store an overlapping-but-different set
+  of branding fields (two logo URLs, two theme colors, stored separately).
+- **Theme does not cascade past the public `[slug]` page** — the logged-in
+  student/trainer dashboards use fixed Tailwind gradients regardless of the
+  academy's configured `theme.primaryColor`/`accentColor`. This is why the
+  trainer view reads as "bland"/generic rather than the academy's own brand.
+- **The "Disciplines" homepage grid (Football Academy/Basketball/Racing
+  League/Model UN/Galaxy Events) is hardcoded demo content**
+  (`SportsGrid.tsx` `defaultSports`), unrelated to any real academy's actual
+  `sports[]` array, and shown on every `[slug]` page regardless of what that
+  academy offers. The `academy.theme.programs` field it checks for an
+  override doesn't exist on the schema and nothing writes to it — the
+  fallback is always taken. No section-toggle mechanism exists yet.
+- **GWD platform logo (`public/gwdlogo.png`) is not referenced anywhere in
+  code** — not on invoices, not on the passport page. Needs wiring in
+  wherever the platform (not the academy) should be branded.
+- **Payments subsystem reads as deliberately hardened**, not incomplete —
+  extensive inline comments document past incidents it was fixing
+  (client-trusted amounts, wrong-student credit, fabricated dues, webhook
+  200-on-failure). Real-money readiness is gated on **environment
+  configuration, not code**: `RAZORPAY_WEBHOOK_SECRET` is unset in
+  `.env.local` (without it, every webhook 503s and settlement relies solely
+  on the client-side verify call, which the code's own comment calls "a
+  convenience path, not the source of truth"), and the live-vs-test key
+  prefix needs manual confirmation before a real transaction.
+- **Global font**: body is `"Plus Jakarta Sans"` (`globals.css:147`),
+  headings are separately pinned to `"Playfair Display"` (`globals.css:163`),
+  loaded via `@import` in `globals.css` plus unrelated `<link>` tags for
+  Bebas Neue/Inter in `layout.tsx`. No `next/font` usage — plain CDN
+  `@import`/`<link>`. Switching to DM Sans is a small, contained change;
+  open question is whether "primary font" means body only or headings too.
+
+### Assumptions taken
+- `SUPER_ADMIN_EMAIL`/`SUPER_ADMIN_PASSWORD` defaults were set to match the
+  values already in `scripts/seed.ts` (not `seed_superadmin.js`'s), since
+  that's the more complete/canonical seed path.
+
+### Open items / gaps flagged
+See findings above — branding unification, theme cascade to dashboards,
+homepage section toggles, cash-payment UI, and the trainer/student UX pass
+are all still to be scoped and built; none of the code for those exists yet.
+
+### Blockers
+None for what was done this session. The branding/onboarding rebuild needs
+priority/sequencing input before starting (see chat).
+
+### Next up
+Awaiting the user's priority order on: (1) DM Sans font swap, (2) unified
+branding/onboarding system + theme cascade, (3) cash-payment UI, (4)
+trainer/student mobile UX pass, (5) real-money payment config checklist.
+
+---
+
+## Session — 2026-07-26 04:28 IST · Branding unification, theme cascade, cash payments
+
+**State at end of session:** not committed. 448/448 tests, `tsc --noEmit` clean,
+`next build` compiles successfully. User approved the full plan ("all"
+workstreams, DM Sans on body **and** headings, one shared branding component).
+
+### Phase 0 · DM Sans everywhere
+`globals.css` body + `h1`–`h6` now DM Sans; Playfair Display dropped as the
+default heading face. Seven files hardcoded `'Playfair Display'` /
+`'Plus Jakarta Sans'` in inline `style` attributes (the legal/static pages,
+`LegalFooter`, `DiscoverPage`) and were swapped too — a global CSS change alone
+would have left those visibly on the old fonts.
+
+Playfair Display and Poppins are still loaded, because they now back the
+opt-in `editorial` / `rounded` font presets. Declaring extra families in the
+Google Fonts `@import` costs one stylesheet request; woff2 files are only
+fetched for families that rendered text actually uses.
+
+**Verified in-browser:** `getComputedStyle` on body and `h1` both report
+`"DM Sans"`.
+
+### Phase 1 · One branding model on `Academy.theme`
+Added, all additive with defaults reproducing current behaviour so no existing
+academy changes appearance on deploy: `fontPreset`, `programs[]`,
+`testimonials[]`, `gallery[]`, `sections{}` (5 booleans, all default true).
+
+`buildThemeVariables()` now also emits `--font-heading` / `--font-body` from
+the preset, and `globals.css` reads `var(--font-heading, <DM Sans fallback>)`
+— so an academy's typeface applies inside its own themed subtree and the
+platform default holds everywhere else.
+
+**Two bugs fixed here:** the super admin's `AcademyForm` zod schema omitted
+`halfYearly` (every academy it created silently got 0), and
+`AcademyManagement` called `updateAcademy` without `{superAdmin:true}`,
+routing edits through the route with **no `runValidators`**.
+
+### Phase 2 · `AcademyBrandingEditor` — the actual fix for the divergence
+One **controlled** component, used by both the super admin's onboarding form
+and the owner's settings tab. Controlled on purpose: onboarding needs the draft
+inside react-hook-form, settings needs it in a self-loading panel; owning state
+internally would have forced one of them to be a special case, which is how the
+previous three diverged.
+
+`BrandingStudio.tsx` and `AcademyBrandingSettings.tsx` are **deleted**, not left
+dormant — both were verified unreferenced first. Leaving them would invite
+someone to wire one back up and re-split the tagline field.
+
+`AcademyBrandingPanel` wraps the editor with load/dirty/save for owners.
+`AcademyForm` embeds the editor directly and spreads `...(academy?.theme ?? {})`
+before its own fields, so `heroImages` (edited nowhere on this screen) survives
+the super admin's `$set`-wholesale update path.
+
+### Phase 2b · Image upload was broken three ways — found while wiring the editor
+`settingsService.uploadLogo`/`uploadHeroImages` posted to
+`/admin/settings/upload-{logo,hero}`, which:
+
+1. **write to `public/uploads` with `fs.writeFile`** — impossible on Vercel
+   (read-only outside `/tmp`, and per-invocation storage is never served).
+   Same class of bug as the winston logger that took the site down.
+2. **read form fields `file`/`files` while the service sent `logo`/`images`** —
+   a guaranteed 400 even locally.
+3. **set `Content-Type: multipart/form-data` by hand**, omitting the boundary,
+   so `req.formData()` cannot parse the body at all.
+
+Proper Cloudinary-backed routes already existed at `/api/upload/image` and
+`/api/upload/hero` (auth, size caps, MIME allowlist, per-academy folders, 503
+when unconfigured). Repointed the service at those, correct field name, and
+let axios set the multipart header itself. This fixes logo upload for
+`SettingsManagement` too, which was equally broken.
+
+**Requires `CLOUDINARY_*` env vars to be set** or uploads return 503 by design.
+
+### Phase 3 · Theme reaches the coach and the student
+`/api/trainer/profile` and `/api/student/profile` populated `academyId` with
+only `name location` — the theme was never fetched, so it could not have
+cascaded regardless of UI. Added `theme` to both.
+
+Both dashboards now wrap in `<AcademyTheme>` and the fixed
+`from-blue-600 via-green-600` chrome is driven by `var(--brand)`. The trainer's
+four stat cards (previously four unrelated hardcoded hues) are now tints of the
+academy's own two colours, using the computed `--brand-on` / `--accent-on` so
+they stay readable whether the brand is navy or lime.
+
+**`BatchRegister` empty state rewritten.** This is the actual answer to "I see
+no QR scanner / attendance option": the feature is complete and generic, but no
+`Batch` exists for that academy or the coach is not in its `coaches[]`. It now
+names the exact screen an admin must visit instead of dead-ending.
+
+### Phase 4 · The homepage stops making things up
+`SportsGrid` fell back to five hardcoded demo cards (Football Academy,
+Basketball, Racing League, Model UN, Galaxy Events) whose override key
+(`theme.programs`) did not exist on the schema — so the fallback was **always**
+taken. Every academy advertised Formula racing and Model UN, and "Explore
+Program" sent their own visitors to a *different* academy's page. Resolution is
+now `theme.programs` → derived from real `sports[]` → render nothing. No demo
+fallback: a page listing disciplines an academy does not teach is worse than no
+disciplines section.
+
+**`TestimonialsCarousel` no longer fabricates endorsements.** It rendered three
+invented people over stock headshots with the academy's real name interpolated
+into the quotes — fabricated endorsements of a real business shown to parents
+choosing where to send their child. The previous author flagged this in a
+comment and could not close it because there was nowhere to store a real
+testimonial. There is now, so the placeholders are gone: real ones or no
+section.
+
+New `GallerySection` renders `theme.gallery`. Every section self-hides on its
+`sections.*` flag — the decision lives in each section, so none can be rendered
+into a state it has nothing to fill.
+
+### Phase 5 · Cash / "mark paid"
+`recordOfflinePayment()` was correct and complete but **no screen called it**.
+Added `RecordCashPaymentDialog`, reachable from each row of the Fee Defaulters
+list, pre-filled with the outstanding amount.
+
+**Bug found doing this:** the defaulters payload exposed `studentId` = the
+*StudentProfile* `_id`, while `/api/payments/pay` resolves students by
+`userId`. Passing the former would have failed with "Student profile not
+found" every time. Added `userId` to the payload.
+
+### Phase 6 · GWD mark
+Receipt: footer, beside the existing "convenience fee supplied by GWD Sports"
+note — deliberately **not** the header, which belongs to the academy as the
+primary supplier. Putting the platform logo on top would misstate who the
+parent bought coaching from. Passport: top of the identity header, since that
+page is most parents' first contact with GWD.
+
+Neither touches an academy's own `/[slug]` page.
+
+### Phase 7 · Code-level responsive pass (user chose this over visual)
+
+**Already correct, left alone:** every `<table>` in the app is already wrapped
+in `overflow-x-auto`, and the admin's main tab bar already uses the right
+mobile pattern (`overflow-x-auto` + `h-auto justify-start`). The oversized
+`w-[700px]`–`w-[1000px]` elements are decorative blur circles inside
+`overflow-hidden` sections, so they cannot cause page scroll.
+
+**Real bug fixed — clipped tab rows.** `TabsList` is `h-10` by default. Any
+grid whose item count exceeds its column count wraps to a second row that is
+then *clipped out of view*. `StudentPage` had five triggers at
+`grid-cols-3` — the Kits and Fees tabs were invisible on every phone. Fixed
+with `h-auto` there, and applied the same fix wherever a wrap can occur:
+`TrainerPage` (now `grid-cols-2 sm:grid-cols-4`), trainer `StudentDetail`
+(`grid-cols-3 sm:grid-cols-5`), plus `AcademyDetails` / `StudentDetails`
+(`grid-cols-2 sm:grid-cols-4`, which were 4 slivers inside a dialog).
+
+### Font sweep, round two — the first pass missed six files
+
+The Phase 0 sweep matched `'Playfair Display', Georgia, serif` with spaces. It
+did **not** match Tailwind's arbitrary-value syntax, which uses underscores:
+`font-['Playfair_Display',Georgia,serif]`. Six files were still on the old
+fonts, including `LandingPage.tsx` and the whole `components/ecosystem/*` set —
+i.e. the dark "Hyderabad's Sports Grid" page, one of the most visible surfaces
+in the app. All converted.
+
+Also found and fixed:
+- **Five `font-family: 'Inter'` rules deep in `globals.css`** styling the
+  Leaflet map labels. Since Inter's `<link>` was being dropped, these would
+  have silently fallen back to generic sans. Converted to DM Sans.
+- **Clash Display was loaded twice** (once in `layout.tsx`, once in
+  `globals.css`) for exactly **one** `<h2>`. Converted that heading and removed
+  both imports.
+- **Inter had a single remaining use** (`WhyChooseUs.tsx`); DM Sans covers it,
+  so it was dropped from the `layout.tsx` import too.
+- **Five static/legal pages each carried their own inline `@import`** for
+  Playfair + Plus Jakarta inside a `<style>` block — dead requests once their
+  `font-family` declarations were converted. Removed.
+
+Net effect: three fewer webfont families fetched on every page load.
+
+**Bebas Neue deliberately kept.** It is a condensed poster face used only by
+`components/shared/ProgramsSection` (the platform's own program showcase
+pages), narrowed to its own `<link>`. It is a display accent, not a competitor
+for the site's primary font — flattening it to DM Sans would remove an
+intentional design choice rather than fix an inconsistency. Say the word if it
+should go too.
+
+### Open items / gaps flagged
+
+- **This deploy changes what existing academies' public pages say.** Every
+  current academy has `programs: []`, so their disciplines grid switches from
+  the five demo cards to cards derived from their real `sports[]` — and any
+  academy with no sports listed loses the section entirely. User explicitly
+  confirmed this is wanted (asked and answered), but it is a live content
+  change, not a silent refactor, so it is worth eyeballing before it ships.
+- Academies with no `theme.testimonials` now show **no** testimonials section
+  at all, where previously they showed three fabricated ones. Also intended.
+- `next lint` could not be run: the project has no ESLint config and the
+  command drops into an interactive setup prompt. Gates used instead were
+  `tsc --noEmit`, 448 unit tests, and a full `next build`.
+
+### Assumptions taken
+- Font presets ship three curated pairings rather than free font choice,
+  matching the existing `BRAND_STYLES` "presets not sliders" reasoning.
+- `GlobalSettings` left alone: despite overlapping field names it is
+  **platform-wide** (`findOne()` with no academy filter) and drives the root
+  marketing site, not per-academy branding.
+- Bebas Neue retained as a display accent (above).
+
+### Blockers
+None outstanding. Visual confirmation still owed — see below.
+
+### Next up
+1. **Someone still needs to look at this.** Verification was `tsc`, 448 tests,
+   `next build`, and computed-style checks — not eyes on a screen. The branding
+   editor, the themed dashboards, and the public page have not been viewed.
+2. Real-money payment checklist with the user: `RAZORPAY_WEBHOOK_SECRET` (unset
+   in `.env.local`; without it every webhook 503s and settlement depends
+   entirely on the browser returning to `/verify-payment`), live-vs-test key
+   prefix, and registering the webhook URL in the Razorpay dashboard.
+3. `CLOUDINARY_*` must be set before any image upload works — the branding
+   editor's logo and gallery uploads depend on it.
+
+---
+
 ## Entry template — copy for the next session
 
 ```markdown

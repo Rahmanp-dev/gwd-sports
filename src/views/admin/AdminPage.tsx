@@ -80,11 +80,8 @@ const KitsManagement = lazyPanel(() =>
 const SettingsManagement = lazyPanel(() =>
   import("@/components/admin/settings/SettingsManagement").then((m) => ({ default: m.SettingsManagement })),
 );
-const AcademyBrandingSettings = lazyPanel(() =>
-  import("@/components/admin/settings/AcademyBrandingSettings").then((m) => ({ default: m.AcademyBrandingSettings })),
-);
-const BrandingStudio = lazyPanel(() =>
-  import("@/components/admin/settings/BrandingStudio").then((m) => ({ default: m.BrandingStudio })),
+const AcademyBrandingPanel = lazyPanel(() =>
+  import("@/components/branding/AcademyBrandingPanel").then((m) => ({ default: m.AcademyBrandingPanel })),
 );
 const CommunicationCenter = lazyPanel(() =>
   import("@/components/admin/messaging/CommunicationCenter").then((m) => ({ default: m.CommunicationCenter })),
@@ -354,16 +351,12 @@ export default function AdminPage() {
             </Card>
           </TabsContent>
 
-          {/* Branding Tab — look & feel first, then logo and fee schedule */}
-          <TabsContent value="branding" className="space-y-6">
+          {/* Branding Tab — the same editor a super admin uses to onboard an
+              academy, so both sides of the handover behave identically. */}
+          <TabsContent value="branding">
             <Card>
               <CardContent className="p-6">
-                <BrandingStudio />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <AcademyBrandingSettings />
+                <AcademyBrandingPanel />
               </CardContent>
             </Card>
           </TabsContent>

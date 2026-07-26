@@ -95,6 +95,13 @@ export async function GET(req: NextRequest) {
       overdueRevenue += s.outstandingFees || 0;
       return {
         studentId: s._id.toString(),
+        /**
+         * The USER id, not the profile id above. Recording an offline payment
+         * (/api/payments/pay) resolves the student by `userId`, so a caller
+         * handed only `studentId` would look up a profile that does not exist
+         * and fail with "Student profile not found".
+         */
+        userId: s.userId?._id?.toString() ?? null,
         name: s.userId?.name || 'Unknown Student',
         email: s.userId?.email || 'N/A',
         phone: s.userId?.phone || 'N/A',

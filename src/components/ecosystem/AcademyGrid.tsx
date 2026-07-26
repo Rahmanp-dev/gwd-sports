@@ -28,7 +28,7 @@ export default function AcademyGrid({ academies, stats }: AcademyGridProps) {
         <div className="text-[#FF1744] text-[10px] tracking-[0.2em] font-medium uppercase mb-4">
           LIVE ACADEMIES
         </div>
-        <h2 className="text-4xl md:text-5xl font-['Clash_Display'] font-bold text-white mb-6">
+        <h2 className="text-4xl md:text-5xl font-['DM_Sans',sans-serif] font-bold text-white mb-6">
           {stats?.primaryCity || 'Hyderabad'}&apos;s Founding Ecosystem
         </h2>
         <p className="text-[#888899] max-w-2xl text-[15px] leading-relaxed">

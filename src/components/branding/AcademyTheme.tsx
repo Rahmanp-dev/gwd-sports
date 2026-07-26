@@ -32,12 +32,12 @@ export function AcademyTheme({
 }) {
   const variables = React.useMemo(
     () => buildThemeVariables(theme ?? {}),
-    [theme?.primaryColor, theme?.accentColor, theme?.style],
+    [theme?.primaryColor, theme?.accentColor, theme?.style, theme?.fontPreset],
   );
 
   return (
     <Tag
-      style={variables as React.CSSProperties}
+      style={{ ...variables, fontFamily: variables["--font-body"] } as React.CSSProperties}
       className={className ?? "contents"}
       data-brand-style={theme?.style ?? "classic"}
     >

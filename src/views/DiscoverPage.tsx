@@ -99,7 +99,7 @@ export default function DiscoverPage() {
   return (
     <div
       className="min-h-screen bg-[#050508] text-white"
-      style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
     >
       {/* Hero */}
       <div className="relative overflow-hidden border-b border-white/[0.06]">
@@ -108,7 +108,7 @@ export default function DiscoverPage() {
           <p className="text-[#FF1744] text-xs tracking-[0.2em] uppercase font-medium mb-4">GWD Sports Ecosystem</p>
           <h1
             className="text-5xl md:text-[60px] font-bold text-white mb-4 leading-tight"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Find Your Academy
           </h1>

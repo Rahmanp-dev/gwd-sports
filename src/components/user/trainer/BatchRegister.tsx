@@ -202,14 +202,27 @@ export function BatchRegister() {
   }
 
   if (batches.length === 0) {
+    /**
+     * This is the single most common reason a coach reports "I have no
+     * attendance screen". The feature is not missing or switched off — there is
+     * simply no Batch with this coach in its `coaches` array, which is also the
+     * state every newly onboarded academy starts in. So say what to do about
+     * it, by name, rather than leaving a dead end.
+     */
     return (
       <div className="rounded-xl border border-gray-700 bg-gray-800 p-8 text-center">
         <Users className="mx-auto mb-3 h-9 w-9 text-gray-600" />
         <p className="text-sm font-medium text-gray-300">
           You are not assigned to any batch yet.
         </p>
-        <p className="mt-1 text-xs text-gray-500">
-          An academy admin assigns coaches to batches.
+        <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-gray-500">
+          Attendance is marked per batch, so this screen stays empty until you
+          are on one. Ask an academy admin to open{" "}
+          <span className="font-semibold text-gray-400">
+            Admin dashboard → Check-in
+          </span>
+          , create a batch for the sessions you coach, and add you to its
+          coaches. Your register and its QR code appear here straight after.
         </p>
       </div>
     );

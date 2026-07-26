@@ -19,6 +19,47 @@ export interface AcademyTimings {
   workingDays: string[];
 }
 
+export interface AcademyProgram {
+  id: string;
+  label: string;
+  emoji?: string;
+  description?: string;
+}
+
+export interface AcademyTestimonial {
+  name: string;
+  role?: string;
+  quote: string;
+  avatarUrl?: string;
+}
+
+export interface AcademyGalleryItem {
+  url: string;
+  caption?: string;
+}
+
+export interface AcademyHomepageSections {
+  programs: boolean;
+  achievements: boolean;
+  testimonials: boolean;
+  gallery: boolean;
+  stats: boolean;
+}
+
+export interface AcademyTheme {
+  primaryColor: string;
+  accentColor?: string;
+  logoUrl?: string;
+  heroImages?: string[];
+  tagline?: string;
+  style?: "bold" | "classic" | "minimal";
+  fontPreset?: "sans" | "editorial" | "rounded";
+  programs?: AcademyProgram[];
+  testimonials?: AcademyTestimonial[];
+  gallery?: AcademyGalleryItem[];
+  sections?: AcademyHomepageSections;
+}
+
 export interface Academy {
   _id: string;
   name: string;
@@ -36,11 +77,7 @@ export interface Academy {
   capacity: number;
   images: string[];
   isActive: boolean;
-  theme?: {
-    primaryColor: string;
-    logoUrl?: string;
-    tagline?: string;
-  };
+  theme?: AcademyTheme;
   platformFeePercent?: number;
   coordinates?: {
     lat: number;

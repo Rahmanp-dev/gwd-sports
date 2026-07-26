@@ -168,7 +168,16 @@ export function PassportPage({ passportId }: { passportId: string }) {
   return (
     <div className="min-h-screen bg-slate-50 pb-12">
       {/* Identity header */}
-      <div className="bg-gradient-to-b from-slate-900 to-slate-800 px-4 pb-16 pt-10 text-center">
+      <div className="bg-gradient-to-b from-slate-900 to-slate-800 px-4 pb-16 pt-6 text-center">
+        {/* For most parents this page IS GWD — they arrive from a WhatsApp
+            message with no account and no prior context. The mark says who is
+            vouching for the record before anything else loads. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/gwdlogo.png"
+          alt="GWD Sports"
+          className="mx-auto mb-5 h-6 w-auto opacity-90"
+        />
         <div className="mx-auto flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-white/20 bg-slate-700">
           {data.photoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element

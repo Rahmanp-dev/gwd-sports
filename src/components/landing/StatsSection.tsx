@@ -85,6 +85,8 @@ function AnimatedCounter({ value, suffix }: AnimatedCounterProps) {
 }
 
 export default function StatsSection({ academy }: { academy?: any }) {
+  if (academy?.theme?.sections?.stats === false) return null;
+
   return (
     <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
       {/* Animated Background */}

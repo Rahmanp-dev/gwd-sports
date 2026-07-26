@@ -47,14 +47,14 @@ export default function AcademyDetailSidebar({ selectedAcademy, onClose }: Acade
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: '100%', opacity: 0 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-[420px] bg-[#050508]/50 backdrop-blur-[32px] border-l border-white/[0.08] shadow-[-20px_0_60px_rgba(0,0,0,0.85)] flex flex-col justify-between overflow-hidden text-white font-['Plus_Jakarta_Sans',sans-serif]"
+        className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-[420px] bg-[#050508]/50 backdrop-blur-[32px] border-l border-white/[0.08] shadow-[-20px_0_60px_rgba(0,0,0,0.85)] flex flex-col justify-between overflow-hidden text-white font-['DM_Sans',sans-serif]"
       >
         {/* Scrollable Content Container */}
         <div className="p-6 md:p-7 overflow-y-auto custom-scrollbar flex-1 space-y-6">
           {/* Top Row: Title & Close Button */}
           <div className="flex items-start justify-between gap-4 pt-1">
             <div className="space-y-2">
-              <h2 className="text-2xl md:text-[27px] font-bold font-['Playfair_Display',Georgia,serif] text-white tracking-tight leading-[1.2]">
+              <h2 className="text-2xl md:text-[27px] font-bold font-['DM_Sans',sans-serif] text-white tracking-tight leading-[1.2]">
                 {selectedAcademy.name}
               </h2>
               {isMastergrade && (

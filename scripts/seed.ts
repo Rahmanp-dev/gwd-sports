@@ -10,6 +10,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 import Academy from '../src/lib/models/Academy';
 import User from '../src/lib/models/User';
 import GlobalSettings from '../src/lib/models/Settings';
+import config from '../src/lib/env';
 
 const DB_URI = process.env.DB_URI;
 
@@ -25,26 +26,29 @@ async function seed() {
     console.log('Connected to database.');
 
     const salt = await bcrypt.genSalt(10);
-    const superAdminPassword = await bcrypt.hash('GwdAdmin123!', salt);
+    const superAdminPassword = await bcrypt.hash(config.SUPER_ADMIN_PASSWORD, salt);
     const academyAdminPassword = await bcrypt.hash('Admin123!', salt);
     const userPassword = await bcrypt.hash('User123!', salt);
 
     console.log('Seeding GWD Super Admin...');
-    
-    let superAdmin = await User.findOne({ email: 'superadmin@gwd.in' });
+
+    let superAdmin = await User.findOne({ email: config.SUPER_ADMIN_EMAIL });
     if (!superAdmin) {
       superAdmin = new User({
         name: 'GWD Super Admin',
-        email: 'superadmin@gwd.in',
+        email: config.SUPER_ADMIN_EMAIL,
         password: superAdminPassword,
         phone: '+919999999999',
         role: 'gwd_super_admin',
         isActive: true,
       });
       await superAdmin.save();
-      console.log('✅ Created superadmin@gwd.in');
+      console.log(`✅ Created ${config.SUPER_ADMIN_EMAIL}`);
     } else {
-      console.log('⚡ superadmin@gwd.in already exists.');
+      superAdmin.password = superAdminPassword;
+      superAdmin.isActive = true;
+      await superAdmin.save();
+      console.log(`⚡ ${config.SUPER_ADMIN_EMAIL} already exists — password reset to match SUPER_ADMIN_PASSWORD.`);
     }
 
     console.log('\nSeeding Academies...');
@@ -195,7 +199,7 @@ async function seed() {
     console.log('--- CREDENTIALS ---');
     console.log('Role               | Email                     | Password');
     console.log('-------------------|---------------------------|--------------');
-    console.log('GWD Super Admin    | superadmin@gwd.in         | GwdAdmin123!');
+    console.log(`GWD Super Admin    | ${config.SUPER_ADMIN_EMAIL} | (from SUPER_ADMIN_PASSWORD)`);
     console.log('Master Grid Admin  | admin@mastergrid.in       | Admin123!');
     console.log('Champions FC Admin | admin@championsfc.in      | Admin123!');
     console.log('Master Grid Student| student@mastergrid.in     | User123!');

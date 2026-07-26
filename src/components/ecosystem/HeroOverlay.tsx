@@ -36,7 +36,7 @@ export default function HeroOverlay({ city, academyCount, sportsCount }: HeroOve
           GWD SPORTS ECOSYSTEM
         </motion.div>
 
-        <motion.h1 variants={itemVariants} className="text-4xl md:text-[52px] font-['Playfair_Display',Georgia,serif] font-extrabold leading-[1.15] text-white mb-4 tracking-tight">
+        <motion.h1 variants={itemVariants} className="text-4xl md:text-[52px] font-['DM_Sans',sans-serif] font-extrabold leading-[1.15] text-white mb-4 tracking-tight">
           {city}&apos;s<br />Sports Grid
         </motion.h1>
 

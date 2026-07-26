@@ -15,7 +15,7 @@ function Section({
   return (
     <section className="mt-10">
       <h2
-        style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+        style={{ fontFamily: "'DM Sans', sans-serif" }}
         className="text-xl font-bold text-white mb-3 pb-2 border-b border-white/10"
       >
         {title}
@@ -46,14 +46,13 @@ export default function PrivacyPolicyPage() {
     <>
       {/* Google Fonts */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
       `}</style>
 
       <div
         className="min-h-screen"
         style={{
           background: "#0a0a0e",
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
+          fontFamily: "'DM Sans', sans-serif",
           color: "#ffffff",
         }}
       >
@@ -92,7 +91,7 @@ export default function PrivacyPolicyPage() {
                 style={{ background: "linear-gradient(180deg, #dc2626, #991b1b)" }}
               />
               <h1
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
                 className="text-4xl md:text-5xl font-bold"
               >
                 Privacy Policy

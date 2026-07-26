@@ -138,7 +138,7 @@ export const StudentDetails: React.FC<StudentDetailsProps> = ({
 
       <CardContent>
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="kits">Kits ({student.kits.length})</TabsTrigger>
             <TabsTrigger value="attendance">Attendance</TabsTrigger>

@@ -29,6 +29,10 @@ import {
 import { useAppSelector } from "@/store";
 import { API_BASE_URL } from "@/utils/constants";
 import axios from "axios";
+import {
+  RecordCashPaymentDialog,
+  type CashPaymentTarget,
+} from "./RecordCashPaymentDialog";
 
 function fmt(val: number): string {
   if (val === undefined || val === null || typeof val !== 'number' || isNaN(val)) return "₹0";
@@ -404,6 +408,7 @@ export function FinanceDashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [cashTarget, setCashTarget] = useState<CashPaymentTarget | null>(null);
   const { token } = useAppSelector((s) => s.auth);
   const API = API_BASE_URL;
 
@@ -477,6 +482,11 @@ export function FinanceDashboard() {
 
   return (
     <div className="space-y-6">
+      <RecordCashPaymentDialog
+        target={cashTarget}
+        onClose={() => setCashTarget(null)}
+        onRecorded={fetchAnalytics}
+      />
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
@@ -830,7 +840,7 @@ export function FinanceDashboard() {
                     <p className="text-sm font-bold text-red-600">
                       {fmt(d.outstanding)}
                     </p>
-                    <div className="flex gap-1 mt-0.5 justify-end">
+                    <div className="flex gap-1 mt-0.5 justify-end items-center">
                       {d.phone && (
                         <a
                           href={`tel:${d.phone}`}
@@ -846,6 +856,23 @@ export function FinanceDashboard() {
                         >
                           <Mail className="w-2.5 h-2.5 text-blue-600" />
                         </a>
+                      )}
+                      {/* Most of these dues get settled in cash at the ground.
+                          Without this the ledger never catches up with reality. */}
+                      {d.userId && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCashTarget({
+                              userId: d.userId,
+                              name: d.name,
+                              outstanding: d.outstandingFees ?? d.outstanding,
+                            })
+                          }
+                          className="ml-0.5 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-700 transition-colors hover:bg-emerald-200"
+                        >
+                          Mark paid
+                        </button>
                       )}
                     </div>
                   </div>

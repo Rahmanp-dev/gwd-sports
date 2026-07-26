@@ -38,7 +38,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="bg-[#050508] min-h-screen text-white font-['Plus_Jakarta_Sans',sans-serif] selection:bg-[#ff1744]/30 selection:text-white">
+    <div className="bg-[#050508] min-h-screen text-white font-['DM_Sans',sans-serif] selection:bg-[#ff1744]/30 selection:text-white">
       <EcoNavbar />
 
       {/* Hero Section (Map) */}

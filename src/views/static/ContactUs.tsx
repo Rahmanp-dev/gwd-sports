@@ -19,12 +19,12 @@ export default function ContactUs() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0e] text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+    <div className="min-h-screen bg-[#0a0a0e] text-white" style={{ fontFamily: "'DM Sans', sans-serif" }}>
       {/* Header */}
       <div className="border-b border-white/[0.06] bg-[#050508]">
         <div className="max-w-4xl mx-auto px-6 py-16">
           <p className="text-[#FF1744] text-xs tracking-[0.2em] uppercase font-medium mb-4">GWD Sports Ecosystem</p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             Contact Us
           </h1>
           <p className="text-[#888899] text-sm">We&apos;re here to help. Reach out anytime.</p>
@@ -34,7 +34,7 @@ export default function ContactUs() {
       <div className="max-w-5xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-12">
         {/* Contact Info Cards */}
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-white mb-6" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Get in Touch</h2>
+          <h2 className="text-2xl font-bold text-white mb-6" style={{ fontFamily: "'DM Sans', sans-serif" }}>Get in Touch</h2>
 
           {[
             { label: 'Email', value: 'support@gwd.in', icon: '✉', href: 'mailto:support@gwd.in' },
@@ -65,7 +65,7 @@ export default function ContactUs() {
 
         {/* Contact Form */}
         <div>
-          <h2 className="text-2xl font-bold text-white mb-6" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Send a Message</h2>
+          <h2 className="text-2xl font-bold text-white mb-6" style={{ fontFamily: "'DM Sans', sans-serif" }}>Send a Message</h2>
 
           {submitted ? (
             <div className="bg-emerald-900/20 border border-emerald-700/30 rounded-2xl p-8 text-center">

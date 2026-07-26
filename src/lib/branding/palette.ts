@@ -193,10 +193,47 @@ export function isBrandStyle(value: unknown): value is BrandStyle {
   return value === 'bold' || value === 'classic' || value === 'minimal';
 }
 
+/**
+ * Font pairing, same "presets not sliders" reasoning as BRAND_STYLES above:
+ * an owner picking a heading font and a body font independently is how you
+ * get a page that looks like a ransom note. Three pairings that are already
+ * known to work together.
+ */
+export type FontPreset = 'sans' | 'editorial' | 'rounded';
+
+export const FONT_PRESETS: Record<
+  FontPreset,
+  { label: string; description: string; heading: string; body: string }
+> = {
+  sans: {
+    label: 'Modern',
+    description: 'DM Sans throughout. Clean and platform-consistent.',
+    heading: "'DM Sans', system-ui, -apple-system, sans-serif",
+    body: "'DM Sans', system-ui, -apple-system, sans-serif",
+  },
+  editorial: {
+    label: 'Editorial',
+    description: 'Playfair Display headings over DM Sans body copy. Suits established clubs.',
+    heading: "'Playfair Display', Georgia, serif",
+    body: "'DM Sans', system-ui, -apple-system, sans-serif",
+  },
+  rounded: {
+    label: 'Friendly',
+    description: 'Poppins headings, rounder and energetic. Suits youth academies.',
+    heading: "'Poppins', system-ui, -apple-system, sans-serif",
+    body: "'DM Sans', system-ui, -apple-system, sans-serif",
+  },
+};
+
+export function isFontPreset(value: unknown): value is FontPreset {
+  return value === 'sans' || value === 'editorial' || value === 'rounded';
+}
+
 export interface BrandInput {
   primaryColor?: string | null;
   accentColor?: string | null;
   style?: string | null;
+  fontPreset?: string | null;
 }
 
 /**
@@ -213,6 +250,8 @@ export function buildThemeVariables(input: BrandInput): Record<string, string> {
   const accent = parseHex(input.accentColor) ?? parseHex(DEFAULT_ACCENT)!;
   const style = isBrandStyle(input.style) ? input.style : 'classic';
   const preset = BRAND_STYLES[style];
+  const fontPreset = isFontPreset(input.fontPreset) ? input.fontPreset : 'sans';
+  const fonts = FONT_PRESETS[fontPreset];
 
   const onPrimary = readableOn(primary);
   const onAccent = readableOn(accent);
@@ -235,6 +274,9 @@ export function buildThemeVariables(input: BrandInput): Record<string, string> {
 
     '--brand-radius': preset.radius,
     '--brand-shadow': preset.shadow,
+
+    '--font-heading': fonts.heading,
+    '--font-body': fonts.body,
   };
 }
 

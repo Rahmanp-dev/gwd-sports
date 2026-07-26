@@ -23,7 +23,7 @@ export default function EcoNavbar() {
           : 'bg-black/40 backdrop-blur-[24px] border-[#FF1744]/20 shadow-[0_8px_25px_rgba(0,0,0,0.5),0_0_15px_rgba(255,23,68,0.15)]'
       }`}
     >
-      <a href="/" className="flex items-center gap-1.5 font-['Playfair_Display',Georgia,serif] font-bold text-lg tracking-wider text-white">
+      <a href="/" className="flex items-center gap-1.5 font-['DM_Sans',sans-serif] font-bold text-lg tracking-wider text-white">
         <span className="text-[#FF1744]">GWD</span>
         <span>SPORTS</span>
       </a>

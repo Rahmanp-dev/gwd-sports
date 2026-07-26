@@ -14,8 +14,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-        <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet" />
+        {/* Bebas Neue is the condensed poster face used only by the program
+            showcase pages (components/shared/ProgramsSection). Everything else
+            is DM Sans, loaded from globals.css. Inter and Clash Display were
+            dropped: Inter had a single use that DM Sans covers, and Clash
+            Display was fetched on every page load — twice, from here and from
+            globals.css — for one <h2>. */}
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
       </head>
       <body suppressHydrationWarning>
         <AnalyticsProvider />

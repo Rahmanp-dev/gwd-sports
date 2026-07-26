@@ -116,7 +116,6 @@ export default function ContactPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
         .contact-input:focus {
           border-color: rgba(220,38,38,0.4) !important;
           background: rgba(255,255,255,0.06) !important;
@@ -129,7 +128,7 @@ export default function ContactPage() {
         className="min-h-screen"
         style={{
           background: "#0a0a0e",
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
+          fontFamily: "'DM Sans', sans-serif",
           color: "#ffffff",
         }}
       >
@@ -179,7 +178,7 @@ export default function ContactPage() {
                 }}
               />
               <h1
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
                 className="text-4xl md:text-5xl font-bold"
               >
                 Contact Us
@@ -198,7 +197,7 @@ export default function ContactPage() {
             {/* ── Left: Contact Info ── */}
             <div className="lg:col-span-2 space-y-4">
               <h2
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
                 className="text-2xl font-bold text-white mb-6"
               >
                 Get in Touch
@@ -308,7 +307,7 @@ export default function ContactPage() {
                 }}
               >
                 <h2
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
                   className="text-2xl font-bold text-white mb-6"
                 >
                   Send Us a Message

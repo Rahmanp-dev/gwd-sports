@@ -41,6 +41,7 @@ import Footer from "@/components/landing/Footer";
 import { toast } from "sonner";
 import FeesManagement from "./tabs/FeesManagement";
 import { CheckInCard } from "@/components/user/student/CheckInCard";
+import { AcademyTheme } from "@/components/branding/AcademyTheme";
 
 export default function MGFCStudentPage() {
   const navigate = useNavigate();
@@ -139,6 +140,7 @@ export default function MGFCStudentPage() {
   const rollNumber =
     studentProfile?._id?.substring(0, 8).toUpperCase() || "N/A";
   const academyName = studentProfile?.academyId?.name || "Not in any academy";
+  const academyTheme = studentProfile?.academyId?.theme ?? null;
   const position = studentProfile?.level || "beginner";
   const sports = studentProfile?.sports?.join(", ") || "None";
   const isCricket = studentProfile?.sports?.some(
@@ -224,14 +226,22 @@ export default function MGFCStudentPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
+    /* Students see their own academy's colours and typeface — same variables,
+       same engine, as that academy's public page. See AcademyTheme. */
+    <AcademyTheme theme={academyTheme} as="div" className="min-h-screen bg-slate-950">
       {/* Header */}
-      <div className="bg-gradient-to-r from-green-600 to-blue-600 py-6 px-4 sm:px-6 lg:px-8">
+      <div
+        className="py-6 px-4 sm:px-6 lg:px-8"
+        style={{
+          background: "linear-gradient(135deg, var(--brand), var(--brand-strong))",
+          color: "var(--brand-on)",
+        }}
+      >
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <Avatar className="h-20 w-20 border-4 border-white shadow-xl">
-                <AvatarFallback className="bg-gradient-to-br from-green-600 to-blue-600 text-white text-2xl font-bold">
+                <AvatarFallback className="bg-white/20 text-white text-2xl font-bold">
                   {realName
                     .split(" ")
                     .map((n: string) => n[0])
@@ -310,7 +320,10 @@ export default function MGFCStudentPage() {
           onValueChange={handleTabChange}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 bg-gray-800 border border-gray-700">
+          {/* `h-auto` matters: TabsList is h-10 by default, so five triggers
+              wrapping into two rows at grid-cols-3 had the second row clipped
+              out of view on every phone. */}
+          <TabsList className="grid h-auto w-full grid-cols-3 md:grid-cols-5 bg-gray-800 border border-gray-700">
             <TabsTrigger
               value="dashboard"
               className="data-[state=active]:bg-green-600"
@@ -934,6 +947,6 @@ export default function MGFCStudentPage() {
 
       {/* Footer */}
       <Footer />
-    </div>
+    </AcademyTheme>
   );
 }

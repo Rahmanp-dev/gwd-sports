@@ -13,6 +13,33 @@ export interface IRegisteredTeam {
   winRate?: string;
 }
 
+export interface IProgram {
+  id: string;
+  label: string;
+  emoji?: string;
+  description?: string;
+}
+
+export interface ITestimonial {
+  name: string;
+  role?: string;
+  quote: string;
+  avatarUrl?: string;
+}
+
+export interface IGalleryItem {
+  url: string;
+  caption?: string;
+}
+
+export interface IHomepageSections {
+  programs: boolean;
+  achievements: boolean;
+  testimonials: boolean;
+  gallery: boolean;
+  stats: boolean;
+}
+
 export interface IAcademy extends Document {
   name: string;
   description: string;
@@ -59,6 +86,26 @@ export interface IAcademy extends Document {
     heroImages: string[];
     tagline: string;
     style?: 'bold' | 'classic' | 'minimal';
+    /**
+     * Curated font pairing, same "presets not sliders" philosophy as `style`.
+     * See FONT_PRESETS in lib/branding/palette.ts.
+     */
+    fontPreset?: 'sans' | 'editorial' | 'rounded';
+    /**
+     * Overrides the platform's demo discipline cards (Football/Basketball/
+     * Racing League/...) on the public page. Empty means "derive from real
+     * `sports[]`" — see SportsGrid.tsx. Never falls back to the demo cards on
+     * a real academy's page.
+     */
+    programs: IProgram[];
+    testimonials: ITestimonial[];
+    gallery: IGalleryItem[];
+    /**
+     * Which homepage sections to show. All default true so an existing
+     * academy's page looks the same after this field is introduced; an owner
+     * or superadmin can turn any of them off.
+     */
+    sections: IHomepageSections;
   };
   platformFeePercent: number;
   coordinates?: {
@@ -275,6 +322,34 @@ const AcademySchema = new Schema<IAcademy>({
       type: String,
       enum: ['bold', 'classic', 'minimal'],
       default: 'classic'
+    },
+    fontPreset: {
+      type: String,
+      enum: ['sans', 'editorial', 'rounded'],
+      default: 'sans'
+    },
+    programs: [{
+      id: { type: String, required: true },
+      label: { type: String, required: true },
+      emoji: { type: String },
+      description: { type: String }
+    }],
+    testimonials: [{
+      name: { type: String, required: true },
+      role: { type: String },
+      quote: { type: String, required: true },
+      avatarUrl: { type: String }
+    }],
+    gallery: [{
+      url: { type: String, required: true },
+      caption: { type: String }
+    }],
+    sections: {
+      programs: { type: Boolean, default: true },
+      achievements: { type: Boolean, default: true },
+      testimonials: { type: Boolean, default: true },
+      gallery: { type: Boolean, default: true },
+      stats: { type: Boolean, default: true }
     }
   },
   platformFeePercent: {

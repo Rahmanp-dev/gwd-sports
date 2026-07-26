@@ -20,14 +20,13 @@ export default function LegalFooter() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
         .legal-link { color: #888899; transition: color 0.2s; }
         .legal-link:hover { color: #ffffff; }
       `}</style>
 
       <footer
         className="bg-[#030305] border-t border-white/[0.05] py-8 px-6"
-        style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+        style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         <div className="max-w-5xl mx-auto">
           {/* Top: Logo + Tagline (centered) */}
@@ -35,7 +34,7 @@ export default function LegalFooter() {
             <Link href="/" className="inline-flex items-baseline gap-0 group">
               <span
                 style={{
-                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontFamily: "'DM Sans', sans-serif",
                   fontSize: "1.5rem",
                   fontWeight: 700,
                   color: "#dc2626",
@@ -48,7 +47,7 @@ export default function LegalFooter() {
               </span>
               <span
                 style={{
-                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontFamily: "'DM Sans', sans-serif",
                   fontSize: "1.5rem",
                   fontWeight: 700,
                   color: "#ffffff",

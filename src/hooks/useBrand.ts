@@ -73,7 +73,7 @@ export function useBrand(): Brand {
         if (!academy?.name) return;
         const value = {
           name: academy.name as string,
-          logoUrl: academy.branding?.logoUrl || null,
+          logoUrl: academy.theme?.logoUrl || null,
         };
         cache.set(key, value);
         if (!cancelled) setResolved(value);

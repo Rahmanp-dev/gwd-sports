@@ -212,7 +212,9 @@ export function StudentDetail({ studentUserId }: { studentUserId: string }) {
       )}
 
       <Tabs defaultValue="performance" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5 bg-gray-800 text-xs">
+        {/* Five triggers at 375px is ~70px each. Wrap to three columns on a
+            phone instead, with h-auto so the second row is not clipped. */}
+        <TabsList className="grid h-auto w-full grid-cols-3 sm:grid-cols-5 bg-gray-800 text-xs">
           <TabsTrigger value="performance" className="data-[state=active]:bg-blue-600">
             Performance
           </TabsTrigger>

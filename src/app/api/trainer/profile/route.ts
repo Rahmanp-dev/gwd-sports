@@ -10,7 +10,9 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
     const trainer = await TrainerProfile.findOne({ userId: auth.user._id })
       .populate('userId', 'name email phone')
-      .populate('academyId', 'name location')
+      // `theme` drives the dashboard's colours and typeface — without it a
+      // coach sees the platform's default palette instead of their academy's.
+      .populate('academyId', 'name location theme')
       .populate('students', 'name email phone');
     return NextResponse.json({ success: true, data: { trainer } });
   } catch (error) {

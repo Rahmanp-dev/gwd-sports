@@ -118,7 +118,7 @@ export default function WhyChooseUs({ academy }: { academy?: any }) {
                 {/* Floating Number (Subtle) */}
                 <div
                   className="absolute bottom-4 right-6 text-7xl font-black text-slate-50 group-hover:text-white transition-colors z-0"
-                  style={{ fontFamily: "'Inter', sans-serif" }}
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
                   0{index + 1}
                 </div>

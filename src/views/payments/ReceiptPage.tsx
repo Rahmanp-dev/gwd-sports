@@ -222,16 +222,31 @@ export function ReceiptPage({ paymentId }: { paymentId: string }) {
           </tfoot>
         </table>
 
-        <div className="mt-6 border-t border-slate-200 pt-4">
-          <p className="text-[10px] leading-relaxed text-slate-400">
-            This is a payment receipt, not a GST tax invoice. The academy fee is
-            supplied by {receipt.academy.name}; the convenience fee is supplied
-            by GWD Sports for online payment processing. If you need a tax
-            invoice for either component, contact the respective supplier.
-          </p>
-          <p className="mt-2 text-[10px] text-slate-400">
-            Computer-generated — valid without a signature.
-          </p>
+        {/**
+         * The GWD mark sits in the footer, not the header. The academy is the
+         * primary supplier and owns the top of this document; GWD is named here
+         * because it supplied the convenience-fee line item, which is exactly
+         * what the note beside it says. Putting the platform logo at the top
+         * would misstate who the parent bought coaching from.
+         */}
+        <div className="mt-6 flex items-start gap-3 border-t border-slate-200 pt-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/gwdlogo.png"
+            alt="GWD Sports"
+            className="mt-0.5 h-7 w-auto flex-shrink-0 opacity-70 print:opacity-100"
+          />
+          <div>
+            <p className="text-[10px] leading-relaxed text-slate-400">
+              This is a payment receipt, not a GST tax invoice. The academy fee is
+              supplied by {receipt.academy.name}; the convenience fee is supplied
+              by GWD Sports for online payment processing. If you need a tax
+              invoice for either component, contact the respective supplier.
+            </p>
+            <p className="mt-2 text-[10px] text-slate-400">
+              Computer-generated — valid without a signature.
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -26,6 +26,15 @@ const envSchema = z.object({
 
   BCRYPT_ROUNDS: z.coerce.number().default(12),
 
+  /**
+   * Read by scripts/seed.ts and seed_superadmin.js when (re)creating the
+   * platform superadmin account. Changing this does NOT change an existing
+   * account's password — the seed script must be re-run against that
+   * database for the change to take effect.
+   */
+  SUPER_ADMIN_EMAIL: z.string().default("superadmin@gwd.in"),
+  SUPER_ADMIN_PASSWORD: z.string().default("GwdAdmin123!"),
+
   RATE_LIMIT_WINDOW_MS: z.coerce.number().default(900000), // 15 minutes
   RATE_LIMIT_MAX_REQUESTS: z.coerce.number().default(100),
 

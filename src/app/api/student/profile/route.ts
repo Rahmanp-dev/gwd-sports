@@ -11,7 +11,9 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
     const student = await StudentProfile.findOne({ userId: auth.user._id })
       .populate('userId', 'name email phone')
-      .populate('academyId', 'name location fees')
+      // `theme` drives the dashboard's colours and typeface — without it a
+      // student sees the platform's default palette, not their academy's.
+      .populate('academyId', 'name location fees theme')
       .populate('trainers', 'name phone email sports');
     return NextResponse.json({ success: true, data: { studentProfile: student } });
   } catch (error) {

@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { logout } from "@/store/slices/authSlice";
 import { BatchRegister } from "@/components/user/trainer/BatchRegister";
 import { StudentDetail } from "@/components/user/trainer/StudentDetail";
+import { AcademyTheme } from "@/components/branding/AcademyTheme";
 import { CATEGORY_DEFINITIONS } from "@/lib/performance/taxonomy";
 import {
   Calendar,
@@ -82,7 +83,21 @@ interface DetailedStudent {
 interface TrainerProfile {
   _id: string;
   userId: string;
-  academyId: string | null;
+  academyId:
+    | string
+    | {
+        _id: string;
+        name: string;
+        location?: string;
+        theme?: {
+          primaryColor?: string;
+          accentColor?: string;
+          style?: string;
+          fontPreset?: string;
+          logoUrl?: string;
+        };
+      }
+    | null;
   sports: string[];
   students: string[];
   specializations: string[];
@@ -521,9 +536,12 @@ export default function MGFCTrainerPage() {
   const trainerEmail = userProfile?.email || "—";
   const trainerPhone = userProfile?.phone || "—";
   const trainerSports = trainerProfile?.sports || userProfile?.sports || [];
-  const academyName = trainerProfile?.academyId
-    ? trainerProfile.academyId
-    : "Not in any academy";
+  const academy =
+    trainerProfile?.academyId && typeof trainerProfile.academyId === "object"
+      ? trainerProfile.academyId
+      : null;
+  const academyName = academy?.name || "Not in any academy";
+  const academyTheme = academy?.theme ?? null;
   const specializations = trainerProfile?.specializations || [];
   const qualifications = trainerProfile?.qualifications || [];
   const experience = trainerProfile?.experience || [];
@@ -545,20 +563,44 @@ export default function MGFCTrainerPage() {
     day.charAt(0).toUpperCase() + day.slice(1, 3);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
+    /**
+     * The coach sees their own academy's brand, not the platform's.
+     *
+     * This wrapper emits the same CSS custom properties the academy's public
+     * page uses, computed by the same function, so a parent and a coach are
+     * looking at one identity. Before this, the header was a fixed blue/green
+     * gradient for every academy on the platform.
+     */
+    <AcademyTheme theme={academyTheme} as="div" className="min-h-screen bg-slate-950">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-green-600 to-blue-600 py-6 px-4 sm:px-6 lg:px-8">
+      <div
+        className="py-6 px-4 sm:px-6 lg:px-8"
+        style={{
+          background:
+            "linear-gradient(135deg, var(--brand), var(--brand-strong))",
+          color: "var(--brand-on)",
+        }}
+      >
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
+              {academyTheme?.logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={academyTheme.logoUrl}
+                  alt=""
+                  className="h-16 w-16 rounded-full border-4 border-white/80 bg-white object-contain p-1"
+                />
+              ) : (
               <Avatar className="h-16 w-16 border-4 border-white">
-                <AvatarFallback className="bg-gradient-to-br from-blue-600 to-green-600 text-white text-xl font-bold">
+                <AvatarFallback className="bg-white/20 text-white text-xl font-bold">
                   {realName
                     .split(" ")
                     .map((n: string) => n[0])
                     .join("")}
                 </AvatarFallback>
               </Avatar>
+              )}
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold text-white">
                   {realName}
@@ -567,11 +609,9 @@ export default function MGFCTrainerPage() {
                   <Badge className="bg-white/20 text-white border-white/30">
                     ID: {trainerIdShort}
                   </Badge>
-                  {typeof academyName === "string" ? (
-                    <Badge className="bg-white/20 text-white border-white/30">
-                      {academyName}
-                    </Badge>
-                  ) : null}
+                  <Badge className="bg-white/20 text-white border-white/30">
+                    {academyName}
+                  </Badge>
                   {trainerProfile?.isActive ? (
                     <Badge className="bg-green-500/30 text-white border-green-300/40">
                       Active
@@ -627,7 +667,9 @@ export default function MGFCTrainerPage() {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-4 bg-gray-800 border border-gray-700">
+          {/* Two columns on a phone rather than four ~85px slivers; the full
+              row returns as soon as there is width for it. */}
+          <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-4 bg-gray-800 border border-gray-700">
             <TabsTrigger
               value="overview"
               className="data-[state=active]:bg-blue-600"
@@ -679,76 +721,74 @@ export default function MGFCTrainerPage() {
               variants={containerVariants}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
             >
-              <motion.div variants={itemVariants}>
-                <Card className="bg-gradient-to-br from-blue-600 to-blue-800 border-blue-500/50">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-blue-200 text-sm">Total Students</p>
-                        <h3 className="text-3xl font-bold text-white mt-1">
-                          {students.length}
-                        </h3>
+              {/**
+               * Four fixed hues (blue/green/purple/orange) became four tints of
+               * the academy's own two colours. `--brand-on`/`--accent-on` are
+               * computed for contrast, so these stay readable whether the
+               * academy's brand is navy or lime.
+               */}
+              {(
+                [
+                  {
+                    label: "Total Students",
+                    value: students.length,
+                    Icon: Users,
+                    bg: "var(--brand)",
+                    fg: "var(--brand-on)",
+                  },
+                  {
+                    label: "Sports",
+                    value: trainerSports.length,
+                    Icon: Trophy,
+                    bg: "var(--accent)",
+                    fg: "var(--accent-on)",
+                  },
+                  {
+                    label: "Rating",
+                    value: rating?.average ? rating.average.toFixed(1) : "N/A",
+                    hint: rating?.totalReviews
+                      ? `${rating.totalReviews} reviews`
+                      : undefined,
+                    Icon: Star,
+                    bg: "var(--brand-strong)",
+                    fg: "var(--brand-on)",
+                  },
+                  {
+                    label: "Qualifications",
+                    value: qualifications.length,
+                    Icon: Award,
+                    bg: "#1e293b",
+                    fg: "#ffffff",
+                  },
+                ] as Array<{
+                  label: string;
+                  value: React.ReactNode;
+                  hint?: string;
+                  Icon: React.ComponentType<{ className?: string }>;
+                  bg: string;
+                  fg: string;
+                }>
+              ).map(({ label, value, hint, Icon, bg, fg }) => (
+                <motion.div key={label} variants={itemVariants}>
+                  <Card
+                    className="border-0"
+                    style={{ background: bg, color: fg }}
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm opacity-80">{label}</p>
+                          <h3 className="text-3xl font-bold mt-1">{value}</h3>
+                          {hint ? (
+                            <p className="text-xs mt-1 opacity-70">{hint}</p>
+                          ) : null}
+                        </div>
+                        <Icon className="h-10 w-10 opacity-70" />
                       </div>
-                      <Users className="h-10 w-10 text-blue-200" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-
-              <motion.div variants={itemVariants}>
-                <Card className="bg-gradient-to-br from-green-600 to-green-800 border-green-500/50">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-green-200 text-sm">Sports</p>
-                        <h3 className="text-3xl font-bold text-white mt-1">
-                          {trainerSports.length}
-                        </h3>
-                      </div>
-                      <Trophy className="h-10 w-10 text-green-200" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-
-              <motion.div variants={itemVariants}>
-                <Card className="bg-gradient-to-br from-purple-600 to-purple-800 border-purple-500/50">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-purple-200 text-sm">Rating</p>
-                        <h3 className="text-3xl font-bold text-white mt-1">
-                          {rating?.average ? rating.average.toFixed(1) : "N/A"}
-                        </h3>
-                        {rating?.totalReviews ? (
-                          <p className="text-purple-300 text-xs mt-1">
-                            {rating.totalReviews} reviews
-                          </p>
-                        ) : null}
-                      </div>
-                      <Star className="h-10 w-10 text-purple-200" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-
-              <motion.div variants={itemVariants}>
-                <Card className="bg-gradient-to-br from-orange-600 to-orange-800 border-orange-500/50">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-orange-200 text-sm">
-                          Qualifications
-                        </p>
-                        <h3 className="text-3xl font-bold text-white mt-1">
-                          {qualifications.length}
-                        </h3>
-                      </div>
-                      <Award className="h-10 w-10 text-orange-200" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
             </motion.div>
 
             {/* Info + Sports + Specializations */}
@@ -796,7 +836,7 @@ export default function MGFCTrainerPage() {
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-400">Academy</span>
                       <span className="text-white font-medium">
-                        {typeof academyName === "string" ? academyName : "—"}
+                        {academyName}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
@@ -1643,6 +1683,6 @@ export default function MGFCTrainerPage() {
       </Dialog>
 
       <Footer />
-    </div>
+    </AcademyTheme>
   );
 }

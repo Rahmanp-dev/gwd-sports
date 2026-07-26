@@ -107,7 +107,7 @@ export const AcademyManagement: React.FC = () => {
     if (!selectedAcademy) return;
     setIsLoading(true);
     try {
-      await academyService.updateAcademy(selectedAcademy._id, data);
+      await academyService.updateAcademy(selectedAcademy._id, data, { superAdmin: true });
       toastUtils.success(
         "Academy updated successfully",
         "The academy information has been updated.",

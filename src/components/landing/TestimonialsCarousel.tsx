@@ -1,68 +1,55 @@
 "use client";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BRAND_NAME } from "@/utils/constants";
 
 /**
- * ⚠️ PLACEHOLDER CONTENT — NOT REAL TESTIMONIALS.
+ * ════════════════════════════════════════════════════════════════════════════
+ * REAL TESTIMONIALS ONLY — OR NONE
+ * ════════════════════════════════════════════════════════════════════════════
  *
- * These are invented quotes attributed to invented people, illustrated with
- * stock photography. They were written as demo content and are still here.
+ * This section used to render three invented quotes from invented people
+ * ("Sarah Johnson", "Michael Chen", "Priya Sharma") over stock headshots, with
+ * the academy's name interpolated into them. On a live academy's public site
+ * that is a fabricated endorsement of a real, named business shown to real
+ * parents deciding where to send their child. The previous author flagged it in
+ * a comment and left the decision open; there was no way to close it then,
+ * because there was nowhere to store a genuine testimonial.
  *
- * They were previously baked with the PLATFORM name at module load, which is
- * the bug this change fixes — on an academy's public page they named the wrong
- * organisation entirely. They are now a function of whichever brand is being
- * rendered.
- *
- * Note what that means: on a live academy's public site these become fabricated
- * endorsements of a real, named business. That is a decision for whoever owns
- * the marketing site, not a technical one — either replace them with real
- * testimonials, or gate this section behind academies that have supplied some.
+ * There is now: `theme.testimonials`, editable in the branding editor. So the
+ * placeholders are gone. An academy that has supplied testimonials shows them;
+ * one that has not shows no section at all.
+ * ════════════════════════════════════════════════════════════════════════════
  */
-const buildTestimonials = (brandName: string) => [
-  {
-    name: "Sarah Johnson",
-    role: "Basketball Champion",
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
-    content: `${brandName} didn't just improve my game - they transformed my entire life. From struggling player to state champion in 18 months. The coaches here are legends!`,
-    rating: 5,
-    achievement: "State Champion 2025",
-  },
-  {
-    name: "Michael Chen",
-    role: "Professional Footballer",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
-    content: `The intensity, professionalism, and world-class training here pushed me beyond my limits. Now I'm playing professionally. Dreams do come true at ${brandName}!`,
-    rating: 5,
-    achievement: "Pro League Player",
-  },
-  {
-    name: "Priya Sharma",
-    role: "National Swimming Champion",
-    image:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
-    content: `Olympic-standard facilities, expert coaches, and a supportive community. ${brandName} gave me everything I needed to become a national champion. Forever grateful!`,
-    rating: 5,
-    achievement: "National Gold Medalist",
-  },
-];
+interface PublicTestimonial {
+  name: string;
+  role?: string;
+  quote: string;
+  avatarUrl?: string;
+}
 
 export default function TestimonialsCarousel({ academy }: { academy?: any }) {
   const [current, setCurrent] = useState(0);
-  // Built per render from whichever academy this page belongs to, rather than
-  // frozen at module load with the platform's name.
-  const testimonials = React.useMemo(
-    () => buildTestimonials(academy?.name || BRAND_NAME),
-    [academy?.name],
+
+  const testimonials: PublicTestimonial[] = React.useMemo(
+    () =>
+      (academy?.theme?.testimonials ?? []).filter(
+        (t: PublicTestimonial) => t?.quote?.trim(),
+      ),
+    [academy?.theme?.testimonials],
   );
 
-  const next = () => setCurrent((current + 1) % testimonials.length);
-  const prev = () =>
-    setCurrent((current - 1 + testimonials.length) % testimonials.length);
+  const total = testimonials.length;
+  const next = () => setCurrent((c) => (c + 1) % total);
+  const prev = () => setCurrent((c) => (c - 1 + total) % total);
+
+  // Nothing genuine to show, or the owner switched the section off.
+  if (academy?.theme?.sections?.testimonials === false || total === 0) {
+    return null;
+  }
+
+  const safeIndex = Math.min(current, total - 1);
 
   return (
     <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-slate-50 overflow-hidden">
@@ -113,7 +100,7 @@ export default function TestimonialsCarousel({ academy }: { academy?: any }) {
         <div className="relative">
           <AnimatePresence mode="wait">
             <motion.div
-              key={current}
+              key={safeIndex}
               initial={{ opacity: 0, x: 50, scale: 0.95 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: -50, scale: 0.95 }}
@@ -130,57 +117,38 @@ export default function TestimonialsCarousel({ academy }: { academy?: any }) {
                 </motion.div>
 
                 <div className="flex flex-col lg:flex-row gap-8 items-center pt-4">
-                  {/* Image */}
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    className="flex-shrink-0 relative"
-                  >
-                    <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden ring-4 ring-white shadow-lg">
-                      <img
-                        src={testimonials[current].image}
-                        alt={testimonials[current].name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="absolute -bottom-2 -right-2 bg-[var(--brand)] text-white px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-md border border-white flex items-center gap-1">
-                      <Star className="w-3 h-3 fill-current" /> Verified
-                    </div>
-                  </motion.div>
+                  {/* Photo, only when the academy actually supplied one. No
+                      stock headshot stands in for a real person here. */}
+                  {testimonials[safeIndex].avatarUrl ? (
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      className="flex-shrink-0"
+                    >
+                      <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden ring-4 ring-white shadow-lg">
+                        <img
+                          src={testimonials[safeIndex].avatarUrl}
+                          alt={testimonials[safeIndex].name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </motion.div>
+                  ) : null}
 
                   {/* Content */}
                   <div className="flex-1 text-center lg:text-left">
-                    {/* Rating */}
-                    <div className="flex gap-1 mb-4 justify-center lg:justify-start">
-                      {Array.from({ length: testimonials[current].rating }).map(
-                        (_, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{ opacity: 0, scale: 0 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: i * 0.1 }}
-                          >
-                            <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
-                          </motion.div>
-                        ),
-                      )}
-                    </div>
-
-                    {/* Quote */}
                     <blockquote className="text-xl sm:text-2xl text-slate-700 mb-6 font-medium leading-relaxed">
-                      "{testimonials[current].content}"
+                      “{testimonials[safeIndex].quote}”
                     </blockquote>
 
-                    {/* Author */}
                     <div>
                       <div className="text-2xl font-bold text-slate-900 mb-1 font-display tracking-tight">
-                        {testimonials[current].name}
+                        {testimonials[safeIndex].name}
                       </div>
-                      <div className="text-[color:var(--brand)] font-semibold mb-3">
-                        {testimonials[current].role}
-                      </div>
-                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-100 text-slate-600 rounded-full text-sm font-semibold">
-                        🏆 {testimonials[current].achievement}
-                      </div>
+                      {testimonials[safeIndex].role ? (
+                        <div className="text-[color:var(--brand)] font-semibold">
+                          {testimonials[safeIndex].role}
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -188,8 +156,8 @@ export default function TestimonialsCarousel({ academy }: { academy?: any }) {
             </motion.div>
           </AnimatePresence>
 
-          {/* Navigation */}
-          <div className="flex justify-center gap-4 mt-8">
+          {/* Navigation — pointless with a single testimonial. */}
+          <div className={`justify-center gap-4 mt-8 ${total > 1 ? "flex" : "hidden"}`}>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 onClick={prev}
@@ -213,7 +181,7 @@ export default function TestimonialsCarousel({ academy }: { academy?: any }) {
           </div>
 
           {/* Dots */}
-          <div className="flex justify-center gap-2 mt-6">
+          <div className={`justify-center gap-2 mt-6 ${total > 1 ? "flex" : "hidden"}`}>
             {testimonials.map((_, index) => (
               <motion.button
                 key={index}

@@ -114,3 +114,24 @@ export const loadRazorpayScript = (): Promise<boolean> => {
     document.body.appendChild(script);
   });
 };
+
+export interface RecordOfflinePaymentParams {
+  studentUserId: string;
+  amount: number;
+  period?: "monthly" | "quarterly" | "yearly";
+  transactionId?: string;
+  note?: string;
+}
+
+/**
+ * Records money the academy received off-platform — cash in hand, a direct UPI
+ * transfer, a bank deposit. Nothing moves through Razorpay; this is bookkeeping
+ * for money the academy already holds, so the student's ledger stops showing
+ * them as owing it.
+ */
+export const recordOfflinePayment = async (
+  params: RecordOfflinePaymentParams,
+): Promise<{ success: boolean; message?: string; data?: any }> => {
+  const response = await apiService.post("/payments/pay", params);
+  return response as any;
+};

@@ -35,6 +35,12 @@ import {
 import type { Academy, AcademyFormData } from "@/services/academyService";
 import { SPORTS_LIST } from "@/utils/constants";
 import { X, Plus } from "lucide-react";
+import {
+  AcademyBrandingEditor,
+  defaultBrandingDraft,
+  draftFromAcademy,
+  type BrandingDraft,
+} from "@/components/branding/AcademyBrandingEditor";
 
 // Define form validation schema
 const academyFormSchema = z.object({
@@ -60,6 +66,7 @@ const academyFormSchema = z.object({
   fees: z.object({
     monthly: z.number().min(0, { message: "Monthly fee must be positive" }),
     quarterly: z.number().min(0, { message: "Quarterly fee must be positive" }),
+    halfYearly: z.number().min(0, { message: "Half-yearly fee must be positive" }),
     yearly: z.number().min(0, { message: "Yearly fee must be positive" }),
   }),
   timings: z.object({
@@ -132,6 +139,16 @@ export const AcademyForm: React.FC<AcademyFormProps> = ({
   const [newFacility, setNewFacility] = useState("");
   const [newImage, setNewImage] = useState("");
 
+  /**
+   * Branding is held outside react-hook-form: AcademyBrandingEditor is a
+   * controlled component with its own nested shape, and threading arrays of
+   * objects through zod here would buy nothing — the editor is the only thing
+   * that writes them, and it cannot produce an invalid value.
+   */
+  const [branding, setBranding] = useState<BrandingDraft>(() =>
+    academy ? draftFromAcademy(academy) : defaultBrandingDraft(),
+  );
+
   const form = useForm<FormData>({
     resolver: zodResolver(academyFormSchema),
     defaultValues: {
@@ -151,6 +168,7 @@ export const AcademyForm: React.FC<AcademyFormProps> = ({
       fees: {
         monthly: academy?.fees?.monthly || 0,
         quarterly: academy?.fees?.quarterly || 0,
+        halfYearly: academy?.fees?.halfYearly || 0,
         yearly: academy?.fees?.yearly || 0,
       },
       timings: {
@@ -237,7 +255,29 @@ export const AcademyForm: React.FC<AcademyFormProps> = ({
   };
 
   const handleSubmit = (data: FormData) => {
-    onSubmit(data as AcademyFormData);
+    /**
+     * Spread the existing theme first so fields this screen does not edit —
+     * heroImages today, whatever gets added later — survive the round trip.
+     * The super admin update path `$set`s this object wholesale, so anything
+     * missing here would be silently erased.
+     */
+    onSubmit({
+      ...data,
+      theme: {
+        ...(academy?.theme ?? {}),
+        primaryColor: branding.primaryColor,
+        accentColor: branding.accentColor,
+        style: branding.style,
+        fontPreset: branding.fontPreset,
+        tagline: branding.tagline,
+        logoUrl: branding.logoUrl,
+        programs: branding.programs,
+        testimonials: branding.testimonials,
+        gallery: branding.gallery,
+        sections: branding.sections,
+      },
+      achievements: branding.achievements,
+    } as unknown as AcademyFormData);
   };
 
   return (
@@ -516,7 +556,7 @@ export const AcademyForm: React.FC<AcademyFormProps> = ({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <FormField
                 control={form.control}
                 name="fees.monthly"
@@ -567,6 +607,30 @@ export const AcademyForm: React.FC<AcademyFormProps> = ({
 
               <FormField
                 control={form.control}
+                name="fees.halfYearly"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Half-Yearly Fee (₹) *</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="800.00"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(parseFloat(e.target.value) || 0)
+                        }
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="fees.yearly"
                 render={({ field }) => (
                   <FormItem>
@@ -589,6 +653,27 @@ export const AcademyForm: React.FC<AcademyFormProps> = ({
                 )}
               />
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Branding — the same editor the academy's own owner gets, so the
+            handover at the end of onboarding is seamless. */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Branding &amp; homepage</CardTitle>
+            <CardDescription>
+              Set up how this academy's public page looks. The owner can change
+              all of this later from their own dashboard, on this same screen.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AcademyBrandingEditor
+              value={branding}
+              onChange={setBranding}
+              academyName={form.watch("name") || "Your Academy"}
+              sports={form.watch("sports") ?? []}
+              disabled={isLoading}
+            />
           </CardContent>
         </Card>
 
