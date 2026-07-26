@@ -1,3 +1,4 @@
+import { ACTIVE } from '@/lib/models/activeFilter';
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { adminMiddleware } from '@/lib/middleware/auth';
@@ -112,7 +113,7 @@ export async function GET(req: NextRequest) {
     const collectionRate = totalCount > 0 ? Math.round((successCount / totalCount) * 100) : 100;
 
     // 2. Defaulters (Students with outstanding fees)
-    const defaulterStudents = await StudentProfile.find({ outstandingFees: { $gt: 0 }, isActive: true, ...tenantFilter })
+    const defaulterStudents = await StudentProfile.find({ outstandingFees: { $gt: 0 }, isActive: ACTIVE, ...tenantFilter })
       .populate('userId', 'name email phone')
       .lean();
 
@@ -188,7 +189,7 @@ export async function GET(req: NextRequest) {
     ).then(res => res.filter(Boolean));
 
     // 6. Academy Revenue
-    const academies = await Academy.find({ isActive: true }).lean();
+    const academies = await Academy.find({ isActive: ACTIVE }).lean();
     const academyRevenue = academies.map((ac: any) => ({
       academyId: ac._id.toString(),
       academyName: ac.name,

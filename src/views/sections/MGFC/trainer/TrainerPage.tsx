@@ -631,15 +631,17 @@ export default function MGFCTrainerPage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Link to="/user/profile">
-                <Button
-                  variant="outline"
-                  className="border-gray-500 text-black hover:bg-gray-200"
-                >
-                  <Users className="h-4 w-4 mr-2" />
-                  My Profile
-                </Button>
-              </Link>
+              {/* Was a link to /user/profile, which now redirects coaches back
+                  to this page — an infinite bounce. Account settings are the
+                  Account tab below. */}
+              <Button
+                variant="outline"
+                className="border-gray-500 text-black hover:bg-gray-200"
+                onClick={() => setActiveTab("account")}
+              >
+                <Users className="h-4 w-4 mr-2" />
+                My Account
+              </Button>
               <Button
                 variant="outline"
                 className="border-gray-500 text-black hover:bg-gray-200"

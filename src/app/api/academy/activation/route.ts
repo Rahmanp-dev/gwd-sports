@@ -1,3 +1,4 @@
+import { ACTIVE } from '@/lib/models/activeFilter';
 import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import { connectToDatabase } from '@/lib/db';
@@ -41,16 +42,16 @@ export async function GET(req: NextRequest) {
 
     const [totalStudents, withParentPhone, passportStats, importStats, welcomeEvents, dormant] =
       await Promise.all([
-        StudentProfile.countDocuments({ academyId, isActive: true }),
+        StudentProfile.countDocuments({ academyId, isActive: ACTIVE }),
 
         StudentProfile.countDocuments({
           academyId,
-          isActive: true,
+          isActive: ACTIVE,
           parentPhoneE164: { $ne: null, $exists: true },
         }),
 
         Passport.aggregate([
-          { $match: { currentAcademyId: toObjectId(academyId), isActive: true } },
+          { $match: { currentAcademyId: toObjectId(academyId), isActive: ACTIVE } },
           {
             $group: {
               _id: null,
@@ -84,7 +85,7 @@ export async function GET(req: NextRequest) {
         // The call list.
         Passport.find({
           currentAcademyId: toObjectId(academyId),
-          isActive: true,
+          isActive: ACTIVE,
           parentFirstEngagedAt: null,
         })
           .select('passportId studentName parentName parentPhone createdAt')

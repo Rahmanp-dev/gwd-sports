@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GWD Sports Ecosystem — Academy Partner Booklet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red: #DC2626;
+            --red-dark: #991B1B;
+            --red-light: #FEE2E2;
+            --red-50: #FEF2F2;
+            --charcoal: #1F2937;
+            --charcoal-dark: #111827;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --white: #FFFFFF;
+            --font: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 11pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        body { font-family: var(--font); color: var(--charcoal); line-height: 1.5; background: var(--gray-100); }
+
+        .page { width: 210mm; min-height: 297mm; margin: 20px auto; background: var(--white); box-shadow: 0 4px 24px rgba(0,0,0,0.08); position: relative; overflow: hidden; page-break-after: always; display: flex; flex-direction: column; }
+        .page:last-child { page-break-after: auto; }
+        .page-dark { background: var(--charcoal-dark); color: var(--white); }
+        .page-number { position: absolute; bottom: 12mm; right: 15mm; font-size: 8pt; color: var(--gray-400); font-weight: 500; }
+        .page-dark .page-number { color: rgba(255,255,255,0.4); }
+        .page-footer { position: absolute; bottom: 12mm; left: 15mm; font-size: 7pt; color: var(--gray-300); letter-spacing: 0.5px; text-transform: uppercase; }
+        .page-dark .page-footer { color: rgba(255,255,255,0.25); }
+        .page-content { padding: 18mm 18mm 25mm 18mm; flex: 1; display: flex; flex-direction: column; }
+        .page-content-centered { padding: 18mm; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+
+        .logo { height: 48px; margin-bottom: 24px; }
+        h1 { font-size: 32pt; font-weight: 800; line-height: 1.1; letter-spacing: -0.5px; margin-bottom: 12px; }
+        h2 { font-size: 22pt; font-weight: 700; line-height: 1.15; letter-spacing: -0.3px; margin-bottom: 10px; }
+        h3 { font-size: 14pt; font-weight: 700; line-height: 1.2; margin-bottom: 8px; }
+        h4 { font-size: 11pt; font-weight: 600; line-height: 1.3; margin-bottom: 4px; }
+        .subtitle { font-size: 13pt; font-weight: 400; line-height: 1.5; color: var(--gray-500); }
+        .page-dark .subtitle { color: rgba(255,255,255,0.65); }
+        .text-red { color: var(--red); }
+        .text-muted { color: var(--gray-500); }
+        .text-sm { font-size: 9pt; }
+        .text-xs { font-size: 8pt; }
+        .section-label { font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--red); margin-bottom: 8px; }
+        .page-dark .section-label { color: rgba(255,255,255,0.45); }
+
+        .accent-bar { height: 4px; background: linear-gradient(90deg, var(--red), var(--red-dark)); width: 60px; margin: 12px 0 16px 0; border-radius: 2px; }
+        .accent-strip-top { height: 6px; background: var(--red); width: 100%; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; }
+
+        .card { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 10px; padding: 16px; }
+        .card-dark { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 16px; }
+        .card-red { background: var(--red); color: var(--white); border-radius: 10px; padding: 16px; }
+        .card-red-outline { background: var(--white); border: 2px solid var(--red); border-radius: 10px; padding: 16px; }
+        .card-icon { width: 36px; height: 36px; background: var(--red-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
+
+        .img-full { width: 100%; border-radius: 12px; object-fit: cover; }
+        .img-rounded { border-radius: 12px; width: 100%; object-fit: cover; }
+        .img-shadow { box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+
+        .pain-point { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+        .pain-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+
+        .flywheel { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 16px 0; }
+        .flywheel-item { background: var(--red); color: var(--white); padding: 8px 14px; border-radius: 20px; font-size: 9pt; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .flywheel-arrow { color: var(--gray-300); font-size: 16px; display: flex; align-items: center; }
+
+        .step { display: flex; gap: 14px; margin-bottom: 16px; align-items: flex-start; }
+        .step-num { width: 32px; height: 32px; background: var(--red); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13pt; flex-shrink: 0; }
+        .step-content { flex: 1; }
+
+        .tab-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 8px; font-size: 9pt; font-weight: 500; }
+        .tab-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+
+        .timeline-item { display: flex; gap: 14px; margin-bottom: 18px; position: relative; }
+        .timeline-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--red); flex-shrink: 0; margin-top: 4px; }
+        .timeline-item:not(:last-child)::before { content: ''; position: absolute; left: 6px; top: 20px; bottom: -10px; width: 2px; background: var(--red-light); }
+
+        .message-type { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; background: var(--gray-50); border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--red); }
+        .message-icon { font-size: 18px; flex-shrink: 0; }
+
+        .split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center; }
+
+        .checklist-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+        .check { color: var(--red); font-weight: 700; }
+
+        .quote-box { border-left: 4px solid var(--red); padding: 12px 16px; background: var(--red-50); border-radius: 0 8px 8px 0; font-style: italic; margin: 14px 0; }
+
+        .big-stat { text-align: center; padding: 12px; }
+        .big-stat .number { font-size: 32pt; font-weight: 800; color: var(--red); line-height: 1; }
+        .big-stat .label { font-size: 8pt; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--gray-500); margin-top: 4px; }
+
+        .feature-row { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--gray-100); align-items: flex-start; }
+        .feature-row:last-child { border-bottom: none; }
+
+        .badge { display: inline-block; padding: 3px 10px; background: var(--red-light); color: var(--red); border-radius: 12px; font-size: 8pt; font-weight: 600; }
+
+        @media print {
+            body { background: white; }
+            .page { margin: 0; box-shadow: none; width: 100%; min-height: 100vh; }
+        }
+        @page { size: A4; margin: 0; }
+    </style>
+</head>
+<body>
+
+<!-- PAGE 1 — COVER -->
+<div class="page page-dark" style="padding: 0;">
+    <img src="../public/gwdlogo.png" alt="" style="position:absolute;top:0;left:0;width:100%;height:65%;object-fit:cover;opacity:0;">
+    <div style="position: absolute; top: 0; left: 0; right: 0; height: 65%; background: linear-gradient(135deg, #111827 0%, #1a1020 50%, #2d1215 100%); opacity: 0.95;"></div>
+    <div style="position: absolute; top: 15%; left: 50%; transform: translateX(-50%); width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(220,38,38,0.15) 0%, transparent 70%);"></div>
+    <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 40px 50px 50px; z-index: 2;">
+        <img src="../public/gwdlogo.png" alt="GWD" style="height: 56px; margin-bottom: 28px;">
+        <h1 style="font-size: 38pt; line-height: 1.05; margin-bottom: 14px;">
+            Your Academy.<br>
+            <span style="color: var(--red);">Digitally Elevated.</span>
+        </h1>
+        <p style="font-size: 14pt; color: rgba(255,255,255,0.6); max-width: 420px; margin-bottom: 28px;">
+            The complete sports ecosystem — free for every academy in India.
+        </p>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <div style="height: 3px; width: 50px; background: var(--red); border-radius: 2px;"></div>
+            <span style="font-size: 8pt; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.4);">Academy Partner Guide 2026</span>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 2 — THE PROBLEM -->
+<div class="page">
+    <div class="accent-strip-top"></div>
+    <div class="page-content">
+        <div class="section-label">The Challenge</div>
+        <h2>Running an Academy Shouldn't Mean<br>Running in <span class="text-red">Circles</span></h2>
+        <div class="accent-bar"></div>
+        <p class="subtitle" style="margin-bottom: 28px; max-width: 440px;">You became a coach to build champions. Not to be an accountant, a designer, a WhatsApp broadcaster, and a fee-collector — all before breakfast.</p>
+        <div class="pain-point"><span class="pain-icon">📋</span><div><h4>Attendance on Paper Registers</h4><p class="text-sm text-muted">Lost registers, no history, parents have no visibility into whether their child showed up.</p></div></div>
+        <div class="pain-point"><span class="pain-icon">💸</span><div><h4>Fee Collection via Cash & UPI Reminders</h4><p class="text-sm text-muted">No receipts, no tracking, endless follow-ups on WhatsApp groups. Awkward conversations every month.</p></div></div>
+        <div class="pain-point"><span class="pain-icon">🌐</span><div><h4>Zero Digital Presence</h4><p class="text-sm text-muted">Parents searching "cricket academy near me" will never find you. No website, no listing, no discoverability.</p></div></div>
+        <div class="pain-point"><span class="pain-icon">🏅</span><div><h4>No Way to Showcase Student Progress</h4><p class="text-sm text-muted">Achievements, performance metrics, training milestones — they exist only in your head or a notebook.</p></div></div>
+        <div class="pain-point"><span class="pain-icon">📱</span><div><h4>Manual WhatsApp Messaging</h4><p class="text-sm text-muted">Typing the same fee reminder to 50 parents. Forwarding the same attendance update. Every. Single. Day.</p></div></div>
+        <div class="quote-box">"I spend more time managing admin work than actually coaching my students."<br><span class="text-sm" style="font-style: normal; color: var(--gray-500);">— Every academy owner, everywhere.</span></div>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">02</div>
+</div>
+
+<!-- PAGE 3 — THE ECOSYSTEM -->
+<div class="page page-dark">
+    <div style="height: 6px; background: var(--red);"></div>
+    <div class="page-content">
+        <div class="section-label" style="color: rgba(255,255,255,0.45);">The Solution</div>
+        <h2 style="color: var(--white);">One Platform. Every Academy.<br><span style="color: var(--red);">Zero Cost.</span></h2>
+        <div style="height: 4px; width: 60px; background: var(--red); border-radius: 2px; margin: 12px 0 20px;"></div>
+        <p style="color: rgba(255,255,255,0.65); font-size: 11pt; max-width: 460px; margin-bottom: 24px;">GWD Sports Ecosystem gives every academy a complete digital platform — website, payments, attendance, WhatsApp messaging, student passports — <strong style="color: white;">completely free</strong>.</p>
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 20px; margin-bottom: 20px;">
+            <h4 style="color: rgba(255,255,255,0.5); font-size: 8pt; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 14px; text-align: center;">The GWD Flywheel</h4>
+            <div class="flywheel">
+                <div class="flywheel-item">🗺️ Discovery Map</div><div class="flywheel-arrow">→</div>
+                <div class="flywheel-item">🌐 Your Website</div><div class="flywheel-arrow">→</div>
+                <div class="flywheel-item">📋 Onboarding</div><div class="flywheel-arrow">→</div>
+                <div class="flywheel-item">📱 QR Attendance</div><div class="flywheel-arrow">→</div>
+                <div class="flywheel-item">💳 Fee Collection</div><div class="flywheel-arrow">→</div>
+                <div class="flywheel-item">📊 Performance</div><div class="flywheel-arrow">→</div>
+                <div class="flywheel-item">🛂 Passport</div><div class="flywheel-arrow">→</div>
+                <div class="flywheel-item">📲 Social Sharing</div><div class="flywheel-arrow">→</div>
+                <div class="flywheel-item">🔄 More Leads</div>
+            </div>
+        </div>
+        <div class="card-dark" style="border-left: 3px solid var(--red);">
+            <h4 style="color: var(--white); margin-bottom: 6px;">💰 How We Make Money (Hint: Not From You)</h4>
+            <p style="color: rgba(255,255,255,0.6); font-size: 10pt;">We charge a small <strong style="color: white;">convenience fee to parents</strong> (not to you) on digital payments. You receive <strong style="color: var(--red);">100% of your coaching fee</strong> directly into your bank account via automated Razorpay splits. No deductions. No commissions. No hidden charges.</p>
+        </div>
+        <div class="grid-3" style="margin-top: 18px;">
+            <div class="big-stat"><div class="number" style="color: var(--red);">100%</div><div class="label" style="color: rgba(255,255,255,0.4);">Fee Goes to You</div></div>
+            <div class="big-stat"><div class="number" style="color: var(--red);">₹0</div><div class="label" style="color: rgba(255,255,255,0.4);">Setup Cost</div></div>
+            <div class="big-stat"><div class="number" style="color: var(--red);">₹0</div><div class="label" style="color: rgba(255,255,255,0.4);">Monthly Fee</div></div>
+        </div>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">03</div>
+</div>
+
+<!-- PAGE 4 — YOUR FREE DIGITAL PRESENCE -->
+<div class="page">
+    <div class="accent-strip-top"></div>
+    <div class="page-content">
+        <div class="section-label">Digital Presence</div>
+        <h2>Your Academy Gets Its Own <span class="text-red">Website</span>. For Free.</h2>
+        <div class="accent-bar"></div>
+        <p style="font-size: 10pt; color: var(--gray-600); margin-bottom: 16px;">Every academy on GWD gets a fully branded, mobile-responsive website — with your logo, your colors, your sports, your gallery, your testimonials. Parents see <em>your brand</em>, not ours.</p>
+        <div class="grid-2">
+            <div class="card"><div class="card-icon">🎨</div><h4>Fully Customizable</h4><p class="text-sm text-muted">Your colors, fonts, logo, tagline, and background style. 6 curated theme presets or go fully custom.</p></div>
+            <div class="card"><div class="card-icon">📱</div><h4>Mobile-First</h4><p class="text-sm text-muted">Optimized for the phones parents actually use. Looks stunning on every screen size.</p></div>
+            <div class="card"><div class="card-icon">🏟️</div><h4>Real Content Only</h4><p class="text-sm text-muted">Sports, stats, and testimonials are pulled from your real data — no fake "1000+ athletes" claims.</p></div>
+            <div class="card"><div class="card-icon">📸</div><h4>Photo Gallery & Events</h4><p class="text-sm text-muted">Upload training photos, showcase events, and build a visual portfolio parents can browse.</p></div>
+        </div>
+        <div class="card-red-outline" style="margin-top: 16px;">
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <span style="font-size: 28px;">🗺️</span>
+                <div><h4 style="color: var(--red);">Discovery Map — India's First Sports Academy Directory</h4><p class="text-sm" style="color: var(--gray-600);">Parents searching for "cricket academy near me" find YOU on our interactive Discovery Map. Each pin links to your fully branded academy page. <strong>Free leads, forever.</strong></p></div>
+            </div>
+        </div>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">04</div>
+</div>
+
+<!-- PAGE 5 — THE SPORTS PASSPORT -->
+<div class="page">
+    <div class="accent-strip-top"></div>
+    <div class="page-content">
+        <div class="section-label">Student Identity</div>
+        <h2>Every Student Gets a <span class="text-red">Digital Sports Passport</span></h2>
+        <div class="accent-bar"></div>
+        <p style="font-size: 10pt; color: var(--gray-600); margin-bottom: 16px;">The Sports Passport is a unique, shareable digital identity for every student. It carries their achievements, attendance, performance metrics, and your academy's branding — all in one beautiful, mobile-friendly page.</p>
+        <div style="margin-bottom: 12px;">
+            <div class="checklist-item"><span class="check">✓</span><span class="text-sm">Unique Passport ID (GWD-XXXXXX)</span></div>
+            <div class="checklist-item"><span class="check">✓</span><span class="text-sm">Your academy's branding & logo</span></div>
+            <div class="checklist-item"><span class="check">✓</span><span class="text-sm">QR code for instant check-in</span></div>
+            <div class="checklist-item"><span class="check">✓</span><span class="text-sm">Performance scores & badges</span></div>
+            <div class="checklist-item"><span class="check">✓</span><span class="text-sm">Attendance record</span></div>
+            <div class="checklist-item"><span class="check">✓</span><span class="text-sm">Shareable link for social media</span></div>
+        </div>
+        <div class="card-red" style="margin-top: 16px;">
+            <h4 style="margin-bottom: 6px;">🔄 The Viral Loop That Grows Your Academy</h4>
+            <p style="font-size: 9pt; opacity: 0.9;">Parents share their child's Passport on WhatsApp and social media → Friends see your academy's brand, logo, and achievements → They visit your website on the Discovery Map → They become new leads → <strong>Your academy grows organically, for free.</strong></p>
+        </div>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">05</div>
+</div>
+
+<!-- PAGE 6 — FUTURE VISION -->
+<div class="page page-dark">
+    <div style="height: 6px; background: var(--red);"></div>
+    <div class="page-content">
+        <div class="section-label" style="color: rgba(255,255,255,0.45);">Roadmap</div>
+        <h2 style="color: var(--white);">This Is Just the <span style="color: var(--red);">Beginning</span></h2>
+        <div style="height: 4px; width: 60px; background: var(--red); border-radius: 2px; margin: 12px 0 20px;"></div>
+        <p style="color: rgba(255,255,255,0.6); margin-bottom: 24px; font-size: 10pt;">Every feature we build makes YOUR academy more valuable. Here's what's coming:</p>
+        <div class="timeline-item"><div class="timeline-dot"></div><div><h4 style="color: var(--white);">🎨 Content Engine — Auto-Generated Social Posts</h4><p style="color: rgba(255,255,255,0.55); font-size: 9pt;">AI-powered post generation for your academy's social media — training highlights, achievement announcements, event promotions.</p></div></div>
+        <div class="timeline-item"><div class="timeline-dot"></div><div><h4 style="color: var(--white);">🏫 School Camps — GWD Brings Students to You</h4><p style="color: rgba(255,255,255,0.55); font-size: 9pt;">GWD organizes sports camps at schools in your area. Top performers get introduced to YOUR academy. We generate the leads; you convert them.</p></div></div>
+        <div class="timeline-item"><div class="timeline-dot"></div><div><h4 style="color: var(--white);">⭐ Elite Circle — Recognize & Scout Champions</h4><p style="color: rgba(255,255,255,0.55); font-size: 9pt;">Top-performing students across all GWD academies are showcased in the Elite Circle. Scouts, selectors, and competitive programs discover talent.</p></div></div>
+        <div class="timeline-item"><div class="timeline-dot"></div><div><h4 style="color: var(--white);">🏆 Inter-Academy Tournaments</h4><p style="color: rgba(255,255,255,0.55); font-size: 9pt;">GWD-organized competitive events between ecosystem academies. Build rivalries, community, and prestige.</p></div></div>
+        <div class="card-dark" style="border-left: 3px solid var(--red); margin-top: 16px;">
+            <p style="color: rgba(255,255,255,0.7); font-size: 9pt; font-style: italic;">"Every school camp we run, every tournament we organize, every elite player we scout — it all feeds back into your academy. The ecosystem grows together."</p>
+        </div>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">06</div>
+</div>
+
+<!-- PAGE 7 — ADMIN DASHBOARD -->
+<div class="page">
+    <div class="accent-strip-top"></div>
+    <div class="page-content">
+        <div class="section-label">Platform Features</div>
+        <h2>Your <span class="text-red">Command Center</span></h2>
+        <div class="accent-bar"></div>
+        <p style="font-size: 10pt; color: var(--gray-600); margin-bottom: 16px;">The Admin Dashboard is your mission control — everything about your academy at a glance. Manage students, fees, attendance, branding, events, trainers, and WhatsApp communications from a single screen with <strong>13 dedicated tabs</strong>:</p>
+        <div class="tab-grid">
+            <div class="tab-badge">📊 Overview</div><div class="tab-badge">👥 Users</div><div class="tab-badge">🎓 Students</div><div class="tab-badge">📥 Import</div><div class="tab-badge">🏋️ Trainers</div><div class="tab-badge">📅 Events</div><div class="tab-badge">🌐 Landing Page</div><div class="tab-badge">💰 Fees</div><div class="tab-badge">👕 Kits</div><div class="tab-badge">✅ Check-in</div><div class="tab-badge">📱 Comms</div><div class="tab-badge">🎨 Branding</div><div class="tab-badge">⚙️ Settings</div>
+        </div>
+        <div class="grid-2" style="margin-top: 14px;">
+            <div class="card"><h4>🚀 Smart Setup Checklist</h4><p class="text-sm text-muted">First time? The dashboard shows a step-by-step checklist of what to configure before going live — fees, batches, branding, and more.</p></div>
+            <div class="card"><h4>📈 Real-Time Metrics</h4><p class="text-sm text-muted">Total students, active batches, fee collection rate, attendance trends, and recent activity — all on the Overview tab.</p></div>
+        </div>
+        <div class="card-red-outline" style="margin-top: 14px;">
+            <p class="text-sm" style="color: var(--gray-600);"><strong style="color: var(--red);">Privacy First:</strong> Every piece of data is strictly isolated to your academy. You cannot see any other academy's data, student counts, or financials. Ever.</p>
+        </div>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">07</div>
+</div>
+
+<!-- PAGE 8 — STUDENT IMPORT -->
+<div class="page">
+    <div class="accent-strip-top"></div>
+    <div class="page-content">
+        <div class="section-label">Onboarding</div>
+        <h2>Add 50 Students in <span class="text-red">Under 5 Minutes</span></h2>
+        <div class="accent-bar"></div>
+        <p style="font-size: 10pt; color: var(--gray-600); margin-bottom: 20px;">The Import Wizard makes onboarding your existing students effortless.</p>
+        <h3 style="margin-bottom: 12px;">Three Ways to Import</h3>
+        <div class="grid-3" style="margin-bottom: 20px;">
+            <div class="card" style="text-align: center;"><span style="font-size: 32px; display: block; margin-bottom: 8px;">📋</span><h4>CSV Upload</h4><p class="text-xs text-muted">Upload a spreadsheet with names, phone numbers, sports, and batches.</p></div>
+            <div class="card" style="text-align: center;"><span style="font-size: 32px; display: block; margin-bottom: 8px;">📷</span><h4>Photo OCR</h4><p class="text-xs text-muted">Take a photo of your paper register. AI extracts names and numbers.</p></div>
+            <div class="card" style="text-align: center;"><span style="font-size: 32px; display: block; margin-bottom: 8px;">💬</span><h4>Paste Text</h4><p class="text-xs text-muted">Copy-paste a WhatsApp message or list. The system parses it intelligently.</p></div>
+        </div>
+        <h3 style="margin-bottom: 12px;">What Happens Automatically</h3>
+        <div class="step"><div class="step-num">1</div><div class="step-content"><h4>Digital Passport Created</h4><p class="text-sm text-muted">Each student gets a unique ID (GWD-XXXXXX), a passport page, and a QR code — instantly.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><h4>Parent Receives WhatsApp Welcome</h4><p class="text-sm text-muted">Automated message with passport link, login credentials, and payment link.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><h4>Fee Schedule Attached</h4><p class="text-sm text-muted">If you've set up fee plans, the student is automatically enrolled. Reminders start on schedule.</p></div></div>
+        <div class="quote-box">Import once. The platform handles credentials, welcome messages, passports, and fee linking — all automatically.</div>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">08</div>
+</div>
+
+<!-- PAGE 9 — ATTENDANCE -->
+<div class="page">
+    <div class="accent-strip-top"></div>
+    <div class="page-content">
+        <div class="section-label">Attendance</div>
+        <h2><span class="text-red">Two Modes.</span> Zero Paper. Instant Notifications.</h2>
+        <div class="accent-bar"></div>
+        <div class="grid-2" style="margin-bottom: 16px;">
+            <div class="card" style="border-left: 3px solid var(--red);"><div class="badge" style="margin-bottom: 8px;">Mode 1</div><h4>Parent Self Check-In (QR)</h4><p class="text-sm text-muted">Print the batch QR code and display it at your academy entrance. Parents scan it → child is marked present → parent gets instant WhatsApp confirmation.</p></div>
+            <div class="card" style="border-left: 3px solid var(--red);"><div class="badge" style="margin-bottom: 8px;">Mode 2</div><h4>Coach Batch Register</h4><p class="text-sm text-muted">Coach opens the Trainer Portal → sees the batch roster → one tap to mark each student present or absent → all parents notified at once.</p></div>
+        </div>
+        <div class="grid-3" style="margin-top: 10px;">
+            <div class="card" style="text-align: center;"><span style="font-size: 24px;">🔀</span><h4 style="margin-top: 6px;">Smart Merge</h4><p class="text-xs text-muted">If both QR and coach register are used, the system merges them. No duplicate messages.</p></div>
+            <div class="card" style="text-align: center;"><span style="font-size: 24px;">⏰</span><h4 style="margin-top: 6px;">Check-In Windows</h4><p class="text-xs text-muted">Configure time slots per batch. QR scans only work during the scheduled window.</p></div>
+            <div class="card" style="text-align: center;"><span style="font-size: 24px;">📊</span><h4 style="margin-top: 6px;">Attendance History</h4><p class="text-xs text-muted">Every check-in is recorded permanently. View trends by student, batch, or date.</p></div>
+        </div>
+        <div class="card-red" style="margin-top: auto;"><p style="font-size: 9pt;"><strong>Why Parents Love It:</strong> "Rohan checked in at MasterGrade Cricket Academy at 5:30 PM ✅" — that one WhatsApp message every evening is worth more to a parent than any brochure you'll ever print.</p></div>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">09</div>
+</div>
+
+<!-- PAGE 10 — FEE COLLECTION -->
+<div class="page">
+    <div class="accent-strip-top"></div>
+    <div class="page-content">
+        <div class="section-label">Payments</div>
+        <h2>Fee Collection on <span class="text-red">Autopilot</span></h2>
+        <div class="accent-bar"></div>
+        <p style="font-size: 10pt; color: var(--gray-600); margin-bottom: 18px;">No more awkward fee conversations. The platform collects fees, sends reminders, issues receipts, and deposits money into your bank — automatically.</p>
+        <div class="step"><div class="step-num">1</div><div class="step-content"><h4>Set Your Fee Schedule</h4><p class="text-sm text-muted">Define plans: Monthly, Quarterly, Half-Yearly, or Annual. Set the amount.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><h4>Parents Receive Payment Links</h4><p class="text-sm text-muted">Via WhatsApp, via the Passport page, or via a direct /pay link. UPI, cards, net banking — all supported.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><h4>Money Splits Automatically</h4><p class="text-sm text-muted"><strong>100% coaching fee → your bank.</strong> Convenience fee (charged to parent) → GWD. Powered by Razorpay Route.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content"><h4>Receipt Sent Instantly</h4><p class="text-sm text-muted">Parent gets a WhatsApp payment receipt the moment the payment settles.</p></div></div>
+        <div class="grid-2" style="margin-top: 12px;">
+            <div class="card" style="border-left: 3px solid var(--red);"><h4>🔔 Smart Fee Reminders</h4><p class="text-xs text-muted"><strong>T-5 days:</strong> Friendly heads-up · <strong>Due date:</strong> Fee is due today · <strong>T+1 to T+3:</strong> Overdue · <strong>After T+3:</strong> Stops automatically. No harassment. Capped at 3/day.</p></div>
+            <div class="card" style="border-left: 3px solid var(--red);"><h4>💵 Cash & Offline Payments</h4><p class="text-xs text-muted">One tap records cash payment, immediately cancels pending fee reminders, and marks the fee as settled. Clean books.</p></div>
+        </div>
+        <div class="card-red-outline" style="margin-top: 12px;"><p class="text-sm" style="color: var(--gray-700);"><strong style="color: var(--red);">Important:</strong> We never restrict a student's attendance, passport, or access due to non-payment. Non-payment is a billing issue — not a reason to punish a child.</p></div>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">10</div>
+</div>
+
+<!-- PAGE 11 — WHATSAPP ENGINE -->
+<div class="page page-dark">
+    <div style="height: 6px; background: var(--red);"></div>
+    <div class="page-content">
+        <div class="section-label" style="color: rgba(255,255,255,0.45);">Communication</div>
+        <h2 style="color: var(--white);">Automated <span style="color: var(--red);">WhatsApp</span> That Just Works</h2>
+        <div style="height: 4px; width: 60px; background: var(--red); border-radius: 2px; margin: 12px 0 18px;"></div>
+        <p style="color: rgba(255,255,255,0.6); font-size: 10pt; margin-bottom: 16px;">Powered by the official Meta WhatsApp Cloud API. Every message is a pre-approved template — professional, compliant, and delivered reliably.</p>
+        <h4 style="color: var(--white); margin-bottom: 10px;">7 Automated Message Types</h4>
+        <div class="message-type" style="background: rgba(255,255,255,0.06); border-left-color: var(--red);"><span class="message-icon">👋</span><div><h4 style="color: var(--white); font-size: 9pt;">Welcome Message</h4><p style="color: rgba(255,255,255,0.5); font-size: 8pt;">Passport link + login credentials on import</p></div></div>
+        <div class="message-type" style="background: rgba(255,255,255,0.06); border-left-color: var(--red);"><span class="message-icon">✅</span><div><h4 style="color: var(--white); font-size: 9pt;">Attendance Confirmation</h4><p style="color: rgba(255,255,255,0.5); font-size: 8pt;">"Rohan checked in at 5:30 PM ✅"</p></div></div>
+        <div class="message-type" style="background: rgba(255,255,255,0.06); border-left-color: var(--red);"><span class="message-icon">💸</span><div><h4 style="color: var(--white); font-size: 9pt;">Fee Reminder</h4><p style="color: rgba(255,255,255,0.5); font-size: 8pt;">Smart cadence: friendly → due → overdue → stop</p></div></div>
+        <div class="message-type" style="background: rgba(255,255,255,0.06); border-left-color: var(--red);"><span class="message-icon">🧾</span><div><h4 style="color: var(--white); font-size: 9pt;">Payment Receipt</h4><p style="color: rgba(255,255,255,0.5); font-size: 8pt;">Instant confirmation when payment settles</p></div></div>
+        <div class="grid-3" style="margin-top: 14px;">
+            <div class="card-dark" style="text-align: center; padding: 12px;"><span style="font-size: 20px;">📊</span><h4 style="color: var(--white); font-size: 9pt; margin-top: 4px;">Weekly Digest</h4><p style="color: rgba(255,255,255,0.4); font-size: 7pt;">Attendance %, achievements, next fee</p></div>
+            <div class="card-dark" style="text-align: center; padding: 12px;"><span style="font-size: 20px;">🏅</span><h4 style="color: var(--white); font-size: 9pt; margin-top: 4px;">Achievement Alert</h4><p style="color: rgba(255,255,255,0.4); font-size: 7pt;">Badges & milestones to parents</p></div>
+            <div class="card-dark" style="text-align: center; padding: 12px;"><span style="font-size: 20px;">📢</span><h4 style="color: var(--white); font-size: 9pt; margin-top: 4px;">Broadcast</h4><p style="color: rgba(255,255,255,0.4); font-size: 7pt;">Your own announcements</p></div>
+        </div>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">11</div>
+</div>
+
+<!-- PAGE 12 — PERFORMANCE & ACHIEVEMENTS -->
+<div class="page">
+    <div class="accent-strip-top"></div>
+    <div class="page-content">
+        <div class="section-label">Performance</div>
+        <h2>Track Progress. <span class="text-red">Award Achievements.</span></h2>
+        <div class="accent-bar"></div>
+        <p style="font-size: 10pt; color: var(--gray-600); margin-bottom: 18px;">Coaches evaluate students with structured metrics. The system automatically generates badges based on configurable rules.</p>
+        <h3 style="margin-bottom: 12px;">Performance Categories</h3>
+        <div class="grid-4" style="margin-bottom: 18px;">
+            <div class="card" style="text-align: center; padding: 14px;"><span style="font-size: 28px;">🧠</span><h4 style="font-size: 9pt;">Tactical</h4><p class="text-xs text-muted">Game sense, positioning</p></div>
+            <div class="card" style="text-align: center; padding: 14px;"><span style="font-size: 28px;">⚡</span><h4 style="font-size: 9pt;">Technical</h4><p class="text-xs text-muted">Skills, technique</p></div>
+            <div class="card" style="text-align: center; padding: 14px;"><span style="font-size: 28px;">🎮</span><h4 style="font-size: 9pt;">SSG</h4><p class="text-xs text-muted">Small-sided games</p></div>
+            <div class="card" style="text-align: center; padding: 14px;"><span style="font-size: 28px;">🏟️</span><h4 style="font-size: 9pt;">Match Play</h4><p class="text-xs text-muted">Full match performance</p></div>
+        </div>
+        <div class="grid-2">
+            <div>
+                <h3 style="margin-bottom: 12px;">How Evaluations Work</h3>
+                <div class="feature-row"><span>1️⃣</span><div><h4>Coach Selects Metric</h4><p class="text-xs text-muted">Sport → category → specific metric</p></div></div>
+                <div class="feature-row"><span>2️⃣</span><div><h4>Score & Remarks</h4><p class="text-xs text-muted">Score out of max (e.g., 8/10) with remarks</p></div></div>
+                <div class="feature-row"><span>3️⃣</span><div><h4>Auto-Calculated Efficiency</h4><p class="text-xs text-muted">% efficiency rating computed dynamically</p></div></div>
+            </div>
+            <div class="card-red"><h4 style="margin-bottom: 8px;">🏅 Automated Achievement Engine</h4><p style="font-size: 9pt; opacity: 0.9;">Badges awarded automatically: attendance milestones (25, 50, 100 sessions), performance thresholds (Gold, Silver, Bronze), sport-specific achievements, and custom badges you define.</p><p style="font-size: 8pt; opacity: 0.7; margin-top: 8px; font-style: italic;">Parent gets WhatsApp: "🏅 Rohan earned Gold Badge!"</p></div>
+        </div>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">12</div>
+</div>
+
+<!-- PAGE 13 — BRANDING STUDIO -->
+<div class="page">
+    <div class="accent-strip-top"></div>
+    <div class="page-content">
+        <div class="section-label">Branding</div>
+        <h2>Make It <span class="text-red">Yours</span>. Completely.</h2>
+        <div class="accent-bar"></div>
+        <div class="grid-2">
+            <div>
+                <h3 style="margin-bottom: 12px;">What You Can Customize</h3>
+                <div class="feature-row"><span>🎨</span><div><h4>Colors</h4><p class="text-xs text-muted">6 curated presets (Violet, Deep Blue, Forest, Crimson, Midnight, Sunrise) or custom.</p></div></div>
+                <div class="feature-row"><span>🖼️</span><div><h4>Logo & Hero Images</h4><p class="text-xs text-muted">Upload your logo and hero background. They appear everywhere.</p></div></div>
+                <div class="feature-row"><span>✏️</span><div><h4>Fonts & Style</h4><p class="text-xs text-muted">Modern (DM Sans), Editorial (Playfair), or Friendly (Poppins).</p></div></div>
+                <div class="feature-row"><span>🌗</span><div><h4>Background Style</h4><p class="text-xs text-muted">Light, Soft Tint, Gradient, or Dark mode.</p></div></div>
+                <div class="feature-row"><span>💪</span><div><h4>Brand Feel</h4><p class="text-xs text-muted">Bold (high energy), Classic (restrained), or Minimal (sharp).</p></div></div>
+            </div>
+            <div>
+                <h3 style="margin-bottom: 12px;">Where Branding Appears</h3>
+                <div class="card" style="margin-bottom: 8px;"><div style="display: flex; align-items: center; gap: 8px;"><span>🌐</span><h4 style="margin: 0;">Academy Website</h4></div></div>
+                <div class="card" style="margin-bottom: 8px;"><div style="display: flex; align-items: center; gap: 8px;"><span>🛂</span><h4 style="margin: 0;">Student Passports</h4></div></div>
+                <div class="card" style="margin-bottom: 8px;"><div style="display: flex; align-items: center; gap: 8px;"><span>🧾</span><h4 style="margin: 0;">Payment Receipts</h4></div></div>
+                <div class="card" style="margin-bottom: 8px;"><div style="display: flex; align-items: center; gap: 8px;"><span>🏋️</span><h4 style="margin: 0;">Trainer Dashboard</h4></div></div>
+                <div class="card" style="margin-bottom: 8px;"><div style="display: flex; align-items: center; gap: 8px;"><span>🎓</span><h4 style="margin: 0;">Student Dashboard</h4></div></div>
+                <div class="card"><div style="display: flex; align-items: center; gap: 8px;"><span>📱</span><h4 style="margin: 0;">WhatsApp Messages</h4></div></div>
+                <div class="card-red-outline" style="margin-top: 12px;"><p class="text-xs" style="color: var(--gray-600);">Toggle website sections on/off: Hero, Sports Grid, Stats, Gallery, Testimonials, Events, Why Choose Us.</p></div>
+            </div>
+        </div>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">13</div>
+</div>
+
+<!-- PAGE 14 — TRAINER & STUDENT PORTALS -->
+<div class="page">
+    <div class="accent-strip-top"></div>
+    <div class="page-content">
+        <div class="section-label">Portals</div>
+        <h2>Dedicated Dashboards for <span class="text-red">Everyone</span></h2>
+        <div class="accent-bar"></div>
+        <div class="grid-2" style="gap: 20px;">
+            <div>
+                <div style="background: var(--charcoal-dark); color: white; padding: 14px 16px; border-radius: 12px 12px 0 0;"><h3 style="color: white; margin-bottom: 4px;">🏋️ Trainer Portal</h3><p style="font-size: 8pt; color: rgba(255,255,255,0.5);">/portal/trainer</p></div>
+                <div style="border: 1px solid var(--gray-200); border-top: none; border-radius: 0 0 12px 12px; padding: 14px;">
+                    <div class="feature-row"><span>👤</span><div><h4>Profile & Info</h4><p class="text-xs text-muted">Hourly rate, sports, specializations</p></div></div>
+                    <div class="feature-row"><span>📋</span><div><h4>Student Roster</h4><p class="text-xs text-muted">View students, mark attendance, evaluate</p></div></div>
+                    <div class="feature-row"><span>📊</span><div><h4>Performance Entry</h4><p class="text-xs text-muted">Sport → category → metric → score → remarks</p></div></div>
+                    <div class="feature-row"><span>📅</span><div><h4>Availability</h4><p class="text-xs text-muted">Schedule slots and batch assignments</p></div></div>
+                </div>
+            </div>
+            <div>
+                <div style="background: var(--red); color: white; padding: 14px 16px; border-radius: 12px 12px 0 0;"><h3 style="color: white; margin-bottom: 4px;">🎓 Student Portal</h3><p style="font-size: 8pt; color: rgba(255,255,255,0.7);">/portal/student</p></div>
+                <div style="border: 1px solid var(--gray-200); border-top: none; border-radius: 0 0 12px 12px; padding: 14px;">
+                    <div class="feature-row"><span>📱</span><div><h4>QR Code & Overview</h4><p class="text-xs text-muted">Digital passport QR, evaluation history</p></div></div>
+                    <div class="feature-row"><span>📈</span><div><h4>Evaluation Timeline</h4><p class="text-xs text-muted">Performance logs with % efficiency</p></div></div>
+                    <div class="feature-row"><span>💰</span><div><h4>Fees & Payments</h4><p class="text-xs text-muted">View dues, history, pay online</p></div></div>
+                    <div class="feature-row"><span>👕</span><div><h4>Kits</h4><p class="text-xs text-muted">Track assigned sports kits</p></div></div>
+                    <div class="feature-row"><span>⚙️</span><div><h4>Account Settings</h4><p class="text-xs text-muted">Profile, password, preferences</p></div></div>
+                </div>
+            </div>
+        </div>
+        <div class="card-red" style="margin-top: 16px;"><p style="font-size: 9pt;"><strong>Academy-Branded Experience:</strong> Both portals inherit your academy's colors, logo, and fonts. Trainers and students see YOUR brand — not a generic app.</p></div>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">14</div>
+</div>
+
+<!-- PAGE 15 — HOW TO USE IT (DIVIDER) -->
+<div class="page page-dark">
+    <div style="height: 6px; background: var(--red);"></div>
+    <div class="page-content-centered" style="padding: 50px;">
+        <div class="section-label" style="color: rgba(255,255,255,0.45);">Part 3</div>
+        <h1 style="color: var(--white); font-size: 36pt; margin-bottom: 8px;">How to <span style="color: var(--red);">Use</span> It</h1>
+        <div style="height: 4px; width: 80px; background: var(--red); border-radius: 2px; margin: 16px auto;"></div>
+        <p style="color: rgba(255,255,255,0.55); font-size: 13pt; max-width: 400px;">A step-by-step guide to getting your academy live on GWD in under 30 minutes.</p>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">15</div>
+</div>
+
+<!-- PAGE 16 — GETTING STARTED -->
+<div class="page">
+    <div class="accent-strip-top"></div>
+    <div class="page-content">
+        <div class="section-label">Getting Started</div>
+        <h2>Your First <span class="text-red">10 Minutes</span></h2>
+        <div class="accent-bar"></div>
+        <p style="font-size: 10pt; color: var(--gray-600); margin-bottom: 20px;">GWD will provide you with admin login credentials. Here's what to do first:</p>
+        <div class="step"><div class="step-num">1</div><div class="step-content"><h4>Log In to Your Admin Dashboard</h4><p class="text-sm text-muted">Visit your academy URL and log in with the credentials provided by GWD.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><h4>Complete the Setup Checklist</h4><p class="text-sm text-muted">The dashboard shows a proactive checklist of what needs to be configured. Follow it top to bottom.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><h4>Set Your Fee Schedule</h4><p class="text-sm text-muted"><strong>Fees</strong> tab → Create a fee plan. Choose Monthly / Quarterly / Half-Yearly / Annual and set the amount. <em>Without this, parents cannot make payments.</em></p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content"><h4>Create Your First Batch</h4><p class="text-sm text-muted"><strong>Check-in</strong> tab → Add Batch. Name it (e.g., "Morning 6–8 AM"), assign a time slot and days. This generates the QR code.</p></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-content"><h4>Upload Your Logo & Set Brand Colors</h4><p class="text-sm text-muted"><strong>Branding</strong> tab → Upload your logo, write your tagline, and pick your colors. Immediately applies to website, passports, and receipts.</p></div></div>
+        <div class="card" style="margin-top: auto; background: var(--red-50); border: 1px solid var(--red-light);"><div style="display: flex; gap: 10px; align-items: flex-start;"><span style="font-size: 20px;">💡</span><div><h4 style="color: var(--red);">Pro Tip</h4><p class="text-sm" style="color: var(--gray-600);">Once fees, batch, and branding are set, your academy website is <strong>live</strong>. Share the URL with parents immediately.</p></div></div></div>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">16</div>
+</div>
+
+<!-- PAGE 17 — ADDING STUDENTS -->
+<div class="page">
+    <div class="accent-strip-top"></div>
+    <div class="page-content">
+        <div class="section-label">Step-by-Step</div>
+        <h2>Adding Students & <span class="text-red">Activating Parents</span></h2>
+        <div class="accent-bar"></div>
+        <div class="step"><div class="step-num">1</div><div class="step-content"><h4>Go to the Import Tab</h4><p class="text-sm text-muted">Click <strong>"Import"</strong> in the admin sidebar.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><h4>Choose Your Import Method</h4><p class="text-sm text-muted">CSV file, photo of register (OCR), or paste WhatsApp text.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><h4>Review & Fix Staged Data</h4><p class="text-sm text-muted">Preview every student before import. Fix errors, assign batches, add missing phone numbers.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content"><h4>Click Import</h4><p class="text-sm text-muted">Students are created instantly with Passport IDs, QR codes, and login credentials.</p></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-content"><h4>Parents Receive WhatsApp Welcome (Automatic)</h4><p class="text-sm text-muted">Within minutes, each parent gets:</p>
+            <div style="background: var(--gray-50); border-radius: 8px; padding: 12px; margin-top: 8px; border-left: 3px solid #25D366;">
+                <p class="text-xs" style="color: var(--gray-700);"><em>Hi Priya! Rohan is now on GWD — MasterGrade Cricket Academy's training, attendance and progress all in one place.</em><br><br><em>View Rohan's Sports Passport: [link]</em><br><em>Username: rohan_gwd123</em><br><em>Password: ••••••••</em></p>
+            </div>
+        </div></div>
+        <div class="card-red-outline" style="margin-top: 12px;"><p class="text-sm" style="color: var(--gray-700);"><strong style="color: var(--red);">Adding individually?</strong> <strong>Students</strong> tab → <strong>Add Student</strong>. Fill in name, parent phone, batch, and sport. Same automation triggers.</p></div>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">17</div>
+</div>
+
+<!-- PAGE 18 — DAILY OPERATIONS -->
+<div class="page">
+    <div class="accent-strip-top"></div>
+    <div class="page-content">
+        <div class="section-label">Daily Workflow</div>
+        <h2>Your <span class="text-red">Daily Routine</span> — Simplified</h2>
+        <div class="accent-bar"></div>
+        <div class="grid-2" style="gap: 18px; margin-bottom: 16px;">
+            <div class="card" style="border-top: 4px solid var(--red);"><h3 style="margin-bottom: 10px;">🌅 Session Start</h3>
+                <div class="feature-row"><span>1.</span><p class="text-sm">Display the batch <strong>QR code</strong> at your entrance (Check-in → batch → Print QR)</p></div>
+                <div class="feature-row"><span>2.</span><p class="text-sm">Parents scan as students arrive → instant WhatsApp confirmation</p></div>
+                <div class="feature-row" style="border-bottom: none;"><span>3.</span><p class="text-sm"><strong>OR</strong> coach opens Trainer Portal → batch roster → one-tap attendance</p></div>
+            </div>
+            <div class="card" style="border-top: 4px solid var(--red);"><h3 style="margin-bottom: 10px;">🌙 End of Day</h3>
+                <div class="feature-row"><span>1.</span><p class="text-sm">Check <strong>Comms</strong> tab — all messages and delivery status</p></div>
+                <div class="feature-row"><span>2.</span><p class="text-sm">Review <strong>Fees</strong> tab for new payments or overdue</p></div>
+                <div class="feature-row" style="border-bottom: none;"><span>3.</span><p class="text-sm">Record <strong>cash payments</strong>: Fees → student → "Record Cash" → done</p></div>
+            </div>
+        </div>
+        <h3 style="margin-bottom: 10px;">📆 Weekly</h3>
+        <div class="grid-3" style="margin-bottom: 16px;">
+            <div class="card" style="text-align: center;"><span style="font-size: 24px;">📊</span><h4 style="margin-top: 6px; font-size: 9pt;">Weekly Digest</h4><p class="text-xs text-muted">Auto-sent to parents: attendance %, achievements, next fee</p></div>
+            <div class="card" style="text-align: center;"><span style="font-size: 24px;">🏅</span><h4 style="margin-top: 6px; font-size: 9pt;">Evaluate Students</h4><p class="text-xs text-muted">Coaches log performance → badges auto-generate</p></div>
+            <div class="card" style="text-align: center;"><span style="font-size: 24px;">📢</span><h4 style="margin-top: 6px; font-size: 9pt;">Broadcast</h4><p class="text-xs text-muted">Comms → Broadcast → write announcement → send</p></div>
+        </div>
+        <div class="card" style="background: var(--red-50); border: 1px solid var(--red-light);"><p class="text-sm" style="color: var(--gray-700);"><strong style="color: var(--red);">Fee reminders are fully automated.</strong> The system sends at T-5, due date, T+1 to T+3 — then stops. Parents who pay online get instant receipts. Cash just needs a one-tap record from you.</p></div>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">18</div>
+</div>
+
+<!-- PAGE 19 — MANAGING TEAM & DASHBOARD -->
+<div class="page">
+    <div class="accent-strip-top"></div>
+    <div class="page-content">
+        <div class="section-label">Advanced</div>
+        <h2>Managing Your <span class="text-red">Team & Data</span></h2>
+        <div class="accent-bar"></div>
+        <div class="grid-2" style="gap: 16px; margin-bottom: 18px;">
+            <div><h3 style="margin-bottom: 10px;">👥 Adding Trainers</h3>
+                <div class="step" style="margin-bottom: 10px;"><div class="step-num" style="width: 24px; height: 24px; font-size: 10pt;">1</div><p class="text-sm"><strong>Users</strong> tab → <strong>Add User</strong></p></div>
+                <div class="step" style="margin-bottom: 10px;"><div class="step-num" style="width: 24px; height: 24px; font-size: 10pt;">2</div><p class="text-sm">Set role to <strong>Trainer</strong></p></div>
+                <div class="step" style="margin-bottom: 10px;"><div class="step-num" style="width: 24px; height: 24px; font-size: 10pt;">3</div><p class="text-sm">Fill in name, phone, sports, specialization</p></div>
+                <div class="step" style="margin-bottom: 10px;"><div class="step-num" style="width: 24px; height: 24px; font-size: 10pt;">4</div><p class="text-sm">Assign to batches in <strong>Check-in</strong> tab</p></div>
+            </div>
+            <div><h3 style="margin-bottom: 10px;">📅 Creating Events</h3>
+                <div class="step" style="margin-bottom: 10px;"><div class="step-num" style="width: 24px; height: 24px; font-size: 10pt;">1</div><p class="text-sm"><strong>Events</strong> tab → <strong>Create Event</strong></p></div>
+                <div class="step" style="margin-bottom: 10px;"><div class="step-num" style="width: 24px; height: 24px; font-size: 10pt;">2</div><p class="text-sm">Add title, date, description, type</p></div>
+                <div class="step" style="margin-bottom: 10px;"><div class="step-num" style="width: 24px; height: 24px; font-size: 10pt;">3</div><p class="text-sm">Events appear on your academy website</p></div>
+            </div>
+        </div>
+        <h3 style="margin-bottom: 12px;">📊 Understanding Your Dashboard Tabs</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--gray-200); border: 1px solid var(--gray-200); border-radius: 8px; overflow: hidden; font-size: 9pt;">
+            <div style="background: var(--charcoal-dark); color: white; padding: 8px 12px; font-weight: 700;">Tab</div>
+            <div style="background: var(--charcoal-dark); color: white; padding: 8px 12px; font-weight: 700;">What You'll Find</div>
+            <div style="background: white; padding: 8px 12px; font-weight: 600;">📊 Overview</div><div style="background: white; padding: 8px 12px;">Total students, active batches, fee collection rate, recent activity</div>
+            <div style="background: var(--gray-50); padding: 8px 12px; font-weight: 600;">💰 Fees</div><div style="background: var(--gray-50); padding: 8px 12px;">Who paid, who's overdue, payment history, cash recording</div>
+            <div style="background: white; padding: 8px 12px; font-weight: 600;">✅ Check-in</div><div style="background: white; padding: 8px 12px;">Batch QR codes, attendance records, batch schedules</div>
+            <div style="background: var(--gray-50); padding: 8px 12px; font-weight: 600;">📱 Comms</div><div style="background: var(--gray-50); padding: 8px 12px;">All WhatsApp messages sent, delivery status (sent/delivered/read/failed)</div>
+            <div style="background: white; padding: 8px 12px; font-weight: 600;">🎓 Students</div><div style="background: white; padding: 8px 12px;">Individual profiles, attendance history, performance records</div>
+            <div style="background: var(--gray-50); padding: 8px 12px; font-weight: 600;">🌐 Landing Page</div><div style="background: var(--gray-50); padding: 8px 12px;">Toggle website sections, add testimonials, manage gallery</div>
+        </div>
+    </div>
+    <div class="page-footer">GWD Sports Ecosystem</div>
+    <div class="page-number">19</div>
+</div>
+
+<!-- PAGE 20 — BACK COVER -->
+<div class="page page-dark" style="padding: 0;">
+    <div style="height: 6px; background: var(--red);"></div>
+    <div class="page-content-centered" style="padding: 50px;">
+        <img src="../public/gwdlogo.png" alt="GWD" style="height: 72px; margin-bottom: 32px;">
+        <h1 style="color: var(--white); font-size: 30pt; margin-bottom: 8px;">Welcome to the<br><span style="color: var(--red);">Ecosystem</span></h1>
+        <div style="height: 4px; width: 60px; background: var(--red); border-radius: 2px; margin: 16px auto 28px;"></div>
+        <p style="color: rgba(255,255,255,0.55); font-size: 11pt; max-width: 380px; margin-bottom: 36px;">Join a growing network of academies that are digitizing their operations, growing their student base, and building their brand — together.</p>
+        <div style="display: flex; gap: 24px; justify-content: center; margin-bottom: 36px;">
+            <div class="big-stat"><div class="number" style="color: var(--red); font-size: 28pt;">₹0</div><div class="label" style="color: rgba(255,255,255,0.4);">Setup Cost</div></div>
+            <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
+            <div class="big-stat"><div class="number" style="color: var(--red); font-size: 28pt;">100%</div><div class="label" style="color: rgba(255,255,255,0.4);">Fee to Academy</div></div>
+            <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
+            <div class="big-stat"><div class="number" style="color: var(--red); font-size: 28pt;">∞</div><div class="label" style="color: rgba(255,255,255,0.4);">Growth Potential</div></div>
+        </div>
+        <div class="card-dark" style="max-width: 380px; text-align: center; margin-bottom: 32px;">
+            <h4 style="color: var(--white); margin-bottom: 8px;">🌐 Visit Us</h4>
+            <p style="color: var(--red); font-size: 12pt; font-weight: 600; margin-bottom: 4px;">sports.gwdglobal.in</p>
+            <p style="color: rgba(255,255,255,0.4); font-size: 9pt;">Discover academies. Explore the ecosystem. Join the movement.</p>
+        </div>
+        <div style="margin-top: auto; text-align: center;">
+            <p style="color: rgba(255,255,255,0.3); font-size: 7pt; max-width: 340px; margin: 0 auto;">GWD Sports Ecosystem charges a small convenience fee to parents on digital payments. Academy owners receive 100% of their coaching fee directly via Razorpay Route. All WhatsApp communication is powered by the official Meta WhatsApp Cloud API. © 2026 GWD Global.</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

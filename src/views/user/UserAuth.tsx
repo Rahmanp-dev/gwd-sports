@@ -244,6 +244,8 @@ export default function UserAuth() {
             <div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
+                loading="eager"
+                decoding="async"
                 src="/gwdlogo.png"
                 alt="GWD Sports"
                 className="mb-6 h-14 w-auto"
@@ -312,6 +314,8 @@ export default function UserAuth() {
                   platform at all without this. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
+                loading="eager"
+                decoding="async"
                 src="/gwdlogo.png"
                 alt="GWD Sports"
                 className="mx-auto mb-5 h-12 w-auto lg:hidden"

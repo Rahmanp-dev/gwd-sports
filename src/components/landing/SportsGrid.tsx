@@ -59,7 +59,7 @@ export default function SportsGrid({ academy }: { academy?: any }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-20"
+          className="text-center mb-10 sm:mb-16"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -77,7 +77,7 @@ export default function SportsGrid({ academy }: { academy?: any }) {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-4xl sm:text-5xl lg:text-7xl font-bold text-slate-900 mb-6 font-display tracking-tight"
+            className="text-3xl sm:text-5xl lg:text-6xl font-bold text-slate-900 mb-4 sm:mb-6 font-display tracking-tight"
           >
             Master Your <span className="text-[color:var(--brand)]">Game</span>
           </motion.h2>
@@ -86,15 +86,22 @@ export default function SportsGrid({ academy }: { academy?: any }) {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto"
+            className="text-sm sm:text-lg text-slate-500 max-w-2xl mx-auto"
           >
             Train with elite coaches in state-of-the-art facilities across
             multiple disciplines.
           </motion.p>
         </motion.div>
 
-        {/* Sports Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/**
+         * Two-up on a phone, four-up on desktop.
+         *
+         * These were one enormous 400px-tall tile per row on mobile — three
+         * disciplines meant three full screens of scrolling before a parent
+         * reached anything else. Someone scanning "what do they teach" wants to
+         * see the whole list at once, not tour it.
+         */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">
           {displaySports.map((sport: DerivedProgram, index: number) => (
             <motion.div
               key={sport.id || sport.label || index}
@@ -108,10 +115,12 @@ export default function SportsGrid({ academy }: { academy?: any }) {
               {/* Enrolling is the only honest destination: these are this
                   academy's own disciplines, not pages that exist per sport. */}
               <Link to="/user/auth" className="block h-full">
-                <div className="relative h-[400px] rounded-[2rem] overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-300 border border-slate-100">
+                <div className="relative h-[210px] sm:h-[300px] lg:h-[340px] rounded-2xl sm:rounded-[2rem] overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-300 border border-slate-100">
                   {sport.image ? (
                     <>
                       <img
+                        loading="lazy"
+                        decoding="async"
                         src={sport.image}
                         alt={sport.label}
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -131,16 +140,16 @@ export default function SportsGrid({ academy }: { academy?: any }) {
                   )}
 
                   {/* Content */}
-                  <div className="absolute bottom-0 left-0 right-0 p-8">
-                    <div className="text-5xl mb-4 transform transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-2">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 lg:p-8">
+                    <div className="text-3xl sm:text-4xl lg:text-5xl mb-2 sm:mb-4 transform transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-2">
                       {sport.emoji || "🏅"}
                     </div>
                     <div>
-                      <h3 className="text-3xl font-bold text-white mb-2 font-display tracking-tight">
+                      <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold text-white mb-1 sm:mb-2 font-display tracking-tight leading-tight">
                         {sport.label}
                       </h3>
                       {sport.description ? (
-                        <p className="text-white/80 font-medium">
+                        <p className="text-white/80 font-medium text-xs sm:text-sm">
                           {sport.description}
                         </p>
                       ) : null}

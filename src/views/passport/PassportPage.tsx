@@ -174,6 +174,8 @@ export function PassportPage({ passportId }: { passportId: string }) {
             vouching for the record before anything else loads. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
+          loading="eager"
+          decoding="async"
           src="/gwdlogo.png"
           alt="GWD Sports"
           className="mx-auto mb-5 h-10 w-auto opacity-95"
@@ -182,6 +184,8 @@ export function PassportPage({ passportId }: { passportId: string }) {
           {data.photoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
+              loading="lazy"
+              decoding="async"
               src={data.photoUrl}
               alt={data.studentName}
               className="h-full w-full object-cover"

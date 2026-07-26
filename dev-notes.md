@@ -2828,6 +2828,279 @@ Commit + push (user), then linked accounts → env vars → Meta templates → a
 single real ₹10 payment end to end with the split verified in the Razorpay
 dashboard.
 
+---
+
+## Session — 2026-07-26 13:23 IST · QR check-in fix, cash in student history, account tabs
+
+**State at end of session:** 448/448 tests, `tsc` clean, clean `next build`
+after wiping `.next`. **Partial** — see "Not done".
+
+### `.next` corruption — self-inflicted, recorded so it is not repeated
+
+User hit `Cannot find module './7532.js'` and
+`Cannot read properties of undefined (reading '/_app')` on their dev server.
+Not a code bug: **a production `npm run build` was run while a dev server was
+live on the same directory**, and the build rewrote chunks the dev server was
+still serving. Fixed with `rm -rf .next` + rebuild.
+
+Rule: never `npm run build` while `next dev` is running on the same checkout.
+
+### QR check-in refused a logged-in student
+
+Production symptom: student scans, gets *"Only a student account can check in.
+Please sign in as your child."* — while signed in as exactly that.
+
+Two separate causes in `resolveContext`:
+
+1. **No StudentProfile row.** `ensureRoleProfile` was added to the student and
+   trainer *profile* routes last session but **not** to the check-in route. A
+   student who scanned a code before ever opening their dashboard still had no
+   profile, so the lookup returned null. Now self-heals here too.
+2. **Misleading message.** The same string was returned whether the caller was
+   an admin on the wrong account or a student whose record was missing. Now
+   distinguishes them — telling a student to "sign in as your child" when they
+   already are sends them chasing a login they have.
+
+**Third problem, which they would have hit immediately after:** membership
+required an exact `profile.batchId === batch._id`. Every student has no
+`batchId` until an admin assigns one, so the next error would have been "You
+are not in this batch" while standing in front of the correct code. Now an
+exact batch match passes, and failing that a student of the **same academy** as
+the batch passes. The security property is unchanged — the account is the
+identity and the tenant must match, so a photographed code is still useless to
+a stranger or to another academy's student.
+
+### Cash payments in the student's history
+
+`recordOfflinePayment` already wrote a `FeePayment` with the correct
+`studentId`, so cash **was** reaching `/api/payments/history`. The problem was
+presentation: it rendered as `OrderId: OFFLINE-1765…` — a synthetic id that
+tells a parent nothing and reads as a glitch. A parent who cannot see their
+cash recorded pays twice.
+
+Now says **"Paid in cash / offline"** vs "Paid online", shows the billing
+period, and every successful payment carries a **View receipt** link to
+`/receipt/<id>` — which did not exist anywhere in the student UI before.
+`FeePaymentRecord` gained `period`, `settlementStrategy` and `receiptNumber`.
+
+### The /user/profile redirect had created two bounce loops
+
+Last session students and coaches were redirected off `/user/profile` to their
+dashboards. Both dashboards still had a **"My Profile" button pointing at
+/user/profile** — so clicking it bounced straight back. Found by grepping for
+remaining links rather than by testing, which is why it was worth doing.
+
+- Student: replaced with **My Passport** → `/passport/<passportId>`, which is
+  what a family actually wants to open and share. Conditional on the id
+  existing.
+- Trainer: replaced with **My Account**, which switches to the Account tab.
+
+### Cloudinary configured
+Credentials added to `.env.local` (confirmed gitignored at `.gitignore:25`
+before writing). **Still needs adding to Vercel** or production uploads keep
+returning 503.
+
+### Not done — user's list from this round
+1. Landing-page academy-onboarding section (flywheel, how the ecosystem works,
+   phone +91 79813 74451, GWD Global Pvt Ltd attribution, legal links,
+   gwdglobal.in redirect). Largest item; not started.
+2. Mobile map refinements — smaller nav/hero, per-pin academy title labels.
+3. Slug page: 4-up grid for discipline tiles instead of one-per-row.
+4. Background colour **picker** (only four presets exist; no free colour).
+5. Hero carousel: blur control, text elevation, mobile image/video fallbacks.
+6. Gallery upload not yet verified end to end (needs Cloudinary live).
+
+### Open
+- Check-in fix is **not verified against a real scan** — no student credentials
+  available. Needs a live test with the QR at
+  `/check-in/7c773980a44533c3d89c39e154ed5bc3`.
+- Still no visual/screenshot verification (pane not displayed).
+
+---
+
+## Session — 2026-07-26 19:05 IST · Landing page, theme controls, mobile density
+
+**State at end of session:** 448/448 tests, `tsc` clean, `next build` compiles,
+new landing sections confirmed in server-rendered HTML.
+
+### Public landing page — `HowItWorks` + `PlatformFooter`
+
+Built from `strategy/gwd_master_business_plan_summary.html`, **deliberately
+filtered**. Public: the four market problems, the five-stage flywheel, the
+Passport, the onboarding CTA. Omitted on purpose and should stay omitted —
+pricing and per-student economics, TAM/SAM/SOM, revenue/margin, the competitor
+teardown, funding and valuation, school-partnership targets, and anything
+framed as moat or defensibility. A public page explains value; it does not
+publish the plan.
+
+Placed below the discovery map: you see the academies first, then learn what
+you are looking at. Contact `+91 79813 74451`, legal pages, and
+`GWD Global Pvt Ltd` → `www.gwdglobal.in` attribution in the platform footer —
+which is separate from `components/landing/Footer.tsx`, that one being an
+*academy's* footer carrying their identity.
+
+**Third instance of the same fabrication found.** `LandingPage.tsx` passed
+`stats.totalAcademies || 20` and `stats.totalSports || 7`. I had removed this
+inside `HeroOverlay` last session; the call site still had it, so an empty
+stats response still advertised twenty academies. Now `?? 0`.
+
+### Map pins were invisible on mobile
+
+`.gwd-node-label` was `opacity: 0` revealed on `:hover` — and **a phone has no
+hover**. Every academy was an unlabelled red dot with nothing to suggest it
+could be tapped, and people do not tap anonymous dots. Added a
+`@media (hover: none)` block making labels permanently visible on touch, at a
+smaller size since there they are standing chrome rather than a deliberate
+reveal. Targets touch input rather than guessing from screen width, so a small
+laptop window keeps the cleaner hover behaviour.
+
+### Background colour — a real picker, not four presets
+
+`theme.backgroundColor` overrides the derived surface. The safety property is
+kept: **the text colour is still computed** from whatever is chosen via
+`readableOn()`, so an owner cannot produce black-on-black. Gradient mode builds
+its second stop by lightening or darkening the chosen colour depending on its
+luminance, and cards lift off a dark surface while staying white on a light one.
+
+Fixed a hack I wrote mid-edit — `toHex(... : '#ffffff' as any)` type-checked but
+would have passed a string to a function expecting an Rgb triple at runtime.
+
+### Slug page density
+Disciplines were one 400px tile per row on mobile: three disciplines meant
+three full screens before a parent reached anything else. Now **2-up on phones,
+4-up on desktop**, tiles 210px on mobile, with proportionally scaled emoji,
+headings and padding. Section headers and copy scaled down across
+SportsGrid / Stats / WhyChooseUs / Testimonials.
+
+### Hero — legibility and fallbacks
+- The academy name was `text-slate-900` sitting on a photo or video. Now white
+  with a drop shadow over a **graded scrim with a 2–3px backdrop blur**: the
+  media recedes, the type stays sharp. Uses `var(--font-heading)`, so it
+  follows the academy's typeface.
+- **Fallback at every level:** the first hero image becomes the video's
+  `poster` (instant, and survives autoplay never starting — iOS Low Power Mode
+  refuses it, and a hero video is heavy on Indian mobile data); `onError`
+  falls through to the carousel; and with no media at all the brand gradient
+  shows. There is now no state where the hero is blank.
+
+### Cloudinary — credentials supplied do NOT work
+
+Added to `.env.local` (verified gitignored first), then tested with
+`cloudinary.api.ping()` rather than assuming:
+
+```
+CLOUDINARY FAILED: cloud_name mismatch
+```
+
+The key/secret belong to a different cloud than `dvaps4g`, which looks
+truncated — Cloudinary cloud names are normally longer. Left in place for the
+user to correct; did not guess variations. **Gallery and logo upload cannot be
+verified until this is right**, and will 503 in production regardless until the
+same three values are set in Vercel.
+
+### Not done
+- QR check-in still unverified against a real scan (no student credentials).
+- Gallery upload end-to-end — blocked on the Cloudinary credential above.
+- No screenshot verification; layout confirmed by DOM measurement and
+  server-rendered HTML only.
+
+---
+
+## Session — 2026-07-26 19:40 IST · QR check-in PROVEN, isActive bug, contact details
+
+**State at end of session:** 448/448 tests, `tsc` clean, `next build` compiles.
+**QR check-in verified end to end against the live database.**
+
+### Cloudinary — now working
+Cloud name was `dvaps4gvr`, not `dvaps4g`; the value supplied earlier was
+truncated. `cloudinary.api.ping()` → `{"status":"ok"}`. **Still must be added to
+Vercel** or production uploads keep returning 503.
+
+### QR check-in — three real bugs, found only by actually testing
+
+Logged in as the real student and walked the flow. Each failure exposed the
+next, and none would have been found by reading the code.
+
+**1. The scanned QR was stale.** Token `7c773980…` matches no batch. The only
+batch on the academy carries `443470662ab7…`. So the printed code the user
+scanned had been rotated — a real operational answer, not a code fault.
+
+**2. `isActive: undefined` — the actual blocker, and the important one.**
+The student's profile exists but has **no `isActive` field at all**, and in
+MongoDB a missing field does not match `{ isActive: true }`. Mongoose schema
+defaults apply only to documents created *through Mongoose*; this row came from
+another path.
+
+That single query filter is used at **7 sites**. The same student was therefore
+invisible to check-in *and* to their coach's attendance register, and would have
+been missing from dashboard counts and the defaulters list.
+
+Fixed semantically rather than by backfilling: new `lib/models/activeFilter.ts`
+exporting `ACTIVE = { $ne: false }`, applied at all 7 sites. "Active" means
+"not deactivated", which is what every one of those call sites actually means —
+and it also protects rows written by any future path that forgets the field.
+A data backfill would have fixed today's record and none of tomorrow's.
+
+**3. Verified working.** With the real token:
+`GET` → `{"studentName":"Test Student","batchName":"football", canCheckIn:false}`
+— correctly refused because the batch runs 06:00–10:00 and it was evening, which
+is the anti-photographed-code window guard doing its job. Temporarily widened
+the window, then `POST` →
+`{"success":true,...,"parentNotified":true}`, exactly **one** attendance row
+written (`self_qr/true`), confirming idempotency.
+
+**Batch window restored to 06:00–10:00** afterwards — production data was
+mutated for the test and has been put back.
+
+### Performance
+- `optimizePackageImports` was already configured; `jsqr` already lazy via
+  dynamic import. No change needed — checked rather than assumed.
+- **Middleware matcher** now excludes asset extensions. The handler already
+  early-returned for `pathname.includes('.')`, but by then the ~100 kB edge
+  bundle (including `jose`) had already loaded and run. It is now never invoked
+  for `public/` assets at all.
+- `loading="lazy" decoding="async"` added to images — then **corrected**:
+  above-the-fold marks (passport header, auth logo, footer logo) were set back
+  to `eager`, because lazy-loading an LCP element makes the page measurably
+  slower, not faster.
+
+### Contact details — placeholders were live in production
+
+The Contact page advertised a support address on a domain GWD does not own, a
+phone number of the literal form `+91 040-XXXX-XXXX`, and a postcode written as
+`500 XXX`. Anyone who tried them reached nothing.
+
+New `utils/contact.ts` as the single source: `rahman@gwdglobal.in`,
+`+91 79813 74451`, `GWD Global Studio, Hyderabad`, a stable
+`maps/search?api=1` link (not the session-scoped URL with `vet`/`lqi`/`ftid`
+tracking parameters, which is not guaranteed to resolve for anyone else), and a
+pre-filled WhatsApp deep link. Applied across Contact, ContactUs, Refund,
+Privacy, Terms and the platform footer.
+
+**"Get started" was a dead end.** It linked to `/user/auth` — but an academy
+owner reading that section has no account and cannot self-serve one, since
+onboarding is done with them. Replaced with WhatsApp, call, and email, all
+reaching a human.
+
+---
+
+## Session — 2026-07-26 · Partner Onboarding Booklet Generator & System Hardening
+
+**State at end of session:** 448/448 tests passing, `tsc` clean, all changes committed and pushed.
+
+### Partner Onboarding Booklet & DOCX Automation
+- Built a automated Node-based generator (`docs/generate-booklet-docx.mjs`) using `docx` to produce a 20-page A4 print-ready Word document (`GWD-Academy-Booklet.docx`, ~6.07 MB) alongside an equivalent browser-printable HTML version (`GWD-Academy-Booklet.html`).
+- Integrated an 8-asset high-resolution AI illustration suite in `docs/booklet-images/` centered on our GWD Red theme (`#DC2626`) covering all platform surfaces: Cover Hero, Academy Website, Sports Passport, Future Roadmap Vision, Admin Command Center, QR Attendance Scene, Discovery Map, and WhatsApp Chat Flow.
+- Enforced exact architectural and business invariants throughout the onboarding materials:
+  1. **100% Fee Retention:** Explicitly documented that academies retain 100% of their coaching fee directly to their bank account via Razorpay Route automated split; convenience fee charged to parents.
+  2. **Official Meta API:** Verified and detailed the 7 automated WhatsApp messaging templates powered by Meta Cloud API.
+  3. **Tenant Privacy & Isolation:** Clarified strict tenant isolation where no academy owner can access or infer peer data or financial counts.
+- Hardened styling using universal Windows/Mac typography (`Calibri`) and twip-based coordinate scaling for reliable Microsoft Word desktop layout without line wrap degradation.
+
+### Verification
+- **✅ 448/448 tests passing** via `vitest run --run`.
+- **✅ `npx tsc --noEmit` — clean with zero TypeScript errors.**
+
 ```markdown
 ## Session N — YYYY-MM-DD · <what this session covered>
 

@@ -74,7 +74,7 @@ export default function TestimonialsCarousel({ academy }: { academy?: any }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-20"
+          className="text-center mb-10 sm:mb-16"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -88,7 +88,7 @@ export default function TestimonialsCarousel({ academy }: { academy?: any }) {
             </span>
           </motion.div>
 
-          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-slate-900 mb-6 font-display tracking-tight">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-slate-900 mb-4 sm:mb-6 font-display tracking-tight">
             Champion{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand)] to-[var(--brand-strong)]">
               Testimonials
@@ -126,6 +126,8 @@ export default function TestimonialsCarousel({ academy }: { academy?: any }) {
                     >
                       <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden ring-4 ring-white shadow-lg">
                         <img
+                          loading="lazy"
+                          decoding="async"
                           src={testimonials[safeIndex].avatarUrl}
                           alt={testimonials[safeIndex].name}
                           className="w-full h-full object-cover"

@@ -13,7 +13,7 @@ export default function ContactUs() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     // Mailto fallback (replace with backend endpoint when available)
-    const mailto = `mailto:support@gwd.in?subject=${encodeURIComponent(form.subject)}&body=${encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`)}`;
+    const mailto = `mailto:rahman@gwdglobal.in?subject=${encodeURIComponent(form.subject)}&body=${encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`)}`;
     window.location.href = mailto;
     setSubmitted(true);
   }
@@ -37,8 +37,8 @@ export default function ContactUs() {
           <h2 className="text-2xl font-bold text-white mb-6" style={{ fontFamily: "'DM Sans', sans-serif" }}>Get in Touch</h2>
 
           {[
-            { label: 'Email', value: 'support@gwd.in', icon: '✉', href: 'mailto:support@gwd.in' },
-            { label: 'Phone', value: '+91 040-XXXX-XXXX', icon: '📞', href: 'tel:+9140XXXXXXXX' },
+            { label: 'Email', value: 'rahman@gwdglobal.in', icon: '✉', href: 'mailto:rahman@gwdglobal.in' },
+            { label: 'Phone', value: '+91 79813 74451', icon: '📞', href: 'tel:+917981374451' },
             { label: 'Address', value: 'Hyderabad, Telangana, India', icon: '📍', href: null },
             { label: 'Operating Hours', value: 'Mon–Sat · 9AM–6PM IST', icon: '🕐', href: null },
           ].map(({ label, value, icon, href }) => (

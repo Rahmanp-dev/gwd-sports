@@ -273,6 +273,16 @@ export interface BrandInput {
   style?: string | null;
   fontPreset?: string | null;
   backgroundStyle?: string | null;
+  /**
+   * Optional explicit page background colour.
+   *
+   * The four `backgroundStyle` treatments derive their surface from the brand
+   * colour, which keeps things readable but gives an owner no way to say
+   * "cream", or "this exact navy". When set, this overrides the derived
+   * surface — and the TEXT colour is still computed from it, so an owner
+   * cannot accidentally produce black-on-black.
+   */
+  backgroundColor?: string | null;
 }
 
 /**
@@ -317,7 +327,7 @@ export function buildThemeVariables(input: BrandInput): Record<string, string> {
     '--font-heading': fonts.heading,
     '--font-body': fonts.body,
 
-    ...backgroundVariables(primary, input.backgroundStyle),
+    ...backgroundVariables(primary, input.backgroundStyle, input.backgroundColor),
   };
 }
 
@@ -332,8 +342,38 @@ export function buildThemeVariables(input: BrandInput): Record<string, string> {
 function backgroundVariables(
   primary: Rgb,
   requested: string | null | undefined,
+  customColor?: string | null,
 ): Record<string, string> {
   const style = isBackgroundStyle(requested) ? requested : 'light';
+
+  /**
+   * An explicit colour wins over the derived treatment — but the text colour
+   * is still COMPUTED from it via readableOn(), never chosen by the owner.
+   * That is the whole safety property: any background they pick stays legible,
+   * including a gradient built from it.
+   */
+  const custom = parseHex(customColor);
+  if (custom) {
+    const onCustom = readableOn(custom);
+    const isDarkSurface = relativeLuminance(custom) < 0.4;
+    return {
+      '--page-bg':
+        style === 'gradient'
+          ? `linear-gradient(180deg, ${toHex(custom)} 0%, ${toHex(
+              isDarkSurface ? darken(custom, 0.35) : lighten(custom, 0.55),
+            )} 100%)`
+          : toHex(custom),
+      // Cards lift off a dark surface and stay white on a light one, so text
+      // inside a card is always readable regardless of the chosen colour.
+      '--page-surface': isDarkSurface ? toHex(lighten(custom, 0.1)) : '#ffffff',
+      '--page-card': isDarkSurface ? toHex(lighten(custom, 0.14)) : '#ffffff',
+      '--page-fg': toHex(onCustom),
+      '--page-muted': isDarkSurface ? '#a1a1aa' : '#64748b',
+      '--page-border': toHex(
+        isDarkSurface ? lighten(custom, 0.2) : darken(custom, 0.08),
+      ),
+    };
+  }
 
   if (style === 'dark') {
     // Not pure black: a near-black tinted toward the brand reads as designed.

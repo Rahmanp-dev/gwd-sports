@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { ACTIVE } from '@/lib/models/activeFilter';
 import mongoose from 'mongoose';
 import { connectToDatabase } from '@/lib/db';
 import { roleMiddleware } from '@/lib/middleware/auth';
@@ -102,7 +103,7 @@ export async function GET(req: NextRequest) {
       at
     );
 
-    const students = await StudentProfile.find({ batchId: batch._id, isActive: true })
+    const students = await StudentProfile.find({ batchId: batch._id, isActive: ACTIVE })
       .select('userId passportId attendance parentPhoneE164')
       .populate('userId', 'name')
       .lean();

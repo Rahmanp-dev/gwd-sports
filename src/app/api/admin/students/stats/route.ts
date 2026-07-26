@@ -1,3 +1,4 @@
+import { ACTIVE } from '@/lib/models/activeFilter';
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { adminMiddleware } from '@/lib/middleware/auth';
@@ -9,15 +10,15 @@ export async function GET(req: NextRequest) {
     if (auth?.error) return NextResponse.json({ success: false, message: auth.error }, { status: auth.status });
     await connectToDatabase();
 
-    const totalStudents = await StudentProfile.countDocuments({ isActive: true });
+    const totalStudents = await StudentProfile.countDocuments({ isActive: ACTIVE });
     
     const levelStats = await StudentProfile.aggregate([
-      { $match: { isActive: true } },
+      { $match: { isActive: ACTIVE } },
       { $group: { _id: '$level', count: { $sum: 1 } } }
     ]);
 
     const sportStats = await StudentProfile.aggregate([
-      { $match: { isActive: true } },
+      { $match: { isActive: ACTIVE } },
       { $unwind: '$sports' },
       { $group: { _id: '$sports', count: { $sum: 1 } } }
     ]);

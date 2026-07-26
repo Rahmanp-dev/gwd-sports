@@ -141,6 +141,9 @@ export default function MGFCStudentPage() {
   const rollNumber =
     studentProfile?._id?.substring(0, 8).toUpperCase() || "N/A";
   const academyName = studentProfile?.academyId?.name || "Not in any academy";
+  /** Public, shareable record. Absent only for profiles created before
+   *  passports existed, so the button is conditional rather than assumed. */
+  const passportId: string | null = studentProfile?.passportId ?? null;
   const academyTheme = studentProfile?.academyId?.theme ?? null;
   const position = studentProfile?.level || "beginner";
   const sports = studentProfile?.sports?.join(", ") || "None";
@@ -283,16 +286,25 @@ export default function MGFCStudentPage() {
                 </div>
               </div>
             </div>
-            <div className="flex gap-2 self-start sm:self-auto">
-              <Link to="/user/profile">
-                <Button
-                  variant="outline"
-                  className="border-gray-500 text-black hover:bg-gray-200"
-                >
-                  <Users className="h-4 w-4 mr-2" />
-                  My Profile
-                </Button>
-              </Link>
+            <div className="flex flex-wrap gap-2 self-start sm:self-auto">
+              {/**
+               * Was "My Profile" → /user/profile. That page now redirects
+               * students straight back to this dashboard, so the button was an
+               * infinite bounce. Account settings live on the Account tab
+               * here; this slot is far better spent on the Passport, which is
+               * the thing a family actually wants to open and share.
+               */}
+              {passportId ? (
+                <Link to={`/passport/${passportId}`}>
+                  <Button
+                    variant="outline"
+                    className="border-gray-500 text-black hover:bg-gray-200"
+                  >
+                    <Award className="h-4 w-4 mr-2" />
+                    My Passport
+                  </Button>
+                </Link>
+              ) : null}
               <Button
                 variant="outline"
                 className="border-gray-500 text-black hover:bg-gray-200"

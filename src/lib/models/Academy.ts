@@ -93,6 +93,8 @@ export interface IAcademy extends Document {
     fontPreset?: 'sans' | 'editorial' | 'rounded';
     /** Page surface treatment. See BACKGROUND_STYLES in lib/branding/palette.ts. */
     backgroundStyle?: 'light' | 'soft' | 'gradient' | 'dark';
+    /** Explicit page colour. Overrides the derived surface; text stays computed. */
+    backgroundColor?: string;
     /**
      * Overrides the platform's demo discipline cards (Football/Basketball/
      * Racing League/...) on the public page. Empty means "derive from real
@@ -335,6 +337,8 @@ const AcademySchema = new Schema<IAcademy>({
       enum: ['light', 'soft', 'gradient', 'dark'],
       default: 'light'
     },
+    /** Empty means "derive the surface from the brand colour". */
+    backgroundColor: { type: String, default: '' },
     programs: [{
       id: { type: String, required: true },
       label: { type: String, required: true },

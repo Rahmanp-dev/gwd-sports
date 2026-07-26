@@ -296,10 +296,10 @@ export default function RefundPolicyPage() {
                   <li>• Payment method used</li>
                 </ul>
                 <a
-                  href="mailto:support@gwd.in"
+                  href="mailto:rahman@gwdglobal.in"
                   className="mt-4 inline-block text-sm font-semibold text-blue-400 hover:text-blue-300"
                 >
-                  support@gwd.in →
+                  rahman@gwdglobal.in →
                 </a>
               </div>
 
@@ -452,13 +452,13 @@ export default function RefundPolicyPage() {
                 For all refund and payment queries:
               </p>
               <a
-                href="mailto:support@gwd.in"
+                href="mailto:rahman@gwdglobal.in"
                 className="text-blue-400 hover:text-blue-300 text-sm mt-2 inline-block"
               >
-                support@gwd.in
+                rahman@gwdglobal.in
               </a>
               <p className="text-[#a0a0b0] text-sm mt-2">
-                Phone: +91 040-XXXX-XXXX
+                Phone: +91 79813 74451
               </p>
               <p className="text-[#a0a0b0] text-sm">
                 Address: GWD Sports Ecosystem, Hyderabad, Telangana, India

@@ -76,5 +76,17 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next|static|favicon.ico|api).*)'],
+  /**
+   * Excluding asset extensions here, not just inside the handler.
+   *
+   * The handler already early-returns for `pathname.includes('.')`, but by then
+   * the middleware bundle (~100 kB, including `jose`) has already been loaded
+   * and invoked at the edge. Filtering in the matcher means it is never
+   * invoked at all for `/gwdlogo.png`, `/videos/landing.webm`, fonts and the
+   * rest of `public/` — which on a media-heavy academy page is most of the
+   * requests on the page.
+   */
+  matcher: [
+    '/((?!_next|static|api|favicon\\.ico|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|webm|mp4|woff|woff2|ttf|otf|css|js|txt|xml|json)$).*)',
+  ],
 };

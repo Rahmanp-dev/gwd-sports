@@ -273,6 +273,8 @@ export function BatchQrCodes() {
               {dataUri ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
+                  loading="lazy"
+                  decoding="async"
                   src={dataUri}
                   alt={`Check-in code for ${qr.batchName}`}
                   className="h-56 w-56"

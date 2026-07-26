@@ -1,3 +1,4 @@
+import { ACTIVE } from '@/lib/models/activeFilter';
 import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import { connectToDatabase } from '@/lib/db';
@@ -39,7 +40,7 @@ export async function GET(req: NextRequest) {
     ]);
     
     const studentsByLevel = await StudentProfile.aggregate([
-      { $match: { isActive: true, ...tenantFilter } },
+      { $match: { isActive: ACTIVE, ...tenantFilter } },
       { $group: { _id: "$level", count: { $sum: 1 } } }
     ]);
     
@@ -84,17 +85,17 @@ export async function GET(req: NextRequest) {
 
     // 3. TRAINERS
     const trainerTotal = await TrainerProfile.countDocuments(tenantFilter);
-    const trainerActive = await TrainerProfile.countDocuments({ isActive: true, ...tenantFilter });
+    const trainerActive = await TrainerProfile.countDocuments({ isActive: ACTIVE, ...tenantFilter });
     
     const sportDistribution = await TrainerProfile.aggregate([
-      { $match: { isActive: true, ...tenantFilter } },
+      { $match: { isActive: ACTIVE, ...tenantFilter } },
       { $unwind: "$sports" },
       { $group: { _id: "$sports", count: { $sum: 1 } } },
       { $sort: { count: -1 } }
     ]);
 
     // Top Trainers mock (could aggregate student array length)
-    const topTrainers = await TrainerProfile.find({ isActive: true, ...tenantFilter })
+    const topTrainers = await TrainerProfile.find({ isActive: ACTIVE, ...tenantFilter })
       .populate('userId', 'name')
       .limit(3)
       .lean();
@@ -120,10 +121,10 @@ export async function GET(req: NextRequest) {
      */
     const academyScope = (!isSuperAdmin && academyObjectId) ? { _id: academyObjectId } : {};
     const academiesTotal = await Academy.countDocuments(academyScope);
-    const academiesActive = await Academy.countDocuments({ isActive: true, ...academyScope });
+    const academiesActive = await Academy.countDocuments({ isActive: ACTIVE, ...academyScope });
 
     // 5. ATTENDANCE & DROP-OFF
-    const allStudents = await StudentProfile.find({ isActive: true, ...tenantFilter }).select('attendance userId').populate('userId', 'name').lean();
+    const allStudents = await StudentProfile.find({ isActive: ACTIVE, ...tenantFilter }).select('attendance userId').populate('userId', 'name').lean();
     
     let totalRecords = 0;
     let presentCount = 0;

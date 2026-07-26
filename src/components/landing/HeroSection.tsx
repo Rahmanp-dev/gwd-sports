@@ -8,6 +8,8 @@ import axios from "axios";
 
 export default function HeroSection({ academy }: { academy?: any }) {
   const [mediaLoaded, setMediaLoaded] = useState(false);
+  /** Video 404s or is blocked → fall through to images, then to the gradient. */
+  const [videoFailed, setVideoFailed] = useState(false);
   const [heroMode, setHeroMode] = useState<"video" | "carousel">("video");
   const [heroImages, setHeroImages] = useState<string[]>([]);
   const [logoUrl, setLogoUrl] = useState<string>("");
@@ -71,6 +73,14 @@ export default function HeroSection({ academy }: { academy?: any }) {
   }, [heroMode, heroImages]);
 
   const brandName = academy?.name || BRAND_NAME;
+
+  /** Shows instantly and survives a video that never plays. See the media block. */
+  const posterUrl =
+    heroImages.length > 0
+      ? heroImages[0].startsWith("http")
+        ? heroImages[0]
+        : `${IMAGE_BASE_URL}${heroImages[0]}`
+      : null;
   const brandFirstPart = brandName.split(" ")[0] || brandName;
   const brandSecondPart = brandName.split(" ").slice(1).join(" ") || "";
   // Colour is no longer read here — it arrives as CSS custom properties from
@@ -82,13 +92,29 @@ export default function HeroSection({ academy }: { academy?: any }) {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-50">
       {/* Background Media with Overlay */}
       <div className="absolute inset-0">
-        {heroMode === "video" ? (
+        {/**
+         * MEDIA, WITH A FALLBACK AT EVERY LEVEL.
+         *
+         * Video autoplay is unreliable on mobile — iOS Low Power Mode refuses
+         * it outright, and a hero video is a heavy download on Indian mobile
+         * data regardless. So: the first hero image is used as the video's
+         * `poster`, which shows instantly and remains if playback never starts,
+         * and `onError` falls back to the brand gradient rather than a white
+         * void. There is no state in which the hero is blank.
+         *
+         * `--brand` gradient is the last resort so an academy with no media at
+         * all still gets a page in its own colours.
+         */}
+        {heroMode === "video" && !videoFailed ? (
           <video
             autoPlay
             muted
             loop
             playsInline
+            preload="metadata"
+            poster={posterUrl ?? undefined}
             onLoadedData={() => setMediaLoaded(true)}
+            onError={() => setVideoFailed(true)}
             className="w-full h-full object-cover"
           >
             <source src="/videos/landing.webm" type="video/webm" />
@@ -107,15 +133,38 @@ export default function HeroSection({ academy }: { academy?: any }) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 1.5 }}
+                onLoad={() => setMediaLoaded(true)}
                 className="absolute inset-0 w-full h-full object-cover"
-                alt="Hero Carousel"
+                alt=""
               />
             ) : (
-              // Fallback if carousel mode but no images
-              <div className="absolute inset-0 bg-slate-100" />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(150deg, var(--brand), var(--brand-strong))",
+                }}
+              />
             )}
           </AnimatePresence>
         )}
+
+        {/**
+         * Legibility scrim over the media.
+         *
+         * The academy name sat directly on top of a photograph or a moving
+         * video, so how readable it was depended entirely on which frame was
+         * showing. A light blur plus a graded dark wash fixes the contrast
+         * without softening the headline itself — the text sits above this
+         * layer, so it stays sharp while the media behind it recedes.
+         */}
+        <div
+          className="absolute inset-0 backdrop-blur-[2px] sm:backdrop-blur-[3px]"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(2,6,23,0.55) 0%, rgba(2,6,23,0.35) 45%, rgba(2,6,23,0.72) 100%)",
+          }}
+        />
 
         <motion.div
           initial={{ opacity: 0 }}
@@ -250,7 +299,22 @@ export default function HeroSection({ academy }: { academy?: any }) {
                 }}
               />
             ) : (
-              <h1 className="text-[44px] sm:text-8xl lg:text-[140px] font-black text-slate-900 uppercase leading-[0.9] tracking-tighter font-display flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+              /**
+               * White with a soft shadow, not `text-slate-900`.
+               *
+               * The name sits on a photograph or video with a dark scrim over
+               * it, so near-black text was fighting the very layer that makes
+               * it readable. White on the scrim is legible over any frame, and
+               * the drop shadow lifts it off busy imagery without blurring the
+               * glyphs — the blur belongs to the media behind, not the type.
+               *
+               * Uses --font-heading so it follows the academy's chosen
+               * typeface rather than sitting on the platform default.
+               */
+              <h1
+                className="text-[40px] sm:text-7xl lg:text-[120px] font-black text-white uppercase leading-[0.92] tracking-tighter flex flex-col sm:flex-row items-center gap-1 sm:gap-4 drop-shadow-[0_2px_20px_rgba(0,0,0,0.55)]"
+                style={{ fontFamily: "var(--font-heading)" }}
+              >
                 {brandFirstPart}
                 {brandSecondPart && (
                   <motion.span

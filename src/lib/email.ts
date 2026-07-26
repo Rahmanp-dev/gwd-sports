@@ -19,7 +19,7 @@ export async function sendWelcomeEmail(opts: {
         <h1 style="font-family:Georgia,serif;font-size:32px;margin-bottom:8px;color:#fff;">Welcome, ${opts.name}! 🎉</h1>
         <p style="color:#aaa;font-size:16px;">You've successfully joined <strong style="color:#FF1744;">${opts.academyName}</strong> on GWD Sports Ecosystem.</p>
         <a href="https://gwd.in/${opts.academySlug}" style="display:inline-block;margin-top:24px;background:#FF1744;color:#fff;padding:14px 28px;border-radius:50px;text-decoration:none;font-weight:700;">View Your Academy</a>
-        <p style="margin-top:32px;color:#555;font-size:12px;">Powered by GWD Sports Ecosystem | support@gwd.in</p>
+        <p style="margin-top:32px;color:#555;font-size:12px;">Powered by GWD Sports Ecosystem | rahman@gwdglobal.in</p>
       </div>
     `
   });
@@ -49,7 +49,7 @@ export async function sendPaymentReceiptEmail(opts: {
           <p><strong style="color:#aaa;">Date:</strong> ${opts.date}</p>
           <p><strong style="color:#aaa;">Order ID:</strong> <span style="font-family:monospace;color:#888;font-size:12px;">${opts.orderId}</span></p>
         </div>
-        <p style="color:#555;font-size:12px;">Powered by GWD Sports Ecosystem | support@gwd.in</p>
+        <p style="color:#555;font-size:12px;">Powered by GWD Sports Ecosystem | rahman@gwdglobal.in</p>
       </div>
     `
   });
@@ -72,7 +72,7 @@ export async function sendPasswordResetEmail(opts: {
         <h1 style="font-family:Georgia,serif;font-size:28px;color:#fff;">Reset Your Password</h1>
         <p style="color:#aaa;">Hi ${opts.name}, click the button below to reset your password. This link expires in 1 hour.</p>
         <a href="${resetUrl}" style="display:inline-block;margin:24px 0;background:#FF1744;color:#fff;padding:14px 28px;border-radius:50px;text-decoration:none;font-weight:700;">Reset Password</a>
-        <p style="color:#555;font-size:12px;">If you didn't request this, ignore this email. | support@gwd.in</p>
+        <p style="color:#555;font-size:12px;">If you didn't request this, ignore this email. | rahman@gwdglobal.in</p>
       </div>
     `
   });
@@ -96,7 +96,7 @@ export async function sendAbsenceAlertEmail(opts: {
         <p style="color:#aaa;">Dear ${opts.parentName},</p>
         <p style="color:#fff;">We noticed that <strong>${opts.studentName}</strong> has missed <strong style="color:#FF1744;">${opts.daysMissed} consecutive sessions</strong> at <strong>${opts.academyName}</strong>.</p>
         <p style="color:#aaa;">Please contact the academy to discuss attendance.</p>
-        <p style="color:#555;font-size:12px;">GWD Sports Ecosystem | support@gwd.in</p>
+        <p style="color:#555;font-size:12px;">GWD Sports Ecosystem | rahman@gwdglobal.in</p>
       </div>
     `
   });

@@ -331,10 +331,10 @@ export default function TermsAndConditionsPage() {
               <strong className="text-white">5–7 business days</strong> to the
               original payment method. For refund requests, email{" "}
               <a
-                href="mailto:support@gwd.in"
+                href="mailto:rahman@gwdglobal.in"
                 className="text-red-400 hover:text-red-300"
               >
-                support@gwd.in
+                rahman@gwdglobal.in
               </a>{" "}
               or submit a request via the Student Dashboard.
             </p>

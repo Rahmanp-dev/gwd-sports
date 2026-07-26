@@ -26,6 +26,15 @@ export interface FeePaymentRecord {
   currency: string;
   status: "pending" | "success" | "failed";
   receipt?: string;
+  /** Billing period this payment covers, when one was recorded. */
+  period?: "monthly" | "quarterly" | "halfYearly" | "yearly" | string;
+  /**
+   * `offline_direct_to_academy` marks cash/UPI/bank money the academy received
+   * outside the platform. The student's history reads this to say "paid in
+   * cash" rather than showing a synthetic OFFLINE- order id.
+   */
+  settlementStrategy?: string;
+  receiptNumber?: string;
   createdAt: string;
   updatedAt: string;
 }

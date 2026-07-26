@@ -16,6 +16,7 @@ import {
   CheckCircle,
   Clock,
   XCircle,
+  FileText,
   Loader2,
   ChevronLeft,
   ChevronRight,
@@ -216,6 +217,21 @@ export default function FeesManagement() {
                 year: "numeric",
               });
 
+              /**
+               * Offline payments are written by recordOfflinePayment() with an
+               * `OFFLINE-` order id and no gateway payment id. Checking the
+               * settlement strategy first, since that is the explicit signal;
+               * the id prefix covers rows written before it was recorded.
+               */
+              const isOffline =
+                (fee as any).settlementStrategy === "offline_direct_to_academy" ||
+                String(fee.orderId ?? "").startsWith("OFFLINE-");
+
+              // A gateway reference is useful; a synthetic offline id is not.
+              const reference = isOffline
+                ? (fee as any).paymentId || null
+                : fee.paymentId || null;
+
               return (
                 <motion.div
                   key={fee._id}
@@ -227,22 +243,37 @@ export default function FeesManagement() {
                   <Card className="bg-gray-800/50 border-gray-700/50 hover:border-gray-600 transition-colors h-full flex flex-col">
                     <CardHeader className="pb-4">
                       <div className="flex justify-between items-start">
-                        <div className="pr-2 text-left">
+                        <div className="pr-2 text-left min-w-0">
+                          {/**
+                           * Say HOW it was paid, not a raw order id.
+                           *
+                           * A cash payment recorded by the academy showed here
+                           * as "OrderId: OFFLINE-1765…", which tells a parent
+                           * nothing and looks like a glitch. They handed over
+                           * notes; the record should say so, or they will
+                           * assume it was not registered and pay twice.
+                           */}
                           <CardTitle className="text-white text-md truncate">
-                            {fee.paymentId
-                              ? `Payment ID:  ${fee.paymentId}`
-                              : `OrderId: ${fee.orderId.slice(0, 15)}...`}
+                            {isOffline
+                              ? "Paid in cash / offline"
+                              : "Paid online"}
                           </CardTitle>
                           <CardDescription className="text-gray-400 mt-1">
                             {formattedMonth}
+                            {fee.period ? ` · ${fee.period}` : ""}
                           </CardDescription>
+                          {reference ? (
+                            <p className="mt-1 truncate font-mono text-[11px] text-gray-500">
+                              {reference}
+                            </p>
+                          ) : null}
                         </div>
                         <Badge className={`${statusInfo.badgeClass} shrink-0`}>
                           {statusInfo.label}
                         </Badge>
                       </div>
                     </CardHeader>
-                    <CardContent className="mt-auto">
+                    <CardContent className="mt-auto space-y-3">
                       <div className="flex justify-between items-end">
                         <div className="text-2xl font-bold text-white">
                           ₹{fee.amount}
@@ -256,6 +287,17 @@ export default function FeesManagement() {
                             : formattedDate}
                         </div>
                       </div>
+
+                      {/* A receipt exists only for money actually taken. */}
+                      {fee.status === "success" ? (
+                        <a
+                          href={`/receipt/${fee._id}`}
+                          className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-xs font-semibold text-gray-300 transition-colors hover:bg-gray-700 hover:text-white"
+                        >
+                          <FileText className="h-3.5 w-3.5" />
+                          View receipt
+                        </a>
+                      ) : null}
                     </CardContent>
                   </Card>
                 </motion.div>

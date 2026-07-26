@@ -232,6 +232,8 @@ export function ReceiptPage({ paymentId }: { paymentId: string }) {
         <div className="mt-6 flex items-start gap-3 border-t border-slate-200 pt-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
+            loading="lazy"
+            decoding="async"
             src="/gwdlogo.png"
             alt="GWD Sports"
             className="mt-0.5 h-12 w-auto flex-shrink-0 opacity-80 print:opacity-100"

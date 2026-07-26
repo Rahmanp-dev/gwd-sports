@@ -82,6 +82,7 @@ export interface BrandingDraft {
   style: BrandStyle;
   fontPreset: FontPreset;
   backgroundStyle: BackgroundStyle;
+  backgroundColor: string;
   tagline: string;
   logoUrl: string;
   programs: AcademyProgram[];
@@ -106,6 +107,7 @@ export function defaultBrandingDraft(): BrandingDraft {
     style: "classic",
     fontPreset: "sans",
     backgroundStyle: "light",
+    backgroundColor: "",
     tagline: "",
     logoUrl: "",
     programs: [],
@@ -131,6 +133,7 @@ export function draftFromAcademy(academy?: Partial<Academy> | null): BrandingDra
     backgroundStyle: isBackgroundStyle(theme.backgroundStyle)
       ? theme.backgroundStyle
       : base.backgroundStyle,
+    backgroundColor: theme.backgroundColor ?? "",
     tagline: theme.tagline ?? "",
     logoUrl: theme.logoUrl ?? "",
     programs: theme.programs ?? [],
@@ -156,6 +159,7 @@ export function draftToThemeUpdate(draft: BrandingDraft): Record<string, unknown
     "theme.style": draft.style,
     "theme.fontPreset": draft.fontPreset,
     "theme.backgroundStyle": draft.backgroundStyle,
+    "theme.backgroundColor": draft.backgroundColor,
     "theme.tagline": draft.tagline,
     "theme.logoUrl": draft.logoUrl,
     "theme.programs": draft.programs,
@@ -324,6 +328,8 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
                 <div className="group relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-white">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
+                    loading="lazy"
+                    decoding="async"
                     src={value.logoUrl}
                     alt="Academy logo"
                     className="max-h-full max-w-full object-contain p-2"
@@ -562,6 +568,45 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
                   </button>
                 );
               })}
+            </div>
+
+            {/* Exact colour — optional override of the derived surface. */}
+            <div className="border-t border-slate-100 pt-4">
+              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                Exact background colour
+              </label>
+              <div className="flex gap-1.5">
+                <input
+                  type="color"
+                  disabled={disabled}
+                  value={HEX.test(value.backgroundColor) ? value.backgroundColor : "#ffffff"}
+                  onChange={(e) => patch({ backgroundColor: e.target.value })}
+                  className="h-9 w-9 flex-shrink-0 cursor-pointer rounded border border-slate-200 bg-white p-0.5"
+                />
+                <Input
+                  value={value.backgroundColor}
+                  disabled={disabled}
+                  placeholder="Leave empty to use the preset above"
+                  onChange={(e) => patch({ backgroundColor: e.target.value })}
+                  className="h-9 font-mono text-xs"
+                />
+                {value.backgroundColor ? (
+                  <button
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => patch({ backgroundColor: "" })}
+                    className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                    aria-label="Clear background colour"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                ) : null}
+              </div>
+              <p className="mt-1.5 text-[11px] leading-relaxed text-slate-400">
+                Overrides the preset. Text colour is worked out from whatever you
+                pick, so it stays readable — including on very dark or very light
+                choices.
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -806,6 +851,8 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
+                      loading="lazy"
+                      decoding="async"
                       src={item.url}
                       alt={item.caption || `Gallery image ${index + 1}`}
                       className="h-12 w-16 flex-shrink-0 rounded object-cover"
@@ -970,6 +1017,8 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
               {value.logoUrl && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
+                  loading="lazy"
+                  decoding="async"
                   src={value.logoUrl}
                   alt=""
                   className="mx-auto mb-3 h-12 object-contain"
@@ -1097,6 +1146,8 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
               {value.gallery.slice(0, 6).map((item, i) => (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
+                  loading="lazy"
+                  decoding="async"
                   key={i}
                   src={item.url}
                   alt={item.caption || ""}

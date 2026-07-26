@@ -59,7 +59,7 @@ export default function WhyChooseUs({ academy }: { academy?: any }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-20"
+          className="text-center mb-10 sm:mb-16"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -73,7 +73,7 @@ export default function WhyChooseUs({ academy }: { academy?: any }) {
             </span>
           </motion.div>
 
-          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-slate-900 mb-6 font-display tracking-tight">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-slate-900 mb-4 sm:mb-6 font-display tracking-tight">
             The Elite <span className="text-[color:var(--brand)]">Difference</span>
           </h2>
         </motion.div>

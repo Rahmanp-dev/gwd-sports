@@ -7,6 +7,8 @@ import HeroOverlay from '@/components/ecosystem/HeroOverlay';
 import AcademyGrid from '@/components/ecosystem/AcademyGrid';
 
 import AcademyDetailSidebar from '@/components/ecosystem/AcademyDetailSidebar';
+import HowItWorks from '@/components/ecosystem/HowItWorks';
+import PlatformFooter from '@/components/ecosystem/PlatformFooter';
 
 const EcosystemMap = dynamic(() => import('@/components/ecosystem/EcosystemMap'), {
   ssr: false,
@@ -58,10 +60,14 @@ export default function LandingPage() {
 
         {/* Hero Content */}
         <div className="absolute inset-0 z-20 pointer-events-none">
+          {/* Real counts only. These were `|| 20` and `|| 7`, so an empty or
+              failed stats response advertised twenty academies and seven
+              sports on the public homepage. The same fabrication was inside
+              HeroOverlay and was removed there; this call site still had it. */}
           <HeroOverlay
             city="Hyderabad"
-            academyCount={stats.totalAcademies || 20}
-            sportsCount={stats.totalSports || 7}
+            academyCount={stats.totalAcademies ?? 0}
+            sportsCount={stats.totalSports ?? 0}
           />
         </div>
       </div>
@@ -69,6 +75,13 @@ export default function LandingPage() {
       {/* Main Content Section (Scrolls up over the map) */}
       <div className="relative z-30 bg-[#050508] border-t border-white/5 shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
         <AcademyGrid academies={academies} stats={stats} />
+
+        {/* Why the platform exists, the flywheel, and how an academy joins.
+            Below discovery on purpose: you see the academies first, then learn
+            what you are looking at. */}
+        <HowItWorks />
+
+        <PlatformFooter />
       </div>
 
       {/* Map Pin Selected Academy Detail Sidebar */}

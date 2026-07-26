@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { ACTIVE } from '@/lib/models/activeFilter';
 import { connectToDatabase } from '@/lib/db';
 import { authMiddleware } from '@/lib/middleware/auth';
 import Batch from '@/lib/models/Batch';
 import Academy from '@/lib/models/Academy';
 import StudentProfile from '@/lib/models/Student';
+import { ensureRoleProfile } from '@/lib/auth/ensureRoleProfile';
 import { recordAttendance } from '@/lib/attendance/record';
 import { resolveSession, validateCheckIn } from '@/lib/attendance/session';
 
@@ -38,7 +40,7 @@ async function resolveContext(req: NextRequest, token: string) {
     return { error: 'This check-in code is not valid.', status: 400 as const };
   }
 
-  const batch = await Batch.findOne({ qrToken: token, isActive: true }).lean();
+  const batch = await Batch.findOne({ qrToken: token, isActive: ACTIVE }).lean();
   if (!batch) {
     // Also the path a ROTATED code takes. Said plainly, because the parent's
     // next move is to look for the new printed code rather than to retry.
@@ -52,20 +54,62 @@ async function resolveContext(req: NextRequest, token: string) {
    * The student is whoever is logged in. A parent logged in as themselves
    * cannot check anyone in — the account IS the identity, so there is nothing
    * to spoof in the request body.
+   *
+   * Self-heal first: an account with `role: 'student'` but no StudentProfile
+   * row was rejected here with "sign in as your child", which is actively
+   * misleading — they WERE signed in as the student. Accounts created through
+   * the admin Users tab had no profile row for exactly this reason. Building
+   * it here matches what the profile routes already do.
    */
+  if (auth.user.role === 'student') {
+    await ensureRoleProfile({
+      userId: auth.user._id,
+      role: 'student',
+      academyId: auth.academyId ?? null,
+    });
+  }
+
   const profile = await StudentProfile.findOne({
     userId: auth.user._id,
-    isActive: true,
+    isActive: ACTIVE,
   }).populate('userId', 'name');
 
   if (!profile) {
+    /**
+     * Distinguish the two cases. Telling a coach or an admin to "sign in as
+     * your child" when they are simply on the wrong account type is fine;
+     * telling a student the same thing when their record is missing sends them
+     * chasing a login they already have.
+     */
     return {
-      error: 'Only a student account can check in. Please sign in as your child.',
+      error:
+        auth.user.role === 'student'
+          ? 'Your student record could not be found. Ask your academy to check your enrolment.'
+          : 'Only a student account can check in. Please sign in as your child.',
       status: 403 as const,
     };
   }
 
-  if (String(profile.batchId ?? '') !== String((batch as any)._id)) {
+  /**
+   * Batch membership, with an academy-level fallback.
+   *
+   * Requiring an exact `batchId` match meant any student not yet assigned to a
+   * batch — which is every student until an admin does it — was refused at the
+   * gate while physically standing in front of the correct code. That reads as
+   * the feature being broken.
+   *
+   * So: an exact batch match passes, and otherwise a student of the SAME
+   * ACADEMY as the batch passes too. The security property that matters is
+   * preserved — a stranger, or a student from another academy, still cannot
+   * check in on a photographed code, because the account is the identity and
+   * the tenant must match.
+   */
+  const sameBatch = String(profile.batchId ?? '') === String((batch as any)._id);
+  const sameAcademy =
+    Boolean(profile.academyId) &&
+    String(profile.academyId) === String((batch as any).academyId ?? '');
+
+  if (!sameBatch && !sameAcademy) {
     return {
       error: 'You are not in this batch. Check you have scanned the right code.',
       status: 403 as const,

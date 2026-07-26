@@ -622,6 +622,36 @@ body {
   transform: translateX(-50%) translateY(-4px);
 }
 
+/**
+ * ON TOUCH DEVICES THE LABEL IS ALWAYS VISIBLE.
+ *
+ * It was revealed on `:hover` only — and a phone has no hover. So on mobile,
+ * where most people meet this map, every academy was an unlabelled red dot with
+ * nothing to suggest it could be tapped. People do not tap anonymous dots.
+ *
+ * `hover: none` targets touch input specifically rather than guessing from
+ * screen width, so a small laptop window keeps the cleaner hover behaviour.
+ * Slightly smaller and more transparent than the hover version, because here it
+ * is permanent chrome sitting on top of the map rather than a deliberate reveal.
+ */
+@media (hover: none) {
+  .gwd-node-label {
+    opacity: 0.94;
+    transform: translateX(-50%);
+    padding: 3px 8px;
+    top: -32px;
+    border-radius: 5px;
+  }
+
+  .gwd-node-name {
+    font-size: 10px;
+  }
+
+  .gwd-node-sport {
+    font-size: 8px;
+  }
+}
+
 .gwd-node-name {
   color: #ffffff;
   font-size: 11px;

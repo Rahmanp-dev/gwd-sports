@@ -206,23 +206,26 @@ export default function ContactPage() {
               <ContactInfoCard
                 icon="✉️"
                 title="Email Support"
-                lines={["support@gwd.in"]}
-                href="mailto:support@gwd.in"
+                lines={["rahman@gwdglobal.in"]}
+                href="mailto:rahman@gwdglobal.in"
               />
               <ContactInfoCard
                 icon="📞"
                 title="Phone"
-                lines={["+91 040-XXXX-XXXX", "Mon–Sat, 9AM–6PM IST"]}
-                href="tel:+91040XXXXXXXX"
+                lines={["+91 79813 74451", "Mon–Sat, 9AM–6PM IST"]}
+                href="tel:+917981374451"
               />
+              {/* Links straight to the map — an address you cannot navigate to
+                  is only marginally better than no address. */}
               <ContactInfoCard
                 icon="📍"
                 title="Office Address"
                 lines={[
-                  "GWD Sports Ecosystem",
-                  "Hyderabad, Telangana",
-                  "India — 500 XXX",
+                  "GWD Global Studio",
+                  "Hyderabad, Telangana, India",
+                  "Open in Google Maps →",
                 ]}
+                href="https://www.google.com/maps/search/?api=1&query=GWD+Global+Studio+Hyderabad"
               />
               <ContactInfoCard
                 icon="🕘"
@@ -352,10 +355,10 @@ export default function ContactPage() {
                       <p className="text-sm text-[#a0a0b0]">
                         Something went wrong. Please try again or email us at{" "}
                         <a
-                          href="mailto:support@gwd.in"
+                          href="mailto:rahman@gwdglobal.in"
                           className="text-red-400"
                         >
-                          support@gwd.in
+                          rahman@gwdglobal.in
                         </a>
                         .
                       </p>
