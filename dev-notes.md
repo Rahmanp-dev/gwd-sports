@@ -3477,5 +3477,26 @@ The CSS variables are on the DOM; migration can be done one section at a time.
    - **Tagline:** High contrast `text-slate-200/90` with shadow.
    - **CTA Button:** Glassmorphic brand gradient CTA with hover scale and glow shadows.
    - **Local Server Fallback:** Guaranteed `mediaLoaded` state and fallback gradient so hero sections never freeze at `opacity: 0` locally or in production.
+---
 
+## Session — 2026-07-27 01:11 IST · Admin Controls for Hero Media (Video/Carousel) & Theme-Driven Footer
 
+**State:** `tsc --noEmit` clean (0 errors), committed & pushed (`7a2d407a`).
+
+### What was built
+
+1. **Hero Section Media Control:**
+   - Added `heroMode` ("video" vs "carousel") and `heroVideoUrl` to `AcademyTheme` schema (`Academy.ts`), service types (`academyService.ts`), and `BrandingDraft`.
+   - Updated `AcademyBrandingEditor.tsx` with a Hero Media Control Card offering mode selection, custom video URL input, video file upload button (`uploadVideo`), and hero carousel image uploader/manager (`uploadHeroImages`).
+   - `HeroSection.tsx` respects `theme.heroMode` and `theme.heroVideoUrl`, playing videos by default with fallback to carousel slides or brand gradient.
+
+2. **Customizable Theme-Driven Footer (`Footer.tsx`):**
+   - Converted `Footer.tsx` from static white container to 100% theme-driven (`var(--page-card)`, `var(--page-fg)`, `var(--page-border)`, `var(--page-muted)`).
+   - Added Footer & Contact Details card to `AcademyBrandingEditor.tsx` allowing owners/admins to edit:
+     - Contact Phone (`footer.phone`)
+     - Email Address (`footer.email`)
+     - Address / Location (`footer.address`)
+     - Footer Blurb / Tagline (`footer.aboutText`)
+     - Copyright Notice (`footer.copyrightText`)
+     - Social Links: Facebook, Instagram, Twitter/X, YouTube (`facebookUrl`, `instagramUrl`, etc.)
+   - Updated `AcademyBrandingEditor.tsx` sidebar with a live Footer Preview block.
