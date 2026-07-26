@@ -74,6 +74,37 @@ export default function UserProfile() {
     }
   }, [token, user, navigate]);
 
+  /**
+   * ══════════════════════════════════════════════════════════════════════════
+   * STUDENTS AND COACHES BELONG ON THEIR OWN DASHBOARD, NOT HERE
+   * ══════════════════════════════════════════════════════════════════════════
+   *
+   * This page and /portal/{student,trainer} were two competing "my account"
+   * surfaces, and this was much the worse of the two. It has no check-in
+   * scanner, no attendance, no fees or receipts, no batches — and no academy
+   * theme, so it renders in platform default colours no matter which academy
+   * the person belongs to.
+   *
+   * Reachable by several routes: the RBAC fallback in middleware.ts sends any
+   * non-admin here, the events pages link to it, and it is the ROLE_HOME for
+   * the plain `user` role. So a student could easily land on it, conclude the
+   * product has none of those features, and be entirely reasonable about it.
+   *
+   * Rather than rebuild those features here — which recreates exactly the
+   * drift that the branding editor consolidation was undoing — send the two
+   * roles that have a real dashboard to it. Account and password settings live
+   * on that dashboard's Account tab.
+   *
+   * The plain `user` role (signed up, not yet attached to an academy) has no
+   * portal dashboard, so this page remains their account screen.
+   * ══════════════════════════════════════════════════════════════════════════
+   */
+  useEffect(() => {
+    if (!user?.role) return;
+    if (user.role === "student") navigate("/portal/student", { replace: true });
+    else if (user.role === "trainer") navigate("/portal/trainer", { replace: true });
+  }, [user?.role, navigate]);
+
   // Fetch fresh profile data
   useEffect(() => {
     if (token && user) {

@@ -42,6 +42,7 @@ import { toast } from "sonner";
 import FeesManagement from "./tabs/FeesManagement";
 import { CheckInCard } from "@/components/user/student/CheckInCard";
 import { AcademyTheme } from "@/components/branding/AcademyTheme";
+import { AccountSettings } from "@/components/user/AccountSettings";
 
 export default function MGFCStudentPage() {
   const navigate = useNavigate();
@@ -323,7 +324,7 @@ export default function MGFCStudentPage() {
           {/* `h-auto` matters: TabsList is h-10 by default, so five triggers
               wrapping into two rows at grid-cols-3 had the second row clipped
               out of view on every phone. */}
-          <TabsList className="grid h-auto w-full grid-cols-3 md:grid-cols-5 bg-gray-800 border border-gray-700">
+          <TabsList className="grid h-auto w-full grid-cols-3 md:grid-cols-6 bg-gray-800 border border-gray-700">
             <TabsTrigger
               value="dashboard"
               className="data-[state=active]:bg-green-600"
@@ -353,6 +354,15 @@ export default function MGFCStudentPage() {
               className="data-[state=active]:bg-green-600"
             >
               Fees
+            </TabsTrigger>
+            {/* Lives here because /user/profile now redirects students to this
+                dashboard — without it, changing a name or password would have
+                become unreachable. */}
+            <TabsTrigger
+              value="account"
+              className="data-[state=active]:bg-green-600"
+            >
+              Account
             </TabsTrigger>
           </TabsList>
 
@@ -941,6 +951,11 @@ export default function MGFCStudentPage() {
           {/* Fees Tab */}
           <TabsContent value="fees" className="space-y-6">
             <FeesManagement />
+          </TabsContent>
+
+          {/* Account Tab */}
+          <TabsContent value="account" className="space-y-6">
+            <AccountSettings />
           </TabsContent>
         </Tabs>
       </div>

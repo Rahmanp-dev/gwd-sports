@@ -15,6 +15,7 @@ import { logout } from "@/store/slices/authSlice";
 import { BatchRegister } from "@/components/user/trainer/BatchRegister";
 import { StudentDetail } from "@/components/user/trainer/StudentDetail";
 import { AcademyTheme } from "@/components/branding/AcademyTheme";
+import { AccountSettings } from "@/components/user/AccountSettings";
 import { CATEGORY_DEFINITIONS } from "@/lib/performance/taxonomy";
 import {
   Calendar,
@@ -669,7 +670,7 @@ export default function MGFCTrainerPage() {
         >
           {/* Two columns on a phone rather than four ~85px slivers; the full
               row returns as soon as there is width for it. */}
-          <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-4 bg-gray-800 border border-gray-700">
+          <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-5 bg-gray-800 border border-gray-700">
             <TabsTrigger
               value="overview"
               className="data-[state=active]:bg-blue-600"
@@ -695,6 +696,14 @@ export default function MGFCTrainerPage() {
               className="data-[state=active]:bg-blue-600"
             >
               Availability
+            </TabsTrigger>
+            {/* /user/profile now redirects coaches here, so account and
+                password settings have to be reachable from this page. */}
+            <TabsTrigger
+              value="account"
+              className="data-[state=active]:bg-blue-600"
+            >
+              Account
             </TabsTrigger>
           </TabsList>
 
@@ -1200,6 +1209,11 @@ export default function MGFCTrainerPage() {
                 </Card>
               </motion.div>
             </motion.div>
+          </TabsContent>
+
+          {/* Account Tab */}
+          <TabsContent value="account" className="space-y-6">
+            <AccountSettings />
           </TabsContent>
         </Tabs>
       </div>
