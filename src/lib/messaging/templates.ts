@@ -230,6 +230,57 @@ const paymentReceipt: TemplateDefinition = {
     `Amount: ${v.amount}. Receipt no: ${v.receiptNumber}. Your receipt: ${v.receiptUrl}`,
 };
 
+/**
+ * SUBMIT TO META AS: gwd_owner_new_student_v1  (category: UTILITY)
+ *
+ *   🎉 New student at {{1}}!
+ *
+ *   {{2}} — parent: {{3}}
+ *   Sport(s): {{4}}
+ *
+ *   View passport: {{5}}
+ *
+ * Sent to the ACADEMY OWNER, never the parent — see academyOwnerPhone on the
+ * student.created event payload. Confirms a signup actually went through and
+ * gives the owner the same passport link the parent got, one keystroke away.
+ */
+const ownerNewStudent: TemplateDefinition = {
+  key: 'owner_new_student',
+  templateName: 'gwd_owner_new_student_v1',
+  languageCode: 'en',
+  priority: MESSAGE_PRIORITY.ATTENDANCE,
+  description: 'Sent to the academy owner when a student record is created (import or self-registration).',
+  variableOrder: ['academyName', 'childName', 'parentName', 'sportsLine', 'passportUrl'],
+  required: ['academyName', 'childName', 'passportUrl'],
+  plainText: (v) =>
+    `New student at ${v.academyName}! ${v.childName} — parent: ${v.parentName}. Sport(s): ${v.sportsLine}. View passport: ${v.passportUrl}`,
+};
+
+/**
+ * SUBMIT TO META AS: gwd_owner_payment_v1  (category: UTILITY)
+ *
+ *   💰 Payment received at {{1}}!
+ *
+ *   {{2}} paid {{3}}.
+ *
+ *   Receipt: {{4}}
+ *
+ * Sent to the ACADEMY OWNER alongside (not instead of) the parent's own
+ * `payment_receipt` — the owner asked to know the moment money comes in, the
+ * same way a shopkeeper hears the till.
+ */
+const ownerPaymentReceived: TemplateDefinition = {
+  key: 'owner_payment_received',
+  templateName: 'gwd_owner_payment_v1',
+  languageCode: 'en',
+  priority: MESSAGE_PRIORITY.PAYMENT,
+  description: 'Sent to the academy owner when a student payment settles, by any method (online, subscription, or offline entry).',
+  variableOrder: ['academyName', 'childName', 'amountFormatted', 'receiptUrl'],
+  required: ['academyName', 'childName', 'amountFormatted', 'receiptUrl'],
+  plainText: (v) =>
+    `Payment received at ${v.academyName}! ${v.childName} paid ${v.amountFormatted}. Receipt: ${v.receiptUrl}`,
+};
+
 export const TEMPLATES: Record<string, TemplateDefinition> = {
   welcome,
   payment_receipt: paymentReceipt,
@@ -249,6 +300,8 @@ export const TEMPLATES: Record<string, TemplateDefinition> = {
   ),
   achievement,
   broadcast,
+  owner_new_student: ownerNewStudent,
+  owner_payment_received: ownerPaymentReceived,
 };
 
 export function getTemplate(key: string): TemplateDefinition {

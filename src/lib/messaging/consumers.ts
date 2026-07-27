@@ -1,4 +1,5 @@
 import DomainEvent, { type IDomainEvent } from '@/lib/models/DomainEvent';
+import OwnerAlert from '@/lib/models/OwnerAlert';
 import { enqueueMessage, cancelQueuedMessages } from './enqueue';
 import { renderWelcomePaymentLine, renderWelcomeLoginLine } from './templates';
 import { formatInr } from '@/lib/payments/money';
@@ -52,6 +53,7 @@ export async function runEventDispatchTick(
         'attendance.created',
         'achievement.created',
         'payment.settled',
+        'payment.failed',
       ],
     },
   })
@@ -123,6 +125,8 @@ async function handleEvent(event: IDomainEvent): Promise<HandleOutcome> {
       return handleAchievementCreated(event);
     case 'payment.settled':
       return handlePaymentSettled(event);
+    case 'payment.failed':
+      return handlePaymentFailed(event);
     default:
       return { status: 'skipped', reason: `no consumer for ${event.name}` };
   }
@@ -143,14 +147,20 @@ async function handleEvent(event: IDomainEvent): Promise<HandleOutcome> {
 async function handleStudentCreated(event: IDomainEvent): Promise<HandleOutcome> {
   const p = event.payload as Record<string, any>;
 
+  if (!p.passportId || !p.passportUrl) {
+    return { status: 'skipped', reason: 'Event payload is missing passport details.' };
+  }
+
+  // Independent of whether the parent could be messaged below — if a student
+  // signed up with no usable phone, the owner finding out via WhatsApp is
+  // more important, not less.
+  await notifyOwnerOfNewStudent(event, p);
+
   if (!p.parentPhone) {
     return {
       status: 'skipped',
       reason: `No parent phone for ${p.studentName ?? 'student'} — cannot send a welcome.`,
     };
-  }
-  if (!p.passportId || !p.passportUrl) {
-    return { status: 'skipped', reason: 'Event payload is missing passport details.' };
   }
 
   const isFeeDue = Boolean(p.isFeeDue && p.feeAmountPaise);
@@ -190,6 +200,39 @@ async function handleStudentCreated(event: IDomainEvent): Promise<HandleOutcome>
   });
 
   return toOutcome(enqueued);
+}
+
+/**
+ * Tells the ACADEMY OWNER a student joined — item raised directly by the
+ * owner: "updates on his number when some trigger happens". Best-effort and
+ * silent on failure; a missing owner alert must never affect the parent-facing
+ * welcome message this runs alongside.
+ */
+async function notifyOwnerOfNewStudent(event: IDomainEvent, p: Record<string, any>): Promise<void> {
+  const ownerPhone = p.academyOwnerPhone;
+  const academyId = p.academyId ?? event.academyId;
+  if (!ownerPhone || !academyId) return;
+
+  const sports: string[] = Array.isArray(p.sports) ? p.sports.filter(Boolean) : [];
+
+  await enqueueMessage({
+    templateKey: 'owner_new_student',
+    recipientPhone: ownerPhone,
+    recipientName: null,
+    academyId,
+    // Deliberately no passportId here — this message is ABOUT the student but
+    // not addressed to their parent, so the cross-contamination guard (which
+    // checks the recipient's own passport) does not apply and must not run.
+    sourceEventId: event._id as any,
+    dedupeKey: `owner_new_student:${p.passportId}:${academyId}`,
+    variables: {
+      academyName: p.academyName || 'your academy',
+      childName: p.studentName || 'A student',
+      parentName: p.parentName || 'not given',
+      sportsLine: sports.length > 0 ? sports.join(', ') : 'not specified yet',
+      passportUrl: p.passportUrl,
+    },
+  });
 }
 
 /**
@@ -319,6 +362,11 @@ async function handlePaymentSettled(event: IDomainEvent): Promise<HandleOutcome>
     reason: 'Fee was paid before this reminder was sent.',
   });
 
+  // Independent of whether the parent receipt below succeeds — the owner asked
+  // to know "if he receives a payment from a student", on every settlement
+  // regardless of method (online, subscription, or cash entered by an admin).
+  await notifyOwnerOfPayment(event, p);
+
   if (!p.parentPhone) {
     return {
       status: 'skipped',
@@ -356,6 +404,72 @@ async function handlePaymentSettled(event: IDomainEvent): Promise<HandleOutcome>
   });
 
   return toOutcome(enqueued);
+}
+
+/**
+ * Tells the ACADEMY OWNER money came in, for any settlement method — online
+ * checkout, an auto-billed subscription, or cash/UPI the owner entered
+ * themselves. Best-effort, mirrors notifyOwnerOfNewStudent above.
+ */
+async function notifyOwnerOfPayment(event: IDomainEvent, p: Record<string, any>): Promise<void> {
+  const ownerPhone = p.academyOwnerPhone;
+  const academyId = p.academyId ?? event.academyId;
+  if (!ownerPhone || !academyId || !p.receiptUrl) return;
+
+  await enqueueMessage({
+    templateKey: 'owner_payment_received',
+    recipientPhone: ownerPhone,
+    recipientName: null,
+    academyId,
+    sourceEventId: event._id as any,
+    dedupeKey: `owner_payment_received:${p.feePaymentId ?? p.passportId}`,
+    variables: {
+      academyName: p.academyName || 'your academy',
+      childName: p.studentName || 'A student',
+      amountFormatted: p.amountFormatted ?? formatInr(Number(p.parentTotalPaise ?? 0)),
+      receiptUrl: p.receiptUrl,
+    },
+  });
+}
+
+/**
+ * TRIGGER — PAYMENT FAILURE
+ *
+ * No parent-facing message: Razorpay already shows the parent their own
+ * checkout failed, and re-explaining a gateway decline over WhatsApp adds
+ * nothing. What was actually missing is the owner ever finding out — a
+ * failed payment used to vanish into `handleEvent`'s default 'skipped'
+ * branch with nobody able to see it anywhere, dashboard included, because
+ * this event name was not even in the dispatcher's claim query.
+ */
+async function handlePaymentFailed(event: IDomainEvent): Promise<HandleOutcome> {
+  const p = event.payload as Record<string, any>;
+
+  if (!event.academyId) {
+    return { status: 'skipped', reason: 'Payment failed with no academy on the event — cannot alert an owner.' };
+  }
+
+  try {
+    await OwnerAlert.create({
+      academyId: event.academyId,
+      type: 'payment_failed',
+      severity: 'warning',
+      passportId: p.passportId ?? null,
+      studentUserId: null,
+      studentName: p.studentName ?? null,
+      parentPhone: p.parentPhone ?? null,
+      title: `Payment failed${p.studentName ? ` for ${p.studentName}` : ''}`,
+      body: `A payment attempt failed${p.method ? ` via ${p.method}` : ''}: ${p.reason ?? 'no reason given by the gateway'}.`,
+      suggestedAction: 'The parent may retry from the same payment link — check with them if it keeps failing.',
+      requiresOwnerDecision: false,
+      // One alert per failed payment attempt, not one per retry of this event.
+      dedupeKey: `payment_failed:${p.paymentId ?? String(event._id)}`,
+    });
+    return { status: 'queued' };
+  } catch (err: any) {
+    if (err?.code === 11000) return { status: 'duplicate' };
+    throw err;
+  }
 }
 
 function toOutcome(

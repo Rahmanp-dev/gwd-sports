@@ -4,6 +4,7 @@ import StudentProfile from '@/lib/models/Student';
 import User from '@/lib/models/User';
 import { authMiddleware } from '@/lib/middleware/auth';
 import { ensureRoleProfile } from '@/lib/auth/ensureRoleProfile';
+import { ensureStudentPassport } from '@/lib/auth/ensurePassport';
 
 export async function GET(req: NextRequest) {
   try {
@@ -24,13 +25,23 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    const student = await StudentProfile.findOne({ userId: auth.user._id })
+    let student = await StudentProfile.findOne({ userId: auth.user._id });
+
+    // Second self-heal: the profile row can exist without a Passport — that was
+    // true of every self-registered student before this file existed. Done
+    // before the populate below so the response already reflects it.
+    if (student && !student.passportId) {
+      await ensureStudentPassport(student._id);
+      student = await StudentProfile.findById(student._id);
+    }
+
+    const populated = await StudentProfile.findOne({ userId: auth.user._id })
       .populate('userId', 'name email phone')
       // `theme` drives the dashboard's colours and typeface — without it a
       // student sees the platform's default palette, not their academy's.
       .populate('academyId', 'name location fees theme')
       .populate('trainers', 'name phone email sports');
-    return NextResponse.json({ success: true, data: { studentProfile: student } });
+    return NextResponse.json({ success: true, data: { studentProfile: populated } });
   } catch (error) {
     return NextResponse.json({ success: false }, { status: 500 });
   }
@@ -50,7 +61,15 @@ export async function POST(req: NextRequest) {
       await User.findByIdAndUpdate(auth.user._id, { role: 'student' });
     }
 
-    return NextResponse.json({ success: true, data: { studentProfile: student } }, { status: 201 });
+    // Mint the Passport as part of registration itself, not on next login —
+    // the welcome WhatsApp message needs the passport link immediately.
+    await ensureStudentPassport(student._id);
+    const withPassport = await StudentProfile.findById(student._id);
+
+    return NextResponse.json(
+      { success: true, data: { studentProfile: withPassport ?? student } },
+      { status: 201 },
+    );
   } catch (error) {
     return NextResponse.json({ success: false }, { status: 500 });
   }

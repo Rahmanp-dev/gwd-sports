@@ -20,7 +20,17 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ stud
       return NextResponse.json({ success: false, message: 'Invalid student ID' }, { status: 400 });
     }
 
-    const student = await StudentProfile.findOne({ userId: studentId }).populate('userId', 'name email');
+    // TENANT ISOLATION — had none: any trainer at any academy could read any
+    // other academy's student's full attendance history by studentId alone.
+    const filter: Record<string, unknown> = { userId: studentId };
+    if (auth.user.role !== 'gwd_super_admin') {
+      if (!auth.academyId) {
+        return NextResponse.json({ success: false, message: 'No academy assigned to your account' }, { status: 403 });
+      }
+      filter.academyId = auth.academyId;
+    }
+
+    const student = await StudentProfile.findOne(filter).populate('userId', 'name email');
     if (!student) {
       return NextResponse.json({ success: false, message: 'Student not found' }, { status: 404 });
     }

@@ -107,6 +107,7 @@ export interface BrandingDraft {
   heroOverlay: number;
   heroMode: "video" | "carousel";
   heroVideoUrl: string;
+  heroEyebrow: string;
   heroImages: string[];
   tagline: string;
   logoUrl: string;
@@ -176,6 +177,7 @@ export function defaultBrandingDraft(): BrandingDraft {
     heroOverlay: 55,
     heroMode: "video",
     heroVideoUrl: "",
+    heroEyebrow: "",
     heroImages: [],
     tagline: "",
     logoUrl: "",
@@ -231,6 +233,7 @@ export function draftFromAcademy(academy?: Partial<Academy> | null): BrandingDra
     heroOverlay: theme.heroOverlay ?? 55,
     heroMode: (theme.heroMode === "carousel" ? "carousel" : "video"),
     heroVideoUrl: theme.heroVideoUrl ?? "",
+    heroEyebrow: theme.heroEyebrow ?? "",
     heroImages: theme.heroImages ?? [],
     tagline: theme.tagline ?? "",
     logoUrl: theme.logoUrl ?? "",
@@ -283,6 +286,7 @@ export function draftToThemeUpdate(draft: BrandingDraft): Record<string, unknown
     "theme.heroOverlay": draft.heroOverlay,
     "theme.heroMode": draft.heroMode,
     "theme.heroVideoUrl": draft.heroVideoUrl,
+    "theme.heroEyebrow": draft.heroEyebrow,
     "theme.heroImages": draft.heroImages,
     "theme.tagline": draft.tagline,
     "theme.logoUrl": draft.logoUrl,
@@ -483,11 +487,20 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
       }));
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,380px)_1fr]">
-      {/* ══ Controls ════════════════════════════════════════════════════ */}
-      <div className="space-y-4">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,380px)_1fr] xl:grid-cols-[minmax(0,760px)_1fr]">
+      {/*
+       * ══ Controls ════════════════════════════════════════════════════
+       * Was a single space-y-4 column of 14 cards — a scroll-forever
+       * sidebar with no way to see two settings at once. CSS multi-column
+       * (not CSS grid) gives a real masonry layout with zero JS: each card
+       * flows into whichever column has room next, so uneven card heights
+       * don't leave ragged gaps the way a naive 2-col grid would.
+       * break-inside-avoid on every card (below) stops one from being
+       * split across the column boundary.
+       */}
+      <div className="columns-1 xl:columns-2 gap-4">
         {/* Logo + tagline */}
-        <Card className="border-0 shadow-sm">
+        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-4 p-5">
             <SectionLabel icon={<ImageIcon className="h-3 w-3" />}>
               Logo &amp; tagline
@@ -685,7 +698,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Colour */}
-        <Card className="border-0 shadow-sm">
+        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-4 p-5">
             <SectionLabel icon={<Palette className="h-3 w-3" />}>Colour</SectionLabel>
 
@@ -783,7 +796,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Feel */}
-        <Card className="border-0 shadow-sm">
+        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<Sparkles className="h-3 w-3" />}>Feel</SectionLabel>
             <div className="space-y-2">
@@ -822,7 +835,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Background */}
-        <Card className="border-0 shadow-sm">
+        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<Palette className="h-3 w-3" />}>
               Page background
@@ -919,7 +932,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Hero media treatment */}
-        <Card className="border-0 shadow-sm">
+        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-4 p-5">
             <SectionLabel icon={<Sparkles className="h-3 w-3" />}>
               Hero photo &amp; video
@@ -928,6 +941,24 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
               Control the background of your hero section. Choose between a
               playing video background or an animated carousel of photos.
             </p>
+
+            {/* Eyebrow / credibility line */}
+            <div>
+              <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                Eyebrow text (optional)
+              </label>
+              <Input
+                value={value.heroEyebrow}
+                disabled={disabled}
+                maxLength={60}
+                placeholder='e.g. "Est. 2015 · Hyderabad" or "500+ athletes trained"'
+                onChange={(e) => patch({ heroEyebrow: e.target.value })}
+              />
+              <p className="mt-1.5 text-[11px] leading-relaxed text-slate-400">
+                A short credibility line above your headline. Leave blank to
+                show nothing — this never appears unless you write it.
+              </p>
+            </div>
 
             {/* Mode Selector */}
             <div>
@@ -1139,7 +1170,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Typeface */}
-        <Card className="border-0 shadow-sm">
+        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<Type className="h-3 w-3" />}>Typeface</SectionLabel>
             <div className="space-y-2">
@@ -1186,7 +1217,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
          * These are read by every section via CSS variables, so changing this
          * single setting rescales the whole page at once.
          */}
-        <Card className="border-0 shadow-sm">
+        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<LayoutDashboard className="h-3 w-3" />}>Layout density</SectionLabel>
             <p className="text-[11px] leading-relaxed text-slate-400">
@@ -1251,7 +1282,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
          * A single contrasting section is how designers create a focal point;
          * every section in accent would be noise. Selecting "None" clears it.
          */}
-        <Card className="border-0 shadow-sm">
+        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<Zap className="h-3 w-3" />}>Accent highlight</SectionLabel>
             <p className="text-[11px] leading-relaxed text-slate-400">
@@ -1315,7 +1346,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
          * consumed by AcademyPublicPage, which renders sections in that order
          * rather than the hardcoded JSX sequence. Hidden sections stay hidden.
          */}
-        <Card className="border-0 shadow-sm">
+        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<GripVertical className="h-3 w-3" />}>
               Section order
@@ -1374,7 +1405,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* ── Footer & Contact Details ──────────────────────────────── */}
-        <Card className="border-0 shadow-sm">
+        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-4 p-5">
             <SectionLabel icon={<Share2 className="h-3 w-3" />}>
               Footer &amp; Contact info
@@ -1524,7 +1555,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Disciplines */}
-        <Card className="border-0 shadow-sm">
+        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <div className="flex items-center justify-between">
               <SectionLabel icon={<Trophy className="h-3 w-3" />}>Disciplines</SectionLabel>
@@ -1619,7 +1650,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Achievements */}
-        <Card className="border-0 shadow-sm">
+        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<Trophy className="h-3 w-3" />}>Achievements</SectionLabel>
             <div className="space-y-2">
@@ -1668,7 +1699,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Gallery */}
-        <Card className="border-0 shadow-sm">
+        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<ImageIcon className="h-3 w-3" />}>Photo gallery</SectionLabel>
             <p className="text-[11px] leading-relaxed text-slate-400">
@@ -1747,7 +1778,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Testimonials */}
-        <Card className="border-0 shadow-sm">
+        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<Quote className="h-3 w-3" />}>Testimonials</SectionLabel>
             <div className="space-y-2">
@@ -1870,6 +1901,18 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
                     }}
                   />
                 </div>
+              )}
+              {value.heroEyebrow && (
+                <span
+                  className="mb-2 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-semibold tracking-wide"
+                  style={{
+                    borderColor: "var(--brand-border)",
+                    background: "var(--brand-soft)",
+                    color: "var(--brand)",
+                  }}
+                >
+                  {value.heroEyebrow}
+                </span>
               )}
               <p
                 className="text-3xl font-extrabold tracking-tight"

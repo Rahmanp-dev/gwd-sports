@@ -4,6 +4,7 @@ import { FeePayment } from '@/lib/models/FeePayment';
 import { paiseToRupees } from './money';
 import { validateAdminSuppliedAmount } from './dues';
 import { emitEvent } from '@/lib/events/emit';
+import { loadReceiptContext } from './receiptContext';
 
 export class OfflinePaymentError extends Error {
   constructor(message: string, public status: number) {
@@ -102,6 +103,10 @@ export async function recordOfflinePayment(params: {
   profile.outstandingFees = Math.max(0, (profile.outstandingFees || 0) - amountRupees);
   await profile.save();
 
+  // Cash/UPI/bank-transfer payments never had passportId/parentPhone/receiptUrl
+  // on the event either — same gap as the subscription webhook, same fix.
+  const context = await loadReceiptContext(feeRecord);
+
   await emitEvent({
     name: 'payment.settled',
     academyId: profile.academyId ?? null,
@@ -114,6 +119,7 @@ export async function recordOfflinePayment(params: {
       period: normalizedPeriod,
       source: 'offline_admin_entry',
       recordedBy: String(actor._id),
+      ...context,
     },
   });
 

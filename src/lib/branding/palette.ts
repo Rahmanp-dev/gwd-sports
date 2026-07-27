@@ -18,6 +18,7 @@ const clamp = (v: number) => Math.max(0, Math.min(255, Math.round(v)));
 export function parseHex(hex?: string | null): Rgb | null {
   if (!hex) return null;
   const s = hex.replace('#', '').trim();
+  if (!/^[0-9a-fA-F]+$/.test(s)) return null;
   if (s.length === 3) {
     const [r, g, b] = s.split('').map((c) => parseInt(c + c, 16));
     return { r, g, b };

@@ -5,6 +5,7 @@ import { FeePayment } from '@/lib/models/FeePayment';
 import User from '@/lib/models/User';
 import { settlePayment, markPaymentFailed } from './settle';
 import { emitEvent } from '@/lib/events/emit';
+import { loadReceiptContext } from './receiptContext';
 
 export type SignatureCheck =
   | { ok: true }
@@ -96,19 +97,26 @@ export async function handleWebhookEvent(payload: any): Promise<WebhookOutcome> 
     case 'payment.failed': {
       const paymentId: string | undefined = paymentEntity?.id;
       const orderId: string | undefined = paymentEntity?.order_id;
-      await markPaymentFailed(
+      const failedPayment = await markPaymentFailed(
         { orderId, paymentId },
         paymentEntity?.error_description || 'payment failed at gateway'
       );
 
+      // Without this, the event carried no academyId at all — payment.failed
+      // was previously unclaimable by the dispatcher and, even if it had been,
+      // OwnerAlert requires academyId. Best-effort: a failed payment we cannot
+      // match to a FeePayment record still gets logged, just with no owner alert.
+      const context = failedPayment ? await loadReceiptContext(failedPayment) : {};
+
       await emitEvent({
         name: 'payment.failed',
-        academyId: null,
+        academyId: failedPayment?.academyId ?? null,
         payload: {
           orderId: orderId ?? null,
           paymentId: paymentId ?? null,
           reason: paymentEntity?.error_description ?? null,
           method: paymentEntity?.method ?? null,
+          ...context,
         },
         dedupeKey: paymentId ? `payment.failed:${paymentId}` : undefined,
       });
@@ -224,7 +232,7 @@ async function handleSubscriptionCharged(
    * baked in — a Razorpay plan configuration decision, not something that can be
    * back-derived here without inventing numbers. Phase 4 addresses it.
    */
-  await FeePayment.create({
+  const feePayment = await FeePayment.create({
     orderId: paymentId,
     paymentId,
     amount: capturedPaise / 100,
@@ -247,15 +255,23 @@ async function handleSubscriptionCharged(
     period,
   });
 
+  // Without this, a subscription charge had no passportId/parentPhone/receiptUrl
+  // on its event — handlePaymentSettled requires passportId to do anything, so
+  // a subscription payment never sent a receipt and never cancelled a queued
+  // fee reminder, unlike the client-verify settlement path (settle.ts).
+  const context = await loadReceiptContext(feePayment);
+
   await emitEvent({
     name: 'payment.settled',
     academyId: sub.academyId,
     payload: {
+      feePaymentId: String(feePayment._id),
       studentUserId: String(sub.studentId),
       paymentId,
       parentTotalPaise: capturedPaise,
       period,
       source: 'subscription',
+      ...context,
     },
     dedupeKey: `payment.settled:${paymentId}`,
   });

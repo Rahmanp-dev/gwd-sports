@@ -93,6 +93,20 @@ export async function createFeeOrder(
     throw new NothingDueError('Nothing is currently due for this student');
   }
 
+  // ---- Reuse a still-open order rather than mint a duplicate --------------
+  //
+  // Nothing server-side stopped a parent double-tapping "Pay" on a slow
+  // connection (or reopening the same WhatsApp link) from creating two live
+  // Razorpay orders for the same fee — the only guard was a React `paying`
+  // flag on the button, which a page reload resets. Two orders for the same
+  // fee is a real risk of a parent actually completing both. Skipped for the
+  // admin ad-hoc path (`overrideBaseAmountPaise`), where a second charge in
+  // the same period may be genuinely intended.
+  if (input.overrideBaseAmountPaise === undefined) {
+    const reused = await reuseOpenOrder({ studentUserId, period, baseAmountPaise });
+    if (reused) return reused;
+  }
+
   // ---- Split --------------------------------------------------------------
   const academy = input.academyId ? await Academy.findById(input.academyId) : null;
   const marginRateBps =
@@ -167,6 +181,60 @@ export async function createFeeOrder(
       period,
     },
   };
+}
+
+/**
+ * A Razorpay order stays payable against until it's actually paid — retrying
+ * checkout on the same order_id is the normal, supported flow, not a hack.
+ * 24 hours bounds how stale a "reused" order can be (a fee schedule or period
+ * could change by the next day) without punishing a parent who just closed
+ * the checkout modal and came back five minutes later.
+ */
+const PENDING_ORDER_REUSE_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+async function reuseOpenOrder(input: {
+  studentUserId: mongoose.Types.ObjectId | string;
+  period: FeePeriod;
+  baseAmountPaise: number;
+}): Promise<CreateFeeOrderResult | null> {
+  const candidate = await FeePayment.findOne({
+    studentId: input.studentUserId,
+    period: input.period,
+    status: 'pending',
+    // academyAmountPaise IS the base amount computeFeeSplit was given — see
+    // money.ts's computeFeeSplit, which sets it verbatim from its input.
+    academyAmountPaise: input.baseAmountPaise,
+    createdAt: { $gte: new Date(Date.now() - PENDING_ORDER_REUSE_WINDOW_MS) },
+  }).sort({ createdAt: -1 });
+
+  if (!candidate) return null;
+
+  try {
+    const order = await razorpay.orders.fetch(candidate.orderId);
+    // 'paid' can arrive here if the webhook settled it a moment after this
+    // process read `status: 'pending'` from Mongo — a genuine race, not a
+    // bug. Falling through to mint a fresh order is correct in that case.
+    if (order.status === 'paid') return null;
+
+    return {
+      order,
+      keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
+      breakdown: {
+        academyFee: paiseToRupees(candidate.academyAmountPaise ?? 0),
+        convenienceFee: paiseToRupees(
+          (candidate.parentTotalPaise ?? 0) - (candidate.academyAmountPaise ?? 0)
+        ),
+        total: paiseToRupees(candidate.parentTotalPaise ?? 0),
+        totalFormatted: formatInr(candidate.parentTotalPaise ?? 0),
+        period: input.period,
+      },
+    };
+  } catch (err: any) {
+    // Razorpay couldn't find/return the order (deleted, API hiccup) — treat
+    // as "nothing to reuse" and let the caller mint a fresh one.
+    console.error('[createOrder] could not reuse pending order, minting a new one:', err?.message || err);
+    return null;
+  }
 }
 
 /** Distinct from NoFeeConfiguredError: a fee exists, but nothing is owed now. */

@@ -32,6 +32,30 @@ interface DerivedStat {
   text: string;
 }
 
+/**
+ * Two treatments, both built from theme tokens rather than a fixed Tailwind
+ * palette. Previously three of the four stats were hardcoded amber/emerald/
+ * purple regardless of the academy's actual brand colour — every academy's
+ * numbers looked like the same rainbow no matter what they picked in the
+ * theme engine. Alternating brand/accent gives the section visual variety
+ * while staying entirely derived from that academy's own palette.
+ *
+ * If the owner has also picked "stats" as their one accent-focus section
+ * (data-section-accent, see globals.css), --brand already equals --accent
+ * there, so the two treatments collapse into one — a harmless, sensible
+ * degradation, not a conflict.
+ */
+const BRAND_TREATMENT = {
+  color: "from-[var(--brand)] to-[var(--brand-strong)]",
+  bg: "bg-[var(--brand-soft)]",
+  text: "text-[color:var(--brand)]",
+};
+const ACCENT_TREATMENT = {
+  color: "from-[var(--accent)] to-[var(--accent-strong)]",
+  bg: "bg-[var(--accent-soft)]",
+  text: "text-[color:var(--accent)]",
+};
+
 function deriveStats(academy?: any): DerivedStat[] {
   const out: DerivedStat[] = [];
 
@@ -42,9 +66,7 @@ function deriveStats(academy?: any): DerivedStat[] {
       value: students,
       suffix: "",
       label: students === 1 ? "Athlete Training" : "Athletes Training",
-      color: "from-[var(--brand)] to-[var(--brand-strong)]",
-      bg: "bg-[var(--brand-soft)]",
-      text: "text-[color:var(--brand)]",
+      ...BRAND_TREATMENT,
     });
   }
 
@@ -57,9 +79,7 @@ function deriveStats(academy?: any): DerivedStat[] {
       value: achievements,
       suffix: "",
       label: achievements === 1 ? "Achievement" : "Achievements",
-      color: "from-amber-400 to-yellow-500",
-      bg: "bg-amber-50",
-      text: "text-amber-600",
+      ...ACCENT_TREATMENT,
     });
   }
 
@@ -70,9 +90,7 @@ function deriveStats(academy?: any): DerivedStat[] {
       value: sports,
       suffix: "",
       label: sports === 1 ? "Discipline" : "Disciplines",
-      color: "from-emerald-400 to-green-500",
-      bg: "bg-emerald-50",
-      text: "text-emerald-600",
+      ...BRAND_TREATMENT,
     });
   }
 
@@ -84,9 +102,7 @@ function deriveStats(academy?: any): DerivedStat[] {
       value: years,
       suffix: years === 1 ? " yr" : " yrs",
       label: "Coaching Experience",
-      color: "from-purple-500 to-fuchsia-500",
-      bg: "bg-purple-50",
-      text: "text-purple-600",
+      ...ACCENT_TREATMENT,
     });
   }
 
@@ -142,7 +158,7 @@ export default function StatsSection({ academy }: { academy?: any }) {
   if (academy?.theme?.sections?.stats === false || stats.length === 0) return null;
 
   return (
-    <section className="relative py-16 md:py-32 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
+    <section className="relative py-[var(--section-py-sm)] md:py-[var(--section-py)] px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
       {/* Animated Background */}
       <motion.div
         animate={{

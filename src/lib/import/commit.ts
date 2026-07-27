@@ -480,6 +480,9 @@ function buildStudentCreatedEvent(input: {
       academyId: String(academy._id),
       academyName: academy.name,
       academySlug: academy.slug,
+      // So the owner's "new student" WhatsApp alert doesn't need its own DB
+      // round trip — same denormalisation reasoning as the rest of this payload.
+      academyOwnerPhone: academy.contactInfo?.phone ?? null,
       sports: profile.sports ?? [],
       batchId: profile.batchId ? String(profile.batchId) : null,
       batchName: row.sportOrBatch ?? null,

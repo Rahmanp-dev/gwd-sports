@@ -12,7 +12,18 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ stud
 
     const updates = await req.json();
 
-    const student = await StudentProfile.findOne({ userId: studentId });
+    // TENANT ISOLATION — this route had none: any trainer at any academy could
+    // edit any other academy's student's performance record just by knowing
+    // studentId/performanceId. Same filter pattern as add-performance.
+    const filter: Record<string, unknown> = { userId: studentId };
+    if (auth.user.role !== 'gwd_super_admin') {
+      if (!auth.academyId) {
+        return NextResponse.json({ success: false, message: 'No academy assigned to your account' }, { status: 403 });
+      }
+      filter.academyId = auth.academyId;
+    }
+
+    const student = await StudentProfile.findOne(filter);
     if (!student) {
       return NextResponse.json({ success: false, message: 'Student not found' }, { status: 404 });
     }
@@ -42,8 +53,16 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ s
     if (auth?.error) return NextResponse.json({ success: false, message: auth.error }, { status: auth.status });
     await connectToDatabase();
 
-    const student = await StudentProfile.findOne({ userId: studentId });
-    
+    const filter: Record<string, unknown> = { userId: studentId };
+    if (auth.user.role !== 'gwd_super_admin') {
+      if (!auth.academyId) {
+        return NextResponse.json({ success: false, message: 'No academy assigned to your account' }, { status: 403 });
+      }
+      filter.academyId = auth.academyId;
+    }
+
+    const student = await StudentProfile.findOne(filter);
+
     if (!student) {
       return NextResponse.json({ success: false, message: 'Student not found' }, { status: 404 });
     }

@@ -234,11 +234,11 @@ export const FeesManagement: React.FC = () => {
           <table className="w-full text-sm text-left text-slate-500">
             <thead className="text-xs text-slate-700 uppercase bg-slate-50 border-b">
               <tr>
-                <th className="px-6 py-4">Transaction / Receipt</th>
-                <th className="px-6 py-4">Student ID / Details</th>
-                <th className="px-6 py-4 font-bold text-center">Amount (₹)</th>
-                <th className="px-6 py-4 text-center">Status</th>
-                <th className="px-6 py-4">Date & Time</th>
+                <th className="px-3 sm:px-6 py-4">Transaction / Receipt</th>
+                <th className="hidden sm:table-cell px-6 py-4">Student ID / Details</th>
+                <th className="px-3 sm:px-6 py-4 font-bold text-center">Amount (₹)</th>
+                <th className="px-3 sm:px-6 py-4 text-center">Status</th>
+                <th className="px-3 sm:px-6 py-4">Date &amp; Time</th>
               </tr>
             </thead>
             <tbody>
@@ -268,7 +268,7 @@ export const FeesManagement: React.FC = () => {
                     key={fee._id}
                     className="bg-white border-b hover:bg-slate-50 transition-colors"
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                       {/* The parent-facing receipt number when there is one —
                           `receipt` is the internal Razorpay order reference and
                           means nothing to anybody outside this table. */}
@@ -289,7 +289,7 @@ export const FeesManagement: React.FC = () => {
                         </a>
                       )}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="hidden sm:table-cell px-6 py-4">
                       {/* Depending on if studentId was fully populated by backend, show it here safely */}
                       <div className="text-xs font-mono text-slate-500">
                         {fee.studentId
@@ -299,15 +299,15 @@ export const FeesManagement: React.FC = () => {
                           : "Anonymous/Direct"}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-3 sm:px-6 py-4 text-center">
                       <span className="font-bold text-slate-900 bg-slate-100 px-2 py-1 rounded">
                         ₹{fee.amount.toFixed(2)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap">
+                    <td className="px-3 sm:px-6 py-4 text-center whitespace-nowrap">
                       {getStatusBadge(fee.status)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                       <div className="text-slate-900">
                         {new Date(fee.createdAt).toLocaleDateString("en-US", {
                           year: "numeric",

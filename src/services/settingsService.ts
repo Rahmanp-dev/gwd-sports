@@ -79,11 +79,50 @@ export const uploadGalleryImage = async (file: File): Promise<string> => {
   return (response as any).data.url;
 };
 
+/**
+ * Uploads a hero background video DIRECTLY to Cloudinary from the browser.
+ *
+ * Was previously posted to /upload/image — which hard-rejects any real video
+ * both on size (5MB cap) and MIME type (image-only allowlist). Even a
+ * dedicated proxy route on our own server would still fail in production:
+ * this app deploys on Vercel, where serverless functions have a hard ~4.5MB
+ * request-body limit, and a real video clip is routinely well above that.
+ * Getting a signed upload signature from our server and then POSTing the
+ * file straight to Cloudinary's own endpoint is Cloudinary's documented
+ * pattern for exactly this — the video binary never touches our server at
+ * all, so no server-side body limit applies.
+ */
 export const uploadVideo = async (file: File): Promise<string> => {
+  const maxBytes = 50 * 1024 * 1024; // 50MB
+  if (file.size > maxBytes) {
+    throw new Error("File too large. Max 50MB — compress the clip or trim its length.");
+  }
+
+  const sigResponse = await apiService.post("/upload/video-signature", {});
+  const { signature, timestamp, folder, apiKey, cloudName } = (sigResponse as any).data as {
+    signature: string;
+    timestamp: number;
+    folder: string;
+    apiKey: string;
+    cloudName: string;
+  };
+
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("folder", "videos");
+  formData.append("api_key", apiKey);
+  formData.append("timestamp", String(timestamp));
+  formData.append("signature", signature);
+  formData.append("folder", folder);
 
-  const response = await apiService.post("/upload/image", formData, MULTIPART);
-  return (response as any).data.url;
+  const uploadResponse = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/video/upload`, {
+    method: "POST",
+    body: formData,
+  });
+  const uploadJson = await uploadResponse.json();
+
+  if (!uploadResponse.ok) {
+    throw new Error(uploadJson?.error?.message || "Video upload failed");
+  }
+
+  return uploadJson.secure_url as string;
 };

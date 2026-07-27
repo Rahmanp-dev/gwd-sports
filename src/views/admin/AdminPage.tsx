@@ -130,11 +130,11 @@ export default function AdminPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header with user info and logout */}
       <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center gap-3">
+          <h1 className="min-w-0 truncate text-xl sm:text-2xl font-bold text-gray-900">
             {brand.name} Admin
           </h1>
-          <div className="flex items-center gap-4">
+          <div className="flex shrink-0 items-center gap-4">
             <div className="hidden md:block text-right">
               <p className="text-sm font-medium">{user?.name || "Admin"}</p>
               <p className="text-xs text-gray-500">{user?.role || "admin"}</p>
@@ -154,7 +154,37 @@ export default function AdminPage() {
           <SetupChecklist onNavigate={setActiveTab} />
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <div className="bg-white p-2 rounded-lg shadow-sm overflow-x-auto">
+            {/*
+              On a phone, 13 tabs in one overflow-x-auto row (below) means
+              the very first thing an owner does every session is hunt for a
+              tab that's scrolled off-screen, with no hint one exists. A
+              native <select> is the standard mobile pattern here — no new
+              dependency, full keyboard/screen-reader support for free, and
+              it drives the exact same activeTab state as the tab strip, so
+              nothing about tab content or routing changes.
+            */}
+            <select
+              value={activeTab}
+              onChange={(e) => setActiveTab(e.target.value)}
+              className="block w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-sm sm:hidden"
+              aria-label="Dashboard section"
+            >
+              <option value="dashboard">Overview</option>
+              <option value="fees">Fees</option>
+              <option value="users">Users</option>
+              <option value="students">Students</option>
+              <option value="import">Import</option>
+              <option value="trainers">Trainers</option>
+              <option value="events">Events</option>
+              <option value="landingPage">Landing Page</option>
+              <option value="kits">Kits</option>
+              <option value="checkin">Check-in</option>
+              <option value="comms">Comms</option>
+              <option value="branding">Branding</option>
+              <option value="settings">Settings</option>
+            </select>
+
+            <div className="hidden bg-white p-2 rounded-lg shadow-sm overflow-x-auto sm:block">
             <TabsList className="h-auto justify-start gap-2">
               <TabsTrigger
                 value="dashboard"

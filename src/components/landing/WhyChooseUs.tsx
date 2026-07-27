@@ -86,7 +86,7 @@ export default function WhyChooseUs({ academy }: { academy?: any }) {
   }
 
   return (
-    <section className="relative py-16 md:py-32 px-4 sm:px-6 lg:px-8 bg-slate-50 overflow-hidden">
+    <section className="relative py-[var(--section-py-sm)] md:py-[var(--section-py)] px-4 sm:px-6 lg:px-8 bg-slate-50 overflow-hidden">
       <div className="relative max-w-7xl mx-auto">
         {/* Section Header */}
         <motion.div

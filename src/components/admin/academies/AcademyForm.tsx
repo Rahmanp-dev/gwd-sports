@@ -256,27 +256,32 @@ export const AcademyForm: React.FC<AcademyFormProps> = ({
 
   const handleSubmit = (data: FormData) => {
     /**
-     * Spread the existing theme first so fields this screen does not edit —
-     * heroImages today, whatever gets added later — survive the round trip.
-     * The super admin update path `$set`s this object wholesale, so anything
-     * missing here would be silently erased.
+     * Was cherry-picking 10 fields out of `branding` (primaryColor, style,
+     * tagline, ...) into `theme`, which meant every OTHER field the shared
+     * AcademyBrandingEditor exposes — heroVideoUrl, heroMode, backgroundStyle,
+     * density, accentSection, footer, logoScale/Shape/Align/Fit, heroBlur,
+     * heroOverlay — updated the live preview here but was silently discarded
+     * on save, with the OLD value from `academy?.theme` winning instead. A
+     * super admin editing an existing academy's hero video (or any of the
+     * others) through this exact form would see it "work" until they
+     * refreshed and found the old one still saved.
+     *
+     * `achievements` is the one BrandingDraft field that is NOT part of
+     * `theme` — it lives at the top level of the Academy document — so it is
+     * pulled out before the rest is spread in. Everything else in
+     * BrandingDraft maps straight onto `theme`, so spreading it wholesale
+     * (over the existing theme, so untouched fields still survive on a
+     * partial `academy` prop) means a field added to the editor later never
+     * needs this list touched again.
      */
+    const { achievements, ...themeFields } = branding;
     onSubmit({
       ...data,
       theme: {
         ...(academy?.theme ?? {}),
-        primaryColor: branding.primaryColor,
-        accentColor: branding.accentColor,
-        style: branding.style,
-        fontPreset: branding.fontPreset,
-        tagline: branding.tagline,
-        logoUrl: branding.logoUrl,
-        programs: branding.programs,
-        testimonials: branding.testimonials,
-        gallery: branding.gallery,
-        sections: branding.sections,
+        ...themeFields,
       },
-      achievements: branding.achievements,
+      achievements,
     } as unknown as AcademyFormData);
   };
 

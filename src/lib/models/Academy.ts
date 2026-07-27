@@ -93,6 +93,8 @@ export interface IAcademy extends Document {
     heroImages: string[];
     heroMode?: 'video' | 'carousel';
     heroVideoUrl?: string;
+    /** Short credibility line above the headline, e.g. "Est. 2015 · Hyderabad". Empty renders nothing. */
+    heroEyebrow?: string;
     tagline: string;
     style?: 'bold' | 'classic' | 'minimal';
     /**
@@ -405,6 +407,7 @@ const AcademySchema = new Schema<IAcademy>({
     heroOverlay: { type: Number, default: 55, min: 0, max: 100 },
     heroMode: { type: String, enum: ['video', 'carousel'], default: 'video' },
     heroVideoUrl: { type: String, default: '' },
+    heroEyebrow: { type: String, default: '', maxlength: 60 },
     footer: {
       phone: { type: String, default: '' },
       email: { type: String, default: '' },

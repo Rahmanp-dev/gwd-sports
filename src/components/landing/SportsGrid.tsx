@@ -45,7 +45,7 @@ export default function SportsGrid({ academy }: { academy?: any }) {
   }
 
   return (
-    <section className="relative py-16 md:py-32 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
+    <section className="relative py-[var(--section-py-sm)] md:py-[var(--section-py)] px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
       {/* Premium Apple-style Light Background */}
       <div className="absolute inset-0 bg-slate-50">
         <div className="absolute top-40 right-0 w-[30rem] h-[30rem] rounded-full bg-[var(--brand-soft)]/50 blur-3xl" />

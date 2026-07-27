@@ -73,6 +73,19 @@ export async function GET(req: NextRequest) {
       }
     ];
 
+    /**
+     * DEFENSE IN DEPTH. This list trusts TrainerProfile.students, which is
+     * meant to only ever contain same-academy students — add-student now
+     * enforces that at write time. This is a second, independent check at
+     * read time so a bad row (from before that fix, or any future bug that
+     * writes to TrainerProfile.students) cannot leak a foreign academy's
+     * student PII into this response.
+     */
+    if (auth.user.role !== 'gwd_super_admin' && auth.academyId) {
+      const academyObjectId = new mongoose.Types.ObjectId(String(auth.academyId));
+      aggregatePipeline.push({ $match: { 'profile.academyId': academyObjectId } });
+    }
+
     if (level) {
       aggregatePipeline.push({ $match: { 'profile.level': level } });
     }
@@ -115,6 +128,11 @@ export async function GET(req: NextRequest) {
       },
       { $unwind: { path: '$profile', preserveNullAndEmptyArrays: true } }
     ];
+
+    if (auth.user.role !== 'gwd_super_admin' && auth.academyId) {
+      const academyObjectId = new mongoose.Types.ObjectId(String(auth.academyId));
+      countPipeline.push({ $match: { 'profile.academyId': academyObjectId } });
+    }
 
     if (level) {
       countPipeline.push({ $match: { 'profile.level': level } });

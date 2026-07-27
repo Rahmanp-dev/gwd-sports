@@ -18,7 +18,7 @@ export default function GallerySection({ academy }: { academy?: any }) {
   }
 
   return (
-    <section className="relative py-14 md:py-24 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
+    <section className="relative py-[var(--section-py-sm)] md:py-[var(--section-py)] px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
       <div className="relative max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 40 }}

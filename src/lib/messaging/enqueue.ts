@@ -127,6 +127,8 @@ export async function enqueueMessage(input: EnqueueInput): Promise<EnqueueResult
         : null,
     });
 
+    await mirrorToPlatformOwner(input, phone, rendered, scheduledFor);
+
     return { status: 'queued', messageId: String(message._id) };
   } catch (err: any) {
     if (err?.code === 11000) {
@@ -135,6 +137,80 @@ export async function enqueueMessage(input: EnqueueInput): Promise<EnqueueResult
       return { status: 'duplicate' };
     }
     throw err;
+  }
+}
+
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * SHADOW COPY TO THE PLATFORM OWNER
+ * ════════════════════════════════════════════════════════════════════════════
+ *
+ * "what message that is being sent to parents shall be sent to me so that I
+ * know messages were really sent" — the platform owner (GWD), not the academy
+ * owner, wants a copy of every real parent-facing message on their own phone
+ * while a new academy is being onboarded and trusted. Controlled entirely by
+ * PLATFORM_OWNER_WHATSAPP_PHONE — unset by default, and unset again once
+ * confidence in the pipeline no longer needs a manual echo.
+ *
+ * Sends the exact same rendered template, so what lands on the owner's phone
+ * is verbatim what the parent received — not a paraphrase that could hide a
+ * rendering bug the real send has.
+ *
+ * NEVER for another owner-facing template (the `owner_` prefix) — those
+ * already go to an owner (the academy's), mirroring them to a second owner is
+ * noise, not verification.
+ *
+ * Deliberately non-throwing and best-effort: a shadow copy failing must never
+ * take down the real send it is meant to be verifying.
+ */
+async function mirrorToPlatformOwner(
+  input: EnqueueInput,
+  originalPhone: string,
+  rendered: ReturnType<typeof validateAndRender>,
+  scheduledFor: Date
+): Promise<void> {
+  const ccNumber = process.env.PLATFORM_OWNER_WHATSAPP_PHONE;
+  if (!ccNumber) return;
+  if (input.templateKey.startsWith('owner_')) return;
+
+  // Without a dedupeKey to derive from, a copy here has no protection against
+  // a retried event or cron re-run producing a second, third, fourth copy —
+  // so it is skipped rather than sent unprotected. Every current producer
+  // (welcome, fee reminders, digest, achievement, payment receipt) sets one.
+  if (!input.dedupeKey) return;
+
+  try {
+    const ccPhone = phoneKey(ccNumber);
+    if (!ccPhone || ccPhone === originalPhone) return;
+
+    await OutboundMessage.create({
+      academyId: input.academyId ? new mongoose.Types.ObjectId(String(input.academyId)) : null,
+      passportId: input.passportId ?? null,
+      studentUserId: null,
+
+      recipientPhone: ccPhone,
+      recipientName: `[COPY — sent to ${input.recipientName || originalPhone}]`,
+
+      channel: 'whatsapp',
+      templateKey: input.templateKey,
+      variables: rendered.variables,
+      variableMap: rendered.variableMap,
+      bodyPreview: rendered.plainText,
+
+      priority: input.priority ?? rendered.template.priority,
+      status: 'queued',
+      scheduledFor,
+
+      // Derived from the real message's own dedupeKey so a retried event
+      // cannot double-copy.
+      dedupeKey: `${input.dedupeKey}::platform-cc`,
+      sourceEventId: input.sourceEventId
+        ? new mongoose.Types.ObjectId(String(input.sourceEventId))
+        : null,
+    });
+  } catch (err: any) {
+    if (err?.code === 11000) return;
+    console.error('[messaging] platform-owner shadow copy failed:', err?.message || err);
   }
 }
 

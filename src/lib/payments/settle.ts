@@ -1,53 +1,10 @@
 import mongoose from 'mongoose';
 import { FeePayment, type IFeePayment } from '@/lib/models/FeePayment';
 import StudentProfile from '@/lib/models/Student';
-import User from '@/lib/models/User';
-import { Academy } from '@/lib/models/Academy';
-import { paiseToRupees, formatInr } from './money';
+import { paiseToRupees } from './money';
 import { emitEvent } from '@/lib/events/emit';
 import { issueReceiptNumber } from './issueReceipt';
-
-/**
- * Everything the parent-facing payment confirmation needs, gathered here so the
- * messaging consumer stays decoupled from the payments module.
- *
- * Entirely best-effort. A settled payment is correct whether or not we can look
- * up a phone number, so every failure path returns partial data and lets the
- * consumer skip rather than throwing and rolling back money that has moved.
- */
-async function loadReceiptContext(payment: IFeePayment): Promise<Record<string, unknown>> {
-  try {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://gwd.in';
-
-    const [profile, student, academy] = await Promise.all([
-      payment.studentId
-        ? StudentProfile.findOne({ userId: payment.studentId })
-            .select('passportId parentName parentPhone')
-            .lean()
-        : null,
-      payment.studentId ? User.findById(payment.studentId).select('name phone').lean() : null,
-      payment.academyId ? Academy.findById(payment.academyId).select('name').lean() : null,
-    ]);
-
-    const totalPaise =
-      payment.parentTotalPaise ?? Math.round((payment.amount ?? 0) * 100);
-
-    return {
-      passportId: (profile as any)?.passportId ?? null,
-      // Parent's number first; the student's own is the fallback, because for
-      // older players the account phone IS the contact number.
-      parentPhone: (profile as any)?.parentPhone ?? (student as any)?.phone ?? null,
-      parentName: (profile as any)?.parentName ?? null,
-      studentName: (student as any)?.name ?? null,
-      academyName: (academy as any)?.name ?? null,
-      amountFormatted: formatInr(totalPaise),
-      receiptUrl: `${appUrl}/receipt/${String(payment._id)}`,
-    };
-  } catch (err: any) {
-    console.error('[settle] receipt context lookup failed:', err?.message || err);
-    return {};
-  }
-}
+import { loadReceiptContext } from './receiptContext';
 
 export type SettlementSource = 'client_verify' | 'webhook' | 'manual_admin';
 
@@ -241,18 +198,22 @@ function normalizePeriod(period?: string): 'monthly' | 'quarterly' | 'yearly' {
 export async function markPaymentFailed(
   lookup: { orderId?: string; paymentId?: string },
   reason?: string
-): Promise<void> {
+): Promise<IFeePayment | null> {
   const filter = lookup.orderId ? { orderId: lookup.orderId } : { paymentId: lookup.paymentId };
-  if (!filter.orderId && !filter.paymentId) return;
+  if (!filter.orderId && !filter.paymentId) return null;
 
-  await FeePayment.updateOne(
+  // findOneAndUpdate rather than updateOne: the caller needs studentId/academyId
+  // off the matched record to raise an owner alert with real context instead of
+  // a bare "a payment failed somewhere".
+  return FeePayment.findOneAndUpdate(
     { ...filter, settledAt: null },
     {
       $set: {
         status: 'failed',
         ...(reason ? { description: reason } : {}),
       },
-    }
+    },
+    { new: true }
   );
 }
 

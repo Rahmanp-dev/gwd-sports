@@ -250,7 +250,7 @@ export const StudentManagement: React.FC = () => {
           setShowForm(open);
         }}
       >
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Student</DialogTitle>
           </DialogHeader>
@@ -283,7 +283,7 @@ export const StudentManagement: React.FC = () => {
           if (!open) setSelectedStudent(null);
         }}
       >
-        <DialogContent className="sm:max-w-4xl">
+        <DialogContent className="sm:max-w-4xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Student Details</DialogTitle>
           </DialogHeader>
@@ -314,7 +314,7 @@ export const StudentManagement: React.FC = () => {
           setShowKitForm(open);
         }}
       >
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Update Kit Status</DialogTitle>
           </DialogHeader>

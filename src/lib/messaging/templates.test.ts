@@ -69,6 +69,8 @@ describe('template registry', () => {
       'gwd_attendance_confirmation_v1',
       'gwd_broadcast_v1',
       'gwd_fee_reminder_v1',
+      'gwd_owner_new_student_v1',
+      'gwd_owner_payment_v1',
       'gwd_payment_receipt_v1',
       'gwd_weekly_digest_v1',
       'gwd_welcome_v1',

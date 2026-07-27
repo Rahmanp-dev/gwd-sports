@@ -67,6 +67,8 @@ export interface AcademyTheme {
   heroOverlay?: number;
   heroMode?: 'video' | 'carousel';
   heroVideoUrl?: string;
+  /** Short credibility line above the headline, e.g. "Est. 2015 · Hyderabad". Empty renders nothing. */
+  heroEyebrow?: string;
   footer?: {
     phone?: string;
     email?: string;

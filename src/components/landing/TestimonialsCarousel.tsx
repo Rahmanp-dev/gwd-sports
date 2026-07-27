@@ -52,7 +52,7 @@ export default function TestimonialsCarousel({ academy }: { academy?: any }) {
   const safeIndex = Math.min(current, total - 1);
 
   return (
-    <section className="relative py-16 md:py-32 px-4 sm:px-6 lg:px-8 bg-slate-50 overflow-hidden">
+    <section className="relative py-[var(--section-py-sm)] md:py-[var(--section-py)] px-4 sm:px-6 lg:px-8 bg-slate-50 overflow-hidden">
       {/* Animated Background */}
       <motion.div
         animate={{

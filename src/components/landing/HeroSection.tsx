@@ -173,6 +173,23 @@ export default function HeroSection({ academy }: { academy?: any }) {
             </motion.div>
           ) : null}
 
+          {/* Eyebrow / credibility line — renders nothing unless the owner writes one */}
+          {theme?.heroEyebrow ? (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.05 }}
+              className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs sm:text-sm font-semibold tracking-wide backdrop-blur-sm"
+              style={{
+                borderColor: "rgb(var(--brand-rgb) / 0.4)",
+                background: "rgb(var(--brand-rgb) / 0.15)",
+                color: "white",
+              }}
+            >
+              {theme.heroEyebrow}
+            </motion.div>
+          ) : null}
+
           {/* Main Title Heading */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}

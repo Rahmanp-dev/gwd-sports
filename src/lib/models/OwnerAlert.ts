@@ -23,7 +23,8 @@ export type OwnerAlertType =
   | 'fee_overdue_15'
   | 'message_delivery_failed'
   | 'student_missing_contact'
-  | 'payment_reconciliation_mismatch';
+  | 'payment_reconciliation_mismatch'
+  | 'payment_failed';
 
 export type OwnerAlertSeverity = 'info' | 'warning' | 'critical';
 

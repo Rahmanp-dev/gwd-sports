@@ -767,17 +767,17 @@ export function FinanceDashboard() {
                       {p.phone && (
                         <a
                           href={`tel:${p.phone}`}
-                          className="w-5 h-5 rounded-full bg-green-50 flex items-center justify-center hover:bg-green-100 transition-colors"
+                          className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center hover:bg-green-100 transition-colors"
                         >
-                          <Phone className="w-2.5 h-2.5 text-green-600" />
+                          <Phone className="w-3.5 h-3.5 text-green-600" />
                         </a>
                       )}
                       {p.email && (
                         <a
                           href={`mailto:${p.email}`}
-                          className="w-5 h-5 rounded-full bg-blue-50 flex items-center justify-center hover:bg-blue-100 transition-colors"
+                          className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center hover:bg-blue-100 transition-colors"
                         >
-                          <Mail className="w-2.5 h-2.5 text-blue-600" />
+                          <Mail className="w-3.5 h-3.5 text-blue-600" />
                         </a>
                       )}
                     </div>
@@ -844,21 +844,22 @@ export function FinanceDashboard() {
                       {d.phone && (
                         <a
                           href={`tel:${d.phone}`}
-                          className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center hover:bg-green-200 transition-colors"
+                          className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center hover:bg-green-200 transition-colors"
                         >
-                          <Phone className="w-2.5 h-2.5 text-green-600" />
+                          <Phone className="w-3.5 h-3.5 text-green-600" />
                         </a>
                       )}
                       {d.email && (
                         <a
                           href={`mailto:${d.email}`}
-                          className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center hover:bg-blue-200 transition-colors"
+                          className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center hover:bg-blue-200 transition-colors"
                         >
-                          <Mail className="w-2.5 h-2.5 text-blue-600" />
+                          <Mail className="w-3.5 h-3.5 text-blue-600" />
                         </a>
                       )}
                       {/* Most of these dues get settled in cash at the ground.
-                          Without this the ledger never catches up with reality. */}
+                          Without this the ledger never catches up with reality.
+                          Sized for a thumb, not a mouse — this records real money. */}
                       {d.userId && (
                         <button
                           type="button"
@@ -869,7 +870,7 @@ export function FinanceDashboard() {
                               outstanding: d.outstandingFees ?? d.outstanding,
                             })
                           }
-                          className="ml-0.5 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-700 transition-colors hover:bg-emerald-200"
+                          className="ml-0.5 min-h-8 rounded-full bg-emerald-100 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700 transition-colors hover:bg-emerald-200"
                         >
                           Mark paid
                         </button>

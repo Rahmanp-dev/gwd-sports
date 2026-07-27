@@ -169,7 +169,7 @@ export const TrainerTable: React.FC<TrainerTableProps> = ({
         </div>
 
         {/* Filter Dropdowns */}
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
