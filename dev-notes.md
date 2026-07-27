@@ -3500,3 +3500,283 @@ The CSS variables are on the DOM; migration can be done one section at a time.
      - Copyright Notice (`footer.copyrightText`)
      - Social Links: Facebook, Instagram, Twitter/X, YouTube (`facebookUrl`, `instagramUrl`, etc.)
    - Updated `AcademyBrandingEditor.tsx` sidebar with a live Footer Preview block.
+
+---
+
+## Session — 2026-07-27 · First Paying Academy Onboarded — Passport Button + Welcome Message Fix (Item 1/9)
+
+**State:** `tsc --noEmit` clean (0 errors), `npm run build` clean. `vitest run` has 1 pre-existing unrelated failure (`palette.test.ts` — `parseHex('#gggggg')` returns `{NaN,NaN,NaN}` instead of `null`; not touched this session, flagged for the theme-engine pass). Not yet committed.
+
+First real paying customer academy closed. User gave a 9-item punch list to make the platform customer-ready; this entry covers item 1 (passport button missing) plus a second bug found while root-causing it.
+
+### Root cause
+
+`findOrCreatePassport()` — the only sanctioned function that mints a Passport — was called from exactly one place: the bulk CSV import commit (`lib/import/commit.ts`). A student who self-registers through the app (`POST /api/student/profile`) got a `StudentProfile` with `passportId: undefined` forever. Two visible consequences:
+1. The dashboard's "My Passport" button (correctly) hides itself when there's no `passportId` — so self-registered students saw nothing, with no explanation.
+2. `student.created` — the domain event that triggers the WhatsApp welcome message with the passport link — was also only ever emitted from the import path. Self-registered students got **no welcome message at all**, ever. This is squarely inside item 3 (messaging audit) as well as item 1.
+
+### Fix
+
+New `src/lib/auth/ensurePassport.ts` — `ensureStudentPassport(studentProfileId)`, following the same self-heal shape as the existing `ensureRoleProfile.ts`:
+- Mints the passport via `findOrCreatePassport()` using `profile.parentPhone || user.phone` as the contact number (self-registration never collects a separate parent phone).
+- Backfills `profile.parentPhoneE164` from the passport's normalised phone — the import path stamps this field on every row, self-registration never did, so a self-registered student was previously unfindable by parent-phone search/lookup.
+- Emits `student.created` with the same payload shape `buildStudentCreatedEvent()` builds in `import/commit.ts` (passport/payment links, fee info, academy context), `dedupeKey`d on `student.created:{passportId}:{academyId}` so it's safe to fire from either call site without a duplicate send. `loginPassword` is `null` here (self-registered students set their own password; nothing to relay, unlike an import-issued one) — `renderWelcomeLoginLine()` already handles a null password gracefully.
+
+Wired into `src/app/api/student/profile/route.ts`:
+- `POST` (registration): mints the passport and fires the welcome message immediately, before the response returns.
+- `GET` (profile read): lazily backfills any already-broken account (`passportId` missing) on next login — so every account broken by the missing call before this fix existed repairs itself, including sending the welcome message it never got.
+
+### Why lazy backfill on GET was deliberately kept (not just POST)
+
+Every self-registered student who signed up before this fix landed is currently sitting with no passport and never got a welcome message. Firing the same self-heal on profile read means they get caught up automatically on next login rather than needing a manual data-repair script — consistent with the `ensureRoleProfile` pattern already established in this codebase. The `dedupeKey` on the event makes this safe even if a student's profile gets re-read many times.
+
+### Next
+
+Continuing down the user's 9-item list: dashboard mobile responsiveness (item 2), full messaging audit — owner CC/logging on all triggers, fee reminder logic, payment-received notification to owner (item 3) — then payment links (item 4), trainer↔student↔passport linkage (item 5), and the theme engine work (items 6–9).
+
+---
+
+## Session — 2026-07-27 · Full Messaging Audit — Owner Alerts, Platform Shadow-CC, Two Silent Payment-Path Bugs (Item 3/9)
+
+**State:** `tsc --noEmit` clean, `vitest run` 448/448 passing (updated the template-registry launch-checklist test for the 2 new templates; fixed one unrelated pre-existing failure below), `npm run build` clean. Not yet committed.
+
+Mapped the entire WhatsApp pipeline end to end (emit → `DomainEvent` → dispatch tick → `OutboundMessage` queue → Meta Cloud API) before changing anything. Cron is real: GitHub Actions every 15 min (`.github/workflows/cron.yml`), Vercel's daily cron is only a Hobby-plan safety net — **confirm `APP_URL`/`CRON_SECRET` are set as GitHub repo secrets before relying on it.**
+
+### Two silent bugs found in the payment settlement paths (not requested directly, but "payment links have no issue" / "if he receives a payment" made these unavoidable to find)
+
+`handlePaymentSettled()` in `consumers.ts` requires `payload.passportId` to do anything — cancel a queued fee reminder or send the receipt. The main Razorpay checkout path (`settle.ts`) built a rich payload via a local `loadReceiptContext()` helper. The other two `payment.settled` emit sites did not:
+
+- **Razorpay subscription auto-charges** (`payments/webhook.ts`, the `subscription.charged` handler) emitted `{ studentUserId, paymentId, parentTotalPaise, period, source }` only — no `passportId`, no `parentPhone`, no `receiptUrl`. Every recurring subscription payment silently never sent a receipt and never cancelled a still-queued overdue reminder for a student who had, in fact, just paid.
+- **Offline/cash payments** recorded by an admin (`payments/offline.ts`, used for cash/UPI/bank-transfer entries — likely the most common payment method for a sports academy) had the identical gap.
+
+Fix: extracted `loadReceiptContext()` out of `settle.ts` into a new shared `src/lib/payments/receiptContext.ts` (also now returns `academyOwnerPhone`, see below) and call it from all three emit sites. `settle.ts`, `webhook.ts`, and `offline.ts` all build the same payload shape now.
+
+Also found `payment.failed` was emitted (`webhook.ts`, real gateway declines) but the dispatcher's claim query in `consumers.ts` only fetched `student.created` / `attendance.created` / `achievement.created` / `payment.settled` — `payment.failed` events sat in Mongo forever, never even reaching the `default: 'skipped'` branch. Added it to the query and to `handleEvent()`'s switch; a failed payment now raises an `OwnerAlert` (new `payment_failed` alert type) instead of vanishing. The event previously also carried `academyId: null` unconditionally — fixed by having `markPaymentFailed()` (settle.ts) `findOneAndUpdate` and return the matched `FeePayment`, so `academyId`/`studentId` are known.
+
+### Owner-facing WhatsApp — did not exist at all, now built (item 3's core ask)
+
+Confirmed via full trace: before this session, the academy owner never received a WhatsApp message from the platform under any circumstance — not on a new signup, not on a payment, nothing. `OwnerAlert` (dashboard-only) existed for overdue fees and delivery failures, but nothing ever reached the owner's phone.
+
+Added two new templates to `messaging/templates.ts` — `owner_new_student` (`gwd_owner_new_student_v1`) and `owner_payment_received` (`gwd_owner_payment_v1`) — both **need Meta approval before they'll actually deliver**, same as every other template here. `academyOwnerPhone` (from `Academy.contactInfo.phone`) is now denormalised onto both the `student.created` payload (`import/commit.ts` and `auth/ensurePassport.ts`) and the `payment.settled` payload (via `receiptContext.ts`), so the consumer never needs an extra DB round trip — same pattern Phase 1 already established for the parent-facing payloads. `consumers.ts` now sends `owner_new_student` from `handleStudentCreated` and `owner_payment_received` from `handlePaymentSettled`, both independent of whether the parent-facing send succeeds (a student with no usable phone is exactly when the owner most needs to know).
+
+### Platform-owner (GWD) shadow-CC — item 3's second ask
+
+"what message that is being sent to parents shall be sent to me so that I know messages were really sent" — added `mirrorToPlatformOwner()` in `messaging/enqueue.ts`, called from `enqueueMessage()` right after every successful parent-facing send. Gated entirely on a new env var, `PLATFORM_OWNER_WHATSAPP_PHONE` (unset by default, off unless configured) — when set, an identical copy of the exact rendered template lands on that number too, `dedupeKey`'d off the original message's own key (`${dedupeKey}::platform-cc`) so a retried event can't double-copy. Skipped entirely for a message with no `dedupeKey` to derive from (none of the current producers hit this) and for any `owner_`-prefixed template, so the two new owner alerts above don't also get mirrored to a second owner.
+
+### Also fixed while in the area
+
+- `.env.example` was still documenting the retired Interakt BSP integration (`INTERAKT_API_KEY`, `INTERAKT_WEBHOOK_SECRET`) and never listed the actual required Meta Cloud API vars at all (`META_WHATSAPP_ACCESS_TOKEN`, `META_WHATSAPP_PHONE_NUMBER_ID`, `META_WHATSAPP_VERIFY_TOKEN`, `META_APP_SECRET`) — anyone provisioning a new environment from the example file alone would have every send silently no-op. Replaced with the real vars (matching `src/lib/env.ts`), the new `PLATFORM_OWNER_WHATSAPP_PHONE`, and the expanded template-approval checklist (9 templates now, 2 new).
+- `parseHex()` in `branding/palette.ts` accepted malformed hex like `#gggggg` and returned `{r:NaN,g:NaN,b:NaN}` instead of `null` — caught by an existing test that was already failing before this session. One-line fix (reject non-hex characters before parsing); flagged as relevant since the upcoming theme-engine work (items 6–9) touches this file directly.
+
+### Confirmed already solid, no changes needed
+
+Fee reminder cadence (T-5 / due / T+3 parent WhatsApp → T+7 / T+15 owner-dashboard-only) in `messaging/reminders.ts` is a fully-implemented daily sweep, correctly cancels on payment, correctly caps escalation at T+3 per the documented product rule that the platform never auto-restricts a student's access. Template validation (`validateAndRender`) and the cross-contamination guard (`assertVariablesBelongTo`) are both strict and already covered by tests. No changes made here.
+
+### What still needs the user's action, not code
+
+The 2 new templates (`gwd_owner_new_student_v1`, `gwd_owner_payment_v1`) — and in fact all 9 — need to be submitted to and approved by Meta in WhatsApp Manager before they'll actually deliver; exact body text is in the comments above each definition in `templates.ts`, or run `requiredTemplateNames()` for the authoritative list. `PLATFORM_OWNER_WHATSAPP_PHONE` needs to be set in the real environment (`.env.local` / hosting provider) to Rahman's own WhatsApp number for the shadow-CC to activate — it does nothing until set.
+
+### Next
+
+Item 4 (payment links audit) overlaps heavily with what was just found in the settlement paths — continuing there next, then item 2 (dashboard mobile pass), item 5 (trainer↔student↔passport), and the theme engine work (items 6–9).
+
+---
+
+## Session — 2026-07-27 · Payment Link Audit — Duplicate-Order Fix (Item 4/9)
+
+**State:** `tsc --noEmit` clean, `vitest run` 448/448, `npm run build` clean. Not yet committed.
+
+"Payment links have no issue" — full audit of `/pay/[passportId]` (the unauthenticated public link a WhatsApp message points a parent at, separate from the in-app `/api/payments/create-order` an authenticated parent/admin uses). Route map: `src/app/pay/[passportId]/page.tsx` → `src/views/passport/PayPage.tsx` → `GET/POST /api/passport/[passportId]/pay` → `POST /api/passport/[passportId]/pay/verify`. Both share `createFeeOrder()` (`src/lib/payments/createOrder.ts`) with the authenticated path, so a fee-model change can't drift between them.
+
+### Confirmed solid, no changes needed
+
+- Amount is always server-derived (`resolveAmountDue`) — the public link can never let a visitor set their own price; only the authenticated admin path has an override, and it's typed as pre-validated paise.
+- Every edge case (bad passport ID, passport not found, student not enrolled, nothing due, zero/negative amount) is handled explicitly with the right HTTP status.
+- Razorpay signature verified with `crypto.timingSafeEqual` before `settlePayment()` is ever reached; a bad signature marks the payment failed and returns.
+- `settlePayment()`'s idempotency is real, not just asserted: an atomic `findOneAndUpdate` claim (`{settledAt: null or missing}`) backed by unique indexes on `orderId` and `paymentId` — genuinely holds under a client-verify-vs-webhook race, and releases the claim if crediting throws afterward rather than leaving a payment stuck "settled but uncredited."
+- Webhook signature check is wired correctly with the raw body preserved (`req.text()` before `JSON.parse`), and `src/middleware.ts` excludes `/api` from its matcher so nothing upstream reparses the body first. Missing `RAZORPAY_WEBHOOK_SECRET` is a loud 503, not a silent pass.
+- Money math is exact integer-paise throughout, with `assertSplitBalances` enforcing the three-way split sums to the parent's total on every construction — no float arithmetic anywhere in the chain.
+
+### Fixed: no protection against a parent double-tapping "Pay"
+
+`createFeeOrder()` (`createOrder.ts`) had no server-side guard against creating two live Razorpay orders for the same student's same fee — the only guard was a React `paying` flag on the button (`PayPage.tsx`), which a page reload or a second visit to the same WhatsApp link resets. On a slow connection — exactly the situation a payment link exists for — a parent could open two checkout sessions and conceivably complete both.
+
+Added `reuseOpenOrder()` in `createOrder.ts`: before minting a new order, look for an existing `FeePayment` for the same student + period + amount, `status: 'pending'`, created within the last 24 hours. If found, fetch that order fresh from Razorpay (retrying checkout against the same `order_id` is Razorpay's normal supported flow, not a hack) and return it instead of creating a duplicate — unless Razorpay reports it `'paid'` already (a genuine settle-just-happened race), in which case it falls through and mints a fresh one. Skipped entirely for the admin ad-hoc amount path, where a second charge in the same period may be intentional. `academyAmountPaise` on `FeePayment` is exactly `computeFeeSplit`'s input base amount (verified in `money.ts`), so comparing it directly is correct rather than reconstructing the split.
+
+### Flagged, not changed — ambiguous or out of scope for this pass
+
+- **Inactive/transferred students remain payable indefinitely** — `resolveStudent()` in `pay/route.ts` doesn't filter on `isActive`, so an old WhatsApp link keeps working for a student who left. Could be intentional (collecting dues from a departed student) or not — did not change behaviour without knowing which, flagging for the user to confirm.
+- **No rate limiting on the public pay endpoints** — `RATE_LIMIT_WINDOW_MS`/`RATE_LIMIT_MAX_REQUESTS` exist in `env.ts` but have zero real implementation anywhere in the codebase (confirmed by grep — only a comment on `check-email/route.ts` says "next step is rate limiting"). Passport IDs are high-entropy enough that brute-forcing a valid one isn't trivial, but nothing stops unbounded automated POSTs against one *known* ID, each of which calls Razorpay's API. Building real rate limiting (needs shared/persistent state across serverless instances) is a bigger task than this pass — flagging as a pre-launch-worth-knowing gap, not fixing today.
+- **Zero automated test coverage on the actual payment HTTP routes** — no `.test.ts` under `src/app/api/payments/` or `src/app/api/passport/` at all; `settlePayment()` itself — the single most safety-critical function in the flow — is referenced from zero test files (existing payment tests only cover `money.ts`, `pricing.ts`, `receiptNumber.ts`, and settlement *strategy selection*, not settlement itself). Did not write a new test suite for this pass — flagging as real debt, not fixing today given the scope of properly mocking Razorpay + Mongo for route-level tests.
+- **Zod env validation names don't match what's actually read** — `env.ts` validates `RAZORPAY_KEY_ID`/`RAZORPAY_KEY_SECRET`, but every route actually reads `process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID`/`RAZORPAY_KEY_SECRET` directly, and nothing under `src/lib/payments` or `src/app/api/payments|passport` even imports `@/lib/env`. In practice a blank/wrong key still fails loudly (Razorpay's own API rejects bad Basic Auth), just not as an explicit guard the way the webhook secret has. Worth manually confirming `RAZORPAY_KEY_SECRET` and `NEXT_PUBLIC_RAZORPAY_KEY_ID` are correct in production before go-live — cosmetic mismatch, not fixing the zod schema today.
+
+### Next
+
+Item 2 (dashboard mobile responsiveness), item 5 (trainer↔student↔passport linkage), then the theme engine work (items 6–9).
+
+---
+
+## Session — 2026-07-27 · Trainer↔Student↔Passport Audit — Fixed Real Cross-Academy Data Leaks (Item 5/9)
+
+**State:** `tsc --noEmit` clean, `vitest run` 448/448 (one unrelated flaky test — `passport.test.ts`'s birthday-paradox collision check on 5000 random IDs failed once by exactly 1, passed clean on immediate rerun; not caused by anything touched this session), `npm run build` clean. Not yet committed.
+
+Owner's ask: "trainer is able to look after his students who are assigned for him and update performances that matter to a parent and student and also reflects main stuff on passport." Audited the whole trainer→student→Passport chain before touching anything.
+
+### Found and fixed: real cross-academy security bugs, not just the assignment question
+
+Several trainer routes had **no tenant (academy) check at all** — not even the "any trainer at my own academy" scoping that most routes correctly enforce, let alone "only my assigned students." With academy #2 about to onboard, these were live cross-tenant holes:
+
+- `PUT`/`DELETE /api/trainer/performance/[studentId]/[performanceId]` (`src/app/api/trainer/performance/[studentId]/[performanceId]/route.ts`) — **live in the trainer UI** (`TrainerPage.tsx`) — any trainer at any academy could edit or delete any other academy's student's performance record just by knowing the IDs. Fixed: added the same academy-filter pattern already used in `add-performance`.
+- `GET /api/trainer/student/[studentId]/attendance` (`src/app/api/trainer/student/[studentId]/attendance/route.ts`) — any trainer could read any student's full attendance history across any academy. No frontend caller found (likely dead code) but a live, exploitable route regardless. Fixed with the same pattern.
+- `POST /api/trainer/add-student` / `remove-student` (`src/app/api/trainer/*-student/route.ts`) — no ownership check (a plain trainer could assign or unassign *any* trainer, not just themselves) and no academy check at all (a trainer could self-assign to a student at a different academy). Fixed: a `trainer`-role caller may now only act on their own assignment; admins/super-admins are unrestricted but the target student (and, for add, the target trainer) must belong to the caller's academy.
+- `GET /api/trainer/students` (`src/app/api/trainer/students/route.ts`) — the resulting list trusted `TrainerProfile.students` with no independent academy check, so a corrupted assignment (from before the `add-student` fix above, or any future bug) would leak that student's name/email/phone/fees into the trainer's dashboard. Added a defense-in-depth `$match` on `profile.academyId` in both the data and count aggregation pipelines, on top of the write-time fix.
+
+### Confirmed: the Performance → Passport pipeline works, with one deliberate omission worth flagging to the owner
+
+Every performance entry a trainer records (`POST /api/trainer/add-performance`) does reach the Passport — but only as an aggregated per-category percentage (`averageByCategory`, `src/lib/passport-public.ts`), never the raw score, remarks, or metric. That's an existing, explicitly-commented design choice ("a coach who knows raw scores go public stops recording honest ones") — not something changed this session. Achievements are a separate model, triggered either automatically when performance/attendance crosses a threshold or manually by a coach from a fixed catalog, and those DO show on the Passport in full, plus fire the `achievement.created` WhatsApp message. Attendance shows dates/rate/streak on the Passport but not the coach's private remarks — same pattern.
+
+**Net for the owner:** a trainer's detailed remarks ("needs work on weak foot") are captured today but never surface anywhere a parent can read them — only the moving percentage does. Not fixed this session since it's a privacy/product tradeoff already made deliberately elsewhere in the code, not a bug — but worth the owner confirming that's still what they want now that a real customer is live.
+
+### Flagged, not changed — a genuine product-scope question, not a bug
+
+The owner's literal words describe **assignment-only** access ("his students who are assigned for him"). What's actually enforced today, by explicit prior design (see the comment in `student-detail/route.ts`: *"WHAT A TRAINER MAY NOT SEE: nothing is withheld... What IS enforced is tenant isolation"*), is **academy-wide** access — any trainer at an academy can view/evaluate/mark attendance for any student at that academy, not just the ones assigned to them. Did not change this without confirming intent: tightening it to assignment-only is a real behavioural change (e.g. it would block an admin or a substitute coach from covering for an absent trainer) that the previous design deliberately chose against. The `GET /api/trainer/students` list IS correctly assignment-scoped — only the detail/write endpoints are academy-wide. Flagging for the owner to decide: keep academy-wide (current, and now fully tenant-safe after the fixes above), or tighten `student-detail`/`add-performance`/`mark-attendance` to assignment-only as literally described.
+
+### Next
+
+Item 2 (dashboard mobile responsiveness pass), then the theme engine work (items 6–9).
+
+---
+
+## Session — 2026-07-27 · Hero Video Upload Fixed — Was Never Going to Work in Production (Item 7/9)
+
+**State:** `tsc --noEmit` clean, `vitest run` 448/448, `npm run build` clean. Not yet committed. **Needs a live test with a real video file and real Cloudinary creds before calling this fully verified** — the fix is architecturally correct and compiles clean, but nothing in this repo's test suite exercises an actual file upload, so this is the one fix this session that wasn't runtime-verified.
+
+### Root cause — two separate bugs stacked on top of each other
+
+1. `uploadVideo()` (`src/services/settingsService.ts`) was posting the video file to `/api/upload/image` — the IMAGE pipeline. That route hard-rejects the request twice over: a 5MB size cap (any real video is bigger) and a MIME allowlist of `image/jpeg|png|webp|gif` only (a video's MIME type, e.g. `video/mp4`, isn't in it and never could be). This alone explains "image upload works, video doesn't" — they were never even hitting comparable code paths.
+2. Even a *dedicated* video proxy route would have failed too, silently, in production: this app deploys on Vercel (`vercel.json`), and Vercel serverless functions have a hard ~4.5MB request-body limit that cannot be configured away. A real hero background clip is routinely 10-50MB. Built and then discarded a first-pass fix (`/api/upload/video` proxying the buffer through our server, like the existing image routes) once this became clear — it would have "worked" for a 2MB test clip and then failed for every real one the owner actually uses.
+
+### Fix — signed direct-to-Cloudinary upload, bypassing our server for the binary entirely
+
+This is Cloudinary's own documented pattern for exactly this situation:
+
+- New `POST /api/upload/video-signature` (`src/app/api/upload/video-signature/route.ts`) — authenticated, returns a Cloudinary-signed upload signature (`cloudinary.utils.api_sign_request`) plus `timestamp`/`folder`/`apiKey`/`cloudName`. Tiny JSON response, no file involved, so no body-size concern.
+- `uploadVideo()` in `settingsService.ts` now: gets that signature, then `fetch()`s the video file straight to `https://api.cloudinary.com/v1_1/{cloudName}/video/upload` from the browser — our server never sees the video bytes at all, so Vercel's body limit never applies. Client-side 50MB cap added for a fast, clear error instead of a slow failed request.
+- Removed the now-dead server-side `uploadVideo()` buffer-upload helper from `cloudinary.ts` (added and then removed in the same session once the direct-upload approach replaced it — never shipped/used).
+
+### What still needs the user's action
+
+Confirmed `POST /api/upload/video-signature` is live and correctly auth-gated (401 unauthenticated, dev server clean startup, no errors in logs) — but did NOT do a full authenticated browser run with a real video file, since that needs a logged-in owner/admin session. **Upload a real video through the branding editor before fully trusting this fix.** If it still fails, check the browser network tab for the response from `https://api.cloudinary.com/v1_1/.../video/upload` directly — that will show Cloudinary's own error if the signature or folder is wrong, versus our server's error if `/upload/video-signature` itself fails.
+
+### Next
+
+Item 2 (dashboard mobile responsiveness pass), then the theme engine work (items 6, 8, 9).
+
+---
+
+## Session — 2026-07-27 · Stats Section Theming + Density Preset Actually Wired Up (Item 6/9)
+
+**State:** `tsc --noEmit` clean, `vitest run` 448/448, `npm run build` clean. Not visually re-verified in a browser this pass (no quick way to reach a live academy page without a DB query for a slug) — pattern-matched from the one stat category in this file that already used the working CSS-var approach, so risk is low, but flagging since every other fix this session got a live check.
+
+### Fixed: Stats section colors never followed the academy's own brand
+
+`StatsSection.tsx`'s `deriveStats()` hardcoded three of its four stat categories to fixed Tailwind colors — amber for achievements, emerald for disciplines, purple for coaching experience — regardless of what the academy picked in the theme engine. Only "Athletes Training" used the brand color. Every academy's "Numbers That Speak" section looked like the same rainbow no matter their actual brand palette — this is almost certainly what "not able to be customised from theme engine" meant.
+
+Replaced the fixed palette with two theme-token treatments (`BRAND_TREATMENT` using `--brand`/`--brand-strong`/`--brand-soft`, `ACCENT_TREATMENT` using the `--accent` equivalents — both already defined by `palette.ts` for every academy), alternating across the four stat categories for visual variety while staying entirely derived from that academy's own colors. If the owner has also picked "stats" as their designated accent-focus section (the per-section accent override from the previous session), `--brand` already equals `--accent` there, so the two treatments collapse into one automatically — no special-casing needed, the existing CSS cascade handles it.
+
+### Fixed: the density preset (`--section-py`/`--section-py-sm`) was built but never consumed anywhere
+
+Confirmed via grep that despite `palette.ts` generating `--section-py`/`--section-py-sm`/`--content-gap` for the compact/spacious density toggle (built in an earlier session), **zero components in the codebase actually referenced these CSS variables** — every section still hardcoded `py-16 md:py-32` (or `py-14 md:py-24` for Gallery) directly in Tailwind. The density toggle in the branding editor was changing a value nothing read.
+
+Wired it into all 5 sections that still hardcoded padding: `StatsSection`, `WhyChooseUs`, `SportsGrid`, `TestimonialsCarousel`, `GallerySection` — `py-[var(--section-py-sm)] md:py-[var(--section-py)]` in place of the hardcoded values. (Hero, Footer, and other already-migrated sections were left alone — this was specifically the "staged but not started" list from the density-preset session's own notes.)
+
+### Next
+
+Item 7 (branding editor layout — grid instead of scrolling sidebar), item 8 (expand theme engine feature set), item 9 (admin dashboard mobile responsiveness).
+
+---
+
+## Session — 2026-07-27 · Branding Editor: Masonry Grid Instead of One 14-Card Scroll (Item 7/9)
+
+**State:** `tsc --noEmit` clean, `vitest run` 448/448, `npm run build` clean. **Not live-verified in a browser** — this component sits behind an authenticated admin/owner session and no login credentials were readily available this pass (checked `.env.local`, found none). CSS-only change (Tailwind utilities, zero JSX structure or logic changes), so risk is low, but this is the most visually prominent change this session and deserves an actual look before calling it done — please check `AcademyBrandingEditor` under the owner settings / super-admin onboarding screen.
+
+`AcademyBrandingEditor.tsx` (2080 lines) had 14 `<Card>` sections — Logo & tagline, Colour, Feel, Page background, Hero photo & video, Typeface, Layout density, Accent highlight, Section order, Footer & Contact info, Disciplines, Achievements, Photo gallery, Testimonials — all stacked in one `<div className="space-y-4">` column, capped at 380px wide by the outer grid (`lg:grid-cols-[minmax(0,380px)_1fr]`, the other column being the live preview). That's the literal "sidebar that is scrolling and scrolling."
+
+Converted the controls column to CSS multi-column (not CSS grid) masonry: `columns-1 xl:columns-2 gap-4` on the wrapper, `break-inside-avoid` + `mb-4` added to every card (all 14 shared the identical `className="border-0 shadow-sm"`, so this was one `replace_all`, zero risk of missing one). Multi-column flow was chosen over a naive `grid-cols-2` specifically because the cards have very different heights (Section order's drag list vs. a single color swatch) — real CSS grid would leave ragged gaps under the short cards, while `columns` flows each card into whichever column has room next, which is true masonry with no JS library. Widened the outer layout to `xl:grid-cols-[minmax(0,760px)_1fr]` so there's actually room for 2 card-columns at that breakpoint; below `xl` it stays exactly as before (single column, same as today), so nothing changes on tablet/narrow desktop. The live preview panel was already `lg:sticky lg:top-4` and untouched.
+
+Did not touch any card's internal content, form logic, upload handlers, or the drag-and-drop section-order — only the two wrapper `<div>` classes and the repeated `<Card>` className. Same reasoning as the payment-link and messaging fixes this session: change the smallest surface that fixes the actual complaint, not a rewrite.
+
+### Next
+
+Item 8 (expand theme engine feature set), item 9 (admin dashboard mobile responsiveness).
+
+---
+
+## Session — 2026-07-27 · Theme Engine: Hero Eyebrow Line + Found a Real Save Bug (Item 8/9)
+
+**State:** `tsc --noEmit` clean, `vitest run` 448/448, `npm run build` clean. Not visually re-verified in browser (same auth-wall constraint as item 7). Not yet committed.
+
+### Shipped: hero eyebrow / credibility line
+
+New optional field, `theme.heroEyebrow` — a short line above the hero headline (e.g. "Est. 2015 · Hyderabad" or "500+ athletes trained"), rendered as a small pill badge. Purely additive: empty by default, renders nothing until the owner writes one, so it's zero visual risk to every academy that doesn't touch it. Wired end-to-end: `Academy.ts` schema (`maxlength: 60`), `academyService.ts` type, `AcademyBrandingEditor.tsx`'s `BrandingDraft` + default/hydrate/patch-mapping (same pattern as every other hero field), a text input in the Hero card, and rendered in both `HeroSection.tsx` (the real public page) and the branding editor's own mini live preview.
+
+### Found and fixed, while wiring the new field in: super admin edits to an EXISTING academy's theme were silently discarded for most fields
+
+Tracing where `heroEyebrow` needed to be saved led to `AcademyForm.tsx`'s `handleSubmit` (the super admin's create/edit academy screen — the same shared `AcademyBrandingEditor` component used here as in the owner's own self-service settings). Its submit handler was cherry-picking exactly 10 fields out of the `branding` draft into `theme` — `primaryColor`, `accentColor`, `style`, `fontPreset`, `tagline`, `logoUrl`, `programs`, `testimonials`, `gallery`, `sections` — and dropping everything else on the floor. Every OTHER theme field the editor exposes — `heroVideoUrl`, `heroMode`, `backgroundStyle`, `density`, `accentSection`, `footer`, `logoScale`/`Shape`/`Align`/`Fit`, `heroBlur`, `heroOverlay`, and now `heroEyebrow` — updated the live preview correctly but was **never included in the save payload**. A super admin editing an existing academy's hero video (or background style, or footer contact info, or any of the others) through this exact screen would see it work in the preview, save, and find the old value still there on reload — the change simply never reached the database. (The owner's own self-service settings panel, `AcademyBrandingPanel.tsx`, uses a different, correctly-exhaustive field-by-field patch map and was never affected.)
+
+Fixed by destructuring out the one `BrandingDraft` field that does NOT belong in `theme` (`achievements`, which lives at the top level of the `Academy` document) and spreading everything else wholesale over the existing theme — so a field added to the shared editor in the future is saved correctly by construction, without this list needing to be remembered and updated again.
+
+### Research: further theme-engine ideas, not built this session (scope/time)
+
+Ranked roughly by effort-to-impact for a future session:
+
+1. **Font pairing** — distinct heading vs. body font choices, not just one `fontPreset` for both. `--font-heading`/`--font-body` CSS vars already exist and are already used independently in `HeroSection.tsx`/`Footer.tsx`, so the CSS plumbing is halfway there; only the preset selector and schema field are missing.
+2. **Hero content alignment** (left vs. center) — logo alignment already exists (`logoAlign`), but the headline/tagline/CTA block is hardcoded centered. Deliberately NOT attempted this session: `HeroSection.tsx`'s hero block has several nested `items-center`/`justify-center`/`text-center` declarations (headline wrap, CTA row, scroll cue) that would all need to move together correctly, and this is a heavily-tuned, fragile component per this engagement's own history (three prior sessions fixing hero contrast/overlay/logo issues) — a half-correct alignment change risks visibly breaking a component that currently works. Worth doing as its own focused pass, not squeezed in alongside everything else this session touched.
+3. **Trust badges row** — small logo strip ("Featured in...", "Certified by...") between hero and stats; same additive, zero-risk-if-empty pattern as the eyebrow line just shipped.
+4. **Gallery layout style** — grid vs. masonry vs. carousel, a preset toggle same shape as `backgroundStyle`.
+5. **Per-section custom heading text** — right now only the hero has a customisable tagline; "Numbers That Speak Volumes", "Why Choose Us", etc. are fixed strings in each component. Editable headings per section would need a `theme.sectionHeadings: Record<SectionKey, string>` field and a small edit in each of the ~5 landing components — mechanically straightforward, just a larger surface (more files) than a single session slot.
+6. **Testimonial layout** — grid vs. rotating carousel toggle (component already named `TestimonialsCarousel`, so this would need a genuine second layout mode, not just a class change).
+
+### Next
+
+Item 9 (admin/owner dashboard mobile responsiveness pass) — the last of the 9.
+
+---
+
+## Session — 2026-07-27 · Admin Dashboard Mobile Pass — Last of the 9 Items
+
+**State:** `tsc --noEmit` clean, `vitest run` 448/448, `npm run build` clean. **Not live-verified on an actual phone/emulator** — same auth-wall constraint as items 7-8 (no login credentials available this pass). All changes are Tailwind-utility-only (responsive class additions, no logic changes), matching patterns already proven elsewhere in this codebase. Please check the real dashboard on a phone before fully trusting this.
+
+Audited the admin dashboard shell and the three most-used sub-views first (dashboard home, students, fees) rather than guessing — full findings below, fixed the ones that actually matter on a phone:
+
+1. **Nav — 13 tabs in one endless horizontal-scroll strip, no hint more exist off-screen** (`AdminPage.tsx`). This is the very first thing an owner sees every session. Added a native `<select>` dropdown, visible only below the `sm` breakpoint, driving the exact same `activeTab` state as the tab strip — zero changes to routing or tab content, purely an alternate mobile-only input for the same state. The desktop tab strip is untouched (`hidden` below `sm`, unchanged above it).
+2. **Header title could collide with the Logout button on a long academy name** (`AdminPage.tsx`) — added `truncate`/`min-w-0`/`shrink-0` so it clips gracefully instead of wrapping into the button.
+3. **Dashboard home: attendance feature cards squeezed into a rigid 3-column grid** (`CommandCenter.tsx`) — these contain full sentences ("Trainers mark attendance with one tap...") that don't fit ~100px-wide mobile columns. Changed to `grid-cols-1 sm:grid-cols-3`. (Left the smaller Active/Enrolled/At-Risk stat grid at fixed 3-columns — those are just short numbers with a 2-word label, confirmed they actually fit fine at 375px.)
+4. **Filter button rows overflow with no wrap** on the three most-used list screens — `StudentTable.tsx`, `TrainerTable.tsx`, `UserTable.tsx` all had the identical `<div className="flex gap-2">` for their Sport/Level/Status/Role filter dropdowns, no `flex-wrap`. Added it to all three (one matching line per file).
+5. **Fees ledger table (`FeesManagement.tsx`) — the money screen — showed all 5 columns unconditionally with no responsive hiding**, unlike `StudentTable`/`TrainerTable` which already progressively hide secondary columns. Hid the "Student ID / Details" column below `sm` (least essential — frequently just "Anonymous/Direct" anyway) and tightened cell padding (`px-6` → `px-3 sm:px-6`) so Transaction/Amount/Status/Date — what an owner actually opens this screen to check — fit without horizontal scrolling on a phone.
+6. **Student dialogs had no height clamp** (`StudentManagement.tsx`, 3 `DialogContent` instances: Edit Student, Student Details, Kit Status) — Radix positions dialogs at `fixed top-1/2 -translate-y-1/2` with no default max-height, so content taller than a short phone viewport overflowed off both edges with no way to scroll to it. The fix pattern (`max-h-[85vh] overflow-y-auto`) already existed correctly in `CommandCenter.tsx`'s own dialogs — just wasn't applied here. Added to all 3.
+7. **Touch targets under 44px on money-adjacent actions** (`FinanceDashboard.tsx`) — the call/email icon circles next to each payer/defaulter row were 20px (`w-5 h-5`), and the "Mark paid" cash-entry button — the action that records money actually received — was `px-2 py-0.5 text-[9px]`, a genuinely hard target to hit reliably with a thumb. Bumped both call/email icon pairs to 32px (`w-8 h-8`) and the button to a proper `min-h-8` tap height with larger padding/text.
+
+### Confirmed already fine, not touched
+
+`StudentTable.tsx`/`TrainerTable.tsx`/`UserTable.tsx`'s actual data tables: already correct — the shared `Table` component wraps every table in `overflow-x-auto`, and both Student/Trainer tables already hide secondary columns responsively (`hidden md:table-cell` etc.). `FinanceDashboard.tsx`/`CommandCenter.tsx`'s main KPI card grids: already properly responsive. There is no fixed-width sidebar anywhere in this app to fix — nav is tab-based, which is why the fix above was a mobile dropdown rather than a sidebar-collapse toggle.
+
+### That closes all 9 items from the customer-launch punch list
+
+- (9) this admin mobile pass. Two genuine product decisions were surfaced rather than silently resolved (trainer assignment-only vs. academy-wide scoping; inactive-student payability) — both documented above for the owner to weigh in on. A handful of items are flagged as needing either the owner's live testing (hero video upload, both editor layout changes, this mobile pass) or their action outside code (submitting the new WhatsApp templates to Meta for approval, setting `PLATFORM_OWNER_WHATSAPP_PHONE`, confirming GitHub Actions cron secrets are set).
+
+---
+
+## Session — 2026-07-27 · Phase 12 (Business Expansion & Sales Strategy)
+
+**State:** Artifacts created, committed, and pushed.
+
+### Shipped: Academy Onboarding Tooling
+To support exponential expansion and onboarding of new academies, we moved from technical implementation to "Business Growth/Sales Engineering":
+
+1. **Academy Growth & Onboarding Playbook:** Created a comprehensive B2B sales strategy document focusing on the "no-cost/value-add" positioning. It includes 6 cold call openers engineered for reluctant ("khadoos") academy owners, 20 direct and indirect growth strategies (parent infiltration, pre-built pages, WhatsApp broadcasts), objection handling scripts, and a 30-day blitz plan.
+2. **Live Demo Meeting Flow:** Built a detailed 25-minute live demo script structured as a 7-act flow (Pain → Reveal → Parent View → Money → WhatsApp Live → Flash Tour → Close). Emphasizes using a mobile device for the demo, live WhatsApp confirmation proofs, and an assumptive close.
+3. **Official Academy Partner Certificate Generator:** Wrote a Node.js script (`docs/generate-partner-certificate.mjs`) to generate a premium, one-page DOCX "Official Academy Partner" certificate. The certificate uses the GWD brand design token system, replaces legal/contractual language with a warm, celebratory tone, and lists the free value provided. The script dynamically outputs a slug-based filename to avoid file-lock conflicts.
+
+### Next
+Resume development of "Elite Circle" integration and School Camp Lead Engine.
