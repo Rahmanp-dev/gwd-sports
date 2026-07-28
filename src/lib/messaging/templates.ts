@@ -39,14 +39,15 @@ export interface TemplateDefinition {
 /**
  * SUBMIT TO META AS: gwd_welcome_v1  (category: UTILITY)
  *
- *   Hi {{1}}! {{2}} is now on GWD — {{3}}'s training, attendance and progress
- *   all in one place.
+ *   Welcome! Hi {{1}}, {{2}} is now on the GWD platform — tracking {{3}}'s training, attendance, and progress all in one place.
  *
- *   View {{3}}'s Sports Passport: {{4}}
+ *   You can view their Sports Passport here: {{4}}
  *
- *   {{5}}
+ *   Update: {{5}}
  *
- *   {{6}}
+ *   Account access: {{6}}
+ *
+ *   Thank you!
  *
  * {{5}} carries either the payment line or a short neutral sentence, and {{6}}
  * the sign-in line, because Meta templates cannot have conditionally-absent
@@ -84,14 +85,16 @@ const welcome: TemplateDefinition = {
     'loginLine',
   ],
   plainText: (v) =>
-    `Hi ${v.parentGreetingName}! ${v.academyName} is now on GWD — ${v.childName}'s training, attendance and progress all in one place. View ${v.childName}'s Sports Passport: ${v.passportUrl} ${v.paymentLine} ${v.loginLine}`,
+    `Welcome! Hi ${v.parentGreetingName}, ${v.academyName} is now on the GWD platform — tracking ${v.childName}'s training, attendance, and progress all in one place. You can view their Sports Passport here: ${v.passportUrl} Update: ${v.paymentLine} Account access: ${v.loginLine} Thank you!`,
 };
 
 /**
  * SUBMIT TO META AS: gwd_attendance_confirmation_v1  (category: UTILITY)
  *
- *   {{1}} checked in at {{2}} ✅
- *   — {{3}}
+ *   Attendance Update: {{1}} checked in safely at {{2}} ✅
+ *
+ *   Thank you,
+ *   {{3}}
  */
 const attendanceConfirmation: TemplateDefinition = {
   key: 'attendance_confirmation',
@@ -101,19 +104,21 @@ const attendanceConfirmation: TemplateDefinition = {
   description: 'Fires on attendance.created. The highest-frequency touchpoint — a parent wants to know their child arrived safely.',
   variableOrder: ['childName', 'checkInTime', 'academyName'],
   required: ['childName', 'checkInTime', 'academyName'],
-  plainText: (v) => `${v.childName} checked in at ${v.checkInTime} ✅ — ${v.academyName}`,
+  plainText: (v) => `Attendance Update: ${v.childName} checked in safely at ${v.checkInTime} ✅ Thank you, ${v.academyName}`,
 };
 
 /**
  * SUBMIT TO META AS: gwd_weekly_digest_v1  (category: UTILITY)
  *
- *   {{1}}'s week at {{2}}
+ *   Here is your weekly update for {{1}} at {{2}}!
  *
- *   Attendance: {{3}}
- *   {{4}}
- *   Next fee due: {{5}}
+ *   Attendance this week: {{3}}
+ *   Highlight: {{4}}
+ *   Next fee due on: {{5}}
  *
- *   Full progress: {{6}}
+ *   See full progress on their passport: {{6}}
+ *
+ *   Have a great week!
  */
 const weeklyDigest: TemplateDefinition = {
   key: 'weekly_digest',
@@ -131,17 +136,19 @@ const weeklyDigest: TemplateDefinition = {
   ],
   required: ['childName', 'academyName', 'attendanceSummary', 'achievementLine', 'nextFeeDue', 'passportUrl'],
   plainText: (v) =>
-    `${v.childName}'s week at ${v.academyName}. Attendance: ${v.attendanceSummary}. ${v.achievementLine} Next fee due: ${v.nextFeeDue}. Full progress: ${v.passportUrl}`,
+    `Here is your weekly update for ${v.childName} at ${v.academyName}! Attendance this week: ${v.attendanceSummary} Highlight: ${v.achievementLine} Next fee due on: ${v.nextFeeDue} See full progress on their passport: ${v.passportUrl} Have a great week!`,
 };
 
 /**
  * SUBMIT TO META AS: gwd_fee_reminder_v1  (category: UTILITY)
  *
- *   {{1}}
+ *   Update from the academy: {{1}}
  *
- *   {{2}}'s fee of {{3}} is due on {{4}}.
+ *   This is a notice regarding {{2}}. The fee of {{3}} is due on {{4}}.
  *
- *   Pay here: {{5}}
+ *   You can complete the payment securely here: {{5}}
+ *
+ *   Thank you for your prompt response.
  *
  * ONE approved template serves T-5, due-date and T+3. {{1}} carries the
  * stage-specific opening line. Three near-identical templates would mean three
@@ -158,16 +165,18 @@ function feeReminderTemplate(key: string, description: string): TemplateDefiniti
     variableOrder: ['openingLine', 'childName', 'amount', 'dueDate', 'paymentUrl'],
     required: ['openingLine', 'childName', 'amount', 'dueDate', 'paymentUrl'],
     plainText: (v) =>
-      `${v.openingLine} ${v.childName}'s fee of ${v.amount} is due on ${v.dueDate}. Pay here: ${v.paymentUrl}`,
+      `Update from the academy: ${v.openingLine} This is a notice regarding ${v.childName}. The fee of ${v.amount} is due on ${v.dueDate}. You can complete the payment securely here: ${v.paymentUrl} Thank you for your prompt response.`,
   };
 }
 
 /**
  * SUBMIT TO META AS: gwd_achievement_v1  (category: UTILITY)
  *
- *   🏅 {{1}} earned {{2}} at {{3}}!
+ *   Great news! 🏅 {{1}} just earned the {{2}} achievement at {{3}}!
  *
- *   See it on their Passport: {{4}}
+ *   You can see the new badge on their Passport here: {{4}}
+ *
+ *   Keep up the great work!
  */
 const achievement: TemplateDefinition = {
   key: 'achievement',
@@ -178,15 +187,17 @@ const achievement: TemplateDefinition = {
   variableOrder: ['childName', 'achievementName', 'academyName', 'passportUrl'],
   required: ['childName', 'achievementName', 'academyName', 'passportUrl'],
   plainText: (v) =>
-    `🏅 ${v.childName} earned ${v.achievementName} at ${v.academyName}! See it on their Passport: ${v.passportUrl}`,
+    `Great news! 🏅 ${v.childName} just earned the ${v.achievementName} achievement at ${v.academyName}! You can see the new badge on their Passport here: ${v.passportUrl} Keep up the great work!`,
 };
 
 /**
  * SUBMIT TO META AS: gwd_broadcast_v1  (category: UTILITY)
  *
+ *   Important update from the academy:
  *   {{1}}
  *
- *   — {{2}}
+ *   Thank you,
+ *   {{2}} Management
  */
 const broadcast: TemplateDefinition = {
   key: 'broadcast',
@@ -196,7 +207,7 @@ const broadcast: TemplateDefinition = {
   description: 'Owner-composed announcement. Lowest priority — always yields to everything else.',
   variableOrder: ['messageBody', 'academyName'],
   required: ['messageBody', 'academyName'],
-  plainText: (v) => `${v.messageBody} — ${v.academyName}`,
+  plainText: (v) => `Important update from the academy: ${v.messageBody} Thank you, ${v.academyName} Management`,
 };
 
 /**
@@ -204,11 +215,14 @@ const broadcast: TemplateDefinition = {
  *
  *   ✅ Payment received — thank you!
  *
- *   {{1}} · {{2}}
- *   Amount: {{3}}
- *   Receipt no: {{4}}
+ *   Student: {{1}}
+ *   Academy: {{2}}
+ *   Amount paid: {{3}}
+ *   Receipt number: {{4}}
  *
- *   Your receipt: {{5}}
+ *   You can download your official receipt here: {{5}}
+ *
+ *   We appreciate your support!
  *
  * The amount shown is what the PARENT paid, which is the figure on their bank
  * statement — the academy/convenience split is itemised on the receipt page
@@ -226,19 +240,21 @@ const paymentReceipt: TemplateDefinition = {
   variableOrder: ['childName', 'academyName', 'amount', 'receiptNumber', 'receiptUrl'],
   required: ['childName', 'academyName', 'amount', 'receiptUrl'],
   plainText: (v) =>
-    `✅ Payment received — thank you! ${v.childName} · ${v.academyName}. ` +
-    `Amount: ${v.amount}. Receipt no: ${v.receiptNumber}. Your receipt: ${v.receiptUrl}`,
+    `✅ Payment received — thank you! Student: ${v.childName} Academy: ${v.academyName} Amount paid: ${v.amount} Receipt number: ${v.receiptNumber} You can download your official receipt here: ${v.receiptUrl} We appreciate your support!`,
 };
 
 /**
  * SUBMIT TO META AS: gwd_owner_new_student_v1  (category: UTILITY)
  *
- *   🎉 New student at {{1}}!
+ *   🎉 Great news! We have a new student at {{1}}!
  *
- *   {{2}} — parent: {{3}}
+ *   Student Name: {{2}}
+ *   Parent Name: {{3}}
  *   Sport(s): {{4}}
  *
- *   View passport: {{5}}
+ *   You can view their newly created passport here: {{5}}
+ *
+ *   End of update.
  *
  * Sent to the ACADEMY OWNER, never the parent — see academyOwnerPhone on the
  * student.created event payload. Confirms a signup actually went through and
@@ -253,17 +269,19 @@ const ownerNewStudent: TemplateDefinition = {
   variableOrder: ['academyName', 'childName', 'parentName', 'sportsLine', 'passportUrl'],
   required: ['academyName', 'childName', 'passportUrl'],
   plainText: (v) =>
-    `New student at ${v.academyName}! ${v.childName} — parent: ${v.parentName}. Sport(s): ${v.sportsLine}. View passport: ${v.passportUrl}`,
+    `🎉 Great news! We have a new student at ${v.academyName}! Student Name: ${v.childName} Parent Name: ${v.parentName} Sport(s): ${v.sportsLine} You can view their newly created passport here: ${v.passportUrl} End of update.`,
 };
 
 /**
  * SUBMIT TO META AS: gwd_owner_payment_v1  (category: UTILITY)
  *
- *   💰 Payment received at {{1}}!
+ *   💰 Success! A payment was just received at {{1}}!
  *
- *   {{2}} paid {{3}}.
+ *   Student {{2}} has paid {{3}}.
  *
- *   Receipt: {{4}}
+ *   You can view the transaction receipt here: {{4}}
+ *
+ *   End of payment alert.
  *
  * Sent to the ACADEMY OWNER alongside (not instead of) the parent's own
  * `payment_receipt` — the owner asked to know the moment money comes in, the
@@ -278,7 +296,7 @@ const ownerPaymentReceived: TemplateDefinition = {
   variableOrder: ['academyName', 'childName', 'amountFormatted', 'receiptUrl'],
   required: ['academyName', 'childName', 'amountFormatted', 'receiptUrl'],
   plainText: (v) =>
-    `Payment received at ${v.academyName}! ${v.childName} paid ${v.amountFormatted}. Receipt: ${v.receiptUrl}`,
+    `💰 Success! A payment was just received at ${v.academyName}! Student ${v.childName} has paid ${v.amountFormatted}. You can view the transaction receipt here: ${v.receiptUrl} End of payment alert.`,
 };
 
 export const TEMPLATES: Record<string, TemplateDefinition> = {
