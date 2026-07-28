@@ -179,10 +179,15 @@ async function main() {
       console.log(`${PASS} Token is attached to WABA asset(s): ${targets.join(', ')}`);
     } else {
       fail(
-        'Token is attached to NO WhatsApp Business Account asset',
-        'Business Settings → Users → System Users → pick the user → Add Assets → ' +
-          'WhatsApp Accounts → select your WABA → enable Full control → Save. ' +
-          'This is what causes "(#200) ... on behalf of this WhatsApp Business Account".',
+        'Token grants messaging on NO WhatsApp Business Account',
+        'ORDER MATTERS, and this is the part that wastes days. `target_ids` is a SNAPSHOT ' +
+          'taken when the token was generated. Assigning the WABA to the system user afterwards ' +
+          'does NOT update an existing token — management calls (reading the WABA, subscribing ' +
+          'the app) start working immediately, so everything looks fixed, while sending still ' +
+          'returns "(#200) ... on behalf of this WhatsApp Business Account". ' +
+          'Do it in this order: (1) assign the WABA to the system user with Full control, ' +
+          '(2) subscribe the app to the WABA, (3) ONLY THEN Generate token, ' +
+          '(4) update META_WHATSAPP_ACCESS_TOKEN and redeploy.',
       );
     }
   }
@@ -240,12 +245,21 @@ async function main() {
   }
 
   for (const waba of wabaIds) {
+    /**
+     * `GET /{waba}/subscribed_apps` returns a 500 "unknown error" (subcode 99)
+     * on accounts where the subscription is perfectly fine — observed against
+     * a WABA that had just accepted a successful POST to this same edge. So a
+     * failure to READ it proves nothing and must not be reported as a fault;
+     * only a successful read is informative.
+     */
     const subs = await get(`${waba}/subscribed_apps`);
     if (subs.status !== 200) {
-      fail(
-        `Cannot read subscribed apps for WABA ${waba} (HTTP ${subs.status})`,
-        subs.body?.error?.message ??
-          'Usually means this token has no management access to that business account.',
+      console.log(
+        `${WARN} Could not read subscribed apps for WABA ${waba} (HTTP ${subs.status}) — ` +
+          'this edge is unreliable and often errors even when the app IS subscribed.',
+      );
+      console.log(
+        `      → To subscribe explicitly: POST /${waba}/subscribed_apps with this token.`,
       );
       continue;
     }

@@ -12,17 +12,28 @@ import type {
 class StudentAdminService {
   private baseAdminUrl = "/admin/students";
 
-  // Helper function to transform API response to match frontend types
+  /**
+   * Transforms an API student into the frontend shape.
+   *
+   * EVERY `userId` access here must be optional-chained. `userId` is a
+   * populated reference, and a populate whose target no longer exists yields
+   * NULL, not a missing key — so a StudentProfile left behind by a deleted
+   * User arrives as `{ userId: null }`. Two of these dereferences were not
+   * guarded while the six below them were, which crashed the entire Students
+   * tab with "can't access property _id, e.userId is null": one orphaned row
+   * took out the whole list, including every healthy student in it.
+   */
   private transformStudent(apiStudent: any): Student {
     return {
       _id: apiStudent._id,
-      userId: apiStudent.userId._id || apiStudent.userId,
+      userId: apiStudent.userId?._id || apiStudent.userId || "",
       user: {
         _id:
           apiStudent.user?._id ||
           (Array.isArray(apiStudent.user)
             ? apiStudent.user[0]?._id
-            : apiStudent.userId._id),
+            : apiStudent.userId?._id) ||
+          "",
         name:
           apiStudent.user?.name ||
           (Array.isArray(apiStudent.user)

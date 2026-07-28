@@ -21,12 +21,33 @@ export async function GET(req: NextRequest) {
     }
 
     const totalStudents = await StudentProfile.countDocuments(filter);
-    const students = await StudentProfile.find(filter)
+    const rows = await StudentProfile.find(filter)
       .populate('userId academyId trainers')
       .skip(skip)
       .limit(limit)
       .lean();
-    
+
+    /**
+     * Drop rows whose user no longer exists.
+     *
+     * A populate against a deleted target yields NULL, and a student with no
+     * user is not a student — it is debris from a delete that did not clean up
+     * after itself (fixed in lib/auth/deleteUserCascade, but historic orphans
+     * are already in the database). Returning them crashed the admin list
+     * outright, so one deleted account hid every remaining student.
+     *
+     * Filtered here rather than only in the client so every consumer of this
+     * endpoint benefits, and logged so the debris is visible rather than
+     * quietly swallowed.
+     */
+    const students = rows.filter((s: any) => s.userId);
+    const orphaned = rows.length - students.length;
+    if (orphaned > 0) {
+      console.warn(
+        `[API_ADMIN_STUDENTS_GET] skipped ${orphaned} student profile(s) whose user no longer exists`,
+      );
+    }
+
     const totalPages = Math.ceil(totalStudents / limit) || 1;
 
     return NextResponse.json({

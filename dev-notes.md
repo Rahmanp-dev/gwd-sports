@@ -3991,3 +3991,62 @@ send time. That is precisely this deployment's remaining fault: scopes present,
 
 Run it after any change in Meta Business Settings. Never sends a message, so it
 is safe against production.
+
+### Follow-up · Orphaned profiles crashed the admin Students tab
+
+`DELETE /api/admin/users/[id]` was a single `User.findByIdAndDelete(id)`. It left
+behind every record pointing at that user, and had **no tenant check at all** —
+any academy admin could delete any user on the platform by id, including another
+academy's owner.
+
+The debris caused two reported symptoms:
+
+- **"can't access property _id, e.userId is null"** — `studentService.transformStudent`
+  dereferenced `apiStudent.userId._id` on lines 19/25 while the six accesses below
+  them correctly used `userId?.`. A populate against a deleted target yields NULL,
+  so ONE orphaned profile crashed the whole Students list, hiding every healthy
+  student in it.
+- **"deleted student still showing in import"** — the `Passport` still pointed at
+  the dead `StudentProfile`, so a re-import matched the existing identity.
+
+Fixed in four places:
+1. `studentService.ts` — optional-chained the two unguarded accesses.
+2. `api/admin/students` — filters rows whose user no longer exists, and logs the
+   count rather than swallowing it. Makes the list work without any data repair.
+3. `lib/auth/deleteUserCascade.ts` — new. Removes StudentProfile/TrainerProfile,
+   pulls the user from `Academy.students`/`trainers`, and DETACHES (never deletes)
+   the Passport: it is the child's cross-academy identity and holds their history,
+   so it is cleared and marked inactive rather than destroyed. Also exports
+   `purgeOrphanedProfiles` for historic debris.
+4. `api/admin/users/[id]` DELETE — cascade + tenant isolation, cannot delete a
+   super admin or yourself.
+
+Production data repaired: 1 orphaned student profile removed, passport
+`GWD-C7SW2B` detached, 1 academy roster corrected. **4 orphaned TRAINER profiles
+remain** — they render as "Unknown" rather than crashing (TrainerTable guards
+with `userId?.name`, and `typeof null === "object"` falls through safely), so they
+were left for a separate pass.
+
+### WhatsApp — root cause finally isolated
+
+`GET /{waba}/assigned_users?business={biz}` returned:
+
+```json
+{ "id": "122125561245354738", "name": "Admin", "tasks": ["MANAGE"] }
+```
+
+The system user holds **MANAGE but not MESSAGING** on the WABA. That single fact
+explains every observation: reading the WABA, listing its phone numbers and
+POSTing `subscribed_apps` all succeed (MANAGE), while sending returns
+`(#200) ... on behalf of this WhatsApp Business Account` (needs MESSAGING).
+
+Two theories were wrong along the way and are recorded so they are not retried:
+`granular_scopes.target_ids` is empty even on a correctly-scoped fresh token, so
+it is NOT a reliable signal; and regenerating the token does not help, because
+the missing piece is the task grant, not a token snapshot.
+
+`POST /{waba}/assigned_users` with `tasks: [MANAGE, MESSAGING]` returns
+`{"success": true}` and silently does not apply. The grant has to come from
+Business Settings → Users → **System Users** → Add Assets → WhatsApp Accounts →
+Full control. Assigning from the WhatsApp account's own People tab grants only
+MANAGE, which is what was done and why it looked correct in the UI.
