@@ -3972,3 +3972,22 @@ So the token can **read** the number but not **send on behalf of the WABA**. Tha
 ### Lesson
 
 Three of these four (stale `now`, `en` vs `en_US`, the `gwd.in` fallback) are invisible to type-checking, unit tests and a build. They only surface by running the real pipeline against the real provider and reading the errors it returns. The health screen has been extended so each would now be reported rather than inferred.
+
+### Follow-up · `npm run whatsapp:doctor`
+
+Added `scripts/whatsapp-doctor.mjs` — a read-only diagnostic that asks Meta the
+questions directly instead of inferring them from a failed send. It checks
+credentials, token type/expiry/scopes, **granular scope target_ids**, the
+sending number's platform/status/name/account_mode, app-to-WABA subscription,
+and whether each required template is APPROVED *in the language we request*.
+
+The `target_ids` check is the one worth keeping. A permission says what a token
+MAY do; `target_ids` says which assets it may do it TO. A System User can hold
+`whatsapp_business_messaging` and be attached to no business account at all —
+reading the phone number still succeeds, so every other check looks green, and
+the only symptom is `(#200) ... on behalf of this WhatsApp Business Account` at
+send time. That is precisely this deployment's remaining fault: scopes present,
+`target_ids` empty.
+
+Run it after any change in Meta Business Settings. Never sends a message, so it
+is safe against production.
