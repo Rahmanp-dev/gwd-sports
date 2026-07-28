@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { authorizeJobRequest } from '@/lib/jobs/auth';
+import { roleMiddleware } from '@/lib/middleware/auth';
 import { runEventDispatchTick } from '@/lib/messaging/consumers';
 import { runSendTick } from '@/lib/messaging/send';
 import { runReminderTick } from '@/lib/messaging/reminders';
@@ -26,8 +27,29 @@ import { configFromEnv } from '@/lib/messaging/scheduling';
  * one, or a retried invocation, cannot double-message anyone.
  */
 export async function POST(req: NextRequest) {
-  const auth = authorizeJobRequest(req);
-  if (!auth.ok) return auth.response;
+  /**
+   * Two ways in.
+   *
+   * The cron path (bearer secret / Vercel header) is the normal one. The
+   * second is a signed-in SUPER ADMIN, added because there was no way to make
+   * the engine run on demand: with the cron misconfigured, a `student.created`
+   * event sits in the log indefinitely and the only visible symptom is a
+   * parent who never got their welcome message. Waiting up to a day for the
+   * next scheduled run to find that out is not a debugging loop anybody can
+   * work with.
+   *
+   * Super admin only, deliberately — this drains the queue for EVERY academy,
+   * so it is a platform operation, not a tenant one.
+   */
+  const cronAuth = authorizeJobRequest(req);
+  if (!cronAuth.ok) {
+    const session = await roleMiddleware(req, ['gwd_super_admin']);
+    if (session?.error) {
+      // Answer as the cron path would, so an unauthenticated caller learns
+      // nothing about which of the two mechanisms rejected them.
+      return cronAuth.response;
+    }
+  }
 
   const startedAt = Date.now();
 
@@ -43,7 +65,18 @@ export async function POST(req: NextRequest) {
     const reminders = await runReminderTick({ now });
     const digest = await runWeeklyDigestTick({ now });
 
-    const send = await runSendTick({ now });
+    /**
+     * A FRESH timestamp, not the tick's frozen `now`.
+     *
+     * The stages above queue messages with `scheduledFor` set to the moment
+     * they were enqueued — which is necessarily LATER than `now`, captured
+     * when the tick started. runSendTick claims on `scheduledFor <= now`, so
+     * passing the stale value made every message just queued invisible to
+     * this stage, defeating the reason send runs last (see the ordering note
+     * above) and delaying every message by a full tick interval. With the
+     * cron misconfigured, "a full tick interval" is unbounded.
+     */
+    const send = await runSendTick({ now: new Date() });
 
     return NextResponse.json({
       success: true,

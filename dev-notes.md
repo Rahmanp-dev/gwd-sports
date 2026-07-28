@@ -3892,3 +3892,83 @@ Verified against the exact endpoints that were failing: `/api/academy/discover` 
 ### Rule for future route work
 
 A new dynamic segment must reuse the slug name its siblings already use, and any change under `src/app/api/**/[*]/` must be verified with a cold build (`rm -rf .next && npm run build`) — a warm build will not catch it.
+
+---
+
+## Session — 2026-07-28 · Why no WhatsApp message arrived (four separate causes)
+
+**State:** `tsc --noEmit` clean, `vitest run` 474/474 (3 new), cold `rm -rf .next && npm run build` clean.
+
+Symptom: a student was imported, the activation panel said "1 welcome message queued", and no message arrived. The Delivery Status panel simultaneously showed every queue counter at 0 and "Last message queued: never" — the two panels were counting different collections (activation counts `DomainEvent`, delivery counts `OutboundMessage`), which is what made this confusing rather than obvious.
+
+Four independent faults, each of which alone was enough to stop delivery. Found by running the pipeline against the real database and reading the errors Meta actually returned.
+
+### 1. Nothing was draining the event log — `CRON_SECRET` unset
+
+`student.created` becomes an `OutboundMessage` only when `POST /api/jobs/tick` runs. `CRON_SECRET` was not set, so:
+- the GitHub Actions workflow (the real 15-minute schedule) exits immediately — it requires `APP_URL` + `CRON_SECRET` repo secrets;
+- the endpoint itself returns 503 "CRON_SECRET is not configured" to any bearer caller.
+
+Vercel's daily cron (`0 3 * * *`) would eventually have run — it authenticates by `x-vercel-cron` header, not the secret — but that is a once-a-day catch-up, useless for testing. The Vercel log confirmed zero `/api/jobs/tick` requests.
+
+**Fixed:** generated `CRON_SECRET` into `.env.local`. Must also be set in Vercel env and as GitHub repo secrets.
+
+**Also added:** `POST /api/jobs/tick` now additionally accepts a signed-in **super admin** session, and MessagingHealth grew a "Run scheduler now" button (super admin only — the tick drains every academy's queue, so it is a platform action). Previously there was no way to run the engine on demand; the only way to discover a broken cron was to import a student and notice, later, that nobody got a message.
+
+### 2. Messages queued in a tick could not be sent by that same tick
+
+`runSendTick` claims on `scheduledFor <= now`, and the route passed the tick's **frozen** `now` — captured before the dispatch stage ran. Messages enqueued milliseconds later therefore had `scheduledFor > now` and were invisible to the send stage in the same run.
+
+This directly defeats the documented ordering in that file ("send runs LAST, so anything queued above can go out in this same tick rather than waiting 15 minutes"). Every message was delayed a full tick interval — and with the cron broken, indefinitely.
+
+**Fixed:** `runSendTick({ now: new Date() })` — a fresh timestamp. Confirmed: first run queued 3 and sent 0; after the fix the next run considered 8.
+
+### 3. Template language mismatch — `en` vs `en_US`
+
+With the queue finally reaching Meta, every send failed:
+
+```
+Meta returned 404 (code 132001):
+(#132001) Template name does not exist in the translation
+```
+
+A Meta template is keyed on **(name, language)**, not name alone. WhatsApp Manager shows these templates as **English (US)** = `en_US`; `templates.ts` hardcoded `'en'` in all nine definitions. The template existed and was Active — only the translation tag was wrong, which is why the dashboard looked completely healthy while nothing could be delivered.
+
+**Fixed:** added `TEMPLATE_LANGUAGE`, defaulting to `en_US`, overridable with `META_WHATSAPP_TEMPLATE_LANG`; all nine definitions now read it. 3 regression tests added. Verified the fix worked by the error *changing* on the next run.
+
+### 4. Every link in every message pointed at the wrong domain
+
+`NEXT_PUBLIC_APP_URL` was unset, and four modules independently wrote
+`process.env.NEXT_PUBLIC_APP_URL || 'https://gwd.in'`. Real queued messages contained
+`https://gwd.in/passport/GWD-C7SW2B` — a domain this deployment does not serve. The deployment is `https://sports.gwdglobal.in` (confirmed by the owner).
+
+This is the worst of the four because it is **invisible from our side**: the message queues, sends, and records as delivered. The only person who ever finds out is the parent tapping a dead link.
+
+**Fixed:** centralised into `lib/appUrl.ts`, which keeps a fallback (a broken link beats crashing mid-import) but logs loudly once and is reportable. Replaced all four call sites. Set `NEXT_PUBLIC_APP_URL` locally; **must be set in Vercel**.
+
+### Remaining blocker — Meta account permission, not code
+
+After all four fixes the error is now:
+
+```
+(#200) You do not have the necessary permissions to send messages
+on behalf of this WhatsApp Business Account
+```
+
+Verified directly against the Graph API:
+- token is `SYSTEM_USER`, `is_valid: true`, **never expires**, scopes include `whatsapp_business_messaging` and `whatsapp_business_management` — correct;
+- the phone number reads back fine: `platform_type: CLOUD_API`, `status: CONNECTED`, `name_status: APPROVED`, `account_mode: LIVE`.
+
+So the token can **read** the number but not **send on behalf of the WABA**. That is a WABA asset-permission gap in Meta Business Settings, fixed there, not here. (The token lacks `business_management`, so the WABA could not be enumerated from the API to narrow it further.)
+
+### Health panel now shows what it previously could not
+
+`/api/academy/messages/health` started at the outbound queue, so the one state it could not see was the one upstream of it: events emitted, no dispatch run, zero messages — every counter 0 and "WhatsApp is connected", indistinguishable from a healthy idle system. Added:
+- pending `DomainEvent` count + age, and a `scheduler_not_running` blocker once the oldest passes 20 minutes;
+- recent send failures **with their error text**, so a Meta rejection is visible instead of a bare count;
+- an `app_url_missing` blocker;
+- the expected template language in the approval blocker.
+
+### Lesson
+
+Three of these four (stale `now`, `en` vs `en_US`, the `gwd.in` fallback) are invisible to type-checking, unit tests and a build. They only surface by running the real pipeline against the real provider and reading the errors it returns. The health screen has been extended so each would now be reported rather than inferred.

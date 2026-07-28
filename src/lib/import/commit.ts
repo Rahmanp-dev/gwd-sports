@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { appUrl as resolveAppUrl } from '@/lib/appUrl';
 import mongoose from 'mongoose';
 import User from '@/lib/models/User';
 import StudentProfile from '@/lib/models/Student';
@@ -438,7 +439,7 @@ function buildStudentCreatedEvent(input: {
   issuedPassword?: string | null;
 }) {
   const { row, job, academy, user, profile, passport, passportResult } = input;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://gwd.in';
+  const appUrl = resolveAppUrl();
 
   const feeAmountPaise = row.feeAmount !== null ? rupeesToPaise(row.feeAmount) : null;
 

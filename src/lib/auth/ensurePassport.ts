@@ -6,6 +6,7 @@ import { findOrCreatePassport } from '@/lib/passport';
 import { emitEvent } from '@/lib/events/emit';
 import { rupeesToPaise } from '@/lib/payments/money';
 import { logger } from '@/lib/logger';
+import { appUrl as resolveAppUrl } from '@/lib/appUrl';
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -97,7 +98,7 @@ export async function ensureStudentPassport(
     // passport link, or a payment link for a fee already on file. dedupeKey
     // makes this safe to call from both call sites (self-registration and the
     // profile-read backfill) without risking a duplicate send.
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://gwd.in';
+    const appUrl = resolveAppUrl();
     const feeAmountPaise =
       typeof profile.feeAmount === 'number' && profile.feeAmount > 0
         ? rupeesToPaise(profile.feeAmount)

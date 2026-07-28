@@ -11,6 +11,7 @@ import {
   type SchedulingConfig,
 } from './scheduling';
 import { currentCycleDueDate } from './reminders';
+import { appUrl as resolveAppUrl } from '@/lib/appUrl';
 
 /**
  * TRIGGER 3 — WEEKLY PROGRESS DIGEST
@@ -81,7 +82,7 @@ export async function runWeeklyDigestTick(
 
   const weekStart = startOfDigestWeek(now, config);
   const weekKey = localDateKey(weekStart, config.timezoneOffsetMinutes);
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://gwd.in';
+  const appUrl = resolveAppUrl();
 
   for (const student of students as any[]) {
     result.studentsChecked++;

@@ -44,6 +44,17 @@ interface HealthData {
     sms: { name: string | null; connected: boolean; note: string };
   };
   queue: { due: number; scheduled: number; held: number; stuck: number };
+  /** Upstream of the queue — events not yet turned into messages. */
+  events?: {
+    pending: number;
+    oldestPendingAt: string | null;
+    oldestPendingAgeMinutes: number;
+  };
+  recentFailures?: {
+    templateKey: string;
+    error: string | null;
+    failedAt: string | null;
+  }[];
   last7Days: { byStatus: Record<string, number>; failed: number };
   activity: {
     lastQueuedAt: string | null;
@@ -107,7 +118,11 @@ export function MessagingHealth() {
   const [data, setData] = useState<HealthData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const { token } = useAppSelector((s) => s.auth);
+  const [running, setRunning] = useState(false);
+  const [runResult, setRunResult] = useState<string>("");
+  const { token, user } = useAppSelector((s) => s.auth);
+
+  const isSuperAdmin = (user as any)?.role === "gwd_super_admin";
 
   const fetchHealth = useCallback(async () => {
     setLoading(true);
@@ -124,6 +139,42 @@ export function MessagingHealth() {
       setLoading(false);
     }
   }, [token]);
+
+  /**
+   * Runs the scheduler on demand.
+   *
+   * Without this, the only way to discover the cron is misconfigured is to
+   * import a student and notice — some time later — that no parent ever got a
+   * message. Super admin only: the tick drains every academy's queue, so it is
+   * a platform action, not a tenant one.
+   */
+  const runTick = useCallback(async () => {
+    setRunning(true);
+    setRunResult("");
+    try {
+      const res = await axios.post(
+        `${API_BASE_URL}/jobs/tick`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      const d = res.data?.data;
+      setRunResult(
+        d
+          ? `Ran in ${d.durationMs}ms — ${d.dispatch?.queued ?? 0} queued, ` +
+            `${d.send?.sent ?? 0} sent, ${d.send?.failed ?? 0} failed, ` +
+            `${d.dispatch?.skipped ?? 0} skipped.`
+          : "Ran, but the response carried no detail.",
+      );
+      await fetchHealth();
+    } catch (e: any) {
+      setRunResult(
+        e.response?.data?.message ||
+          "Could not run the scheduler. Check CRON_SECRET is set on the deployment.",
+      );
+    } finally {
+      setRunning(false);
+    }
+  }, [token, fetchHealth]);
 
   useEffect(() => {
     if (token) fetchHealth();
@@ -165,15 +216,58 @@ export function MessagingHealth() {
             Whether messages can actually reach a parent right now.
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={fetchHealth}
-          className="gap-2 text-xs font-semibold"
-        >
-          <RefreshCw className="h-3.5 w-3.5" /> Refresh
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          {isSuperAdmin && (
+            <Button
+              size="sm"
+              onClick={runTick}
+              disabled={running}
+              className="gap-2 text-xs font-semibold"
+            >
+              {running ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Send className="h-3.5 w-3.5" />
+              )}
+              {running ? "Running…" : "Run scheduler now"}
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={fetchHealth}
+            className="gap-2 text-xs font-semibold"
+          >
+            <RefreshCw className="h-3.5 w-3.5" /> Refresh
+          </Button>
+        </div>
       </div>
+
+      {runResult && (
+        <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs font-medium text-slate-700">
+          {runResult}
+        </div>
+      )}
+
+      {/*
+        Events waiting upstream of the queue. This is the state that looks
+        like health but is not: the engine is connected, every queue counter
+        reads 0, and yet nothing will ever send because no run has consumed
+        the events.
+      */}
+      {data.events && data.events.pending > 0 && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+          <p className="text-sm font-bold text-amber-900">
+            {data.events.pending} event(s) waiting to become messages
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-amber-800">
+            The oldest has been waiting {data.events.oldestPendingAgeMinutes}{" "}
+            minute(s). Events only become messages when the scheduler runs —
+            until then the outbound queue below stays empty and every counter
+            reads zero.
+          </p>
+        </div>
+      )}
 
       {/* The headline verdict. Everything else on this screen is detail. */}
       <div

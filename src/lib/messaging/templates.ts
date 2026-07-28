@@ -21,6 +21,30 @@ import { MESSAGE_PRIORITY } from '@/lib/models/OutboundMessage';
 
 export class TemplateValidationError extends Error {}
 
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * TEMPLATE LANGUAGE — must match the TRANSLATION Meta approved, exactly
+ * ════════════════════════════════════════════════════════════════════════════
+ *
+ * A Meta template is identified by (name, language), not name alone. Creating
+ * a template in WhatsApp Manager defaults to "English (US)" — `en_US` — but
+ * this file hardcoded `en`, so every send was asking for a translation that
+ * did not exist and Meta rejected all of them:
+ *
+ *   Meta returned 404 (code 132001):
+ *   (#132001) Template name does not exist in the translation
+ *
+ * The name in that error is misleading: the TEMPLATE existed and was Active.
+ * Only the language tag was wrong, which is why the WhatsApp Manager showed
+ * everything as approved while nothing could be delivered.
+ *
+ * Configurable because the correct value depends on how the templates were
+ * created in a given Meta account — `en_US` and `en` are both common. Set
+ * META_WHATSAPP_TEMPLATE_LANG to whatever the Language column shows.
+ */
+export const TEMPLATE_LANGUAGE =
+  process.env.META_WHATSAPP_TEMPLATE_LANG?.trim() || 'en_US';
+
 export interface TemplateDefinition {
   key: string;
   /** Must match the Meta-approved template name registered in WhatsApp Manager. */
@@ -39,15 +63,14 @@ export interface TemplateDefinition {
 /**
  * SUBMIT TO META AS: gwd_welcome_v1  (category: UTILITY)
  *
- *   Welcome! Hi {{1}}, {{2}} is now on the GWD platform — tracking {{3}}'s training, attendance, and progress all in one place.
+ *   Hi {{1}}! {{2}} is now on GWD — {{3}}'s training, attendance and progress
+ *   all in one place.
  *
- *   You can view their Sports Passport here: {{4}}
+ *   View {{3}}'s Sports Passport: {{4}}
  *
- *   Update: {{5}}
+ *   {{5}}
  *
- *   Account access: {{6}}
- *
- *   Thank you!
+ *   {{6}}
  *
  * {{5}} carries either the payment line or a short neutral sentence, and {{6}}
  * the sign-in line, because Meta templates cannot have conditionally-absent
@@ -62,7 +85,7 @@ export interface TemplateDefinition {
 const welcome: TemplateDefinition = {
   key: 'welcome',
   templateName: 'gwd_welcome_v1',
-  languageCode: 'en',
+  languageCode: TEMPLATE_LANGUAGE,
   // Tier 2 rather than payment tier: a welcome is sent once per student, in bulk
   // on import day when little else competes, so it does not need the payment
   // reserve — and must not be able to consume it.
@@ -85,45 +108,41 @@ const welcome: TemplateDefinition = {
     'loginLine',
   ],
   plainText: (v) =>
-    `Welcome! Hi ${v.parentGreetingName}, ${v.academyName} is now on the GWD platform — tracking ${v.childName}'s training, attendance, and progress all in one place. You can view their Sports Passport here: ${v.passportUrl} Update: ${v.paymentLine} Account access: ${v.loginLine} Thank you!`,
+    `Hi ${v.parentGreetingName}! ${v.academyName} is now on GWD — ${v.childName}'s training, attendance and progress all in one place. View ${v.childName}'s Sports Passport: ${v.passportUrl} ${v.paymentLine} ${v.loginLine}`,
 };
 
 /**
  * SUBMIT TO META AS: gwd_attendance_confirmation_v1  (category: UTILITY)
  *
- *   Attendance Update: {{1}} checked in safely at {{2}} ✅
- *
- *   Thank you,
- *   {{3}}
+ *   {{1}} checked in at {{2}} ✅
+ *   — {{3}}
  */
 const attendanceConfirmation: TemplateDefinition = {
   key: 'attendance_confirmation',
   templateName: 'gwd_attendance_confirmation_v1',
-  languageCode: 'en',
+  languageCode: TEMPLATE_LANGUAGE,
   priority: MESSAGE_PRIORITY.ATTENDANCE,
   description: 'Fires on attendance.created. The highest-frequency touchpoint — a parent wants to know their child arrived safely.',
   variableOrder: ['childName', 'checkInTime', 'academyName'],
   required: ['childName', 'checkInTime', 'academyName'],
-  plainText: (v) => `Attendance Update: ${v.childName} checked in safely at ${v.checkInTime} ✅ Thank you, ${v.academyName}`,
+  plainText: (v) => `${v.childName} checked in at ${v.checkInTime} ✅ — ${v.academyName}`,
 };
 
 /**
  * SUBMIT TO META AS: gwd_weekly_digest_v1  (category: UTILITY)
  *
- *   Here is your weekly update for {{1}} at {{2}}!
+ *   {{1}}'s week at {{2}}
  *
- *   Attendance this week: {{3}}
- *   Highlight: {{4}}
- *   Next fee due on: {{5}}
+ *   Attendance: {{3}}
+ *   {{4}}
+ *   Next fee due: {{5}}
  *
- *   See full progress on their passport: {{6}}
- *
- *   Have a great week!
+ *   Full progress: {{6}}
  */
 const weeklyDigest: TemplateDefinition = {
   key: 'weekly_digest',
   templateName: 'gwd_weekly_digest_v1',
-  languageCode: 'en',
+  languageCode: TEMPLATE_LANGUAGE,
   priority: MESSAGE_PRIORITY.ACHIEVEMENT,
   description: 'Scheduled Sunday evening, per student. Attendance %, any achievement, upcoming fee date, passport link.',
   variableOrder: [
@@ -136,19 +155,17 @@ const weeklyDigest: TemplateDefinition = {
   ],
   required: ['childName', 'academyName', 'attendanceSummary', 'achievementLine', 'nextFeeDue', 'passportUrl'],
   plainText: (v) =>
-    `Here is your weekly update for ${v.childName} at ${v.academyName}! Attendance this week: ${v.attendanceSummary} Highlight: ${v.achievementLine} Next fee due on: ${v.nextFeeDue} See full progress on their passport: ${v.passportUrl} Have a great week!`,
+    `${v.childName}'s week at ${v.academyName}. Attendance: ${v.attendanceSummary}. ${v.achievementLine} Next fee due: ${v.nextFeeDue}. Full progress: ${v.passportUrl}`,
 };
 
 /**
  * SUBMIT TO META AS: gwd_fee_reminder_v1  (category: UTILITY)
  *
- *   Update from the academy: {{1}}
+ *   {{1}}
  *
- *   This is a notice regarding {{2}}. The fee of {{3}} is due on {{4}}.
+ *   {{2}}'s fee of {{3}} is due on {{4}}.
  *
- *   You can complete the payment securely here: {{5}}
- *
- *   Thank you for your prompt response.
+ *   Pay here: {{5}}
  *
  * ONE approved template serves T-5, due-date and T+3. {{1}} carries the
  * stage-specific opening line. Three near-identical templates would mean three
@@ -159,55 +176,51 @@ function feeReminderTemplate(key: string, description: string): TemplateDefiniti
   return {
     key,
     templateName: 'gwd_fee_reminder_v1',
-    languageCode: 'en',
+    languageCode: TEMPLATE_LANGUAGE,
     priority: MESSAGE_PRIORITY.PAYMENT,
     description,
     variableOrder: ['openingLine', 'childName', 'amount', 'dueDate', 'paymentUrl'],
     required: ['openingLine', 'childName', 'amount', 'dueDate', 'paymentUrl'],
     plainText: (v) =>
-      `Update from the academy: ${v.openingLine} This is a notice regarding ${v.childName}. The fee of ${v.amount} is due on ${v.dueDate}. You can complete the payment securely here: ${v.paymentUrl} Thank you for your prompt response.`,
+      `${v.openingLine} ${v.childName}'s fee of ${v.amount} is due on ${v.dueDate}. Pay here: ${v.paymentUrl}`,
   };
 }
 
 /**
  * SUBMIT TO META AS: gwd_achievement_v1  (category: UTILITY)
  *
- *   Great news! 🏅 {{1}} just earned the {{2}} achievement at {{3}}!
+ *   🏅 {{1}} earned {{2}} at {{3}}!
  *
- *   You can see the new badge on their Passport here: {{4}}
- *
- *   Keep up the great work!
+ *   See it on their Passport: {{4}}
  */
 const achievement: TemplateDefinition = {
   key: 'achievement',
   templateName: 'gwd_achievement_v1',
-  languageCode: 'en',
+  languageCode: TEMPLATE_LANGUAGE,
   priority: MESSAGE_PRIORITY.ACHIEVEMENT,
   description: 'A milestone or badge. Shareable — this is distribution and retention in one motion.',
   variableOrder: ['childName', 'achievementName', 'academyName', 'passportUrl'],
   required: ['childName', 'achievementName', 'academyName', 'passportUrl'],
   plainText: (v) =>
-    `Great news! 🏅 ${v.childName} just earned the ${v.achievementName} achievement at ${v.academyName}! You can see the new badge on their Passport here: ${v.passportUrl} Keep up the great work!`,
+    `🏅 ${v.childName} earned ${v.achievementName} at ${v.academyName}! See it on their Passport: ${v.passportUrl}`,
 };
 
 /**
  * SUBMIT TO META AS: gwd_broadcast_v1  (category: UTILITY)
  *
- *   Important update from the academy:
  *   {{1}}
  *
- *   Thank you,
- *   {{2}} Management
+ *   — {{2}}
  */
 const broadcast: TemplateDefinition = {
   key: 'broadcast',
   templateName: 'gwd_broadcast_v1',
-  languageCode: 'en',
+  languageCode: TEMPLATE_LANGUAGE,
   priority: MESSAGE_PRIORITY.BROADCAST,
   description: 'Owner-composed announcement. Lowest priority — always yields to everything else.',
   variableOrder: ['messageBody', 'academyName'],
   required: ['messageBody', 'academyName'],
-  plainText: (v) => `Important update from the academy: ${v.messageBody} Thank you, ${v.academyName} Management`,
+  plainText: (v) => `${v.messageBody} — ${v.academyName}`,
 };
 
 /**
@@ -215,14 +228,11 @@ const broadcast: TemplateDefinition = {
  *
  *   ✅ Payment received — thank you!
  *
- *   Student: {{1}}
- *   Academy: {{2}}
- *   Amount paid: {{3}}
- *   Receipt number: {{4}}
+ *   {{1}} · {{2}}
+ *   Amount: {{3}}
+ *   Receipt no: {{4}}
  *
- *   You can download your official receipt here: {{5}}
- *
- *   We appreciate your support!
+ *   Your receipt: {{5}}
  *
  * The amount shown is what the PARENT paid, which is the figure on their bank
  * statement — the academy/convenience split is itemised on the receipt page
@@ -231,7 +241,7 @@ const broadcast: TemplateDefinition = {
 const paymentReceipt: TemplateDefinition = {
   key: 'payment_receipt',
   templateName: 'gwd_payment_receipt_v1',
-  languageCode: 'en',
+  languageCode: TEMPLATE_LANGUAGE,
   // Payment tier: this is the confirmation a parent actively waits for after
   // handing over money. It must never be dropped by the daily frequency cap.
   priority: MESSAGE_PRIORITY.PAYMENT,
@@ -240,21 +250,19 @@ const paymentReceipt: TemplateDefinition = {
   variableOrder: ['childName', 'academyName', 'amount', 'receiptNumber', 'receiptUrl'],
   required: ['childName', 'academyName', 'amount', 'receiptUrl'],
   plainText: (v) =>
-    `✅ Payment received — thank you! Student: ${v.childName} Academy: ${v.academyName} Amount paid: ${v.amount} Receipt number: ${v.receiptNumber} You can download your official receipt here: ${v.receiptUrl} We appreciate your support!`,
+    `✅ Payment received — thank you! ${v.childName} · ${v.academyName}. ` +
+    `Amount: ${v.amount}. Receipt no: ${v.receiptNumber}. Your receipt: ${v.receiptUrl}`,
 };
 
 /**
  * SUBMIT TO META AS: gwd_owner_new_student_v1  (category: UTILITY)
  *
- *   🎉 Great news! We have a new student at {{1}}!
+ *   🎉 New student at {{1}}!
  *
- *   Student Name: {{2}}
- *   Parent Name: {{3}}
+ *   {{2}} — parent: {{3}}
  *   Sport(s): {{4}}
  *
- *   You can view their newly created passport here: {{5}}
- *
- *   End of update.
+ *   View passport: {{5}}
  *
  * Sent to the ACADEMY OWNER, never the parent — see academyOwnerPhone on the
  * student.created event payload. Confirms a signup actually went through and
@@ -263,25 +271,23 @@ const paymentReceipt: TemplateDefinition = {
 const ownerNewStudent: TemplateDefinition = {
   key: 'owner_new_student',
   templateName: 'gwd_owner_new_student_v1',
-  languageCode: 'en',
+  languageCode: TEMPLATE_LANGUAGE,
   priority: MESSAGE_PRIORITY.ATTENDANCE,
   description: 'Sent to the academy owner when a student record is created (import or self-registration).',
   variableOrder: ['academyName', 'childName', 'parentName', 'sportsLine', 'passportUrl'],
   required: ['academyName', 'childName', 'passportUrl'],
   plainText: (v) =>
-    `🎉 Great news! We have a new student at ${v.academyName}! Student Name: ${v.childName} Parent Name: ${v.parentName} Sport(s): ${v.sportsLine} You can view their newly created passport here: ${v.passportUrl} End of update.`,
+    `New student at ${v.academyName}! ${v.childName} — parent: ${v.parentName}. Sport(s): ${v.sportsLine}. View passport: ${v.passportUrl}`,
 };
 
 /**
  * SUBMIT TO META AS: gwd_owner_payment_v1  (category: UTILITY)
  *
- *   💰 Success! A payment was just received at {{1}}!
+ *   💰 Payment received at {{1}}!
  *
- *   Student {{2}} has paid {{3}}.
+ *   {{2}} paid {{3}}.
  *
- *   You can view the transaction receipt here: {{4}}
- *
- *   End of payment alert.
+ *   Receipt: {{4}}
  *
  * Sent to the ACADEMY OWNER alongside (not instead of) the parent's own
  * `payment_receipt` — the owner asked to know the moment money comes in, the
@@ -290,13 +296,13 @@ const ownerNewStudent: TemplateDefinition = {
 const ownerPaymentReceived: TemplateDefinition = {
   key: 'owner_payment_received',
   templateName: 'gwd_owner_payment_v1',
-  languageCode: 'en',
+  languageCode: TEMPLATE_LANGUAGE,
   priority: MESSAGE_PRIORITY.PAYMENT,
   description: 'Sent to the academy owner when a student payment settles, by any method (online, subscription, or offline entry).',
   variableOrder: ['academyName', 'childName', 'amountFormatted', 'receiptUrl'],
   required: ['academyName', 'childName', 'amountFormatted', 'receiptUrl'],
   plainText: (v) =>
-    `💰 Success! A payment was just received at ${v.academyName}! Student ${v.childName} has paid ${v.amountFormatted}. You can view the transaction receipt here: ${v.receiptUrl} End of payment alert.`,
+    `Payment received at ${v.academyName}! ${v.childName} paid ${v.amountFormatted}. Receipt: ${v.receiptUrl}`,
 };
 
 export const TEMPLATES: Record<string, TemplateDefinition> = {

@@ -6,6 +6,7 @@ import { enqueueMessage } from './enqueue';
 import { renderFeeOpeningLine } from './templates';
 import { computeFeeSplit, configuredSplitConfig, percentToBps, formatInr } from '@/lib/payments/money';
 import { localDateKey, configFromEnv, fromLocalParts, toLocalParts } from './scheduling';
+import { appUrl as resolveAppUrl } from '@/lib/appUrl';
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -161,7 +162,7 @@ export async function runReminderTick(
     );
 
     const cycleKey = localDateKey(dueDate, config.timezoneOffsetMinutes);
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://gwd.in';
+    const appUrl = resolveAppUrl();
 
     // ---- Stages that message the parent --------------------------------
     if (stage === 't5' || stage === 'due' || stage === 'overdue3') {

@@ -9,6 +9,7 @@ import {
   renderFeeOpeningLine,
   TemplateValidationError,
   TEMPLATES,
+  TEMPLATE_LANGUAGE,
 } from './templates';
 import { MESSAGE_PRIORITY } from '@/lib/models/OutboundMessage';
 
@@ -308,5 +309,31 @@ describe('conditional line renderers', () => {
     ];
     expect(new Set(lines).size).toBe(3);
     expect(lines[2]).toMatch(/overdue/i);
+  });
+});
+
+/**
+ * Regression: every send failed in production with
+ *   (#132001) Template name does not exist in the translation
+ * because this file hardcoded `en` while the templates approved in WhatsApp
+ * Manager were "English (US)" — `en_US`. A Meta template is keyed on
+ * (name, language), so the wrong tag makes an approved template unreachable
+ * while the dashboard still shows it Active.
+ */
+describe('template language', () => {
+  it('uses one language tag across every template', () => {
+    const languages = new Set(Object.values(TEMPLATES).map((t) => t.languageCode));
+    expect(languages.size).toBe(1);
+  });
+
+  it('defaults to en_US, matching WhatsApp Manager’s default translation', () => {
+    // Not `en`: creating a template in WhatsApp Manager produces "English (US)".
+    expect(TEMPLATE_LANGUAGE).toBe(process.env.META_WHATSAPP_TEMPLATE_LANG?.trim() || 'en_US');
+  });
+
+  it('never emits an empty language, which Meta rejects outright', () => {
+    for (const template of Object.values(TEMPLATES)) {
+      expect(template.languageCode.trim().length).toBeGreaterThan(0);
+    }
   });
 });
