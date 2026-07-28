@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:money": "vitest run src/lib/payments",
-    "whatsapp:doctor": "node scripts/whatsapp-doctor.mjs"
+    "whatsapp:doctor": "node scripts/whatsapp-doctor.mjs",
+    "whatsapp:templates": "node scripts/create-whatsapp-templates.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

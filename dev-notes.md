@@ -4050,3 +4050,61 @@ the missing piece is the task grant, not a token snapshot.
 Business Settings → Users → **System Users** → Add Assets → WhatsApp Accounts →
 Full control. Assigning from the WhatsApp account's own People tab grants only
 MANAGE, which is what was done and why it looked correct in the UI.
+
+### Follow-up · Duplicate WABAs — templates and phone number were on different accounts
+
+Enumerating all five WhatsApp Business Accounts (IDs supplied by the owner)
+produced the actual shape of the problem:
+
+| WABA | number | gwd_* templates |
+|---|---|---|
+| 1733246831445995 | **+91 90324 28099** (real) | 0 |
+| 1043341758300698 | US test only | **all 9, approved** |
+| 966642573060846  | US test only | 0 |
+| 1342352581081169 | none | 0 |
+| 1650717539304127 | none | 0 |
+
+A Meta template belongs to ONE WABA. Running the WhatsApp onboarding flow more
+than once silently creates a new account each time, and here it left the
+templates on one account and the sending number on another — so no send could
+ever resolve a template, regardless of permissions. WhatsApp Manager showed
+everything "Approved", because it was: just not on the account doing the sending.
+
+Also found: languages were MIXED on that account — 8 templates `en`, but
+`gwd_welcome_v1` `en_US`. Since the code sends one language for all nine,
+either value would have broken eight of them.
+
+Fixed by recreating all 9 on `1733246831445995` in a single language (`en_US`)
+via a new script, `npm run whatsapp:templates -- <WABA_ID> [--lang=] [--dry] [--only=]`.
+It guards the one mismatch Meta only reports at SEND time (placeholder count vs
+example count) and refuses to submit when they disagree.
+
+Two were rejected on the first pass with "Variables can't be at the start or end
+of the template" — both ended `...at {{3}}.`; a trailing full stop does not count
+as text. A real closing sentence after the last placeholder fixed both.
+
+### Still open — app-level messaging permission
+
+After all of the above, sending still returns
+`(#200) ... permissions to send messages on behalf of this WhatsApp Business Account`
+— and, decisively, **from BOTH WABAs**, including the account whose templates
+were already approved and whose number is a Meta-provided test number.
+
+Known good (verified against the Graph API, not inferred):
+- token: SYSTEM_USER, never expires, `whatsapp_business_messaging` + `whatsapp_business_management`
+- system user holds the WABA asset, `tasks: ["MESSAGING"]`
+- number: CLOUD_API / CONNECTED / APPROVED / `account_mode: LIVE`
+- WABA: `account_review_status: APPROVED`, `business_verification_status: verified`
+- app subscribed (POST /subscribed_apps returned success)
+- templates now present on the sending WABA
+
+Management calls all succeed with this token (reading WABAs, listing numbers,
+CREATING templates). Only messaging is refused, on every account. That is an
+app-level restriction, not an asset one, and it cannot be inspected with a
+system-user token — it needs the App Dashboard.
+
+Dead ends recorded so they are not retried: `granular_scopes.target_ids` is empty
+even on correctly-scoped fresh tokens (unreliable signal); regenerating the token
+does not help; `GET /{waba}/subscribed_apps` returns 500 subcode 99 even when
+subscription is fine; `POST /{waba}/assigned_users` silently no-ops for a
+multi-task array but applies for a single task.
