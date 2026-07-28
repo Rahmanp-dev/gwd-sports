@@ -4,16 +4,22 @@ import { useAppSelector } from "@/store";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, IndianRupee, Loader2, RotateCcw, Save } from "lucide-react";
+import { Check, Globe, IndianRupee, Loader2, RotateCcw, Save } from "lucide-react";
 import { academyService, type Academy, type AcademyFees } from "@/services/academyService";
 import { toastUtils } from "@/utils/toast";
 import {
-  AcademyBrandingEditor,
   draftFromAcademy,
   draftToThemeUpdate,
   defaultBrandingDraft,
   type BrandingDraft,
 } from "./AcademyBrandingEditor";
+import AcademyCanvasEditor from "./AcademyCanvasEditor";
+import EcosystemProfileEditor, {
+  ecosystemProfileFromAcademy,
+  ecosystemProfileToUpdate,
+  emptyEcosystemProfile,
+  type EcosystemProfile,
+} from "@/components/academy/EcosystemProfileEditor";
 
 /**
  * The academy owner's branding screen.
@@ -42,6 +48,10 @@ export const AcademyBrandingPanel: React.FC = () => {
   const [savedFees, setSavedFees] = useState<AcademyFees>(EMPTY_FEES);
   const [dueDay, setDueDay] = useState<number>(5);
   const [savedDueDay, setSavedDueDay] = useState<number>(5);
+  const [ecosystem, setEcosystem] = useState<EcosystemProfile>(emptyEcosystemProfile());
+  const [savedEcosystem, setSavedEcosystem] = useState<EcosystemProfile>(
+    emptyEcosystemProfile(),
+  );
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -69,6 +79,9 @@ export const AcademyBrandingPanel: React.FC = () => {
         setSavedDueDay(nextDue);
         setFees(nextFees);
         setSavedFees(nextFees);
+        const nextEcosystem = ecosystemProfileFromAcademy(found);
+        setEcosystem(nextEcosystem);
+        setSavedEcosystem(nextEcosystem);
       }
     } catch (e: any) {
       setError(e?.response?.data?.message || "Could not load your branding.");
@@ -85,6 +98,7 @@ export const AcademyBrandingPanel: React.FC = () => {
     savedDraft !== null &&
     (JSON.stringify(savedDraft) !== JSON.stringify(draft) ||
       JSON.stringify(savedFees) !== JSON.stringify(fees) ||
+      JSON.stringify(savedEcosystem) !== JSON.stringify(ecosystem) ||
       savedDueDay !== dueDay);
 
   const save = async () => {
@@ -96,6 +110,7 @@ export const AcademyBrandingPanel: React.FC = () => {
         academyId,
         {
           ...draftToThemeUpdate(draft),
+          ...ecosystemProfileToUpdate(ecosystem),
           "fees.monthly": fees.monthly,
           "fees.quarterly": fees.quarterly,
           "fees.halfYearly": fees.halfYearly,
@@ -105,6 +120,7 @@ export const AcademyBrandingPanel: React.FC = () => {
       );
       setSavedDraft(draft);
       setSavedFees(fees);
+      setSavedEcosystem(ecosystem);
       setSavedDueDay(dueDay);
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 2500);
@@ -156,6 +172,7 @@ export const AcademyBrandingPanel: React.FC = () => {
               onClick={() => {
                 if (savedDraft) setDraft(savedDraft);
                 setFees(savedFees);
+                setEcosystem(savedEcosystem);
                 setDueDay(savedDueDay);
               }}
             >
@@ -181,13 +198,41 @@ export const AcademyBrandingPanel: React.FC = () => {
         </div>
       )}
 
-      <AcademyBrandingEditor
+      <AcademyCanvasEditor
         value={draft}
         onChange={setDraft}
+        academy={academy}
         academyName={academy?.name || "Your Academy"}
         sports={academy?.sports ?? []}
         disabled={saving}
       />
+
+      {/*
+        Ecosystem map profile. Not part of the homepage canvas because it does
+        not appear on the homepage — it is what the GWD ecosystem map shows
+        when someone taps this academy's pin. Previously super-admin-only,
+        which meant the people who actually know their squad could not
+        maintain it.
+      */}
+      <Card className="border-0 shadow-sm">
+        <CardContent className="space-y-4 p-5">
+          <div>
+            <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+              <Globe className="h-3 w-3" />
+              Ecosystem map profile
+            </p>
+            <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+              Shown on the GWD ecosystem map when someone taps your academy.
+              Your map position and verification badge are set by GWD.
+            </p>
+          </div>
+          <EcosystemProfileEditor
+            value={ecosystem}
+            onChange={setEcosystem}
+            disabled={saving}
+          />
+        </CardContent>
+      </Card>
 
       {/* Fees — not branding, but this is where owners already look for them. */}
       <Card className="border-0 shadow-sm">

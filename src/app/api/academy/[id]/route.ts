@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import Academy from '@/lib/models/Academy';
-import { adminMiddleware } from '@/lib/middleware/auth';
+import { adminMiddleware, roleMiddleware } from '@/lib/middleware/auth';
+import { filterAcademyUpdate } from '@/lib/academy/updateGuard';
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -21,22 +22,59 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     await connectToDatabase();
     const { id } = await params;
 
-    if (auth.user.role !== 'gwd_super_admin' && auth.academyId !== id) {
+    const isSuperAdmin = auth.user.role === 'gwd_super_admin';
+
+    if (!isSuperAdmin && auth.academyId !== id) {
       return NextResponse.json({ success: false, message: 'Unauthorized to edit this academy' }, { status: 403 });
     }
 
-    const data = await req.json();
-    const academy = await Academy.findByIdAndUpdate(id, data, { new: true });
+    /**
+     * The body used to go straight into findByIdAndUpdate. "It is your own
+     * academy" is NOT sufficient authorisation to write every field on it —
+     * platformFeePercent, verificationStatus, ecosystemScore, rzp_account and
+     * ownerId are GWD's side of the relationship. See lib/academy/updateGuard.
+     */
+    const raw = await req.json();
+    const { update, rejected } = filterAcademyUpdate(raw, isSuperAdmin);
+
+    if (rejected.length > 0) {
+      console.warn(
+        `[academy:PUT] ${auth.user._id} (${auth.user.role}) attempted to set ` +
+          `protected field(s) on ${id}: ${rejected.join(', ')}`,
+      );
+    }
+
+    if (Object.keys(update).length === 0) {
+      return NextResponse.json(
+        { success: false, message: 'No editable fields in request' },
+        { status: 400 },
+      );
+    }
+
+    const academy = await Academy.findByIdAndUpdate(id, update, {
+      new: true,
+      runValidators: true,
+    });
     return NextResponse.json({ success: true, data: { academy } });
   } catch (error) {
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }
 
+/**
+ * Super admin only.
+ *
+ * This had NO ownership check whatsoever — `adminMiddleware` admits any
+ * academy admin, and the handler deleted whatever id it was given. Any
+ * academy's admin could delete any OTHER academy on the platform, including
+ * a competitor's, by id alone.
+ */
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const auth = await adminMiddleware(req);
-    if (auth?.error) return NextResponse.json({ success: false }, { status: auth.status });
+    const auth = await roleMiddleware(req, ['gwd_super_admin']);
+    if (auth?.error) {
+      return NextResponse.json({ success: false, message: auth.error }, { status: auth.status });
+    }
     await connectToDatabase();
     const { id } = await params;
     await Academy.findByIdAndDelete(id);

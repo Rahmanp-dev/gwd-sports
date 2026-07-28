@@ -738,6 +738,25 @@ body {
   position: relative;
 }
 
+/*
+ * GRADIENT BACKGROUNDS MUST NOT REPEAT PER BAND.
+ *
+ * `background: var(--page-bg)` above is correct for a flat colour but wrong
+ * for a gradient: a CSS gradient is painted relative to ITS OWN element box,
+ * so every primary band restarted the fade from its own top edge and a
+ * page-length gradient rendered as a stack of identical repeating gradients
+ * with hard seams between sections.
+ *
+ * The page root (AcademyPublicPage's <main>) already paints --page-bg once
+ * across the full page height, so the fix is simply to let it show through.
+ * Alt bands stay painted — on a gradient page they carry a translucent tint
+ * (see palette.ts) so they still read as an alternating band without
+ * flattening the gradient underneath them.
+ */
+[data-page-bg="gradient"] [data-band="primary"] {
+  background: transparent;
+}
+
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * ACADEMY PUBLIC PAGE — THEME SYSTEM

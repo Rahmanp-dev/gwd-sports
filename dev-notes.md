@@ -3780,3 +3780,83 @@ To support exponential expansion and onboarding of new academies, we moved from 
 
 ### Next
 Resume development of "Elite Circle" integration and School Camp Lead Engine.
+
+---
+
+## Session — 2026-07-28 · Theme Engine Overhaul + Super Admin Depth (6-item request)
+
+**State:** `tsc --noEmit` clean, `vitest run` 471/471 (23 new tests this session), `npm run build` clean. Not committed.
+
+Six items requested: more stats/metrics, editable Elite Difference, working + richer gradients, a homepage-shaped theme editor, more theme features, and a super admin depth/monitoring upgrade with landing-map sync.
+
+### Two dead features found — the fields were never in the schema
+
+**`theme.highlights` (The Elite Difference) was unwritable.** `WhyChooseUs.tsx` has read `academy.theme.highlights` since it was written, but the path was never added to the Academy schema — and Mongoose strips unknown paths on save by default. Anything an owner authored was silently discarded and the platform-true defaults always rendered. That is *why* the section could not be edited; it was never a UI gap. Added to the schema, types, `BrandingDraft`, and built the editor card. `PLATFORM_TRUE_DEFAULTS` now uses icon *keys* rather than component references so the defaults, the editor's picker and the renderer all read one list.
+
+### Gradients: the bug was band repetition, not the gradient itself
+
+`globals.css` painted `background: var(--page-bg)` on every `[data-band="primary"]` wrapper. A CSS gradient is painted relative to *its own element box*, so each band restarted the fade from its own top edge — a page-length gradient rendered as a stack of identical repeating gradients with hard seams. The page root already paints `--page-bg` once across the full height, so the fix is to let it show through: `buildThemeVariables` now emits `--page-bg-mode`, `AcademyTheme` reflects it as `data-page-bg`, and one rule makes primary bands transparent on gradient pages. Alt bands stay painted but switch to a translucent tint so they still read as alternating without flattening the gradient underneath.
+
+On top of that, `buildGradient()` adds real control: linear/radial, 0–360 degree angle (wrapped, not clamped, so a dial dragged past the end keeps meaning something), and 2–4 evenly-spaced colour stops. Per-stop positions were deliberately left out — they are the first thing that lets an owner build a hard-edged band that looks like a rendering bug. Text colour is derived from the **mean luminance of the authored stops**, not the brand colour, so a gradient built from colours unrelated to the brand still gets readable text.
+
+Verified in-browser: `linear-gradient(160deg, rgb(22,163,74) 0%, rgb(14,165,233) 50%, rgb(255,255,255) 100%)` with primary bands computing to `rgba(0,0,0,0)` and alt bands to `rgba(15,23,42,0.04)`.
+
+Also fixed: `AcademyTheme`'s `useMemo` dependency array omitted the new gradient fields, and array identity is unstable across renders — the stops are joined into a string so the preview actually repaints when a colour picker moves.
+
+### New theme features
+
+- **`theme.customStats`** — owner-authored figures rendered *alongside* the four derived ones. The section's rule (every number must be true) is unchanged; what changes is who asserts it. Zero/blank values are dropped rather than rendered as "0 Championships". Brand/accent treatment is re-applied across the combined list so alternation stays even, and keys are index-suffixed because an owner can now name a custom stat the same as a derived one.
+- **`theme.videoSection`** — YouTube/Instagram embed with three layouts (cinematic/framed/split). URL parsing lives in `videoEmbed.ts` (pure, so vitest can transform it — anything exported from a `.tsx` is untestable here) and handles watch/shorts/embed/live/`youtu.be` URLs plus the tracking junk share buttons append. It only ever emits a URL it constructed, so a pasted `javascript:` or arbitrary host can never reach an iframe `src`; that is asserted in tests. Defaults OFF so it cannot render a dead frame on existing academies.
+
+### Item 4 — the theme engine is now the homepage
+
+`AcademyCanvasEditor` renders the **real** landing components (`HeroSection`, `StatsSection`, `WhyChooseUs`, `SportsGrid`, `VideoSection`, `GallerySection`, `TestimonialsCarousel`, `Footer`) through `AcademyTheme` with the unsaved draft applied, and each section is click-to-edit in place, with inline hide/show and reorder. Importing the real sections rather than mocking them means the canvas cannot drift from production.
+
+It replicates `AcademyPublicPage`'s band logic exactly — `renderedCount`, not array index, so hiding a section does not shift the alternation — and sets the same `data-band`/`data-section-accent` attributes so the identical `globals.css` rules apply.
+
+`AcademyCanvasEditor` owns **no branding state**. `value`/`onChange` pass straight through to `AcademyBrandingEditor`, which is still the single home of every control; the canvas only decides which controls are on screen. All 17 control cards were tagged `data-panel="<group>"` (by script, verified against expected order) and filtering is done with one CSS rule rather than 17 conditional guards — a mistyped key cannot silently lose a control, and cards stay mounted so switching sections never discards half-typed input. Verified: 17 cards present, exactly the 2 requested visible, 15 hidden. Wired into **both** the owner's panel and the super admin's academy form.
+
+Canvas sections are `pointer-events-none` — inside the editor a click means "edit this", not "follow this link"; without it, clicking the hero CTA would navigate away mid-edit and lose unsaved work. Hover controls got `focus-within:opacity-100` so they are not invisible-but-tabbable for keyboard users.
+
+### SECURITY: privilege escalation found and fixed while wiring item 6
+
+`PUT /api/academy/[id]` passed the raw request body straight into `findByIdAndUpdate`. The only check was "is this your academy?" — which is **not** sufficient authorisation to write every field on it. Any academy admin could set, on their own tenant:
+
+- `platformFeePercent: 0` — GWD's margin on every future payment, gone
+- `verificationStatus` / `gwdFoundingAcademy` — self-award a verified/founding badge on the public map
+- `ecosystemScore: 100` — top of the public leaderboard
+- `rzp_account` / `settlementStrategy` — point settlement at another account
+- `ownerId` — hand the academy to someone else
+- `isActive` — un-freeze an account GWD had frozen
+
+Worse, **`DELETE` had no ownership check at all** — `adminMiddleware` admits any academy admin and the handler deleted whatever id it was given, so any academy's admin could delete any *other* academy on the platform.
+
+Fixed with `lib/academy/updateGuard.ts`: an **allowlist** on the owner side (not a denylist on the privileged side — a denylist fails open, silently making every newly-added schema field writable by every admin). Mongo operators are refused outright so nesting cannot bypass it, and dot-paths are matched on their first segment so `platformFeePercent.value` cannot smuggle a protected root through. Rejected keys are dropped and logged rather than 400'd. `DELETE` is now super-admin only. 6 tests cover it.
+
+This sat directly in the path of item 6 — owner edits for star players and teams route through that exact endpoint.
+
+### Item 6 — super admin depth
+
+`lib/admin/academyInsights.ts` answers one question per academy: *is this owner actually using what we sold them?* Every figure is windowed (7/30 days) rather than lifetime, because a roster imported once and abandoned looks identical to a thriving academy on any total. It covers owner sign-in recency, roster freshness (profiles updated), coaching activity (attendance marks + performance entries), collection, messaging throughput and open alerts, and reduces to a blunt 0–100 score over five equally-weighted signals — blunt because a weighted model tuned on a handful of academies would look precise while being mostly noise, and this number's only job is to sort a list so a human looks at the right academy first.
+
+**Online vs offline collection is split, never summed.** An academy at 95% offline-marked is using GWD as a ledger, not a payment rail — a completely different commercial position from the same rupee figure collected online, and a combined total hides exactly that. The panel calls it out explicitly below 40%.
+
+Two routes: `/api/admin/academies/[academyId]/insights` (one academy) and `/api/admin/academy-engagement` (all, sorted worst-first, since the academies worth a call this week are the ones at the bottom). Both super-admin only — this exposes collection figures and owner sign-in recency, which is GWD's commercial view of a customer. One malformed academy cannot blank the whole dashboard. `AcademyInsightsPanel` is wired to a new "Usage" button on every academy row.
+
+Caught while writing the aggregation: attendance rows are timestamped `date` but performance rows use `evaluatedAt` — matching the wrong field would have reported zero coaching activity for a busy academy.
+
+Note for later: the engagement route runs ~17 queries per academy and is capped at 100. When the platform outgrows one page of academies this needs a nightly materialised rollup, not a bigger limit.
+
+### Map sync — one editor, two callers
+
+`EcosystemProfileEditor` (head coach, established year, star players with level badges, registered teams) is rendered by **both** the super admin's Pin Map modal and the owner's own settings, so the two surfaces cannot drift into disagreeing about what a star player is. Previously super-admin-only, which meant the people who actually know their squad could not maintain it. Map position and verification badge stay GWD's — enforced by the allowlist above, not merely hidden in the UI.
+
+`achievements` is deliberately **not** in this editor: it is already edited by the branding editor's Achievements card, and two controls writing one field on the same screen is the exact failure that made the old BrandingStudio and AcademyBrandingSettings disagree about who owned the tagline. Removed the now-dead `editCoachName`/`editEstYear` state from the super admin dashboard.
+
+### Verification notes
+
+Browser-verified: canvas renders all 8 sections in order, gradient bands compute correctly, panel filtering shows exactly the right cards. Layout-dependent checks (screenshots, coordinate clicks) were not possible — the Browser pane was not compositing, so `getBoundingClientRect` returned zeros and the accessibility tree read empty. **The canvas editor, insights panel and ecosystem editor have not been seen with real data behind a real login** — click through them before trusting the visuals.
+
+### Next
+
+Not started: rate limiting on public endpoints (still absent platform-wide), route-level tests for the payment HTTP handlers, and the further theme ideas from the previous session's notes (font pairing, hero content alignment, trust badges, per-section headings).

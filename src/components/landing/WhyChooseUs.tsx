@@ -27,38 +27,43 @@ import { BRAND_NAME } from "@/utils/constants";
  */
 const PLATFORM_TRUE_DEFAULTS = [
   {
-    icon: Award,
+    icon: "award",
     title: "Qualified Coaching",
     description: "Sessions led by the academy's own registered coaches",
   },
   {
-    icon: TrendingUp,
+    icon: "progress",
     title: "Tracked Progress",
     description: "Skills assessed and recorded session by session",
   },
   {
-    icon: Users,
+    icon: "users",
     title: "Parents Kept Informed",
     description: "Attendance confirmations and updates sent to parents",
   },
   {
-    icon: Target,
+    icon: "target",
     title: "A Record That Travels",
     description: "Every student gets a Sports Passport that stays theirs",
   },
   {
-    icon: Shield,
+    icon: "shield",
     title: "Clear Fees",
     description: "Transparent fee structure with receipts for every payment",
   },
   {
-    icon: Zap,
+    icon: "zap",
     title: "Simple Enrolment",
     description: "Join, pay and track progress from your phone",
   },
 ];
 
-const ICON_BY_KEY: Record<string, React.ElementType> = {
+/**
+ * Exported so the branding editor offers exactly the icons this component can
+ * actually render — a picker built from a second, hand-copied list is how you
+ * get an owner selecting an icon that silently falls back to Award.
+ */
+export const ICON_BY_KEY: Record<string, React.ElementType> = {
   award: Award,
   progress: TrendingUp,
   users: Users,
@@ -66,6 +71,15 @@ const ICON_BY_KEY: Record<string, React.ElementType> = {
   shield: Shield,
   zap: Zap,
 };
+
+export const HIGHLIGHT_ICON_KEYS = Object.keys(ICON_BY_KEY);
+
+/**
+ * Exported for the editor's "start from the defaults" action, so an owner
+ * edits real copy rather than facing six empty rows. Same objects the
+ * component falls back to, not a copy that can drift.
+ */
+export const DEFAULT_HIGHLIGHT_SEEDS = PLATFORM_TRUE_DEFAULTS;
 
 export default function WhyChooseUs({ academy }: { academy?: any }) {
   /** Academy-authored highlights win; otherwise the platform-true defaults. */

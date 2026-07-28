@@ -32,6 +32,13 @@ import {
   MessagesSquare
 } from "lucide-react";
 import { CommunicationCenter } from "@/components/admin/messaging/CommunicationCenter";
+import AcademyInsightsPanel from "@/components/admin/academies/AcademyInsightsPanel";
+import EcosystemProfileEditor, {
+  ecosystemProfileFromAcademy,
+  ecosystemProfileToUpdate,
+  emptyEcosystemProfile,
+  type EcosystemProfile,
+} from "@/components/academy/EcosystemProfileEditor";
 import { academyService, Academy, CreateAcademyDTO } from "@/services/academyService";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -89,10 +96,17 @@ export default function SuperAdminDashboard() {
   const [editScore, setEditScore] = useState<number>(50);
   const [editStatus, setEditStatus] = useState<'pending' | 'verified' | 'founding'>('pending');
   const [editFounding, setEditFounding] = useState<boolean>(false);
-  const [editCoachName, setEditCoachName] = useState<string>('');
-  const [editEstYear, setEditEstYear] = useState<number>(2024);
   const [editAchievements, setEditAchievements] = useState<string>('');
   const [isSavingCoords, setIsSavingCoords] = useState<boolean>(false);
+
+  // Which academy's usage panel is open, if any.
+  const [insightsFor, setInsightsFor] = useState<{ id: string; name: string } | null>(null);
+
+  // Star players / teams shown on the ecosystem map. Same editor the owner
+  // gets in their own settings, so the two cannot disagree about the shape.
+  const [editEcosystem, setEditEcosystem] = useState<EcosystemProfile>(
+    emptyEcosystemProfile(),
+  );
 
   const handleOpenCoordsModal = (academy: any) => {
     setEditingCoordsAcademy(academy);
@@ -101,9 +115,8 @@ export default function SuperAdminDashboard() {
     setEditScore(academy.ecosystemScore || 50);
     setEditStatus(academy.verificationStatus || 'pending');
     setEditFounding(academy.gwdFoundingAcademy || false);
-    setEditCoachName(academy.coachName || '');
-    setEditEstYear(academy.establishedYear || 2024);
     setEditAchievements(Array.isArray(academy.achievements) ? academy.achievements.join(', ') : '');
+    setEditEcosystem(ecosystemProfileFromAcademy(academy));
   };
 
   const handleSaveCoords = async () => {
@@ -120,9 +133,11 @@ export default function SuperAdminDashboard() {
           ecosystemScore: editScore,
           verificationStatus: editStatus,
           gwdFoundingAcademy: editFounding,
-          coachName: editCoachName,
-          establishedYear: editEstYear,
           achievements: editAchievements ? editAchievements.split(',').map(s => s.trim()).filter(Boolean) : [],
+          // coachName / establishedYear / starPlayers / registeredTeams all
+          // come from the shared editor now — the two loose fields above it
+          // used to own are inside this payload.
+          ...ecosystemProfileToUpdate(editEcosystem),
         } as any,
         { superAdmin: true }
       );
@@ -607,9 +622,25 @@ export default function SuperAdminDashboard() {
 
                         {/* Tenant Controls */}
                         <td className="px-6 py-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
+                          <div className="flex flex-wrap items-center justify-end gap-2">
+                            {/* Usage & engagement — is this owner actually
+                                using what we sold them? */}
+                            <Button
+                              size="sm"
+                              onClick={() =>
+                                setInsightsFor({
+                                  id: academy._id,
+                                  name: academy.name,
+                                })
+                              }
+                              className="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/80 h-8 text-xs font-medium rounded-xl"
+                            >
+                              <Activity className="w-3.5 h-3.5 mr-1" />
+                              Usage
+                            </Button>
+
                             {/* Pin Map Coordinates */}
-                            <Button 
+                            <Button
                               size="sm"
                               onClick={() => handleOpenCoordsModal(academy)}
                               className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/80 h-8 text-xs font-medium rounded-xl"
@@ -1183,29 +1214,6 @@ export default function SuperAdminDashboard() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-medium text-slate-700 mb-1 block">Head Coach Name</label>
-                    <Input
-                      type="text"
-                      placeholder="e.g. Lucky Rao"
-                      value={editCoachName}
-                      onChange={(e) => setEditCoachName(e.target.value)}
-                      className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl text-xs"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-slate-700 mb-1 block">Established Year</label>
-                    <Input
-                      type="number"
-                      placeholder="2024"
-                      value={editEstYear}
-                      onChange={(e) => setEditEstYear(parseInt(e.target.value) || 2024)}
-                      className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl font-mono text-xs"
-                    />
-                  </div>
-                </div>
-
                 <div>
                   <label className="text-xs font-medium text-slate-700 mb-1 block">Public Achievements (comma-separated)</label>
                   <Input
@@ -1214,6 +1222,20 @@ export default function SuperAdminDashboard() {
                     value={editAchievements}
                     onChange={(e) => setEditAchievements(e.target.value)}
                     className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl text-xs"
+                  />
+                </div>
+
+                {/*
+                  Head coach, established year, star players and teams — the
+                  same editor the academy owner uses in their own settings, so
+                  GWD and the owner are never editing two different shapes of
+                  the same map profile.
+                */}
+                <div className="rounded-xl border border-slate-200 bg-white p-4">
+                  <EcosystemProfileEditor
+                    value={editEcosystem}
+                    onChange={setEditEcosystem}
+                    disabled={isSavingCoords}
                   />
                 </div>
 
@@ -1252,6 +1274,14 @@ export default function SuperAdminDashboard() {
           </div>
         )}
       </AnimatePresence>
+
+      {insightsFor && (
+        <AcademyInsightsPanel
+          academyId={insightsFor.id}
+          academyName={insightsFor.name}
+          onClose={() => setInsightsFor(null)}
+        />
+      )}
     </div>
   );
 }

@@ -32,12 +32,37 @@ export interface IGalleryItem {
   caption?: string;
 }
 
+export interface IHighlight {
+  /** Key into WhyChooseUs's ICON_BY_KEY map, not a component. */
+  icon?: string;
+  title: string;
+  description?: string;
+}
+
+export interface ICustomStat {
+  /** Key into StatsSection's STAT_ICON_BY_KEY map. */
+  icon?: string;
+  label: string;
+  value: number;
+  /** e.g. " yrs", "+", "%". Rendered immediately after the counted value. */
+  suffix?: string;
+}
+
+export interface IVideoSection {
+  provider?: 'youtube' | 'instagram';
+  url?: string;
+  heading?: string;
+  subheading?: string;
+  layout?: 'cinematic' | 'framed' | 'split';
+}
+
 export interface IHomepageSections {
   programs: boolean;
   achievements: boolean;
   testimonials: boolean;
   gallery: boolean;
   stats: boolean;
+  video?: boolean;
   /**
    * Order the owner has dragged sections into. Each value is one of the five
    * section keys above. Missing keys are appended after the list in their
@@ -106,6 +131,11 @@ export interface IAcademy extends Document {
     backgroundStyle?: 'light' | 'soft' | 'gradient' | 'dark' | 'slate' | 'vivid' | 'midnight';
     /** Explicit page colour. Overrides the derived surface; text stays computed. */
     backgroundColor?: string;
+    /** Gradient controls — only used when backgroundStyle === 'gradient'. */
+    gradientType?: 'linear' | 'radial';
+    gradientAngle?: number;
+    /** 2–4 hex colours, evenly spaced. Empty = derived brand-into-white fade. */
+    gradientStops?: string[];
     /** Hero logo presentation. See BrandingDraft in AcademyBrandingEditor. */
     logoScale?: number;
     logoShape?: 'square' | 'rounded' | 'circle';
@@ -151,6 +181,12 @@ export interface IAcademy extends Document {
     programs: IProgram[];
     testimonials: ITestimonial[];
     gallery: IGalleryItem[];
+    /** "The Elite Difference" cards. Empty = platform-true defaults. */
+    highlights?: IHighlight[];
+    /** Owner-authored stats, shown alongside the derived ones. */
+    customStats?: ICustomStat[];
+    /** Embedded YouTube / Instagram showcase. */
+    videoSection?: IVideoSection;
     /**
      * Which homepage sections to show. All default true so an existing
      * academy's page looks the same after this field is introduced; an owner
@@ -399,6 +435,14 @@ const AcademySchema = new Schema<IAcademy>({
     },
     /** Empty means "derive the surface from the brand colour". */
     backgroundColor: { type: String, default: '' },
+    /**
+     * Gradient controls. Only consulted when backgroundStyle === 'gradient'.
+     * Empty gradientStops falls back to the original brand-into-white fade,
+     * so academies saved before these fields existed are unchanged.
+     */
+    gradientType: { type: String, enum: ['linear', 'radial'], default: 'linear' },
+    gradientAngle: { type: Number, default: 160, min: 0, max: 360 },
+    gradientStops: [{ type: String }],
     logoScale: { type: Number, default: 100, min: 40, max: 220 },
     logoShape: { type: String, enum: ['square', 'rounded', 'circle'], default: 'rounded' },
     logoAlign: { type: String, enum: ['left', 'center', 'right'], default: 'center' },
@@ -435,6 +479,40 @@ const AcademySchema = new Schema<IAcademy>({
       url: { type: String, required: true },
       caption: { type: String }
     }],
+    /**
+     * "The Elite Difference" cards (WhyChooseUs.tsx).
+     *
+     * WAS MISSING ENTIRELY. WhyChooseUs has read `theme.highlights` since it
+     * was written, but the field was never added here — and Mongoose strips
+     * unknown paths on save by default, so anything an owner authored was
+     * silently discarded and the platform-true defaults always rendered.
+     * That is why this section could not be edited.
+     */
+    highlights: [{
+      icon: { type: String, default: 'award' },
+      title: { type: String, required: true },
+      description: { type: String, default: '' },
+    }],
+    /**
+     * Owner-authored figures for the stats strip, shown ALONGSIDE the four
+     * derived ones (students, achievements, disciplines, years active).
+     * Derived stats stay computed — these are for facts the platform has no
+     * way to know, e.g. "3 grounds" or "12 district selections".
+     */
+    customStats: [{
+      icon: { type: String, default: 'trophy' },
+      label: { type: String, required: true },
+      value: { type: Number, required: true },
+      suffix: { type: String, default: '' },
+    }],
+    /** Embedded YouTube / Instagram showcase section. */
+    videoSection: {
+      provider: { type: String, enum: ['youtube', 'instagram'], default: 'youtube' },
+      url: { type: String, default: '' },
+      heading: { type: String, default: '' },
+      subheading: { type: String, default: '' },
+      layout: { type: String, enum: ['cinematic', 'framed', 'split'], default: 'cinematic' },
+    },
     density: {
       type: String,
       enum: ['compact', 'spacious'],
@@ -447,6 +525,9 @@ const AcademySchema = new Schema<IAcademy>({
       testimonials: { type: Boolean, default: true },
       gallery: { type: Boolean, default: true },
       stats: { type: Boolean, default: true },
+      // Defaults OFF: an empty video section would render a dead frame on
+      // every existing academy's page the moment this shipped.
+      video: { type: Boolean, default: false },
       order: [{ type: String }]
     }
   },

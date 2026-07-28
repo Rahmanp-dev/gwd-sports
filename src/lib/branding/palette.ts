@@ -299,6 +299,79 @@ export interface BrandInput {
    * section in <div data-section-accent> and globals.css does the swap.
    */
   accentSection?: string | null;
+  /**
+   * ── Gradient controls (only consulted when backgroundStyle === 'gradient') ──
+   *
+   * The original `gradient` treatment was a single hardcoded expression:
+   * `linear-gradient(160deg, lighten(brand, 0.9) 0%, #ffffff 60%)`. Fixed
+   * angle, fixed two stops, second stop always white — an owner who picked
+   * "Gradient" got exactly one look with no control over it.
+   */
+  gradientType?: string | null;
+  /** Degrees, 0–360. Ignored for radial. */
+  gradientAngle?: number | null;
+  /**
+   * 2–4 hex colours. When absent or under-filled, falls back to the derived
+   * brand-into-white pair, so every academy saved before this field existed
+   * renders exactly as it did before.
+   */
+  gradientStops?: (string | null | undefined)[] | null;
+}
+
+export type GradientType = 'linear' | 'radial';
+
+export function isGradientType(value: unknown): value is GradientType {
+  return value === 'linear' || value === 'radial';
+}
+
+export const MAX_GRADIENT_STOPS = 4;
+export const MIN_GRADIENT_STOPS = 2;
+
+/**
+ * Builds the CSS gradient expression and reports the stops it actually used,
+ * so the caller can derive a readable text colour from the SAME colours that
+ * end up on screen rather than from the brand colour alone.
+ *
+ * Stops are distributed evenly. Per-stop position control was deliberately
+ * left out: it is the first thing that lets an owner build a hard-edged band
+ * that looks like a rendering bug, and even spacing is what makes a
+ * multi-colour gradient read as intentional.
+ */
+export function buildGradient(input: {
+  type?: string | null;
+  angle?: number | null;
+  stops: (string | null | undefined)[];
+}): { css: string; stops: Rgb[] } {
+  const parsed = input.stops
+    .map((s) => parseHex(s))
+    .filter((c): c is Rgb => c !== null)
+    .slice(0, MAX_GRADIENT_STOPS);
+
+  if (parsed.length < MIN_GRADIENT_STOPS) {
+    return { css: '', stops: parsed };
+  }
+
+  const pieces = parsed.map((c, i) => {
+    const position = Math.round((i / (parsed.length - 1)) * 100);
+    return `${toHex(c)} ${position}%`;
+  });
+
+  // Angle is normalised rather than clamped: 370deg and -10deg are both
+  // meaningful to a person dragging a dial past the end, and both are valid
+  // CSS once wrapped.
+  const angle = ((Math.round(input.angle ?? 160) % 360) + 360) % 360;
+
+  const css = isGradientType(input.type) && input.type === 'radial'
+    ? `radial-gradient(circle at 50% 0%, ${pieces.join(', ')})`
+    : `linear-gradient(${angle}deg, ${pieces.join(', ')})`;
+
+  return { css, stops: parsed };
+}
+
+/** Mean relative luminance across a gradient's stops. */
+function averageLuminance(stops: Rgb[]): number {
+  if (stops.length === 0) return 1;
+  return stops.reduce((sum, c) => sum + relativeLuminance(c), 0) / stops.length;
 }
 
 /**
@@ -351,7 +424,12 @@ export function buildThemeVariables(input: BrandInput): Record<string, string> {
     // Accent section key (consumed by [data-section-accent] in globals.css)
     '--accent-section': input.accentSection ?? '',
 
-    ...backgroundVariables(primary, input.backgroundStyle, input.backgroundColor),
+    // Default; the gradient branches of backgroundVariables override it below.
+    // Declared here rather than repeated across all seven treatments so a new
+    // treatment cannot forget it and silently inherit gradient band behaviour.
+    '--page-bg-mode': 'solid',
+
+    ...backgroundVariables(primary, input.backgroundStyle, input.backgroundColor, input),
   };
 }
 
@@ -373,8 +451,52 @@ function backgroundVariables(
   primary: Rgb,
   requested: string | null | undefined,
   customColor?: string | null,
+  gradient?: Pick<BrandInput, 'gradientType' | 'gradientAngle' | 'gradientStops'>,
 ): Record<string, string> {
   const style = isBackgroundStyle(requested) ? requested : 'light';
+
+  /**
+   * Owner-authored multi-stop gradient. Checked before every named treatment
+   * (including the custom-colour override) because it is the most specific
+   * thing the owner can have asked for.
+   *
+   * `--page-bg-mode: gradient` is the important part: it tells globals.css to
+   * make the alternating primary bands TRANSPARENT. Without that, every band
+   * re-paints `var(--page-bg)` from its own top edge and a page-length
+   * gradient renders as a stack of identical repeating gradients — which is
+   * what "gradients don't work properly" was.
+   */
+  if (style === 'gradient' && gradient) {
+    const authored = buildGradient({
+      type: gradient.gradientType,
+      angle: gradient.gradientAngle,
+      stops: gradient.gradientStops ?? [],
+    });
+
+    if (authored.css) {
+      const lum    = averageLuminance(authored.stops);
+      const isDark = lum < 0.4;
+      // Derived from the actual stops rather than the brand colour, so a
+      // gradient the owner built out of colours unrelated to their brand
+      // still gets readable text.
+      const anchor = authored.stops[0];
+
+      return {
+        '--page-bg':      authored.css,
+        '--page-bg-mode': 'gradient',
+        '--page-surface': isDark ? toHex(lighten(anchor, 0.08)) : '#ffffff',
+        '--page-card':    isDark ? toHex(lighten(anchor, 0.12)) : '#ffffff',
+        '--page-fg':      isDark ? '#f8fafc' : toHex(INK),
+        '--page-muted':   isDark ? '#94a3b8' : '#64748b',
+        '--page-border':  isDark ? toHex(lighten(anchor, 0.2)) : '#e2e8f0',
+        // Alt bands must stay OPAQUE — they are what makes the alternation
+        // visible at all. Semi-transparent ink over the gradient reads as a
+        // tinted band rather than a second flat colour fighting the fade.
+        '--page-alt':     isDark ? 'rgb(255 255 255 / 0.05)' : 'rgb(15 23 42 / 0.04)',
+        '--page-scheme':  isDark ? 'dark' : 'light',
+      };
+    }
+  }
 
   // Custom colour wins over the named treatment.
   const custom = parseHex(customColor);
@@ -385,16 +507,22 @@ function backgroundVariables(
     const altSurface    = isDark ? lighten(custom, 0.06) : darken(custom, 0.035);
 
     // When gradient style AND custom colour: gradient from custom into a
-    // shifted version of itself.
-    const bgValue =
+    // shifted version of itself, honouring the owner's angle/type if set.
+    const derived =
       style === 'gradient'
-        ? `linear-gradient(160deg, ${toHex(custom)} 0%, ${toHex(
-            isDark ? darken(custom, 0.35) : lighten(custom, 0.55),
-          )} 100%)`
-        : toHex(custom);
+        ? buildGradient({
+            type: gradient?.gradientType,
+            angle: gradient?.gradientAngle,
+            stops: [
+              toHex(custom),
+              toHex(isDark ? darken(custom, 0.35) : lighten(custom, 0.55)),
+            ],
+          }).css
+        : '';
 
     return {
-      '--page-bg':      bgValue,
+      '--page-bg':      derived || toHex(custom),
+      '--page-bg-mode': derived ? 'gradient' : 'solid',
       '--page-surface': toHex(isDark ? lighten(custom, 0.08) : WHITE),
       '--page-card':    toHex(cardSurface),
       '--page-fg':      toHex(onCustom),
@@ -463,15 +591,24 @@ function backgroundVariables(
   }
 
   if (style === 'gradient') {
+    // No authored stops: the original brand-into-white fade, unchanged, so
+    // an academy saved before gradient controls existed looks identical.
+    // Angle/type are still honoured if the owner set them.
     const top = lighten(primary, 0.9);
+    const fallback = buildGradient({
+      type: gradient?.gradientType,
+      angle: gradient?.gradientAngle,
+      stops: [toHex(top), '#ffffff'],
+    });
     return {
-      '--page-bg':      `linear-gradient(160deg, ${toHex(top)} 0%, #ffffff 60%)`,
+      '--page-bg':      fallback.css,
+      '--page-bg-mode': 'gradient',
       '--page-surface': '#ffffff',
       '--page-card':    '#ffffff',
       '--page-fg':      toHex(INK),
       '--page-muted':   '#64748b',
       '--page-border':  '#e2e8f0',
-      '--page-alt':     '#f8fafc',
+      '--page-alt':     'rgb(15 23 42 / 0.04)',
       '--page-scheme':  'light',
     };
   }

@@ -1,7 +1,20 @@
 "use client";
 import React from "react";
 import { motion, useInView } from "framer-motion";
-import { Trophy, Users, Target, Award } from "lucide-react";
+import {
+  Trophy,
+  Users,
+  Target,
+  Award,
+  Activity,
+  CalendarDays,
+  Flag,
+  Heart,
+  MapPin,
+  Medal,
+  Star,
+  Zap,
+} from "lucide-react";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -55,6 +68,56 @@ const ACCENT_TREATMENT = {
   bg: "bg-[var(--accent-soft)]",
   text: "text-[color:var(--accent)]",
 };
+
+/**
+ * Icons an owner can pick for a custom stat. Deliberately a fixed set: a free
+ * icon field would mean either an icon-name typo rendering nothing, or
+ * shipping the whole lucide bundle to every public page.
+ */
+export const STAT_ICON_BY_KEY: Record<string, React.ElementType> = {
+  trophy: Trophy,
+  users: Users,
+  target: Target,
+  award: Award,
+  medal: Medal,
+  star: Star,
+  flag: Flag,
+  activity: Activity,
+  calendar: CalendarDays,
+  location: MapPin,
+  heart: Heart,
+  zap: Zap,
+};
+
+export const STAT_ICON_KEYS = Object.keys(STAT_ICON_BY_KEY);
+
+/**
+ * Owner-authored figures, appended after the derived ones.
+ *
+ * The section's rule — every number must be true of this academy — is
+ * unchanged. What changes is WHO asserts it: these are the owner's own
+ * claims about their own academy, which they are responsible for, rather
+ * than figures this codebase invents on their behalf. A blank or zero value
+ * is dropped rather than rendered as "0", because "0 Championships" is not a
+ * stat anyone wants on their homepage.
+ */
+function authoredStats(academy?: any): DerivedStat[] {
+  const raw = Array.isArray(academy?.theme?.customStats)
+    ? academy.theme.customStats
+    : [];
+
+  return raw
+    .filter((s: any) => s?.label && Number.isFinite(Number(s.value)) && Number(s.value) > 0)
+    .map((s: any, index: number) => ({
+      icon: STAT_ICON_BY_KEY[s.icon] ?? Trophy,
+      value: Number(s.value),
+      suffix: s.suffix ?? "",
+      label: String(s.label),
+      // Continues the brand/accent alternation from wherever the derived
+      // stats left off, so a mixed row still reads as one designed set.
+      ...(index % 2 === 0 ? ACCENT_TREATMENT : BRAND_TREATMENT),
+    }));
+}
 
 function deriveStats(academy?: any): DerivedStat[] {
   const out: DerivedStat[] = [];
@@ -152,7 +215,15 @@ function AnimatedCounter({ value, suffix }: AnimatedCounterProps) {
 }
 
 export default function StatsSection({ academy }: { academy?: any }) {
-  const stats = deriveStats(academy);
+  // Derived first (the platform's own true figures), then the owner's.
+  // Treatment is re-applied across the COMBINED list so the brand/accent
+  // alternation stays even no matter how many of each kind exist.
+  const stats = [...deriveStats(academy), ...authoredStats(academy)].map(
+    (stat, index) => ({
+      ...stat,
+      ...(index % 2 === 0 ? BRAND_TREATMENT : ACCENT_TREATMENT),
+    }),
+  );
 
   // Owner switched it off, or this academy has nothing true to put here yet.
   if (academy?.theme?.sections?.stats === false || stats.length === 0) return null;
@@ -194,7 +265,10 @@ export default function StatsSection({ academy }: { academy?: any }) {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {stats.map((stat, index) => (
             <motion.div
-              key={stat.label}
+              /* Index-suffixed: an owner can name a custom stat the same as a
+                 derived one ("Achievements"), and a duplicate React key drops
+                 the second card silently. */
+              key={`${stat.label}-${index}`}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

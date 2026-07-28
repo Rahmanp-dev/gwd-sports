@@ -45,6 +45,12 @@ export function AcademyTheme({
       theme?.backgroundColor,
       theme?.density,
       theme?.accentSection,
+      theme?.gradientType,
+      theme?.gradientAngle,
+      // Array identity is unstable across renders, so the joined value is what
+      // actually tells us the stops changed. Without this the live editor's
+      // colour pickers moved but the preview did not repaint.
+      (theme?.gradientStops ?? []).join(','),
     ],
   );
 
@@ -60,6 +66,9 @@ export function AcademyTheme({
       className={className ?? "contents"}
       data-brand-style={theme?.style ?? "classic"}
       data-page-scheme={variables["--page-scheme"] ?? "light"}
+      /* Drives the gradient band rule in globals.css — see the
+         [data-page-bg="gradient"] block there for why it is needed. */
+      data-page-bg={variables["--page-bg-mode"] ?? "solid"}
     >
       {children}
     </Tag>

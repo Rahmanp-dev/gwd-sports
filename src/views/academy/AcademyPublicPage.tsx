@@ -8,6 +8,7 @@ import EventsTimeline from "@/components/landing/EventsTimeline";
 import StatsSection from "@/components/landing/StatsSection";
 import GallerySection from "@/components/landing/GallerySection";
 import WhyChooseUs from "@/components/landing/WhyChooseUs";
+import VideoSection from "@/components/landing/VideoSection";
 import Footer from "@/components/landing/Footer";
 import AcademyTheme from "@/components/branding/AcademyTheme";
 import { DEFAULT_SECTION_ORDER } from "@/components/branding/AcademyBrandingEditor";
@@ -63,6 +64,7 @@ const SECTION_MAP: Record<string, React.ComponentType<{ academy: any }>> = {
   achievements: WhyChooseUs,
   gallery: GallerySection,
   testimonials: TestimonialsCarousel,
+  video: VideoSection,
 };
 
 export default function AcademyPublicPage({ academy }: { academy: any }) {

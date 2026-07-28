@@ -36,11 +36,11 @@ import type { Academy, AcademyFormData } from "@/services/academyService";
 import { SPORTS_LIST } from "@/utils/constants";
 import { X, Plus } from "lucide-react";
 import {
-  AcademyBrandingEditor,
   defaultBrandingDraft,
   draftFromAcademy,
   type BrandingDraft,
 } from "@/components/branding/AcademyBrandingEditor";
+import AcademyCanvasEditor from "@/components/branding/AcademyCanvasEditor";
 
 // Define form validation schema
 const academyFormSchema = z.object({
@@ -672,9 +672,10 @@ export const AcademyForm: React.FC<AcademyFormProps> = ({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <AcademyBrandingEditor
+            <AcademyCanvasEditor
               value={branding}
               onChange={setBranding}
+              academy={academy}
               academyName={form.watch("name") || "Your Academy"}
               sports={form.watch("sports") ?? []}
               disabled={isLoading}

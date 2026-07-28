@@ -37,6 +37,7 @@ import {
   DEFAULT_ACCENT,
   DEFAULT_PRIMARY,
   FONT_PRESETS,
+  MAX_GRADIENT_STOPS,
   assessContrast,
   buildThemeVariables,
   isBackgroundStyle,
@@ -49,7 +50,9 @@ import {
 } from "@/lib/branding/palette";
 import type {
   Academy,
+  AcademyCustomStat,
   AcademyGalleryItem,
+  AcademyHighlight,
   AcademyHomepageSections,
   AcademyProgram,
   AcademyTestimonial,
@@ -61,6 +64,12 @@ import {
   heroLogoStyle,
   heroScrimStyle,
 } from "@/lib/branding/heroStyle";
+import {
+  DEFAULT_HIGHLIGHT_SEEDS,
+  HIGHLIGHT_ICON_KEYS,
+} from "@/components/landing/WhyChooseUs";
+import { STAT_ICON_KEYS } from "@/components/landing/StatsSection";
+import { VIDEO_LAYOUTS, buildEmbedUrl } from "@/components/landing/videoEmbed";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -99,6 +108,10 @@ export interface BrandingDraft {
   fontPreset: FontPreset;
   backgroundStyle: BackgroundStyle;
   backgroundColor: string;
+  gradientType: "linear" | "radial";
+  gradientAngle: number;
+  /** 2–4 hex colours. Empty array = derived brand-into-white fade. */
+  gradientStops: string[];
   logoScale: number;
   logoShape: "square" | "rounded" | "circle";
   logoAlign: "left" | "center" | "right";
@@ -114,6 +127,15 @@ export interface BrandingDraft {
   programs: AcademyProgram[];
   testimonials: AcademyTestimonial[];
   gallery: AcademyGalleryItem[];
+  highlights: AcademyHighlight[];
+  customStats: AcademyCustomStat[];
+  videoSection: {
+    provider: "youtube" | "instagram";
+    url: string;
+    heading: string;
+    subheading: string;
+    layout: "cinematic" | "framed" | "split";
+  };
   achievements: string[];
   /** Vertical rhythm preset: compact tightens sections, spacious opens them. */
   density: "compact" | "spacious";
@@ -139,7 +161,9 @@ export const DEFAULT_SECTIONS: AcademyHomepageSections = {
   testimonials: true,
   gallery: true,
   stats: true,
-  order: ['programs', 'stats', 'achievements', 'gallery', 'testimonials'],
+  // Off until a video URL is actually set — see VideoSection.tsx.
+  video: false,
+  order: ['programs', 'stats', 'achievements', 'video', 'gallery', 'testimonials'],
 };
 
 /** The canonical section ordering used as a fallback when `order` is absent. */
@@ -147,6 +171,7 @@ export const DEFAULT_SECTION_ORDER = [
   'programs',
   'stats',
   'achievements',
+  'video',
   'gallery',
   'testimonials',
 ] as const;
@@ -156,7 +181,8 @@ export type SectionKey = (typeof DEFAULT_SECTION_ORDER)[number];
 export const SECTION_LABELS: Record<SectionKey, string> = {
   programs: 'Disciplines',
   stats: 'Stats strip',
-  achievements: 'Achievements',
+  achievements: 'The Elite Difference',
+  video: 'Video',
   gallery: 'Photo gallery',
   testimonials: 'Testimonials',
 };
@@ -169,6 +195,9 @@ export function defaultBrandingDraft(): BrandingDraft {
     fontPreset: "sans",
     backgroundStyle: "light",
     backgroundColor: "",
+    gradientType: "linear",
+    gradientAngle: 160,
+    gradientStops: [],
     logoScale: 100,
     logoShape: "rounded",
     logoAlign: "center",
@@ -184,6 +213,15 @@ export function defaultBrandingDraft(): BrandingDraft {
     programs: [],
     testimonials: [],
     gallery: [],
+    highlights: [],
+    customStats: [],
+    videoSection: {
+      provider: "youtube",
+      url: "",
+      heading: "",
+      subheading: "",
+      layout: "cinematic",
+    },
     achievements: [],
     density: "spacious",
     accentSection: "",
@@ -225,6 +263,9 @@ export function draftFromAcademy(academy?: Partial<Academy> | null): BrandingDra
       ? theme.backgroundStyle
       : base.backgroundStyle,
     backgroundColor: theme.backgroundColor ?? "",
+    gradientType: theme.gradientType === "radial" ? "radial" : "linear",
+    gradientAngle: typeof theme.gradientAngle === "number" ? theme.gradientAngle : 160,
+    gradientStops: theme.gradientStops ?? [],
     logoScale: theme.logoScale ?? 100,
     logoShape: theme.logoShape ?? "rounded",
     logoAlign: theme.logoAlign ?? "center",
@@ -240,6 +281,18 @@ export function draftFromAcademy(academy?: Partial<Academy> | null): BrandingDra
     programs: theme.programs ?? [],
     testimonials: theme.testimonials ?? [],
     gallery: theme.gallery ?? [],
+    highlights: theme.highlights ?? [],
+    customStats: theme.customStats ?? [],
+    videoSection: {
+      provider: theme.videoSection?.provider === "instagram" ? "instagram" : "youtube",
+      url: theme.videoSection?.url ?? "",
+      heading: theme.videoSection?.heading ?? "",
+      subheading: theme.videoSection?.subheading ?? "",
+      layout:
+        theme.videoSection?.layout === "framed" || theme.videoSection?.layout === "split"
+          ? theme.videoSection.layout
+          : "cinematic",
+    },
     achievements: academy?.achievements ?? [],
     density: (theme.density === 'compact' || theme.density === 'spacious') ? theme.density : 'spacious',
     accentSection: theme.accentSection ?? "",
@@ -278,6 +331,9 @@ export function draftToThemeUpdate(draft: BrandingDraft): Record<string, unknown
     "theme.fontPreset": draft.fontPreset,
     "theme.backgroundStyle": draft.backgroundStyle,
     "theme.backgroundColor": draft.backgroundColor,
+    "theme.gradientType": draft.gradientType,
+    "theme.gradientAngle": draft.gradientAngle,
+    "theme.gradientStops": draft.gradientStops,
     "theme.logoScale": draft.logoScale,
     "theme.logoShape": draft.logoShape,
     "theme.logoAlign": draft.logoAlign,
@@ -293,6 +349,9 @@ export function draftToThemeUpdate(draft: BrandingDraft): Record<string, unknown
     "theme.programs": draft.programs,
     "theme.testimonials": draft.testimonials,
     "theme.gallery": draft.gallery,
+    "theme.highlights": draft.highlights,
+    "theme.customStats": draft.customStats,
+    "theme.videoSection": draft.videoSection,
     "theme.density": draft.density,
     "theme.accentSection": draft.accentSection,
     "theme.sections": draft.sections,
@@ -349,6 +408,38 @@ const SectionLabel: React.FC<{ icon: React.ReactNode; children: React.ReactNode 
   </p>
 );
 
+/**
+ * Panel groups. Every control card carries `data-panel="<key>"`; the canvas
+ * editor passes `only` to show just the cards for the section the owner
+ * clicked, instead of all seventeen at once.
+ */
+export type BrandingPanel =
+  | "brand"
+  | "hero"
+  | "layout"
+  | "footer"
+  | "programs"
+  | "achievements"
+  | "gallery"
+  | "testimonials"
+  | "highlights"
+  | "stats"
+  | "video";
+
+export const BRANDING_PANEL_LABELS: Record<BrandingPanel, string> = {
+  brand: "Brand & colours",
+  hero: "Hero",
+  layout: "Layout & order",
+  footer: "Footer",
+  programs: "Disciplines",
+  achievements: "Achievements",
+  gallery: "Photo gallery",
+  testimonials: "Testimonials",
+  highlights: "The Elite Difference",
+  stats: "Numbers",
+  video: "Video",
+};
+
 export interface AcademyBrandingEditorProps {
   value: BrandingDraft;
   onChange: (next: BrandingDraft) => void;
@@ -357,6 +448,17 @@ export interface AcademyBrandingEditorProps {
   /** Used by "Use my sports" to seed the disciplines list from real data. */
   sports?: string[];
   disabled?: boolean;
+  /**
+   * Restrict to these panel groups. Undefined = every card, which is the
+   * standalone behaviour this component has always had.
+   */
+  only?: BrandingPanel[];
+  /**
+   * Hide the built-in miniature preview. The canvas editor renders the REAL
+   * landing components at full size, so the small mock preview beside them
+   * would be a second, worse answer to the same question.
+   */
+  hidePreview?: boolean;
 }
 
 export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
@@ -365,6 +467,8 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
   academyName = "Your Academy",
   sports = [],
   disabled = false,
+  only,
+  hidePreview = false,
 }) => {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
@@ -478,6 +582,13 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
   const primaryRgb = parseHex(value.primaryColor);
   const contrast = primaryRgb ? assessContrast(primaryRgb) : null;
 
+  // Same parser the public section uses, so "link recognised" in the editor
+  // means the section will actually render — not that the string looks URL-ish.
+  const videoEmbedUrl = buildEmbedUrl(
+    value.videoSection.provider,
+    value.videoSection.url,
+  );
+
   const previewPrograms = value.programs.length
     ? value.programs
     : sports.slice(0, 3).map((s) => ({
@@ -487,7 +598,32 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
       }));
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,380px)_1fr] xl:grid-cols-[minmax(0,760px)_1fr]">
+    <div
+      className={
+        hidePreview
+          ? "block"
+          : "grid gap-5 lg:grid-cols-[minmax(0,380px)_1fr] xl:grid-cols-[minmax(0,760px)_1fr]"
+      }
+      /*
+       * Panel filtering is done in CSS rather than by conditionally rendering
+       * each card. Seventeen `only?.includes(...)` guards would be seventeen
+       * chances to mistype a key and silently lose a control; one rule that
+       * hides every card NOT in the active group cannot lose one. The cards
+       * stay mounted, so switching sections never discards half-typed input.
+       */
+      data-panel-filter={only?.join(" ") ?? ""}
+    >
+      {only && (
+        <style>{`
+          [data-panel-filter="${only.join(" ")}"] [data-panel] { display: none; }
+          ${only
+            .map(
+              (p) =>
+                `[data-panel-filter="${only.join(" ")}"] [data-panel="${p}"] { display: block; }`,
+            )
+            .join("\n")}
+        `}</style>
+      )}
       {/*
        * ══ Controls ════════════════════════════════════════════════════
        * Was a single space-y-4 column of 14 cards — a scroll-forever
@@ -498,9 +634,9 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
        * break-inside-avoid on every card (below) stops one from being
        * split across the column boundary.
        */}
-      <div className="columns-1 xl:columns-2 gap-4">
+      <div className={hidePreview ? "columns-1 gap-4" : "columns-1 xl:columns-2 gap-4"}>
         {/* Logo + tagline */}
-        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
+        <Card data-panel="brand" className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-4 p-5">
             <SectionLabel icon={<ImageIcon className="h-3 w-3" />}>
               Logo &amp; tagline
@@ -698,7 +834,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Colour */}
-        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
+        <Card data-panel="brand" className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-4 p-5">
             <SectionLabel icon={<Palette className="h-3 w-3" />}>Colour</SectionLabel>
 
@@ -796,7 +932,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Feel */}
-        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
+        <Card data-panel="brand" className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<Sparkles className="h-3 w-3" />}>Feel</SectionLabel>
             <div className="space-y-2">
@@ -835,7 +971,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Background */}
-        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
+        <Card data-panel="brand" className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<Palette className="h-3 w-3" />}>
               Page background
@@ -890,6 +1026,156 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
               })}
             </div>
 
+            {/* Gradient builder — only meaningful for the gradient treatment. */}
+            {value.backgroundStyle === "gradient" && (
+              <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/50 p-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                    Gradient
+                  </label>
+                  {value.gradientStops.length > 0 && (
+                    <button
+                      type="button"
+                      disabled={disabled}
+                      onClick={() => patch({ gradientStops: [] })}
+                      className="text-[10px] font-semibold text-slate-400 hover:text-slate-600"
+                    >
+                      Reset to brand fade
+                    </button>
+                  )}
+                </div>
+
+                {/* Live gradient bar — the actual CSS that will ship. */}
+                <div
+                  className="h-12 w-full rounded-lg border border-slate-200"
+                  style={{
+                    background: buildThemeVariables(value)["--page-bg"],
+                  }}
+                />
+
+                <div className="grid grid-cols-2 gap-2">
+                  {(["linear", "radial"] as const).map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      disabled={disabled}
+                      onClick={() => patch({ gradientType: type })}
+                      className={`rounded-lg border py-2 text-xs font-semibold capitalize transition-all ${
+                        value.gradientType === type
+                          ? "border-slate-900 bg-slate-900 text-white"
+                          : "border-slate-200 text-slate-700 hover:border-slate-300"
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+
+                {value.gradientType === "linear" && (
+                  <div>
+                    <div className="mb-1 flex items-center justify-between">
+                      <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                        Angle
+                      </label>
+                      <span className="text-[10px] font-semibold text-slate-500">
+                        {value.gradientAngle}°
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min={0}
+                      max={360}
+                      step={5}
+                      disabled={disabled}
+                      value={value.gradientAngle}
+                      onChange={(e) => patch({ gradientAngle: Number(e.target.value) })}
+                      className="w-full accent-slate-900"
+                    />
+                  </div>
+                )}
+
+                {/* Colour stops. Evenly spaced — see buildGradient() for why
+                    per-stop positions were deliberately left out. */}
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                    Colours ({value.gradientStops.length || "brand default"})
+                  </label>
+                  {value.gradientStops.map((stop, index) => (
+                    <div key={index} className="flex items-center gap-1.5">
+                      <input
+                        type="color"
+                        disabled={disabled}
+                        value={HEX.test(stop) ? stop : "#ffffff"}
+                        onChange={(e) => {
+                          const next = [...value.gradientStops];
+                          next[index] = e.target.value;
+                          patch({ gradientStops: next });
+                        }}
+                        className="h-8 w-8 flex-shrink-0 cursor-pointer rounded border border-slate-200 bg-white p-0.5"
+                      />
+                      <Input
+                        value={stop}
+                        disabled={disabled}
+                        onChange={(e) => {
+                          const next = [...value.gradientStops];
+                          next[index] = e.target.value;
+                          patch({ gradientStops: next });
+                        }}
+                        className="h-8 font-mono text-xs"
+                      />
+                      <button
+                        type="button"
+                        disabled={disabled}
+                        onClick={() =>
+                          patch({
+                            gradientStops: value.gradientStops.filter((_, i) => i !== index),
+                          })
+                        }
+                        className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded border border-slate-200 text-slate-400 hover:border-red-200 hover:text-red-500"
+                        aria-label={`Remove colour ${index + 1}`}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ))}
+
+                  {value.gradientStops.length < MAX_GRADIENT_STOPS && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={disabled}
+                      className="w-full"
+                      onClick={() =>
+                        patch({
+                          gradientStops: [
+                            ...value.gradientStops,
+                            // Seeds from the brand palette so the first click
+                            // produces something usable, not two black stops.
+                            value.gradientStops.length === 0
+                              ? value.primaryColor
+                              : value.gradientStops.length === 1
+                                ? value.accentColor
+                                : "#ffffff",
+                          ],
+                        })
+                      }
+                    >
+                      <Plus className="mr-1.5 h-3.5 w-3.5" />
+                      Add colour
+                    </Button>
+                  )}
+
+                  {value.gradientStops.length === 1 && (
+                    <p className="text-[10px] leading-relaxed text-amber-600">
+                      A gradient needs at least two colours — one on its own
+                      falls back to the brand fade.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Exact colour — optional override of the derived surface. */}
             <div className="border-t border-slate-100 pt-4">
               <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
@@ -932,7 +1218,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Hero media treatment */}
-        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
+        <Card data-panel="hero" className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-4 p-5">
             <SectionLabel icon={<Sparkles className="h-3 w-3" />}>
               Hero photo &amp; video
@@ -1170,7 +1456,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Typeface */}
-        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
+        <Card data-panel="brand" className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<Type className="h-3 w-3" />}>Typeface</SectionLabel>
             <div className="space-y-2">
@@ -1217,7 +1503,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
          * These are read by every section via CSS variables, so changing this
          * single setting rescales the whole page at once.
          */}
-        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
+        <Card data-panel="layout" className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<LayoutDashboard className="h-3 w-3" />}>Layout density</SectionLabel>
             <p className="text-[11px] leading-relaxed text-slate-400">
@@ -1282,7 +1568,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
          * A single contrasting section is how designers create a focal point;
          * every section in accent would be noise. Selecting "None" clears it.
          */}
-        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
+        <Card data-panel="layout" className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<Zap className="h-3 w-3" />}>Accent highlight</SectionLabel>
             <p className="text-[11px] leading-relaxed text-slate-400">
@@ -1346,7 +1632,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
          * consumed by AcademyPublicPage, which renders sections in that order
          * rather than the hardcoded JSX sequence. Hidden sections stay hidden.
          */}
-        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
+        <Card data-panel="layout" className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<GripVertical className="h-3 w-3" />}>
               Section order
@@ -1405,7 +1691,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* ── Footer & Contact Details ──────────────────────────────── */}
-        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
+        <Card data-panel="footer" className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-4 p-5">
             <SectionLabel icon={<Share2 className="h-3 w-3" />}>
               Footer &amp; Contact info
@@ -1555,7 +1841,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Disciplines */}
-        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
+        <Card data-panel="programs" className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <div className="flex items-center justify-between">
               <SectionLabel icon={<Trophy className="h-3 w-3" />}>Disciplines</SectionLabel>
@@ -1650,7 +1936,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Achievements */}
-        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
+        <Card data-panel="achievements" className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<Trophy className="h-3 w-3" />}>Achievements</SectionLabel>
             <div className="space-y-2">
@@ -1699,7 +1985,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Gallery */}
-        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
+        <Card data-panel="gallery" className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<ImageIcon className="h-3 w-3" />}>Photo gallery</SectionLabel>
             <p className="text-[11px] leading-relaxed text-slate-400">
@@ -1778,7 +2064,7 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
         </Card>
 
         {/* Testimonials */}
-        <Card className="mb-4 break-inside-avoid border-0 shadow-sm">
+        <Card data-panel="testimonials" className="mb-4 break-inside-avoid border-0 shadow-sm">
           <CardContent className="space-y-3 p-5">
             <SectionLabel icon={<Quote className="h-3 w-3" />}>Testimonials</SectionLabel>
             <div className="space-y-2">
@@ -1854,10 +2140,347 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
             </Button>
           </CardContent>
         </Card>
+
+        {/* ── The Elite Difference ─────────────────────────────────────── */}
+        <Card data-panel="highlights" className="mb-4 break-inside-avoid border-0 shadow-sm">
+          <CardContent className="space-y-3 p-5">
+            <div className="flex items-center justify-between">
+              <SectionLabel icon={<Sparkles className="h-3 w-3" />}>
+                The Elite Difference
+              </SectionLabel>
+              {value.highlights.length === 0 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={disabled}
+                  onClick={() =>
+                    patch({ highlights: DEFAULT_HIGHLIGHT_SEEDS.map((h) => ({ ...h })) })
+                  }
+                >
+                  Start from defaults
+                </Button>
+              )}
+            </div>
+            <p className="text-[11px] leading-relaxed text-slate-400">
+              The six cards under &ldquo;The Elite Difference&rdquo;. Leave empty
+              to keep the platform&rsquo;s wording, which is true of any academy
+              here. Anything you write replaces all of it — and becomes your
+              claim to stand behind.
+            </p>
+
+            <div className="space-y-2">
+              {value.highlights.map((highlight, index) => (
+                <div
+                  key={index}
+                  className="space-y-2 rounded-xl border border-slate-200 bg-slate-50/50 p-3"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <select
+                      disabled={disabled}
+                      value={highlight.icon ?? "award"}
+                      onChange={(e) => {
+                        const next = [...value.highlights];
+                        next[index] = { ...highlight, icon: e.target.value };
+                        patch({ highlights: next });
+                      }}
+                      className="h-9 rounded-lg border border-slate-200 bg-white px-2 text-xs capitalize"
+                      aria-label={`Icon for card ${index + 1}`}
+                    >
+                      {HIGHLIGHT_ICON_KEYS.map((key) => (
+                        <option key={key} value={key}>
+                          {key}
+                        </option>
+                      ))}
+                    </select>
+                    <Input
+                      value={highlight.title}
+                      disabled={disabled}
+                      placeholder="Title"
+                      onChange={(e) => {
+                        const next = [...value.highlights];
+                        next[index] = { ...highlight, title: e.target.value };
+                        patch({ highlights: next });
+                      }}
+                      className="h-9"
+                    />
+                    <button
+                      type="button"
+                      disabled={disabled}
+                      onClick={() =>
+                        patch({
+                          highlights: value.highlights.filter((_, i) => i !== index),
+                        })
+                      }
+                      className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:border-red-200 hover:text-red-500"
+                      aria-label={`Remove card ${index + 1}`}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  <Textarea
+                    value={highlight.description ?? ""}
+                    disabled={disabled}
+                    placeholder="One line explaining it"
+                    rows={2}
+                    onChange={(e) => {
+                      const next = [...value.highlights];
+                      next[index] = { ...highlight, description: e.target.value };
+                      patch({ highlights: next });
+                    }}
+                    className="text-xs"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={disabled}
+              className="w-full"
+              onClick={() =>
+                patch({
+                  highlights: [
+                    ...value.highlights,
+                    { icon: "award", title: "", description: "" },
+                  ],
+                })
+              }
+            >
+              <Plus className="mr-1.5 h-3.5 w-3.5" /> Add card
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* ── Custom stats ─────────────────────────────────────────────── */}
+        <Card data-panel="stats" className="mb-4 break-inside-avoid border-0 shadow-sm">
+          <CardContent className="space-y-3 p-5">
+            <SectionLabel icon={<Trophy className="h-3 w-3" />}>
+              Your own numbers
+            </SectionLabel>
+            <p className="text-[11px] leading-relaxed text-slate-400">
+              Shown next to the figures GWD already counts for you (students,
+              achievements, disciplines, years active). Use these for things we
+              cannot see — grounds, district selections, trophies. Every number
+              here is your claim, so keep them true.
+            </p>
+
+            <div className="space-y-2">
+              {value.customStats.map((stat, index) => (
+                <div
+                  key={index}
+                  className="space-y-2 rounded-xl border border-slate-200 bg-slate-50/50 p-3"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <select
+                      disabled={disabled}
+                      value={stat.icon ?? "trophy"}
+                      onChange={(e) => {
+                        const next = [...value.customStats];
+                        next[index] = { ...stat, icon: e.target.value };
+                        patch({ customStats: next });
+                      }}
+                      className="h-9 rounded-lg border border-slate-200 bg-white px-2 text-xs capitalize"
+                      aria-label={`Icon for stat ${index + 1}`}
+                    >
+                      {STAT_ICON_KEYS.map((key) => (
+                        <option key={key} value={key}>
+                          {key}
+                        </option>
+                      ))}
+                    </select>
+                    <Input
+                      value={stat.label}
+                      disabled={disabled}
+                      placeholder="Label, e.g. Trophies"
+                      onChange={(e) => {
+                        const next = [...value.customStats];
+                        next[index] = { ...stat, label: e.target.value };
+                        patch({ customStats: next });
+                      }}
+                      className="h-9"
+                    />
+                    <button
+                      type="button"
+                      disabled={disabled}
+                      onClick={() =>
+                        patch({
+                          customStats: value.customStats.filter((_, i) => i !== index),
+                        })
+                      }
+                      className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:border-red-200 hover:text-red-500"
+                      aria-label={`Remove stat ${index + 1}`}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <Input
+                      type="number"
+                      min={0}
+                      value={String(stat.value ?? "")}
+                      disabled={disabled}
+                      placeholder="Number"
+                      onChange={(e) => {
+                        const next = [...value.customStats];
+                        next[index] = { ...stat, value: Number(e.target.value) };
+                        patch({ customStats: next });
+                      }}
+                      className="h-9"
+                    />
+                    <Input
+                      value={stat.suffix ?? ""}
+                      disabled={disabled}
+                      placeholder="Suffix, e.g. +"
+                      onChange={(e) => {
+                        const next = [...value.customStats];
+                        next[index] = { ...stat, suffix: e.target.value };
+                        patch({ customStats: next });
+                      }}
+                      className="h-9"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={disabled}
+              className="w-full"
+              onClick={() =>
+                patch({
+                  customStats: [
+                    ...value.customStats,
+                    { icon: "trophy", label: "", value: 0, suffix: "" },
+                  ],
+                })
+              }
+            >
+              <Plus className="mr-1.5 h-3.5 w-3.5" /> Add number
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* ── Video section ────────────────────────────────────────────── */}
+        <Card data-panel="video" className="mb-4 break-inside-avoid border-0 shadow-sm">
+          <CardContent className="space-y-3 p-5">
+            <SectionLabel icon={<Video className="h-3 w-3" />}>
+              Video showcase
+            </SectionLabel>
+            <p className="text-[11px] leading-relaxed text-slate-400">
+              Paste a YouTube or Instagram link — whatever is in your address
+              bar. The section stays hidden until the link works.
+            </p>
+
+            <div className="grid grid-cols-2 gap-2">
+              {(["youtube", "instagram"] as const).map((provider) => (
+                <button
+                  key={provider}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() =>
+                    patch({ videoSection: { ...value.videoSection, provider } })
+                  }
+                  className={`rounded-lg border py-2 text-xs font-semibold capitalize transition-all ${
+                    value.videoSection.provider === provider
+                      ? "border-slate-900 bg-slate-900 text-white"
+                      : "border-slate-200 text-slate-700 hover:border-slate-300"
+                  }`}
+                >
+                  {provider}
+                </button>
+              ))}
+            </div>
+
+            <Input
+              value={value.videoSection.url}
+              disabled={disabled}
+              placeholder={
+                value.videoSection.provider === "youtube"
+                  ? "https://youtube.com/watch?v=…"
+                  : "https://instagram.com/reel/…"
+              }
+              onChange={(e) =>
+                patch({ videoSection: { ...value.videoSection, url: e.target.value } })
+              }
+            />
+            {value.videoSection.url && !videoEmbedUrl && (
+              <p className="text-[11px] leading-relaxed text-amber-600">
+                That link doesn&rsquo;t look like a {value.videoSection.provider}{" "}
+                video yet — the section stays hidden until it does.
+              </p>
+            )}
+            {videoEmbedUrl && (
+              <p className="text-[11px] font-medium text-emerald-600">
+                Link recognised — the section will show on your page.
+              </p>
+            )}
+
+            <Input
+              value={value.videoSection.heading}
+              disabled={disabled}
+              placeholder="Heading (default: Watch Us Train)"
+              onChange={(e) =>
+                patch({
+                  videoSection: { ...value.videoSection, heading: e.target.value },
+                })
+              }
+            />
+            <Textarea
+              value={value.videoSection.subheading}
+              disabled={disabled}
+              rows={2}
+              placeholder="Optional line under the heading"
+              onChange={(e) =>
+                patch({
+                  videoSection: { ...value.videoSection, subheading: e.target.value },
+                })
+              }
+              className="text-xs"
+            />
+
+            <div>
+              <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                Layout
+              </label>
+              <div className="space-y-1.5">
+                {(Object.keys(VIDEO_LAYOUTS) as (keyof typeof VIDEO_LAYOUTS)[]).map(
+                  (key) => (
+                    <button
+                      key={key}
+                      type="button"
+                      disabled={disabled}
+                      onClick={() =>
+                        patch({ videoSection: { ...value.videoSection, layout: key } })
+                      }
+                      className={`w-full rounded-lg border p-2.5 text-left transition-all ${
+                        value.videoSection.layout === key
+                          ? "border-slate-900 ring-2 ring-slate-900/10"
+                          : "border-slate-200 hover:border-slate-300"
+                      }`}
+                    >
+                      <span className="block text-xs font-semibold text-slate-800">
+                        {VIDEO_LAYOUTS[key].label}
+                      </span>
+                      <span className="mt-0.5 block text-[10px] leading-snug text-slate-400">
+                        {VIDEO_LAYOUTS[key].description}
+                      </span>
+                    </button>
+                  ),
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* ══ Live preview ════════════════════════════════════════════════ */}
-      <div>
+      <div className={hidePreview ? "hidden" : undefined}>
         <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
           Live preview
         </p>

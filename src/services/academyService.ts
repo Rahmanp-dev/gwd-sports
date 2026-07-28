@@ -38,13 +38,37 @@ export interface AcademyGalleryItem {
   caption?: string;
 }
 
+export interface AcademyHighlight {
+  /** Key into WhyChooseUs's ICON_BY_KEY map. */
+  icon?: string;
+  title: string;
+  description?: string;
+}
+
+export interface AcademyCustomStat {
+  /** Key into StatsSection's STAT_ICON_BY_KEY map. */
+  icon?: string;
+  label: string;
+  value: number;
+  suffix?: string;
+}
+
+export interface AcademyVideoSection {
+  provider?: 'youtube' | 'instagram';
+  url?: string;
+  heading?: string;
+  subheading?: string;
+  layout?: 'cinematic' | 'framed' | 'split';
+}
+
 export interface AcademyHomepageSections {
   programs: boolean;
   achievements: boolean;
   testimonials: boolean;
   gallery: boolean;
   stats: boolean;
-  /** Owner-controlled display order; keys from the five fields above. */
+  video?: boolean;
+  /** Owner-controlled display order; keys from the section fields above. */
   order?: string[];
 }
 
@@ -58,6 +82,11 @@ export interface AcademyTheme {
   fontPreset?: "sans" | "editorial" | "rounded";
   backgroundStyle?: 'light' | 'soft' | 'gradient' | 'dark' | 'slate' | 'vivid' | 'midnight';
   backgroundColor?: string;
+  /** Gradient controls — only used when backgroundStyle === 'gradient'. */
+  gradientType?: 'linear' | 'radial';
+  gradientAngle?: number;
+  /** 2–4 hex colours, evenly spaced. Empty = derived brand-into-white fade. */
+  gradientStops?: string[];
   logoScale?: number;
   logoShape?: "square" | "rounded" | "circle";
   logoAlign?: "left" | "center" | "right";
@@ -87,6 +116,9 @@ export interface AcademyTheme {
   programs?: AcademyProgram[];
   testimonials?: AcademyTestimonial[];
   gallery?: AcademyGalleryItem[];
+  highlights?: AcademyHighlight[];
+  customStats?: AcademyCustomStat[];
+  videoSection?: AcademyVideoSection;
   sections?: AcademyHomepageSections;
 }
 
