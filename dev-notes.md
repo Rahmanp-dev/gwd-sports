@@ -3860,3 +3860,35 @@ Browser-verified: canvas renders all 8 sections in order, gradient bands compute
 ### Next
 
 Not started: rate limiting on public endpoints (still absent platform-wide), route-level tests for the payment HTTP handlers, and the further theme ideas from the previous session's notes (font pairing, hero content alignment, trust badges, per-section headings).
+
+---
+
+## Hotfix — 2026-07-28 · Route slug collision took the whole API down
+
+**State:** `tsc --noEmit` clean, `vitest run` 471/471, clean `npm run build` from a wiped `.next`, dev server starts with no errors. Not committed.
+
+### What broke
+
+I introduced `src/app/api/admin/academies/[academyId]/insights/route.ts` in the previous session while `src/app/api/admin/academies/[id]/` already existed (`route.ts`, `onboard`, `custom-domain`).
+
+Next.js permits exactly ONE slug name per path position across the entire route tree. Two names at the same position is not a per-route problem — it fails the **router build**, so every API route on the deployment returns 500 and `next dev` refuses to start:
+
+```
+[Error: You cannot use different slug names for the same dynamic path ('academyId' !== 'id').]
+```
+
+Production symptoms were total: login 500, `/api/academy/discover` 500, `/api/admin/*` 500, super admin dashboard showing 0 tenants with "Failed to load academies". Nothing to do with MongoDB, auth or permissions — the error message points at connections/permissions and is completely misleading here.
+
+**This did not appear in my earlier verification because `npm run build` was run against a warm `.next`.** The stale route manifest still contained the old tree, so the build passed. The hotfix was verified with `rm -rf .next` first, and that is the only way this class of failure surfaces.
+
+### Fix
+
+Moved the route to `src/app/api/admin/academies/[id]/insights/route.ts` and renamed the handler's param from `academyId` to `id` — `[id]` is the established convention for the three sibling routes, so the newcomer was the one to change. The public URL is unchanged (`/api/admin/academies/<id>/insights`), so `AcademyInsightsPanel` needed no edit.
+
+Swept every dynamic segment in `src/app` for the same class of collision; no others exist.
+
+Verified against the exact endpoints that were failing: `/api/academy/discover` 200, `/api/user/login` 401 (correct rejection, not 500), `/api/admin/academies` 401 (correct auth gate, not 500).
+
+### Rule for future route work
+
+A new dynamic segment must reuse the slug name its siblings already use, and any change under `src/app/api/**/[*]/` must be verified with a cold build (`rm -rf .next && npm run build`) — a warm build will not catch it.

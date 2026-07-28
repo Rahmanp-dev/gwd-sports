@@ -11,9 +11,16 @@ import { getAcademyInsights } from '@/lib/admin/academyInsights';
  * emphatically not something the academy's own admin should be able to read
  * about anyone (including themselves, via a guessed id).
  */
+/**
+ * The dynamic segment MUST be named `[id]`, matching its siblings under
+ * api/admin/academies (`[id]/route.ts`, `[id]/onboard`, `[id]/custom-domain`).
+ * Next.js allows only one slug name per path position across the whole route
+ * tree — a second name ('academyId') does not just break this route, it fails
+ * the entire router build and every API route on the deployment returns 500.
+ */
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ academyId: string }> },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const auth = await roleMiddleware(req, ['gwd_super_admin']);
@@ -22,9 +29,9 @@ export async function GET(
     }
 
     await connectToDatabase();
-    const { academyId } = await params;
+    const { id } = await params;
 
-    const insights = await getAcademyInsights(academyId);
+    const insights = await getAcademyInsights(id);
     if (!insights) {
       return NextResponse.json({ success: false, message: 'Academy not found' }, { status: 404 });
     }
