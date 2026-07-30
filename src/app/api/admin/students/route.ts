@@ -21,8 +21,24 @@ export async function GET(req: NextRequest) {
     }
 
     const totalStudents = await StudentProfile.countDocuments(filter);
+    /**
+     * Field-limited populate.
+     *
+     * `populate('userId academyId trainers')` pulled WHOLE referenced documents
+     * — most damagingly the academy's entire `theme` (every gradient stop,
+     * testimonial and gallery item) repeated once per student row, plus each
+     * trainer's full profile including their own student list.
+     *
+     * The student's own `attendance`/`performance`/`feePayments` arrays are
+     * deliberately still included: `studentService.transformStudent` reads all
+     * three (the "last payment" column comes from `feePayments`), so excluding
+     * them would trade a payload win for a broken table. Serving those from a
+     * separate detail call is the real fix and needs a frontend change.
+     */
     const rows = await StudentProfile.find(filter)
-      .populate('userId academyId trainers')
+      .populate('userId', 'name email phone isActive')
+      .populate('academyId', 'name slug')
+      .populate('trainers', 'name email')
       .skip(skip)
       .limit(limit)
       .lean();

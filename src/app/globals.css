@@ -957,3 +957,43 @@ body {
   color: var(--page-muted) !important;
 }
 
+
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * RESPECT prefers-reduced-motion
+ * ════════════════════════════════════════════════════════════════════════════
+ *
+ * The public page leans hard on motion: framer-motion entrances on every
+ * section, a rotating background blob on the stats strip, a hero carousel,
+ * hover lifts on every card. For a visitor with a vestibular disorder that is
+ * not decoration, it is a page they cannot comfortably read — and this is a
+ * page asking families to trust an academy with their child.
+ *
+ * Two things happen here. Transitions and animations collapse to
+ * near-instant (1ms rather than 0s, because a true 0 can stop transitionend
+ * from firing and leave JS waiting on a callback that never arrives). And
+ * `scroll-behavior` drops back to auto, so the hero's scroll cue jumps
+ * instead of gliding.
+ *
+ * It is also a real performance win on low-end Android, which is most of the
+ * audience here: the infinite 30s rotation on the stats blob repaints forever
+ * on a device that can least afford it.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Kill the decorative infinite loops outright rather than letting them
+     settle at whatever transform frame 1ms lands on. */
+  .animate-pulse,
+  .animate-spin,
+  .animate-bounce {
+    animation: none !important;
+  }
+}

@@ -52,6 +52,13 @@ const OWNER_WRITABLE = new Set([
   'establishedYear',
   'starPlayers',
   'registeredTeams',
+  /**
+   * Attendance geofence — the owner's own operational policy about their own
+   * ground, so theirs to set. Deliberately NOT `coordinates`: that is the
+   * public ecosystem-map pin, which stays GWD's, and is why the geofence
+   * carries its own lat/lng rather than reusing it.
+   */
+  'attendanceGeofence',
 ]);
 
 export interface FilteredUpdate {

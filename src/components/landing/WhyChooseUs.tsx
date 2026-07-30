@@ -95,7 +95,15 @@ export default function WhyChooseUs({ academy }: { academy?: any }) {
     }),
   );
 
-  if (academy?.theme?.sections?.highlights === false || reasons.length === 0) {
+  /**
+   * The key is `achievements`, not `highlights`.
+   *
+   * This checked `sections.highlights`, which does not exist in the schema or
+   * in AcademyHomepageSections — so the owner's off switch for this section did
+   * nothing here and only worked via the page-level wrapper. This section is
+   * registered as `achievements` everywhere else.
+   */
+  if (academy?.theme?.sections?.achievements === false || reasons.length === 0) {
     return null;
   }
 
@@ -134,7 +142,10 @@ export default function WhyChooseUs({ academy }: { academy?: any }) {
             index: number,
           ) => (
             <motion.div
-              key={reason.title}
+              /* Index-suffixed: these titles are owner-authored with no
+                 uniqueness constraint, and a duplicate React key silently
+                 drops the second card. Same hazard StatsSection documents. */
+              key={`${reason.title}-${index}`}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

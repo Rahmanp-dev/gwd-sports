@@ -178,6 +178,13 @@ outboundMessageSchema.index({ recipientPhone: 1, sentOnLocalDate: 1 });
 outboundMessageSchema.index({ providerMessageId: 1 }, { sparse: true });
 // Per-academy message log for the owner dashboard.
 outboundMessageSchema.index({ academyId: 1, createdAt: -1 });
+/**
+ * The delivery-status panel and the engagement rollup both count by
+ * (academyId, status, createdAt >= window). Status is the selective term here —
+ * an academy accumulates far more sent messages than failed ones — so it
+ * belongs in the index rather than being filtered after the fact.
+ */
+outboundMessageSchema.index({ academyId: 1, status: 1, createdAt: -1 });
 outboundMessageSchema.index({ passportId: 1, createdAt: -1 });
 
 export const OutboundMessage: mongoose.Model<IOutboundMessage> =

@@ -4108,3 +4108,110 @@ even on correctly-scoped fresh tokens (unreliable signal); regenerating the toke
 does not help; `GET /{waba}/subscribed_apps` returns 500 subcode 99 even when
 subscription is fine; `POST /{waba}/assigned_users` silently no-ops for a
 multi-task array but applies for a single task.
+
+### RESOLVED · First WhatsApp messages delivered
+
+Three real messages accepted by Meta (HTTP 200, `message_status: accepted`):
+`hello_world` from the test number, then `gwd_welcome_v1` and `gwd_achievement_v1`
+from the **real** business number +91 90324 28099 with working
+`sports.gwdglobal.in` links.
+
+**The actual root cause was WABA fragmentation, not permissions.** Repeated runs
+through WhatsApp onboarding had created five WhatsApp Business Accounts, and the
+three things that must live together were on three different ones:
+
+- app's API Setup bound to `966642573060846` (test number)
+- the 9 `gwd_*` templates on `1043341758300698`
+- the real Indian number on `1733246831445995`
+
+`(#200) You do not have the necessary permissions to send messages on behalf of
+this WhatsApp Business Account` is what Meta returns when you send from a number
+whose WABA the app has no relationship with. It reads like an access-control
+failure and is not one, which is why it resisted every permission fix.
+
+What actually cleared it: `POST /{waba}/subscribed_apps` against
+`1733246831445995` (subscribing the app to the WABA holding the real number),
+plus recreating the 9 templates on that same WABA — all now APPROVED. The
+number then went from `(#200)` straight to `(#132000) number of params` — a
+content error, proving access was resolved.
+
+Confirmed working production config (no change needed):
+`META_WHATSAPP_PHONE_NUMBER_ID=1037734412766765`, the token already in Vercel,
+`META_WHATSAPP_TEMPLATE_LANG=en_US`, `NEXT_PUBLIC_APP_URL=https://sports.gwdglobal.in`,
+`CRON_SECRET` set.
+
+11 stale `failed` messages were cancelled rather than requeued: they were built
+before `NEXT_PUBLIC_APP_URL` existed and their stored variables contain dead
+`gwd.in` links, so resending them would have delivered broken passports.
+
+**Still Standard Access** (`whatsapp_business_messaging` shows "Ready for
+testing"), so delivery is limited to the 5 verified test recipients. Advanced
+Access via App Review is required before real parents receive anything.
+
+Lesson for next time: read the app's **API Setup** page first. It names the bound
+WABA and phone number in plain text, and would have short-circuited nearly all
+of this diagnosis.
+
+---
+
+## Session — 2026-07-29 · GPS attendance geofence, bug audit, performance, admin UX
+
+**State:** `tsc --noEmit` clean, `vitest run` 518/518 (19 new), cold `rm -rf .next && npm run build` clean. Not committed.
+
+### 1. GPS geofence on student QR check-in
+
+The session window (`session.ts`) already stopped a photographed QR code working at 3am. It did nothing about one used from home DURING the session, which is the obvious next cheat. This adds the location axis.
+
+`lib/attendance/geofence.ts` — pure, 23 tests. Haversine distance, plus the part that is actually hard: **accuracy handling**. `coords.accuracy` is a confidence RADIUS, not a quality score, and indoors it is routinely 50–2000m — larger than any useful fence. Treating a fix as a point rejects real students standing in the clubhouse; trusting the accuracy circle in full lets someone 2km away pass by claiming huge accuracy. So a reading worse than 500m is refused as unusable ("step outside"), and otherwise the fence widens by the reported accuracy but only up to a 100m cap. The bias is deliberately asymmetric: a false reject strands a child who really is at training, which is worse than a false accept the coach's own register would catch.
+
+**Fails OPEN when the fence is enabled but no ground is configured** — otherwise an owner ticking the box before setting a location would turn the feature into a silent outage for every student. The owner-facing settings panel says so explicitly ("not enforcing") rather than letting them believe attendance data means something it does not.
+
+`attendanceGeofence.lat/lng` is kept SEPARATE from `coordinates` (the public ecosystem-map pin) because those are frequently different places — a pin on the town centre with training on a field a kilometre away would lock everyone out. Also means enabling the geofence does not require handing an owner control of their position on the public map; `coordinates` stays GWD's (asserted in `updateGuard.test.ts`).
+
+Client side: `useDeviceLocation` names the four distinct failure modes (unsupported / denied / unavailable / timeout) because collapsing them into "location error" is what makes a feature like this feel broken rather than strict. Location is requested **on the tap, not on page load** — prompting before the parent knows why is the reliable way to get it denied forever. `maximumAge: 0`, since a geofence is worthless against a cached fix from this morning at home.
+
+Honest limitation, documented in the module header: browser geolocation is client-supplied and spoofable. This raises the effort from "photograph a code" to "deliberately falsify device location". It is a deterrent, not proof; the coach's mark remains authoritative.
+
+Owner control includes **"Use my current location"** — an owner standing on their own field taps once. The alternative is asking them to find lat/lng, which is how this ends up switched on with a wrong centre.
+
+### 2. Bug audit — what was actually broken
+
+🔴 **CRITICAL, and mine: a single blank row rejected the ENTIRE save.** I added `runValidators: true` to `PUT /api/academy/[id]` last session. Every "Add …" button appends an empty row, and `programs.id/.label`, `testimonials.name/.quote`, `highlights.title`, `customStats.label`, `starPlayers.role`, `registeredTeams.category` are all `required`. So clicking "Add number" and typing nothing discarded the colour, hero and footer edits made in the same sitting — behind a bare `{ success: false }` with **no message and no server log**, so a validation error and a database outage were indistinguishable.
+
+Fixed both halves: `draftSerialize.pruneDraftRows` drops incomplete rows before they are sent (a row the owner never filled in is not data they are trying to keep), and the route now logs and returns the offending field names on a ValidationError. 8 new tests.
+
+Also moved `draftToThemeUpdate` out of the `.tsx` into `draftSerialize.ts` — vitest here cannot transform JSX, so nothing exported from a `.tsx` is testable. Same reason `videoEmbed.ts` was split out earlier.
+
+**Band alternation broke whenever a section self-nulled.** All six sections return null when they have no genuine content, but `AcademyPublicPage` counted a band slot for any section not explicitly switched off — so a gallery with no photos consumed a slot and the two sections after it came out the same colour, meeting in a visible seam. The comment in that file claimed the opposite, which is the kind of confident wrong note that stops anyone looking. New `lib/branding/sectionVisibility.ts` is the single place that knows; the page and the canvas both use it. 14 tests.
+
+**"Link recognised — the section will show on your page" was false.** `sections.video` defaults false and nothing ever set it true, so pasting a valid YouTube link showed a green confirmation and then did not appear. Now derived from the link (only ever turned ON, so it cannot override an owner who deliberately hid a section that still has a link saved).
+
+**`ecosystemProfileToUpdate` threw before the request was sent** — `p.name.trim()` on a legacy row persisted without a name, which presented as the Save button doing nothing.
+
+Others fixed: React key collision on highlights (duplicate title silently dropped a card) and on programs (duplicate label → identical slugged id, plus an emoji-only label slugging to `""` and failing validation); missing `Array.isArray` guards on `theme.gallery`/`testimonials` (a non-array took down the WHOLE public page, not one section); `NaN` from a dropped drag payload silently reordering `programs`; `WhyChooseUs` checking `sections.highlights`, a key that does not exist in the schema (the real key is `achievements`); `daysSince` rendering "NaN day(s) ago" while serialising to null; a 0-height canvas wrapper leaving its toolbar floating over the next section, now an explicit "X is empty" placeholder — the case an owner most needs to click.
+
+**`purgeOrphanedProfiles` was dead code**, exported and never called — the exact debris it exists to clear (4 orphaned trainer profiles, per the previous session's own notes) would never have been removed. Now wired to `/api/admin/purge-orphans`, GET reports scope and POST removes, because nobody should have to run a deletion to find out how much it deletes. It also never cleaned the rosters, so a purge would have left headcounts inflated — bullet 3 of that file's own header, fixed on the delete path and missed on the repair path. `deleteUserCascade` now also clears a dangling `ownerId`.
+
+### 3. Performance
+
+**`/api/admin/academy-engagement` was ~1,700 queries per request.** It called `getAcademyInsights()` (≈17 queries) once per academy, for up to 100 academies, growing linearly with signups — it would have degraded quietly until it timed out. `lib/admin/engagementOverview.ts` does the same work in a **fixed nine aggregations** grouped by `academyId`, so cost is now independent of how many academies exist. `getAcademyInsights` is untouched and still backs the per-academy drill-down, where the extra detail is the point.
+
+Two compound indexes added for the aggregations' actual filter shape: `FeePayment {academyId, status, settledAt}` and `OutboundMessage {academyId, status, createdAt}`. Without the date term those were scanning every successful payment an academy had ever taken — slower the more successful the customer.
+
+`/api/admin/students` populated WHOLE referenced documents — the academy's entire `theme` (every gradient stop, testimonial, gallery item) repeated once per student row, plus each trainer's full profile. Now field-limited. Deliberately did NOT exclude the student's own `attendance`/`performance`/`feePayments` arrays: `studentService.transformStudent` reads all three (the "last payment" column comes from `feePayments`), so excluding them would have traded a payload win for a broken table. Serving those from a separate detail call is the real fix and needs a frontend change — left as noted debt rather than done badly.
+
+Canvas editor now renders from `useDeferredValue(value)`. Every keystroke was re-rendering eight real landing sections full of framer-motion nodes, and the input visibly lagged. `useDeferredValue` rather than a debounce: React keeps the control at normal priority and abandons an in-progress canvas render when the next character arrives — no timer to tune. Also fixed a `useMemo` that depended on the `sports` array's identity, which the caller rebuilds every render, defeating the memo entirely.
+
+### 4. Admin & landing UX
+
+**⌘K command palette.** Thirteen tabs is a good map and a poor way to travel; an owner answering "a parent says they paid, did it land?" reads across Fees, Students and Comms. Matched on **synonyms, not tab titles** — an owner thinks "who hasn't paid", not "Fees", and a palette that only matches the label you were already looking at solves nothing. No fuzzy library: substring matching over a curated keyword list never surprises you with a confident wrong first result, which matters when Enter fires immediately.
+
+Browser-verified: typing "who hasnt paid" resolves to Fees & payments; ArrowDown twice moves the highlight to index 2; Enter selects and closes; Escape closes without selecting and returns focus to the trigger.
+
+**`prefers-reduced-motion`** now respected globally. The public page leans hard on motion — entrance animations on every section, an infinite 30s rotation on the stats blob, hover lifts everywhere — with no relief for a visitor with a vestibular disorder, on a page asking families to trust an academy with their child. Also a real performance win on the low-end Android that is most of this audience. Durations collapse to 1ms rather than 0 so `transitionend` still fires and no JS waits on a callback that never arrives.
+
+### Not done / honest gaps
+
+- The landing page got one principled improvement (reduced motion) rather than a creative redesign; the admin side absorbed most of the UX budget. Worth a dedicated pass.
+- Student list payload still ships embedded history (see above) — needs a frontend change to split detail out.
+- The geofence has not been tested with a real device at a real ground. The logic has 23 unit tests and the UI states are wired, but GPS behaviour on a specific phone indoors is not something unit tests establish.

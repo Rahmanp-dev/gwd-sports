@@ -316,48 +316,28 @@ export function draftFromAcademy(academy?: Partial<Academy> | null): BrandingDra
 }
 
 /**
- * Dot-notation, NOT a nested `theme` object.
- *
- * `PUT /api/academy/:id` does a plain findByIdAndUpdate, so sending
- * `{ theme: {...} }` replaces the whole subdocument — silently wiping
- * heroImages, which nothing on this screen edits. Dot paths touch only the
- * keys named.
+ * Row pruning and the update payload live in ./draftSerialize (a plain .ts
+ * module) so they can be unit-tested — vitest here does not transform JSX,
+ * so nothing exported from this .tsx file is testable. Re-exported to keep
+ * the existing import sites unchanged.
  */
-export function draftToThemeUpdate(draft: BrandingDraft): Record<string, unknown> {
-  return {
-    "theme.primaryColor": draft.primaryColor,
-    "theme.accentColor": draft.accentColor,
-    "theme.style": draft.style,
-    "theme.fontPreset": draft.fontPreset,
-    "theme.backgroundStyle": draft.backgroundStyle,
-    "theme.backgroundColor": draft.backgroundColor,
-    "theme.gradientType": draft.gradientType,
-    "theme.gradientAngle": draft.gradientAngle,
-    "theme.gradientStops": draft.gradientStops,
-    "theme.logoScale": draft.logoScale,
-    "theme.logoShape": draft.logoShape,
-    "theme.logoAlign": draft.logoAlign,
-    "theme.logoFit": draft.logoFit,
-    "theme.heroBlur": draft.heroBlur,
-    "theme.heroOverlay": draft.heroOverlay,
-    "theme.heroMode": draft.heroMode,
-    "theme.heroVideoUrl": draft.heroVideoUrl,
-    "theme.heroEyebrow": draft.heroEyebrow,
-    "theme.heroImages": draft.heroImages,
-    "theme.tagline": draft.tagline,
-    "theme.logoUrl": draft.logoUrl,
-    "theme.programs": draft.programs,
-    "theme.testimonials": draft.testimonials,
-    "theme.gallery": draft.gallery,
-    "theme.highlights": draft.highlights,
-    "theme.customStats": draft.customStats,
-    "theme.videoSection": draft.videoSection,
-    "theme.density": draft.density,
-    "theme.accentSection": draft.accentSection,
-    "theme.sections": draft.sections,
-    "theme.footer": draft.footer,
-    achievements: draft.achievements,
-  };
+export { draftToThemeUpdate, pruneDraftRows } from "./draftSerialize";
+
+/**
+ * A non-empty, collision-resistant id for a discipline.
+ *
+ * `programs[].id` is `required` in the schema AND used as the React key in
+ * SportsGrid, so it must be both. The bare label slug was neither: an
+ * emoji-only label slugged to "" (failing validation and rejecting the whole
+ * save), and two identically-named disciplines slugged to the same value,
+ * silently dropping one card from the page.
+ */
+function slugForProgram(label: string, index: number): string {
+  const slug = String(label ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return slug ? `${slug}-${index + 1}` : `discipline-${index + 1}`;
 }
 
 /** Curated starting points, so nobody has to arrive with a hex code. */
@@ -1658,12 +1638,28 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={(e) => {
                       e.preventDefault();
-                      const from = Number(e.dataTransfer.getData("text/plain"));
-                      const to = index;
-                      if (from === to) return;
                       const order = [
                         ...(value.sections.order ?? DEFAULT_SECTION_ORDER),
                       ];
+                      const from = Number(e.dataTransfer.getData("text/plain"));
+                      const to = index;
+                      /**
+                       * Validate the payload, do not just compare it.
+                       *
+                       * Dropping arbitrary text (a selected word, a file) makes
+                       * `from` NaN. `NaN === to` is false so the old guard let
+                       * it through, and `splice(NaN, 1)` is treated as
+                       * `splice(0, 1)` — silently moving whichever section
+                       * happened to be first.
+                       */
+                      if (
+                        !Number.isInteger(from) ||
+                        from < 0 ||
+                        from >= order.length ||
+                        from === to
+                      ) {
+                        return;
+                      }
                       const [moved] = order.splice(from, 1);
                       order.splice(to, 0, moved);
                       patch({ sections: { ...value.sections, order } });
@@ -1884,9 +1880,16 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
                       onChange={(e) =>
                         updateProgram(index, {
                           label: e.target.value,
-                          id:
-                            program.id ||
-                            e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+                          /**
+                           * `id` is `required` in the schema AND used as the
+                           * React key in SportsGrid, so a slug must be both
+                           * non-empty and unique. The bare slug was neither: a
+                           * label of only emoji slugged to "" (failing
+                           * validation and rejecting the whole save), and two
+                           * disciplines with the same label produced the same
+                           * id, silently dropping one card from the page.
+                           */
+                          id: program.id || slugForProgram(e.target.value, index),
                         })
                       }
                       className="h-9"
@@ -2405,9 +2408,32 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
                   ? "https://youtube.com/watch?v=…"
                   : "https://instagram.com/reel/…"
               }
-              onChange={(e) =>
-                patch({ videoSection: { ...value.videoSection, url: e.target.value } })
-              }
+              onChange={(e) => {
+                const url = e.target.value;
+                /**
+                 * Enable the section as soon as the link parses.
+                 *
+                 * `sections.video` defaults to false (so an empty video section
+                 * never appears on an existing academy's page), and nothing else
+                 * ever set it to true — so pasting a valid link showed "the
+                 * section will show on your page" and then it did not. The
+                 * owner had to find the eye toggle on the canvas to discover
+                 * why. Deriving it from the link makes the message true.
+                 *
+                 * Only ever turned ON here. Switching it off when the URL is
+                 * cleared would override an owner who deliberately hid a
+                 * section that still has a link saved.
+                 */
+                const recognised = Boolean(
+                  buildEmbedUrl(value.videoSection.provider, url),
+                );
+                patch({
+                  videoSection: { ...value.videoSection, url },
+                  ...(recognised && value.sections.video !== true
+                    ? { sections: { ...value.sections, video: true } }
+                    : {}),
+                });
+              }}
             />
             {value.videoSection.url && !videoEmbedUrl && (
               <p className="text-[11px] leading-relaxed text-amber-600">
@@ -2417,7 +2443,9 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
             )}
             {videoEmbedUrl && (
               <p className="text-[11px] font-medium text-emerald-600">
-                Link recognised — the section will show on your page.
+                {value.sections.video === false
+                  ? "Link recognised, but this section is switched off — turn it on to show it."
+                  : "Link recognised — the section will show on your page."}
               </p>
             )}
 

@@ -101,6 +101,111 @@ const AttendanceCenter = lazyPanel(() =>
  * to the first paint.
  */
 import { CommandCenter } from "@/components/admin/dashboard/CommandCenter";
+import CommandPalette, { type PaletteItem } from "@/components/admin/CommandPalette";
+
+/**
+ * ⌘K targets, keyed on what an owner is TRYING TO DO.
+ *
+ * The keywords matter more than the labels. Someone chasing a payment types
+ * "who hasn't paid", not "Fees"; someone about to run a session types
+ * "register", not "Check-in". Matching only the tab names would mean the
+ * palette can only find things you had already located.
+ */
+const PALETTE_ITEMS: PaletteItem[] = [
+  {
+    id: "dashboard",
+    label: "Overview",
+    hint: "Today at a glance",
+    keywords: ["home", "summary", "dashboard", "start"],
+  },
+  {
+    id: "fees",
+    label: "Fees & payments",
+    hint: "Who has paid, who owes, record a cash payment",
+    keywords: [
+      "money", "paid", "unpaid", "due", "overdue", "defaulter",
+      "who hasnt paid", "who has not paid", "collect", "cash", "receipt", "revenue",
+    ],
+  },
+  {
+    id: "students",
+    label: "Students",
+    hint: "Roster, profiles, passports",
+    keywords: ["roster", "children", "kids", "players", "passport", "enrol", "enroll"],
+  },
+  {
+    id: "import",
+    label: "Import students",
+    hint: "Add your roster from a photo, WhatsApp list or spreadsheet",
+    keywords: ["bulk", "csv", "spreadsheet", "excel", "upload", "add students", "register photo"],
+  },
+  {
+    id: "trainers",
+    label: "Trainers",
+    hint: "Coaches and who they look after",
+    keywords: ["coach", "coaches", "staff", "assign"],
+  },
+  {
+    id: "checkin",
+    label: "Check-in",
+    hint: "QR codes and the attendance register",
+    keywords: [
+      "attendance", "qr", "register", "present", "absent", "scan", "mark",
+      // Batches live here rather than in a tab of their own.
+      "batch", "group", "timing", "session",
+    ],
+  },
+  {
+    id: "comms",
+    label: "Messages",
+    hint: "WhatsApp delivery, alerts, announcements",
+    keywords: [
+      "whatsapp", "message", "send", "announcement", "broadcast",
+      "alert", "delivery", "notify", "parents",
+    ],
+  },
+  {
+    id: "events",
+    label: "Events",
+    hint: "Matches, tournaments and camps",
+    keywords: ["match", "tournament", "camp", "fixture", "calendar"],
+  },
+  {
+    id: "branding",
+    label: "Look & feel",
+    hint: "Your public homepage, colours and content",
+    keywords: [
+      "theme", "colour", "color", "logo", "homepage", "website", "landing",
+      "design", "gallery", "video", "tagline", "geofence", "attendance location",
+      // Batches are managed under Check-in, not their own tab — so route the
+      // word people actually use to where the thing actually lives.
+    ],
+  },
+  {
+    id: "landingPage",
+    label: "Landing page",
+    hint: "What visitors see",
+    keywords: ["public", "site", "web", "page"],
+  },
+  {
+    id: "kits",
+    label: "Kits",
+    hint: "Kit issue and sizes",
+    keywords: ["kit", "uniform", "jersey", "size"],
+  },
+  {
+    id: "users",
+    label: "Users",
+    hint: "Accounts and access",
+    keywords: ["account", "login", "access", "permission", "admin", "delete user"],
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    hint: "Academy details and configuration",
+    keywords: ["config", "setup", "detail", "profile", "fees due day"],
+  },
+];
 
 /**
  * Super admins never see the tabbed layout at all — this returns early below.
@@ -134,7 +239,13 @@ export default function AdminPage() {
           <h1 className="min-w-0 truncate text-xl sm:text-2xl font-bold text-gray-900">
             {brand.name} Admin
           </h1>
-          <div className="flex shrink-0 items-center gap-4">
+          <div className="flex shrink-0 items-center gap-3">
+            {/*
+              Thirteen tabs is a good map and a bad way to travel. The palette
+              is keyed on what an owner is trying to DO ("who hasn't paid")
+              rather than on the tab names they would have to already know.
+            */}
+            <CommandPalette items={PALETTE_ITEMS} onSelect={setActiveTab} />
             <div className="hidden md:block text-right">
               <p className="text-sm font-medium">{user?.name || "Admin"}</p>
               <p className="text-xs text-gray-500">{user?.role || "admin"}</p>

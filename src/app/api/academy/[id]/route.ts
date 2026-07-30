@@ -56,8 +56,35 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       runValidators: true,
     });
     return NextResponse.json({ success: true, data: { academy } });
-  } catch (error) {
-    return NextResponse.json({ success: false }, { status: 500 });
+  } catch (error: any) {
+    /**
+     * This used to return a bare `{ success: false }` with no message and log
+     * nothing. Combined with `runValidators`, that made a single blank row in
+     * an editor array present as "Could not save your changes." with no way —
+     * client-side OR server-side — to learn which field was at fault. A
+     * validation error and a database outage were indistinguishable.
+     */
+    console.error('[API_ACADEMY_PUT]', error?.message || error);
+
+    if (error?.name === 'ValidationError') {
+      // Name the offending paths. These are field names, not internals, and
+      // the owner is the only person who can correct them.
+      const fields = Object.keys(error.errors ?? {}).join(', ');
+      return NextResponse.json(
+        {
+          success: false,
+          message: fields
+            ? `Some fields could not be saved: ${fields}. Check for incomplete rows.`
+            : 'Some fields could not be saved. Check for incomplete rows.',
+        },
+        { status: 400 },
+      );
+    }
+
+    return NextResponse.json(
+      { success: false, message: 'Could not save. Please try again.' },
+      { status: 500 },
+    );
   }
 }
 

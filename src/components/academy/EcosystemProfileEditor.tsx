@@ -91,8 +91,22 @@ export function ecosystemProfileToUpdate(
     ...(profile.establishedYear === ""
       ? {}
       : { establishedYear: Number(profile.establishedYear) }),
-    starPlayers: profile.starPlayers.filter((p) => p.name.trim()),
-    registeredTeams: profile.registeredTeams.filter((t) => t.name.trim()),
+    /**
+     * Both fields, not just `name` — and via String() rather than `.trim()`
+     * directly.
+     *
+     * `role` and `category` are `required` in the schema, so a row with a name
+     * but no role failed validation and rejected the WHOLE save (every branding
+     * change in the same sitting with it). And a legacy row persisted without a
+     * name at all made `p.name.trim()` throw a TypeError before the request was
+     * even sent, which looked like the Save button doing nothing.
+     */
+    starPlayers: profile.starPlayers.filter(
+      (p) => String(p?.name ?? "").trim() && String(p?.role ?? "").trim(),
+    ),
+    registeredTeams: profile.registeredTeams.filter(
+      (t) => String(t?.name ?? "").trim() && String(t?.category ?? "").trim(),
+    ),
   };
 }
 

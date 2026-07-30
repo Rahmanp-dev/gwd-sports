@@ -199,6 +199,20 @@ export interface IAcademy extends Document {
     lat: number;
     lng: number;
   };
+  /**
+   * Geofence for student QR self-check-in. See lib/attendance/geofence.ts.
+   *
+   * `lat`/`lng` are the GROUND, kept separate from `coordinates` (the public
+   * ecosystem-map pin) because those are frequently not the same place — a pin
+   * on the town centre with training on a field a kilometre away would lock
+   * every student out if the pin were reused as the fence centre.
+   */
+  attendanceGeofence?: {
+    enabled: boolean;
+    radiusMeters: number;
+    lat?: number;
+    lng?: number;
+  };
   ecosystemScore: number;
   establishedYear?: number;
   achievements: string[];
@@ -540,6 +554,18 @@ const AcademySchema = new Schema<IAcademy>({
   coordinates: {
     lat: { type: Number },
     lng: { type: Number }
+  },
+  /**
+   * Student QR check-in geofence. Off by default: switching it on for every
+   * existing academy would start refusing check-ins at academies that have
+   * never set a ground location.
+   */
+  attendanceGeofence: {
+    enabled: { type: Boolean, default: false },
+    radiusMeters: { type: Number, default: 200, min: 50, max: 5000 },
+    // The ground. Empty falls back to `coordinates` — see resolveGeofenceCentre.
+    lat: { type: Number },
+    lng: { type: Number },
   },
   ecosystemScore: { type: Number, default: 0, min: 0, max: 100 },
   establishedYear: { type: Number },

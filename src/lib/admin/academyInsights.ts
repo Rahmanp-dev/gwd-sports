@@ -106,7 +106,12 @@ function daysAgo(days: number): Date {
 
 function daysSince(date: Date | null | undefined): number | null {
   if (!date) return null;
-  return Math.floor((Date.now() - new Date(date).getTime()) / DAY);
+  const ms = new Date(date).getTime();
+  // An unparseable date produced NaN, which reached the dashboard verbatim as
+  // "NaN day(s) ago" while serialising to null in the JSON — so the API said
+  // "never signed in" and the UI said something else. Treat it as unknown.
+  if (!Number.isFinite(ms)) return null;
+  return Math.floor((Date.now() - ms) / DAY);
 }
 
 /**

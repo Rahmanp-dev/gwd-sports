@@ -34,9 +34,13 @@ export default function TestimonialsCarousel({ academy }: { academy?: any }) {
 
   const testimonials: PublicTestimonial[] = React.useMemo(
     () =>
-      (academy?.theme?.testimonials ?? []).filter(
-        (t: PublicTestimonial) => t?.quote?.trim(),
-      ),
+      /* Array.isArray guard: a non-array here would throw on .filter and take
+         the whole public page down with it, not just this carousel. */
+      Array.isArray(academy?.theme?.testimonials)
+        ? academy.theme.testimonials.filter((t: PublicTestimonial) =>
+            String(t?.quote ?? "").trim(),
+          )
+        : [],
     [academy?.theme?.testimonials],
   );
 

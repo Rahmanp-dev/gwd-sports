@@ -91,3 +91,30 @@ describe('filterAcademyUpdate', () => {
     expect(filterAcademyUpdate(undefined as any, false).update).toEqual({});
   });
 });
+
+describe('attendance geofence', () => {
+  it('lets an owner configure their own ground and radius', () => {
+    const { update, rejected } = filterAcademyUpdate(
+      {
+        'attendanceGeofence.enabled': true,
+        'attendanceGeofence.radiusMeters': 200,
+        'attendanceGeofence.lat': 17.4401,
+        'attendanceGeofence.lng': 78.3489,
+      },
+      false,
+    );
+    expect(rejected).toEqual([]);
+    expect(Object.keys(update)).toHaveLength(4);
+  });
+
+  it('still refuses the public map pin, which is GWD\u2019s', () => {
+    // The geofence carries its own lat/lng precisely so enabling it does not
+    // require handing an owner control of their position on the public map.
+    const { update, rejected } = filterAcademyUpdate(
+      { 'attendanceGeofence.enabled': true, coordinates: { lat: 0, lng: 0 } },
+      false,
+    );
+    expect(update).toEqual({ 'attendanceGeofence.enabled': true });
+    expect(rejected).toEqual(['coordinates']);
+  });
+});

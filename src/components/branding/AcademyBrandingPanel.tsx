@@ -4,7 +4,13 @@ import { useAppSelector } from "@/store";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, Globe, IndianRupee, Loader2, RotateCcw, Save } from "lucide-react";
+import { Check, Globe, IndianRupee, Loader2, MapPin, RotateCcw, Save } from "lucide-react";
+import GeofenceSettings, {
+  emptyGeofenceDraft,
+  geofenceDraftFromAcademy,
+  geofenceDraftToUpdate,
+  type GeofenceDraft,
+} from "@/components/admin/attendance/GeofenceSettings";
 import { academyService, type Academy, type AcademyFees } from "@/services/academyService";
 import { toastUtils } from "@/utils/toast";
 import {
@@ -52,6 +58,8 @@ export const AcademyBrandingPanel: React.FC = () => {
   const [savedEcosystem, setSavedEcosystem] = useState<EcosystemProfile>(
     emptyEcosystemProfile(),
   );
+  const [geofence, setGeofence] = useState<GeofenceDraft>(emptyGeofenceDraft());
+  const [savedGeofence, setSavedGeofence] = useState<GeofenceDraft>(emptyGeofenceDraft());
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -82,6 +90,9 @@ export const AcademyBrandingPanel: React.FC = () => {
         const nextEcosystem = ecosystemProfileFromAcademy(found);
         setEcosystem(nextEcosystem);
         setSavedEcosystem(nextEcosystem);
+        const nextGeofence = geofenceDraftFromAcademy(found);
+        setGeofence(nextGeofence);
+        setSavedGeofence(nextGeofence);
       }
     } catch (e: any) {
       setError(e?.response?.data?.message || "Could not load your branding.");
@@ -99,6 +110,7 @@ export const AcademyBrandingPanel: React.FC = () => {
     (JSON.stringify(savedDraft) !== JSON.stringify(draft) ||
       JSON.stringify(savedFees) !== JSON.stringify(fees) ||
       JSON.stringify(savedEcosystem) !== JSON.stringify(ecosystem) ||
+      JSON.stringify(savedGeofence) !== JSON.stringify(geofence) ||
       savedDueDay !== dueDay);
 
   const save = async () => {
@@ -111,6 +123,7 @@ export const AcademyBrandingPanel: React.FC = () => {
         {
           ...draftToThemeUpdate(draft),
           ...ecosystemProfileToUpdate(ecosystem),
+          ...geofenceDraftToUpdate(geofence),
           "fees.monthly": fees.monthly,
           "fees.quarterly": fees.quarterly,
           "fees.halfYearly": fees.halfYearly,
@@ -121,6 +134,7 @@ export const AcademyBrandingPanel: React.FC = () => {
       setSavedDraft(draft);
       setSavedFees(fees);
       setSavedEcosystem(ecosystem);
+      setSavedGeofence(geofence);
       setSavedDueDay(dueDay);
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 2500);
@@ -173,6 +187,7 @@ export const AcademyBrandingPanel: React.FC = () => {
                 if (savedDraft) setDraft(savedDraft);
                 setFees(savedFees);
                 setEcosystem(savedEcosystem);
+                setGeofence(savedGeofence);
                 setDueDay(savedDueDay);
               }}
             >
@@ -229,6 +244,25 @@ export const AcademyBrandingPanel: React.FC = () => {
           <EcosystemProfileEditor
             value={ecosystem}
             onChange={setEcosystem}
+            disabled={saving}
+          />
+        </CardContent>
+      </Card>
+
+      {/*
+        Attendance geofence. Sits with fees rather than in the homepage canvas
+        because it is operational policy, not something a visitor ever sees.
+      */}
+      <Card className="border-0 shadow-sm">
+        <CardContent className="space-y-4 p-5">
+          <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+            <MapPin className="h-3 w-3" />
+            Attendance
+          </p>
+          <GeofenceSettings
+            value={geofence}
+            onChange={setGeofence}
+            mapPin={academy?.coordinates ?? null}
             disabled={saving}
           />
         </CardContent>

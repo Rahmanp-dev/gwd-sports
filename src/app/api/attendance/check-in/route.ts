@@ -8,6 +8,11 @@ import StudentProfile from '@/lib/models/Student';
 import { ensureRoleProfile } from '@/lib/auth/ensureRoleProfile';
 import { recordAttendance } from '@/lib/attendance/record';
 import { resolveSession, validateCheckIn } from '@/lib/attendance/session';
+import {
+  evaluateGeofence,
+  normaliseRadius,
+  resolveGeofenceCentre,
+} from '@/lib/attendance/geofence';
 
 /**
  * Parent QR self-check-in.
@@ -116,7 +121,32 @@ async function resolveContext(req: NextRequest, token: string) {
     };
   }
 
-  return { auth, batch: batch as any, profile };
+  /**
+   * Loaded here rather than only in POST so GET can tell the page whether a
+   * location will be required — the page needs that BEFORE the parent presses
+   * the button, or the permission prompt appears at the worst possible moment
+   * and the first tap always fails. Also saves POST a second round trip for
+   * the academy name.
+   */
+  const academy = await Academy.findById(profile.academyId)
+    .select('name coordinates attendanceGeofence')
+    .lean();
+
+  return { auth, batch: batch as any, profile, academy: academy as any };
+}
+
+/** The geofence config for an academy, with the centre already resolved. */
+function geofenceFor(academy: any) {
+  const cfg = academy?.attendanceGeofence ?? {};
+  const centre = resolveGeofenceCentre(
+    cfg.lat !== undefined && cfg.lng !== undefined ? { lat: cfg.lat, lng: cfg.lng } : null,
+    academy?.coordinates ?? null,
+  );
+  return {
+    enabled: Boolean(cfg.enabled),
+    radiusMeters: normaliseRadius(cfg.radiusMeters),
+    centre,
+  };
 }
 
 function sessionBatch(batch: any) {
@@ -140,6 +170,7 @@ export async function GET(req: NextRequest) {
     const now = new Date();
     const verdict = validateCheckIn(sessionBatch(ctx.batch), now);
     const session = resolveSession(sessionBatch(ctx.batch), now);
+    const geofence = geofenceFor(ctx.academy);
 
     const already = (ctx.profile.attendance ?? []).find(
       (row: any) => row.sessionId === session.sessionId
@@ -153,6 +184,16 @@ export async function GET(req: NextRequest) {
         sport: ctx.batch.sport,
         session: { sessionId: session.sessionId, date: session.date, weekday: session.weekday },
         canCheckIn: verdict.ok && !already,
+        /**
+         * Whether the page must obtain a location before POSTing.
+         *
+         * `enabled && centre` rather than just `enabled`: with the fence on but
+         * no ground set, the server fails open (see evaluateGeofence), so
+         * demanding a location the parent's answer cannot affect would be a
+         * pointless permission prompt.
+         */
+        locationRequired: Boolean(geofence.enabled && geofence.centre),
+        geofenceRadiusMeters: geofence.centre ? geofence.radiusMeters : null,
         // Present even when canCheckIn is true, so the page can show the window
         // rather than only complaining once it has closed.
         opensAt: session.opensAt.toISOString(),
@@ -187,13 +228,51 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const academy = await Academy.findById(ctx.profile.academyId).select('name').lean();
+    /**
+     * The geofence, checked AFTER the session window.
+     *
+     * Order matters for the message the parent reads: "training isn't on right
+     * now" is more useful than "you're not at the ground" when both are true,
+     * and asking for location permission to then reject on time would be a
+     * prompt for nothing.
+     *
+     * The coordinates are client-supplied and therefore spoofable — see the
+     * header of lib/attendance/geofence.ts. This is a deterrent, not proof;
+     * the coach's own register remains the authoritative path.
+     */
+    const geofence = geofenceFor(ctx.academy);
+    const location = payload?.location;
+    const geoVerdict = evaluateGeofence(
+      geofence,
+      location
+        ? {
+            lat: Number(location.lat),
+            lng: Number(location.lng),
+            accuracy: location.accuracy === undefined ? null : Number(location.accuracy),
+          }
+        : null,
+    );
+
+    if (!geoVerdict.ok) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: geoVerdict.reason,
+          code: geoVerdict.code,
+          data: {
+            distanceMeters: geoVerdict.distanceMeters ?? null,
+            allowedMeters: geoVerdict.allowedMeters ?? null,
+          },
+        },
+        { status: 403 },
+      );
+    }
 
     const result = await recordAttendance({
       target: {
         profile: ctx.profile,
         studentName: (ctx.profile.userId as any)?.name ?? 'your child',
-        academyName: (academy as any)?.name ?? 'your academy',
+        academyName: ctx.academy?.name ?? 'your academy',
       },
       session: verdict.session,
       date: now,

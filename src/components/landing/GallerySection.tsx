@@ -10,8 +10,14 @@ import { motion } from "framer-motion";
  * else's facility is worse than no gallery.
  */
 export default function GallerySection({ academy }: { academy?: any }) {
-  const gallery: { url: string; caption?: string }[] =
-    academy?.theme?.gallery?.filter((g: any) => g?.url) ?? [];
+  /* Array.isArray, not optional chaining: a non-array persisted at
+     theme.gallery makes .filter throw, which takes down the WHOLE public page
+     rather than just this section. */
+  const gallery: { url: string; caption?: string }[] = Array.isArray(
+    academy?.theme?.gallery,
+  )
+    ? academy.theme.gallery.filter((g: any) => g?.url)
+    : [];
 
   if (academy?.theme?.sections?.gallery === false || gallery.length === 0) {
     return null;

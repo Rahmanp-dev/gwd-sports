@@ -126,6 +126,13 @@ const feePaymentSchema = new Schema<IFeePayment>(
 
 // Indexes for financial queries
 feePaymentSchema.index({ academyId: 1, status: 1 });
+/**
+ * The engagement rollup and the per-academy insights panel both filter on
+ * (academyId, status, settledAt >= window). Without `settledAt` in the index
+ * that becomes a scan of every successful payment an academy has ever taken,
+ * which only gets slower as a customer succeeds.
+ */
+feePaymentSchema.index({ academyId: 1, status: 1, settledAt: -1 });
 feePaymentSchema.index({ studentId: 1 });
 feePaymentSchema.index({ createdAt: -1 });
 // Drives the daily reconciliation sweep: recent successful payments.

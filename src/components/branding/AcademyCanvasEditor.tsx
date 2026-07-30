@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useDeferredValue, useMemo, useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
@@ -30,6 +30,7 @@ import {
   type SectionKey,
 } from "./AcademyBrandingEditor";
 import { draftToPreviewAcademy } from "./draftPreview";
+import { sectionWillRender } from "@/lib/branding/sectionVisibility";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -107,9 +108,38 @@ export const AcademyCanvasEditor: React.FC<AcademyCanvasEditorProps> = ({
 
   // Rebuilt on every keystroke — cheap, and the whole point is that the page
   // below reflects the draft immediately.
+  /**
+   * The canvas renders from a DEFERRED copy of the draft.
+   *
+   * Every keystroke in a control re-renders eight real landing sections, each
+   * full of framer-motion nodes — so typing a tagline was driving a complete
+   * homepage re-render per character and the input visibly lagged behind the
+   * keyboard.
+   *
+   * `useDeferredValue` is the right tool rather than a debounce: React renders
+   * the control immediately at normal priority and the canvas at low priority,
+   * abandoning an in-progress canvas render as soon as the next character
+   * arrives. No timer to tune, and the preview still lands within a frame or
+   * two of the user stopping.
+   */
+  const deferredValue = useDeferredValue(value);
+
+  /**
+   * `sports` is an array prop rebuilt by the caller on every render
+   * (`academy?.sports ?? []`), so depending on it directly would defeat this
+   * memo entirely. The joined string is what actually tells us it changed.
+   */
+  const sportsKey = sports.join(",");
+
   const previewAcademy = useMemo(
-    () => draftToPreviewAcademy(value, { name: academyName, sports, ...(academy ?? {}) }),
-    [value, academy, academyName, sports],
+    () =>
+      draftToPreviewAcademy(deferredValue, {
+        name: academyName,
+        sports,
+        ...(academy ?? {}),
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [deferredValue, academy, academyName, sportsKey],
   );
 
   const order = useMemo(() => {
@@ -242,16 +272,24 @@ export const AcademyCanvasEditor: React.FC<AcademyCanvasEditorProps> = ({
                   const Section = CANVAS_SECTIONS[key];
                   if (!Section) return null;
 
-                  const visible = value.sections[key as SectionKey] !== false;
-                  // A hidden section still occupies a slot on the canvas (the
-                  // owner needs to see and un-hide it), but must not consume a
-                  // band position, or the live page's rhythm would differ.
-                  const band = visible
+                  const switchedOn = value.sections[key as SectionKey] !== false;
+                  /**
+                   * `willRender` is the same predicate the live page uses, so
+                   * the canvas assigns the identical bands — including skipping
+                   * sections that self-null for want of content.
+                   *
+                   * The canvas still SHOWS those sections (as an empty
+                   * placeholder below) because the owner needs somewhere to
+                   * click to fill them in. It just must not let them consume a
+                   * band slot, or the canvas would drift from the real page.
+                   */
+                  const willRender = switchedOn && sectionWillRender(key, previewAcademy);
+                  const band = willRender
                     ? renderedCount % 2 === 0
                       ? "primary"
                       : "alt"
                     : undefined;
-                  if (visible) renderedCount++;
+                  if (willRender) renderedCount++;
 
                   return (
                     <CanvasSection
@@ -259,13 +297,14 @@ export const AcademyCanvasEditor: React.FC<AcademyCanvasEditorProps> = ({
                       sectionKey={key}
                       title={SECTION_TITLES[key] ?? key}
                       selected={selected === key}
-                      hidden={!visible}
+                      hidden={!switchedOn}
+                      empty={switchedOn && !willRender}
                       band={band}
                       accented={Boolean(
                         value.accentSection && value.accentSection === key,
                       )}
                       onSelect={() => setSelected(selected === key ? null : key)}
-                      onToggle={() => setSectionVisible(key, !visible)}
+                      onToggle={() => setSectionVisible(key, !switchedOn)}
                       onMoveUp={index > 0 ? () => move(key, -1) : undefined}
                       onMoveDown={
                         index < order.length - 1 ? () => move(key, 1) : undefined
@@ -377,6 +416,7 @@ function CanvasSection({
   children,
   selected,
   hidden = false,
+  empty = false,
   band,
   accented = false,
   onSelect,
@@ -392,6 +432,8 @@ function CanvasSection({
   children: React.ReactNode;
   selected: boolean;
   hidden?: boolean;
+  /** Switched on, but has no content yet — so it renders nothing on the page. */
+  empty?: boolean;
   /** 'primary' | 'alt' — the same alternating band the live page uses. */
   band?: string;
   accented?: boolean;
@@ -421,6 +463,27 @@ function CanvasSection({
       >
         {children}
       </div>
+
+      {/*
+        A section that is switched on but has no content renders NOTHING, which
+        collapsed this wrapper to zero height and left its floating toolbar
+        overlapping the next section down. Worse, the owner had nothing to click
+        to fill it in — the very case they most need to reach. This placeholder
+        gives it height and a reason.
+      */}
+      {empty && (
+        <div className="flex min-h-[7rem] items-center justify-center border-y border-dashed border-slate-300 bg-slate-50/80 px-6 py-10 text-center">
+          <div>
+            <p className="text-sm font-semibold text-slate-600">
+              {title} is empty
+            </p>
+            <p className="mt-1 text-xs text-slate-400">
+              Nothing here yet, so it will not appear on your page. Press Edit to
+              add something.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Selection ring */}
       <div

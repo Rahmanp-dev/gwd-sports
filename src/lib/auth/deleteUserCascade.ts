@@ -98,6 +98,22 @@ export async function deleteUserCascade(
     console.error('[deleteUserCascade] roster cleanup failed:', err?.message || err);
   }
 
+  /**
+   * Clear a dangling `ownerId`.
+   *
+   * Deleting the account that owns an academy left `ownerId` pointing at a
+   * user that no longer exists. Nothing crashes today only because every
+   * reader happens to optional-chain it, which is luck rather than design —
+   * and an academy with a phantom owner is a support problem regardless.
+   * Cleared rather than reassigned: who should own it next is a decision for a
+   * human, and inventing one here would be worse than leaving it visibly unset.
+   */
+  try {
+    await Academy.updateMany({ ownerId: userId }, { $unset: { ownerId: '' } } as any);
+  } catch (err: any) {
+    console.error('[deleteUserCascade] owner cleanup failed:', err?.message || err);
+  }
+
   await User.findByIdAndDelete(userId);
 
   return result;
@@ -112,6 +128,7 @@ export async function deleteUserCascade(
  */
 export async function purgeOrphanedProfiles(
   academyId?: mongoose.Types.ObjectId | string | null,
+  options: { dryRun?: boolean } = {},
 ): Promise<{ students: number; trainers: number }> {
   const scope = academyId ? { academyId } : {};
 
@@ -142,6 +159,28 @@ export async function purgeOrphanedProfiles(
     .filter((r) => !r.userId || !alive.has(String(r.userId)))
     .map((r) => r._id);
 
+  /**
+   * The dead users' ids, so the rosters can be cleaned too.
+   *
+   * This function previously deleted the profiles and detached the passports
+   * but left the user ids sitting in `Academy.students`/`trainers` — inflating
+   * headcount and capacity checks. That is bullet 3 of this file's own header,
+   * fixed on the delete path but originally missed on the repair path.
+   */
+  const deadUserIds = [
+    ...new Set(
+      [...(studentRows as any[]), ...(trainerRows as any[])]
+        .filter((r) => r.userId && !alive.has(String(r.userId)))
+        .map((r) => r.userId),
+    ),
+  ];
+
+  // Counting without deleting, so the scope of a destructive repair can be
+  // seen before it is run.
+  if (options.dryRun) {
+    return { students: deadStudents.length, trainers: deadTrainers.length };
+  }
+
   if (deadStudents.length) {
     await Passport.updateMany(
       { currentStudentProfileId: { $in: deadStudents } },
@@ -151,6 +190,12 @@ export async function purgeOrphanedProfiles(
   }
   if (deadTrainers.length) {
     await TrainerProfile.deleteMany({ _id: { $in: deadTrainers } });
+  }
+  if (deadUserIds.length) {
+    await Academy.updateMany(
+      { $or: [{ students: { $in: deadUserIds } }, { trainers: { $in: deadUserIds } }] },
+      { $pull: { students: { $in: deadUserIds }, trainers: { $in: deadUserIds } } } as any,
+    );
   }
 
   return { students: deadStudents.length, trainers: deadTrainers.length };

@@ -9,9 +9,11 @@ import {
   CheckCircle2,
   Clock,
   Loader2,
+  MapPin,
   QrCode,
   XCircle,
 } from "lucide-react";
+import { useDeviceLocation } from "@/lib/attendance/useDeviceLocation";
 
 /**
  * What a parent sees after scanning the QR code on the academy wall.
@@ -32,6 +34,9 @@ interface Preview {
   closesAt: string;
   reason: string | null;
   alreadyCheckedIn: { present: boolean; source: string } | null;
+  /** True when this academy only accepts check-ins at the ground. */
+  locationRequired?: boolean;
+  geofenceRadiusMeters?: number | null;
 }
 
 function timeIst(iso: string): string {
@@ -105,6 +110,7 @@ export function CheckInPage({ token }: { token: string }) {
   );
 
   const { token: authToken } = useAppSelector((s) => s.auth);
+  const geo = useDeviceLocation();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -131,10 +137,31 @@ export function CheckInPage({ token }: { token: string }) {
   const checkIn = async () => {
     setSubmitting(true);
     setError("");
+
+    /**
+     * Location is fetched on the tap, not on page load.
+     *
+     * Asking on load would fire the browser's permission prompt before the
+     * parent has any idea why the page wants it, which is the reliable way to
+     * get it denied forever. Here the prompt arrives immediately after they
+     * chose to check in, when the reason is obvious.
+     */
+    let location = null;
+    if (preview?.locationRequired) {
+      location = await geo.request();
+      if (!location) {
+        // The hook has already produced a message specific to WHY it failed
+        // (denied / indoors / unsupported), which is more use than a generic one.
+        setError(geo.message || "Could not get your location.");
+        setSubmitting(false);
+        return;
+      }
+    }
+
     try {
       const res = await axios.post(
         `${API_BASE_URL}/attendance/check-in`,
-        { token },
+        { token, ...(location ? { location } : {}) },
         { headers: { Authorization: `Bearer ${authToken}` } },
       );
       if (res.data?.success) {
@@ -273,12 +300,24 @@ export function CheckInPage({ token }: { token: string }) {
               ) : (
                 <CheckCircle2 className="mr-2 h-5 w-5" />
               )}
-              Check in
+              {/* Naming the location step matters: the browser prompt appears
+                  during this tap, and a button that still says "Check in"
+                  while a permission dialog is up reads as a stuck button. */}
+              {submitting && geo.status === "requesting"
+                ? "Checking you are at the ground…"
+                : "Check in"}
             </Button>
             <p className="mt-2.5 flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
               <Clock className="h-3 w-3" />
               Open until {timeIst(preview.closesAt)}
             </p>
+            {/* Told BEFORE the tap, so the permission prompt is expected. */}
+            {preview.locationRequired && (
+              <p className="mt-1 flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
+                <MapPin className="h-3 w-3" />
+                Your academy checks you are at the ground
+              </p>
+            )}
           </>
         ) : (
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-center">

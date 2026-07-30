@@ -12,6 +12,7 @@ import VideoSection from "@/components/landing/VideoSection";
 import Footer from "@/components/landing/Footer";
 import AcademyTheme from "@/components/branding/AcademyTheme";
 import { DEFAULT_SECTION_ORDER } from "@/components/branding/AcademyBrandingEditor";
+import { sectionWillRender } from "@/lib/branding/sectionVisibility";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -103,6 +104,18 @@ export default function AcademyPublicPage({ academy }: { academy: any }) {
 
         const Section = SECTION_MAP[key];
         if (!Section) return null;
+
+        /**
+         * Skip sections that will render nothing.
+         *
+         * Every section self-nulls when it has no genuine content, and this
+         * used to count them anyway — so a gallery with no photos consumed a
+         * band slot and the two sections after it came out the same colour,
+         * meeting in a visible seam. `sectionWillRender` is the single place
+         * that knows, shared with the sections themselves so the two cannot
+         * disagree.
+         */
+        if (!sectionWillRender(key, academy)) return null;
 
         // Alternating band: primary (--page-bg) for even count, alt (--page-alt)
         // for odd. renderedCount is incremented AFTER we determine the band, so
