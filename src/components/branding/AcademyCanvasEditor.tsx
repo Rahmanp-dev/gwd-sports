@@ -455,11 +455,29 @@ function CanvasSection({
       data-section-accent={accented ? sectionKey : undefined}
       aria-label={title}
     >
-      {/* The real section. Non-interactive inside the canvas — see above. */}
+      {/*
+        The real section. Non-interactive inside the canvas — see above.
+
+        WITH ONE EXCEPTION: the video iframe, once this section is selected.
+
+        `pointer-events-none` is right for links, but it also swallowed clicks
+        on an embedded video's play button. An owner would paste a YouTube or
+        Instagram URL, see the frame appear, press play, and get nothing — the
+        obvious reading of which is "the video is broken", when in fact the
+        canvas was eating the click by design.
+
+        Re-enabling it unconditionally would break selection: the first click
+        on the video would play it instead of selecting the section to edit.
+        So it is gated on `selected` — click once to select the band as usual,
+        and it then becomes playable so the owner can confirm the right clip is
+        in there before saving. Everything else in the section stays inert.
+      */}
       <div
-        className={`pointer-events-none select-none transition-opacity ${
-          hidden ? "opacity-30 grayscale" : ""
-        }`}
+        className={`select-none transition-opacity ${
+          selected
+            ? "pointer-events-none [&_iframe]:pointer-events-auto"
+            : "pointer-events-none"
+        } ${hidden ? "opacity-30 grayscale" : ""}`}
       >
         {children}
       </div>

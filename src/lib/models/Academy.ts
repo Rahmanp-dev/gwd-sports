@@ -526,6 +526,18 @@ const AcademySchema = new Schema<IAcademy>({
       heading: { type: String, default: '' },
       subheading: { type: String, default: '' },
       layout: { type: String, enum: ['cinematic', 'framed', 'split'], default: 'cinematic' },
+      /**
+       * Frame shape. `auto` reads it from the URL — a /shorts/ or /reel/ link
+       * is portrait — which is right most of the time and costs the owner
+       * nothing. Explicit values exist because detection cannot always be
+       * right: a landscape clip can be posted to Reels, and a square post is
+       * indistinguishable from a portrait one by URL alone.
+       */
+      aspect: {
+        type: String,
+        enum: ['auto', '16:9', '9:16', '1:1', '4:5', '21:9'],
+        default: 'auto',
+      },
     },
     density: {
       type: String,

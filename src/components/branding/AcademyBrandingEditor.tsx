@@ -69,7 +69,14 @@ import {
   HIGHLIGHT_ICON_KEYS,
 } from "@/components/landing/WhyChooseUs";
 import { STAT_ICON_KEYS } from "@/components/landing/StatsSection";
-import { VIDEO_LAYOUTS, buildEmbedUrl } from "@/components/landing/videoEmbed";
+import {
+  VIDEO_LAYOUTS,
+  VIDEO_ASPECTS,
+  buildEmbedUrl,
+  detectShape,
+  isVideoAspect,
+  type VideoAspect,
+} from "@/components/landing/videoEmbed";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -135,6 +142,8 @@ export interface BrandingDraft {
     heading: string;
     subheading: string;
     layout: "cinematic" | "framed" | "split";
+    /** Frame shape. "auto" reads it from the URL. See videoEmbed.ts. */
+    aspect: VideoAspect;
   };
   achievements: string[];
   /** Vertical rhythm preset: compact tightens sections, spacious opens them. */
@@ -221,6 +230,7 @@ export function defaultBrandingDraft(): BrandingDraft {
       heading: "",
       subheading: "",
       layout: "cinematic",
+      aspect: "auto",
     },
     achievements: [],
     density: "spacious",
@@ -292,6 +302,9 @@ export function draftFromAcademy(academy?: Partial<Academy> | null): BrandingDra
         theme.videoSection?.layout === "framed" || theme.videoSection?.layout === "split"
           ? theme.videoSection.layout
           : "cinematic",
+      aspect: isVideoAspect(theme.videoSection?.aspect)
+        ? theme.videoSection.aspect
+        : "auto",
     },
     achievements: academy?.achievements ?? [],
     density: (theme.density === 'compact' || theme.density === 'spacious') ? theme.density : 'spacious',
@@ -2471,6 +2484,64 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
               }
               className="text-xs"
             />
+
+            {/*
+              FRAME SHAPE. The renderer used to force every embed into 16:9,
+              which turned a Short, a Reel or a portrait post into a thin strip
+              between two black slabs. "Auto" reads the shape from the URL —
+              a /shorts/ or /reel/ link is portrait — and the explicit options
+              exist for the cases a URL cannot tell you: a landscape clip
+              posted to Reels, or a square post versus a tall one.
+            */}
+            <div>
+              <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                Frame shape
+              </label>
+              <div className="grid grid-cols-3 gap-1.5">
+                {(["auto", ...Object.keys(VIDEO_ASPECTS)] as VideoAspect[]).map((key) => {
+                  const active = value.videoSection.aspect === key;
+                  const meta = key === "auto" ? null : VIDEO_ASPECTS[key as Exclude<VideoAspect, "auto">];
+                  const autoShape =
+                    key === "auto" && value.videoSection.url
+                      ? detectShape(value.videoSection.provider, value.videoSection.url)
+                      : null;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      disabled={disabled}
+                      onClick={() =>
+                        patch({ videoSection: { ...value.videoSection, aspect: key } })
+                      }
+                      className={`rounded-lg border p-2 text-center transition-all ${
+                        active
+                          ? "border-slate-900 ring-2 ring-slate-900/10"
+                          : "border-slate-200 hover:border-slate-300"
+                      }`}
+                    >
+                      {/* A miniature of the actual proportion — faster to read
+                          than the label, and it makes a wrong choice obvious. */}
+                      <span className="mx-auto mb-1.5 block w-6">
+                        <span
+                          className="block w-full rounded-sm bg-slate-300"
+                          style={{ aspectRatio: meta ? meta.css : "16 / 9" }}
+                        />
+                      </span>
+                      <span className="block text-[10px] font-semibold text-slate-700">
+                        {key === "auto" ? "Auto" : meta!.label}
+                      </span>
+                      <span className="mt-0.5 block text-[9px] leading-tight text-slate-400">
+                        {key === "auto"
+                          ? autoShape
+                            ? `Detected: ${autoShape}`
+                            : "From the link"
+                          : key}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
             <div>
               <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">

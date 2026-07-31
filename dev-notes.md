@@ -4480,3 +4480,49 @@ The real situation is a fixed parent total with a variable actual cost underneat
 2. **GST on GWD's own fee.** If GWD is registered, the platform fee is a taxable supply — so "we keep 1%" is gross, not net. Any figure presented as what GWD keeps should say which.
 3. **Disclosing a processor's commercial terms.** Payment aggregator agreements commonly restrict publishing negotiated rates. Avoided for now by not naming a rate.
 4. **Publishing the 1% margin at all** is a commercial choice, not a correctness one — it sets a visible ceiling that is awkward to raise later.
+
+---
+
+## Session — 2026-07-31 (cont. 5) · Video aspect ratios, and a privilege-escalation hole in user editing
+
+**State:** `tsc --noEmit` clean, `vitest run` 586/586 (30 new), cold `rm -rf .next && npm run build` clean. Not committed.
+
+### 1. Video: two separate bugs behind one complaint
+
+**Orientation.** `VideoFrame` hard-coded `aspectRatio: "16 / 9"`. That is right for exactly one of the things owners paste. A YouTube Short, an Instagram Reel and a portrait post are all taller than they are wide, so each was letterboxed into a thin strip between two black slabs — which is what an owner sees and reasonably calls broken.
+
+Fixed with `aspect` on the video section: `auto` plus 16:9, 9:16, 1:1, 4:5 and 21:9. **Auto reads the shape out of the URL** — a `/shorts/` or `/reel/` link is portrait, and we already know that at parse time, so the right default costs the owner nothing. Explicit values exist because detection cannot always be right: a landscape clip can be posted to Reels, and a square post is indistinguishable from a tall one by URL alone. Instagram `/p/` is deliberately reported as **square rather than portrait** — a 4:5 post in a square frame gets modest padding, whereas a square post in a 4:5 frame gets side bars, so guessing the less-tall option errs smaller.
+
+The width cap now follows the aspect rather than the provider. `cinematic` may widen a landscape video but never a portrait one — "full-width" applied to 9:16 is the bug being fixed, not a layout choice. The editor's picker draws a **miniature of the real proportion** next to each label, which is faster to read than the words and makes a wrong pick obvious.
+
+**"It doesn't play from admin."** Not a video bug at all. `AcademyCanvasEditor` puts `pointer-events-none` on section content so a click means "edit this band" rather than "follow this link" — correct, and deliberate. But it also swallowed clicks on the embed's play button, so an owner pasted a URL, saw the frame, pressed play and got nothing. Now gated on selection: click once to select the band as usual, and the iframe becomes interactive so the clip can be checked before saving. Everything else in the section stays inert. 12 new tests on shape detection and resolution.
+
+Honest limitation left in place: Instagram restricts inline playback for Reels in third-party embeds — some will always show a preview card that opens Instagram. That is theirs, not ours.
+
+### 2. 🔴 `PUT /api/admin/users/[id]` — three defects, one of them critical
+
+The handler took the request body wholesale, dropped `password` and `refreshTokens`, and `$set` the remainder.
+
+🔴 **Privilege escalation.** `role` was writable. Any academy admin could `PUT {"role":"gwd_super_admin"}` at their own id and own the platform. `academyId` was writable too, which moves a user between tenants.
+
+🔴 **No tenant scoping.** The `DELETE` handler immediately below it had careful academy scoping added at some point — its own comment describes the same hole being closed. `PUT` never got the same treatment, so any academy admin could edit **any** user on the platform by id, another academy's owner included.
+
+🔴 **No cascade — the quiet one.** A parent's phone is stored in five places by design, so the systems reading it do not have to join at send time: `User.phone`, `StudentProfile.parentPhone`, `StudentProfile.parentPhoneE164`, `Passport.parentPhone` and `Passport.identityKey`. Writing only the first left attendance confirmations, fee reminders, the weekly digest and every broadcast still addressed to the old number. **Nothing errors. The parent simply stops hearing from the academy and nobody can tell.** And `identityKey` is uniquely indexed — it is what makes "never create a second Passport for the same child" a database guarantee — so a stale one means the next import carrying the new number no longer matches and the child gets a duplicate Passport with an empty history.
+
+**Fixed** with `lib/users/identityChange.ts` (pure: role-keyed allowlist, validation, diff) and `applyIdentityChange.ts` (the write half).
+
+Details worth keeping:
+- **Uniqueness is checked before anything is written.** Both `User.email` and `Passport.identityKey` are unique; a collision found halfway would leave the user renamed and the passport not — the exact split-brain the function exists to prevent. Not perfectly atomic without a transaction, but it turns the common case from "half applied, raw 500" into "nothing applied, clear message".
+- **A name change also rebuilds the key**, because it is `${phone}::${normalised name}`. Nobody expects a spelling correction to break duplicate detection, which is why it is easy to miss.
+- **All of a parent's passports move together.** A parent with three children has three passports linked only by phone; moving one would split the siblings across two numbers.
+- **An identityKey collision refuses rather than merges.** Merging two passports for one child is a judgement call, not something to do silently inside an edit — the message names the conflicting passport id.
+- You cannot change your own role or deactivate yourself; both lock you out of the dashboard you are standing in.
+- The response names what else moved, so an admin changing a phone is told the passports followed rather than left guessing, and reports any fields it refused rather than dropping them silently.
+
+19 new tests, including that `role`/`academyId` are absent from the academy-admin allowlist entirely and that credentials never pass for anyone.
+
+### Not done / honest gaps
+
+- **The admin and super-admin UIs were not touched.** The API is now correct and synced, but neither dashboard has an edit form wired to the new validation, so the field-level errors and the "synced across N passports" message have nowhere to display yet. That is the remaining half of "updated across all admin and superadmins".
+- No self-service email/phone change for a user on their own profile — this is the admin path only.
+- The video work is verified by unit tests, typecheck and build, not by eye in a browser.

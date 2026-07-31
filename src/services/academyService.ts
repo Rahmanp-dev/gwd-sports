@@ -59,6 +59,12 @@ export interface AcademyVideoSection {
   heading?: string;
   subheading?: string;
   layout?: 'cinematic' | 'framed' | 'split';
+  /**
+   * Frame shape. 'auto' derives it from the URL — a /shorts/ or /reel/ link is
+   * portrait. Without this every embed was forced to 16:9 and vertical video
+   * rendered as a strip between two black slabs. See components/landing/videoEmbed.ts.
+   */
+  aspect?: 'auto' | '16:9' | '9:16' | '1:1' | '4:5' | '21:9';
 }
 
 export interface AcademyHomepageSections {

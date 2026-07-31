@@ -2,7 +2,13 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { PlayCircle } from "lucide-react";
-import { buildEmbedUrl, type VideoLayout, type VideoProvider } from "./videoEmbed";
+import {
+  buildEmbedUrl,
+  resolveAspect,
+  VIDEO_ASPECTS,
+  type VideoLayout,
+  type VideoProvider,
+} from "./videoEmbed";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -22,23 +28,26 @@ import { buildEmbedUrl, type VideoLayout, type VideoProvider } from "./videoEmbe
 function VideoFrame({
   src,
   title,
+  aspectCss,
   className,
 }: {
   src: string;
   title: string;
+  /** e.g. "9 / 16". Never hard-coded — see the aspect notes in videoEmbed.ts. */
+  aspectCss: string;
   className?: string;
 }) {
   return (
     <div
       className={`relative w-full overflow-hidden rounded-[var(--brand-radius)] bg-black ${className ?? ""}`}
-      style={{ aspectRatio: "16 / 9" }}
+      style={{ aspectRatio: aspectCss }}
     >
       <iframe
         src={src}
         title={title}
         loading="lazy"
         className="absolute inset-0 h-full w-full border-0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         allowFullScreen
       />
     </div>
@@ -64,11 +73,20 @@ export default function VideoSection({ academy }: { academy?: any }) {
   const subheading = config.subheading || "";
   const frameTitle = `${academy?.name ?? "Academy"} video`;
 
-  // Instagram embeds are portrait-ish and have their own chrome; capping the
-  // width stops a reel from becoming a full-bleed letterbox with huge black
-  // bars either side.
-  const widthCap =
-    provider === "instagram" ? "max-w-md" : layout === "cinematic" ? "max-w-6xl" : "max-w-4xl";
+  /**
+   * The frame's shape, and therefore how wide it may be.
+   *
+   * This used to cap purely by provider and then force every embed into 16:9,
+   * which letterboxed Shorts, Reels and portrait posts into a black slab. The
+   * cap now follows the ASPECT: a 9:16 clip has to stay narrow or it becomes
+   * taller than the viewport, while a 16:9 one can run wide. A `cinematic`
+   * layout is allowed to widen a landscape video but never a portrait one —
+   * "full-width" applied to 9:16 is exactly the bug being fixed.
+   */
+  const aspect = resolveAspect(config.aspect, provider, String(config.url ?? ""));
+  const { css: aspectCss, cap } = VIDEO_ASPECTS[aspect];
+  const isWide = aspect === "16:9" || aspect === "21:9";
+  const widthCap = isWide && layout === "cinematic" ? "max-w-6xl" : cap;
 
   return (
     <section className="relative py-[var(--section-py-sm)] md:py-[var(--section-py)] px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
@@ -117,6 +135,7 @@ export default function VideoSection({ academy }: { academy?: any }) {
               <VideoFrame
                 src={embedUrl}
                 title={frameTitle}
+                aspectCss={aspectCss}
                 className="shadow-2xl"
               />
             </motion.div>
@@ -162,12 +181,13 @@ export default function VideoSection({ academy }: { academy?: any }) {
                     boxShadow: "0 25px 60px -20px rgb(var(--brand-rgb) / 0.45)",
                   }}
                 >
-                  <VideoFrame src={embedUrl} title={frameTitle} />
+                  <VideoFrame src={embedUrl} title={frameTitle} aspectCss={aspectCss} />
                 </div>
               ) : (
                 <VideoFrame
                   src={embedUrl}
                   title={frameTitle}
+                  aspectCss={aspectCss}
                   className="shadow-2xl"
                 />
               )}
