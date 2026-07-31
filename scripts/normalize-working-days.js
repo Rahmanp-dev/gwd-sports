@@ -41,9 +41,11 @@ function normalise(value) {
 
 async function main() {
   const apply = process.argv.includes('--apply');
-  const uri = process.env.MONGODB_URI;
+  // DB_URI is what src/lib/db.ts and .env.local actually use; MONGODB_URI
+  // is kept as a fallback for anyone with it already exported.
+  const uri = process.env.DB_URI || process.env.MONGODB_URI;
   if (!uri) {
-    console.error('MONGODB_URI is not set.');
+    console.error('DB_URI is not set.');
     process.exit(1);
   }
 

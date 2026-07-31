@@ -112,8 +112,20 @@ export default function DiscoverPage() {
           >
             Find Your Academy
           </h1>
+          {/*
+            This read "Search from 500+ sports academies across India" — a
+            number nothing in the system produced and roughly a hundred times
+            the real figure. It sat directly above a live count of the actual
+            directory, so the page contradicted itself in two adjacent lines,
+            and it broke the rule this codebase applies to every academy's own
+            website: never state a figure the data does not support.
+
+            The honest version is also the more useful one — it tells a parent
+            what the filters below actually do.
+          */}
           <p className="text-[#888899] text-base md:text-lg max-w-xl mx-auto mb-10">
-            Search from 500+ sports academies across India. Find the perfect fit for your game.
+            Every academy in the GWD ecosystem, on one map. Filter by sport and
+            city to find the right fit near you.
           </p>
 
           {/* Search Bar */}

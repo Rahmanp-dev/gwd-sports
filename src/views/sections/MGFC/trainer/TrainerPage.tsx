@@ -64,6 +64,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Footer from "@/components/landing/Footer";
 import { toast } from "sonner";
+import { PassportRecordsDialog } from "@/components/trainer/PassportRecordsDialog";
 
 interface DetailedStudent {
   _id: string;
@@ -151,6 +152,10 @@ export default function MGFCTrainerPage() {
   const { user, token } = useAppSelector((state) => state.auth);
 
   const [activeTab, setActiveTab] = useState("overview");
+  /** The student whose Sports Passport record is open, if any. */
+  const [passportStudent, setPassportStudent] = useState<DetailedStudent | null>(
+    null,
+  );
   const [trainerProfile, setTrainerProfile] = useState<TrainerProfile | null>(
     null,
   );
@@ -1109,6 +1114,13 @@ export default function MGFCTrainerPage() {
                                 Add Performance
                               </DropdownMenuItem>
                               <DropdownMenuItem
+                                className="hover:bg-gray-700 cursor-pointer py-2 text-amber-400 focus:text-amber-300 focus:bg-gray-700"
+                                onClick={() => setPassportStudent(student)}
+                              >
+                                <Trophy className="mr-2 h-4 w-4" />
+                                Sports Passport
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
                                 className="hover:bg-gray-700 cursor-pointer py-2 text-purple-400 focus:text-purple-300 focus:bg-gray-700"
                                 onClick={() => {
                                   setSelectedStudentForPerformance(student);
@@ -1697,6 +1709,16 @@ export default function MGFCTrainerPage() {
           {viewStudentId && <StudentDetail studentUserId={viewStudentId} />}
         </DialogContent>
       </Dialog>
+
+      {/* Sports Passport record — tournaments, leagues, camps, trials. */}
+      <PassportRecordsDialog
+        open={!!passportStudent}
+        onOpenChange={(open) => {
+          if (!open) setPassportStudent(null);
+        }}
+        studentId={passportStudent?.userId ?? null}
+        studentName={passportStudent?.user?.name ?? "this student"}
+      />
 
       <Footer />
     </AcademyTheme>

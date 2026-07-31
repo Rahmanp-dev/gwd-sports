@@ -1,4 +1,5 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Types } from 'mongoose';
+import { RECORD_KINDS, RECORD_LEVELS } from '@/lib/passport/records';
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -37,6 +38,44 @@ export interface IAcademyStint {
   leftAt?: Date | null;
 }
 
+/**
+ * One curated entry in the child's sporting history — a tournament played, a
+ * league entered, a camp completed, a trial attended, a certification earned.
+ *
+ * These live HERE rather than on StudentProfile for the same reason
+ * academyHistory does: they happened to the child, not to their current
+ * enrolment, and rule 3 above says a transfer must not restart the record.
+ * `academyName` is denormalised in so provenance survives the academy itself
+ * being removed.
+ *
+ * Every field on this subdocument is published by lib/passport/records.ts —
+ * except `recordedBy`, which is retained for accountability inside the academy
+ * and deliberately never leaves the server. See that module's header.
+ */
+export interface IPassportRecord {
+  _id: mongoose.Types.ObjectId;
+  kind: string;
+  title: string;
+  organisation?: string | null;
+  sport?: string | null;
+  level?: string | null;
+  result?: string | null;
+  startedOn: Date;
+  endedOn?: Date | null;
+  location?: string | null;
+  /** Public-facing. Named "summary" and not "notes" on purpose — see records.ts. */
+  summary?: string | null;
+
+  /** Which academy entered it. NOT a tenant scope — it is provenance. */
+  academyId?: mongoose.Types.ObjectId | null;
+  academyName?: string | null;
+
+  /** Internal accountability. Never published. */
+  recordedBy?: mongoose.Types.ObjectId | null;
+  recordedAt: Date;
+  updatedAt?: Date | null;
+}
+
 export interface IPassport extends Document {
   /** Public, permanent, URL-safe identifier. e.g. "GWD-7K2M9X". */
   passportId: string;
@@ -65,6 +104,9 @@ export interface IPassport extends Document {
 
   academyHistory: IAcademyStint[];
 
+  /** Curated sporting history. See IPassportRecord. */
+  records: Types.DocumentArray<IPassportRecord>;
+
   /**
    * Set the first time the parent opens any passport or payment link. This is
    * the "engaged parent" signal the activation dashboard counts, and what
@@ -86,6 +128,34 @@ const academyStintSchema = new Schema<IAcademyStint>(
     leftAt: { type: Date, default: null },
   },
   { _id: false }
+);
+
+/**
+ * `_id` is left ON (unlike academyStintSchema) because these are individually
+ * editable and deletable by a coach — the id is the handle the PATCH and DELETE
+ * routes address, and without it there is no stable way to name one row.
+ */
+const passportRecordSchema = new Schema<IPassportRecord>(
+  {
+    kind: { type: String, required: true, enum: RECORD_KINDS as unknown as string[] },
+    title: { type: String, required: true, trim: true, maxlength: 120 },
+    organisation: { type: String, trim: true, default: null, maxlength: 120 },
+    sport: { type: String, trim: true, lowercase: true, default: null },
+    level: { type: String, enum: [...RECORD_LEVELS, null], default: null },
+    result: { type: String, trim: true, default: null, maxlength: 80 },
+    startedOn: { type: Date, required: true },
+    endedOn: { type: Date, default: null },
+    location: { type: String, trim: true, default: null, maxlength: 120 },
+    summary: { type: String, trim: true, default: null, maxlength: 400 },
+
+    academyId: { type: Schema.Types.ObjectId, ref: 'Academy', default: null },
+    academyName: { type: String, trim: true, default: null },
+
+    recordedBy: { type: Schema.Types.ObjectId, ref: 'User', default: null },
+    recordedAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: null },
+  },
+  { _id: true }
 );
 
 const passportSchema = new Schema<IPassport>(
@@ -112,6 +182,8 @@ const passportSchema = new Schema<IPassport>(
     },
 
     academyHistory: { type: [academyStintSchema], default: [] },
+
+    records: { type: [passportRecordSchema], default: [] },
 
     parentFirstEngagedAt: { type: Date, default: null },
     parentLastEngagedAt: { type: Date, default: null },

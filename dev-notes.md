@@ -4215,3 +4215,268 @@ Browser-verified: typing "who hasnt paid" resolves to Fees & payments; ArrowDown
 - The landing page got one principled improvement (reduced motion) rather than a creative redesign; the admin side absorbed most of the UX budget. Worth a dedicated pass.
 - Student list payload still ships embedded history (see above) — needs a frontend change to split detail out.
 - The geofence has not been tested with a real device at a real ground. The logic has 23 unit tests and the UI states are wired, but GPS behaviour on a specific phone indoors is not something unit tests establish.
+
+---
+
+## Session — 2026-07-30 · Transaction ledger: student name, no sideways scroll, moved up the page
+
+**State:** `tsc --noEmit` clean, `vitest run` 518/518, cold `rm -rf .next && npm run build` clean. Not committed.
+
+Owner request, in their words: the ledger *"is scrolling horizontally [which] is not something good for checking out"*; it needs *"the student name, of course, who is the student who has paid that transaction"*; bring it *"a little above on the top"*; remove Revenue by Academy, Top Paying Students and Monthly Revenue; keep Fee Defaulters (*"necessary"*) and Payment Status.
+
+### 1. Why there was no student name — a ref/field mismatch, not a UI omission
+
+`FeePayment.studentId` is a ref to **User**, but `/api/payments/admin/all` populated it selecting `totalFeesPaid outstandingFees level sports` — fields that live on **StudentProfile**. Mongoose does not complain about this. It ran the populate, returned a User document with essentially none of the requested fields on it, and the ledger rendered a payment id and an amount with no way to tell whose payment it was. An owner answering "a parent says they paid" had to copy a Razorpay id and go looking elsewhere.
+
+Fixed by populating the User ref with real User fields (`name email phone`) and fetching the passport id separately from StudentProfile — **one extra query for the whole page, not one per row** — because those genuinely are two collections and the previous code was trying to read one through the other.
+
+The response now carries a flattened `student` object so the client never has to guess which of `studentId` / `student` is populated on a given row. Every field on it is **nullable on purpose**: a payment made through a passport link has no account behind it, so "who paid" has no answer for some rows. The API returns `null` rather than `"Unknown"`, and the UI says "Direct payment (no account)" in its own words — `"Unknown"` reads like data we lost, which is a different and worse claim.
+
+Search was extended while in there: it now matches the **child's name** (what an owner actually reaches for — they know "Rehan", not `pay_TIcXMzHtzEi1KE`) by resolving names to user ids first, capped at 500 so a one-letter query cannot build an unbounded `$in`. No tenant filter is needed on that lookup because `query.academyId` still scopes the payments themselves. Also added `receiptNumber` to the searchable fields, escaped the regex (an owner pasting an id containing regex characters should search for that text, not compile it), clamped `limit` to 100, and added a `console.error` — this route previously failed silently.
+
+### 2. The horizontal scroll
+
+It was a five-column `<table>` inside `overflow-x-auto`. On a phone that meant dragging sideways to reach Status and Date — the two columns an owner opens this screen to read — and losing your place in the row while doing it. Hiding columns at small widths was not an option either: the column that gets hidden is precisely the answer to "did this payment land".
+
+Replaced with a list whose rows **reflow instead of scrolling**: identity on one side, money/state/date on the other, and below `lg` those stack. Nothing was dropped — the request was explicitly for more detail, not less — and the row now carries more than the table did: student name, passport id, a Cash badge for `offline_direct_to_academy` settlements, a tappable phone number, receipt number, gateway id, amount, status and the receipt link.
+
+Two details that matter for the "never scrolls" claim actually holding:
+- The gateway id uses `break-all`, not `truncate`. It is one long unbroken token; a truncated one that still runs past the card edge is the same horizontal scroll reintroduced. Wrapping keeps the whole id copyable.
+- The student name uses `break-words`, not `truncate`. "Who paid this?" is the question the row exists to answer, and an ellipsis mid-name answers it badly.
+
+### 3. Reorder — and one card that was reporting invented numbers
+
+New order: KPI cards → **Fee Defaulters (2/3) + Payment Status (1/3)** → **Transaction Ledger** → Daily Revenue. Money owed first, status beside it, and the ledger immediately under both, so "call this parent" and "confirm what they paid" are one glance apart rather than three charts apart.
+
+The defaulters card leads by **DOM order, not `lg:order-*`** — order utilities only apply at `lg`, so with the order-class approach the donut still jumped ahead of the defaulters list on a phone, which is the one screen where being wrong matters most.
+
+The ledger is passed into `<FinanceDashboard ledgerSlot={…}>` from `FeesManagement`. Layout decisions stay with the dashboard; the ledger's data, filters and pagination stay with the component that owns them.
+
+Removed as asked: Monthly Revenue, Top Paying Students, Revenue by Academy — **and their server-side computation too**, rather than leaving the API producing figures nobody renders. `topPayers` alone cost an aggregation plus five sequential `findById().populate()` round-trips on every dashboard load.
+
+🔴 **`academyRevenue` had to go regardless of the UI request.** It did not measure per-academy revenue at all. It divided platform lifetime revenue evenly across every active academy and labelled each quotient with an academy's name — the code said so: `// Even distribution mock if not linked directly`. With one customer that happens to look correct, which is exactly how it survived to production. The moment a second academy signed up it would have reported both earning half of a total neither of them earned, on a financial dashboard. Payments do carry a real `academyId`, so this is recoverable as a genuine `$group` if the card is ever wanted back — but it must not return as an estimate.
+
+### Not done / honest gaps
+
+- **The admin Fees screen was not visually verified in a browser.** It sits behind login and I do not enter credentials. Verification here is `tsc`, the full vitest suite and a cold production build — that establishes it compiles and type-checks, not that it looks right. Worth a look on a real phone.
+- "Daily Revenue — Last 30 Days" was not in the owner's remove list, so it was kept, moved to the bottom.
+- `SuperAdminDashboard` also consumes `/admin/finance-analytics` but reads only `summary` (verified), so dropping the three fields does not affect it.
+
+---
+
+## Session — 2026-07-31 · Sports Passport: a sporting record the coach owns
+
+**State:** `tsc --noEmit` clean, `vitest run` 555/555 (34 new), cold `rm -rf .next && npm run build` clean, both new routes registered. Not committed.
+
+Request: the passport showed attendance and little else. It needed the child's actual sporting history — tournaments, leagues, camps, training — with the coach able to maintain it end to end, and a public link that works.
+
+### 1. Where the records live, and why it matters
+
+On **Passport**, not StudentProfile. A district championship played in April happened to *the child*, not to their current enrolment; putting it on the academy-scoped record would delete a child's history the day their family changed academy, which is the exact failure `models/Passport.ts` rule 3 exists to prevent. The recording academy is denormalised into each row as provenance, the same way `academyHistory` and `Achievement.academyName` already do.
+
+Six kinds (tournament, league, camp, trial, certification, milestone) and an **ordered** level enum (academy → school → club → district → state → national → international). Ordering is what lets the passport header show one "highest level reached" badge, which is the thing a parent screenshots.
+
+The public-facing free-text field is called **`summary`, deliberately not `notes`**. `lib/passport-public.ts` withholds coach remarks on purpose — a register note like "distracted today, sent home early" is written for the academy, and publishing it changes what coaches are willing to write down. A field called "notes" invites exactly that private register voice. It is named a summary, capped at 400 characters, and the coach's form states above the box that it appears on the public page — so the contract is visible while typing rather than discovered afterwards.
+
+### 2. The authorisation problem this creates
+
+Passport is the one model in the system that is **not tenant-scoped**, which makes writing to it the one place a naive handler leaks across academies. `lib/passport/recordAccess.ts` is the whole gate and nothing else touches Passport directly:
+
+1. Resolve the caller's **StudentProfile** — the academy-scoped enrolment — by `{ userId, academyId }`. Not enrolled at your academy means "not found", byte-identical to a student who does not exist, so the endpoint cannot be used to probe another academy's roster.
+2. Only then follow that profile's `passportId` to the global Passport.
+3. For edits and deletes, `canMutate()` additionally requires the record to have been written by the caller's academy. **Without step 3, a coach at the academy a student transferred TO could silently rewrite or delete a district final a different club ran.** Records are append-and-own; the coach's list renders another academy's rows with a lock and no buttons rather than failing on submit.
+
+9 tests on that logic, including ObjectId-vs-string comparison — mongoose returns ObjectIds and a `===` would have denied every legitimate edit while looking correct.
+
+### 3. 🔴 Three MasterGrade passports were unreachable at their own URL
+
+Found while seeding. `/api/passport/[passportId]` shape-checks before it queries:
+
+`/^GWD-[23456789ABCDEFGHJKMNPQRSTVWXYZ]{6}$/`
+
+That alphabet excludes 0/1/I/L/O/U so a parent reading an id off a screen cannot confuse glyphs. The three MasterGrade passports were `GWD-HYD-00001/2/3` — **wrong shape, wrong alphabet, wrong length** — so every one was rejected with a 400 *before the database was touched*. The records existed, looked fine in the admin, and simply did not answer at their own address. All three were also missing `studentName`, which the schema declares required, so they had been inserted outside the model. The pattern appears nowhere in the codebase; they were hand-inserted.
+
+Nobody would have found this until a parent tapped the link in their welcome message.
+
+`scripts/repair-passports.js` fixes them: regenerates a conforming id, backfills `studentName` from the linked user, rebuilds the uniquely-indexed `identityKey` (missing it is a duplicate passport waiting to happen), and repoints `studentprofiles.passportId` and `achievements.passportId` so nothing is orphaned. Dry-run by default.
+
+Regenerating a passportId is normally **forbidden** — rule 4 says it is public and permanent because parents bookmark it. Setting that aside is safe for exactly these documents and no others: an id that fails the route regex has never successfully served a page, so there is no working link to invalidate. The script only ever rewrites ids that are already unreachable, and prints every change.
+
+Applied: `GWD-HYD-00001 → GWD-C8A6GN` (Rahul Verma), `00002 → GWD-S4399W` (Ananya Rao), `00003 → GWD-PEYRR9` (Siddharth Nair).
+
+### 4. Two scripts that could never have run
+
+`scripts/reconcile-pending-payments.js` and `scripts/normalize-working-days.js` both read `process.env.MONGODB_URI`. This project uses **`DB_URI`** — that is what `src/lib/db.ts` reads and what `.env.local` defines. Neither script has ever connected here; both exit with "MONGODB_URI is not set", which reads like a missing config rather than a wrong variable name. The payments one **recovers money Razorpay captured that this database still shows as pending**, so it being silently unrunnable is the expensive half. Both now prefer `DB_URI` and keep `MONGODB_URI` as a fallback.
+
+### 5. Seeded data, and one thing I corrected in it
+
+`scripts/seed-passport-records.js` writes six sample entries onto a MasterGrade student. Rows carry a `__seed` marker so `--clear` removes exactly them and never something a coach typed. It does **not** fabricate achievements, attendance or performance scores — those are earned by the rules engine from real activity, and manufacturing them would put numbers on a child's page that no coach stands behind.
+
+First pass tagged the BCCI Level 1 fitness assessment as `level: national`. That is a nationally *standardised* test, not national-level competition — but `level` drives the header badge, so the page announced **"National level"** for a child who has not competed there. Retagged as unlevelled; the badge now correctly reads "State level" from the league and the state trial.
+
+Also fixed in the component, not just the data: when the academy ran the event itself, `organisation` and `academyName` are the same string and the row printed it twice ("MasterGrade Sports Academy, Kukatpally · MasterGrade Sports Academy"). Provenance now only renders when it says something the reader does not already know.
+
+### Not done / honest gaps
+
+- **The coach's editor has not been clicked through in a browser.** The trainer portal is behind a login and I do not enter credentials. It is covered by typecheck, a cold build and unit tests on the authorisation logic — that establishes it compiles and that the gate is correct, not that the dialog behaves. Worth five minutes signing in as a MasterGrade trainer and adding one record.
+- Attendance on the seeded student is genuinely empty, so the three stat tiles read "—/0/0". That is honest rather than broken, but it makes the top of the page look thin next to a full sporting record.
+
+---
+
+## Session — 2026-07-31 (cont.) · Booklet screenshots, and a decorative filter UI on the front door
+
+**State:** `tsc --noEmit` clean, `vitest run` 555/555, `npm run build` clean. Not committed.
+
+### 1. Booklet screenshots fitted
+
+Eight captures supplied. Seven are 1903×947 desktop (≈2.01:1); one is 390×874 phone (≈0.45:1).
+
+Fitting is by width with `height:auto` only — that is what actually guarantees no stretch, and it is now asserted rather than assumed: a DOM check compares every image's natural ratio against its rendered ratio and reports **0% distortion on all of them**. The seven wide captures are full-bleed (`.shot-bleed` escapes the 17mm page padding), which buys 17mm of height each and reads as a plate rather than a picture floating in a column. The phone capture is capped at 56mm wide, because a 0.45:1 image spanning a column would be 200mm tall and own the page.
+
+**Page 09 was rebuilt.** It framed the academy-profile capture in a phone frame, which would have squashed a 2:1 desktop screenshot into a 36mm sliver. It is now a full-width plate with a three-card row beneath.
+
+### 2. 🔴 Two layout defects the screenshots exposed
+
+**Mid-page voids of up to 113mm.** `.stack-end` was `margin-top:auto`, which anchors the closing callout to the foot of the page and absorbs *all* remaining height as one gap. On page 04 that was 106mm of blank paper sitting in the middle of the page above a stranded pull-quote — it reads as a rendering fault, not as spacing. Compounding it, the base type was 10.5pt, far too small for A4, so content compressed into the top third.
+
+Fixed in two parts: base type 10.5pt → 13pt (also materially better to read in print, which is the point of the document), and `.page-body` now uses `justify-content:space-between` so surplus height is *shared between* the blocks instead of pooled in one place. Worst gap fell from **113mm to 29mm**, average max gap is 14mm, and no page overflows. Pooling the surplus at the foot instead was tried and rejected: it just moved the problem, leaving pages looking top-heavy with 129mm of dead paper below.
+
+### 3. 🔴 One supplied screenshot was the wrong screen
+
+`financial command center.png` contains the **Check-in codes** page — a near-duplicate of the check-in capture, not the ledger. Publishing it would have put a QR-code screen under the caption "Money owed, money collected and every transaction with the student's name on it", on a page arguing the platform is precise about money.
+
+Removed rather than shipped. The slot now renders a dashed, labelled placeholder ("Screenshot slot — Admin → Fees & payments"), verified by firing the error path. Dropping a real capture at `docs/booklet-images/shot-fees.png` fills it with no markup change.
+
+### 4. 🔴 The Discovery filter UI was decorative
+
+Found while sourcing booklet copy. `/api/academy/discover` **accepted no query parameters at all**. The page has always sent `search`, `sport`, `city`, `page` and `limit`; every one was discarded. The search box filtered nothing, the sport chips filtered nothing, the city field filtered nothing, the pager did nothing — the entire filter UI was a facade over an unfiltered list, on the public front door of the product, and it is the exact feature the booklet leads with ("Filtered by intent — parents narrow by sport and location").
+
+It also returned its count as `stats.totalAcademies` while the page read `data.total`, so the header permanently said **"0 academies found" directly above a grid of academies**.
+
+Rewritten: real `$regex` filtering on name/location/sport with the pattern escaped, `countDocuments` for a true total, skip/limit pagination, `limit` clamped to 48. `isActive: ACTIVE` rather than `isActive: true`, per lib/models/activeFilter.ts — same 4 results here either way, so no behaviour change, but it stops an academy created outside mongoose being invisible.
+
+**The filter chips are still derived from every active academy, not from the filtered page.** Deriving them from the filtered set would make them vanish as you used them — filter to Cricket and Football would disappear from the picker, stranding the parent with no way back.
+
+Verified live: no filter → "4 academies found" / 4 cards; `sport=cricket` → 4; `search=master` → MasterGrade only; `search=a(b` → 0 and no crash; `limit=2&page=2` → page 2 of 2. Clicking Badminton in the browser → "1 academy found", MasterGrade, correct singular.
+
+### 5. 🔴 A fabricated stat on the public page
+
+`/discover` said **"Search from 500+ sports academies across India"** — roughly a hundred times the real figure, produced by nothing in the system, and sitting directly above a live count of the actual directory. The page contradicted itself in two adjacent lines. It also breaks the rule this codebase enforces on every academy's own site (`sectionVisibility` / the branding editor refuse to generate "500+ athletes trained"). Replaced with copy that describes what the filters do.
+
+### Not done / honest gaps
+
+- **`4Force Cricket Academy` is `isActive: false` in this database** and therefore absent from Discovery. Both the old and new queries exclude it identically, so this is not a regression — but they are the first paying customer, so it is worth checking whether that flag is intentional in this environment.
+- The booklet still has no Fees capture (see §3), and the coach's passport editor is still unverified in a browser (login required).
+- The landing page itself was not enriched with booklet material this pass — only the two Discovery defects were fixed. The strongest candidate remains the ₹0 / 100%-to-academy commercial explanation, which the booklet answers plainly and the landing page currently does not.
+
+---
+
+## Session — 2026-07-31 (cont. 2) · Fees capture, payment regression check, landing page conversion section
+
+**State:** `tsc --noEmit` clean, `vitest run` 555/555, `npm run build` clean. Not committed.
+
+### 1. Booklet complete
+
+Corrected Fees capture imported (1902×946, 2.01:1 — same family as the other six wide shots). **All 8 screenshots now load, 0.00% distortion on every one, no pending slots, no page overflow, 32 pages.** Confirmed the new capture is genuinely a different screen from the check-in one by sampling ink density — the check-in shot has roughly twice the dark pixels because of the QR block.
+
+### 2. Payments verified end to end after the Passport changes
+
+The concern was justified: `/pay/[passportId]` uses the **same** `PASSPORT_ID_PATTERN` as the passport route, so the three MasterGrade passports whose ids were `GWD-HYD-0000n` had been failing on the payment link too, not just the passport page. The repair fixed both.
+
+Verified against a live server:
+
+- Three repaired ids → `/api/passport/<id>` **200**, `/api/passport/<id>/pay` **200**
+- Four pre-existing ids (`GWD-SGGDDF`, `GWD-BQGSQK`, `GWD-E2HFWF`, `GWD-VEVAH8`) → **200 / 200**, no regression from the `records` field
+- `GWD-HYD-00001`, `GWD-XXXX`, `NONSENSE` → **400** on both, still correctly rejected
+- **A real test-mode Razorpay order was created** (`order_TJunFLRmuEbLLI`): ₹3,104 total, `academyAmountPaise: 300000`, `gatewayFeePaise: 7325`, `gwdNetPaise: 3075`, `passportId` and `studentUserId` both resolved. The split is exactly what the booklet claims — 100% of the ₹3,000 coaching fee to the academy.
+
+Leak checks: `/pay` exposes only `passportId`, `studentName`, `academyName`, `period` and the amount breakdown — **the new `records` array does not reach it**, nor does `identityKey`, `parentPhone`, medical data or `outstandingFees`. `/passport` publishes `records` and `highestLevel` and still leaks no `recordedBy`, `_id`, phone or fee data.
+
+### 3. Landing page — the section that was missing
+
+`HowItWorks` covers the problem, the loop and how to join. It never answered the question every owner asks in the first minute: *"if it's free, where's the catch?"* Unanswered on the page, it gets asked on a call — and until it is answered, nothing above it is being believed.
+
+New `components/ecosystem/WhatItCosts.tsx`, placed between `HowItWorks` and the footer, ordered by what an owner actually decides on:
+
+1. **What it costs** — ₹0 / ₹0 / 100%, then the split shown as a worked example (₹3,104 paid → ₹3,000 to the academy → ₹104 convenience) rather than asserted. An owner who can see where each rupee goes stops needing reassurance. These are the real figures from the order above.
+2. **What we commit to** — data sealed off at the database layer; no child locked out over money; your page never overstates you; you can leave with your data.
+3. **What's coming** — Content Engine, school campaigns, tournaments, in a visually distinct gold block explicitly badged **"Not available yet"**.
+4. **The Sports Passport**, last — academy-first ordering, because the academy signs up and the student benefits. Closes on why it matters commercially: a shared Passport is a lead the academy did nothing to generate.
+
+Every figure is **structural, not measured** — ₹0 and 100% are properties of how settlement is wired, not counts. Nothing claims an academy, student or success count, for the same reason the `|| 20` / `|| 7` fallbacks were removed from this page previously.
+
+### Not done / honest gaps
+
+- **The new section was verified by DOM, not by eye.** The Browser pane stopped compositing partway through, so screenshots and layout measurements return 0. Structure, ordering, copy and the split figures are all confirmed present and correct via the DOM; how it *looks* at each breakpoint is not. Worth a scroll on a real screen, particularly the mobile stacking of the three-up figure row.
+- The coach's Passport editor is still unverified in a browser (trainer login required).
+
+---
+
+## Session — 2026-07-31 (cont. 3) · Showing the full fee split, not just "convenience fee"
+
+**State:** `tsc --noEmit` clean, `vitest run` 556/556 (1 new), `npm run build` clean. Not committed.
+
+Owner's point, and it was right: a section headed *"If it's free, where's the catch?"* that then hides a charge behind the word "convenience" has not answered its own question. Both the homepage and the booklet said the convenience fee "is ours" — which is **wrong**, and understated our own transparency.
+
+### What the split actually is
+
+Read off `computeFeeSplit()` at the shipped defaults (`DEFAULT_GATEWAY_RATE_BPS = 236`, `DEFAULT_MARGIN_RATE_BPS = 100`) and confirmed against the live test-mode order created earlier:
+
+| | ₹3,000 monthly fee |
+|---|---|
+| Parent pays | **₹3,104** |
+| Academy receives | **₹3,000** — 100% |
+| Razorpay | **₹73.25** — 2% gateway + 18% GST on it |
+| GWD keeps | **₹30.75** — 1% platform fee |
+
+The 236 bps is 200 × 1.18: Razorpay's 2% plus GST, with **no input tax credit claimed** (the conservative assumption already flagged in `money.ts`). So roughly **two thirds of the convenience fee is the payment gateway, not GWD**, and GWD's actual take is about a rupee in every hundred of the coaching fee.
+
+That is a far better story than "a small convenience fee", and it was being left on the table by rounding it into one number.
+
+### Changed
+
+- `components/ecosystem/WhatItCosts.tsx` — the three-tile row became four, breaking ₹104 into Razorpay's ₹73.25 and GWD's ₹30.75, each with its rate labelled. The lede no longer claims the fee "is ours".
+- `docs/GWD-Academy-Booklet.html` page 06 — same four-way panel, same correction. The commitments page (31) also said "our revenue is the convenience fee"; now names the 1% platform fee and points at page 06. Verified: no page overflows after the addition, all 8 screenshots still load.
+
+### The guard
+
+These figures are hand-written copy in a `.tsx` and an `.html`, so nothing would catch them going stale if the rates move — and stale numbers under a "where's the catch?" heading are worse than never having asked. `pricing.test.ts` already pins the model with the same ₹3,000 worked example and its header instructs whoever changes the rates to update the dependent documents. Added a test to that file asserting all four printed figures, that the two cuts sum exactly to the convenience fee with no unexplained residue, and that the labels hold (236 bps === 200 × 1.18, margin === 1%). The homepage and booklet are now named in that file as sources to keep in sync.
+
+### Note
+
+`GWD_GATEWAY_RATE_BPS` and `GWD_MARGIN_RATE_BPS` are env-overridable and `platformFeePercent` is per-academy, so the printed example is the **default** case. If a partner is ever put on a different margin, the page still shows 1% — worth revisiting if per-academy pricing becomes real rather than theoretical.
+
+---
+
+## Session — 2026-07-31 (cont. 4) · Retracting a fee claim we cannot stand behind
+
+**State:** `tsc --noEmit` clean, `vitest run` 557/557, `npm run build` clean, booklet 32 pages no overflow. Not committed.
+
+Owner asked whether naming the fee split publicly is legally/ethically sound. Checking it found that the previous entry's four-way breakdown was **wrong to publish**, and I had introduced it.
+
+### The defect
+
+`money.ts` computes `gatewayFeePaise` as a flat 236 bps on the captured total, **with no branching by payment instrument**. `settle.ts` separately stores `gatewayFeeActualPaise`, read off the Razorpay webhook. The codebase keeps them as two fields because they are two different quantities: one is an assumption used to gross the parent's total up, the other is what was really charged.
+
+They diverge hardest on the commonest case. **UPI carries zero MDR in India**, so on a UPI payment the gateway's real charge is at or near nil. Because the model cannot see the instrument, the parent is still charged the same grossed-up ₹3,104 — meaning GWD realises the whole ₹104 add-on, not the modelled ₹30.75.
+
+So the published panel "Razorpay ₹73.25 / GWD keeps ₹30.75" was doing two bad things at once: attributing an amount to a **named third party that they do not charge on that transaction**, and **understating GWD's own take severalfold, in GWD's favour**. That is the worst direction for an error like this to run.
+
+### Corrected
+
+Homepage and booklet now assert only what holds on **every** transaction regardless of instrument: parent pays ₹3,104, academy receives ₹3,000 (100%), ₹104 added on top described as "gateway, tax + our 1%". The 1% is stated because we set it; the gateway's share is described as varying with how the parent pays, which is true. No per-party rupee figure, no third-party rate.
+
+### The test caught my reasoning error
+
+First attempt asserted `computeFeeSplit(base, {gatewayRateBps: 0}).gwdNetPaise > modelled × 3`. It failed — at a zero rate the model charges the parent **less** (₹3,030) and GWD still nets ₹30. That is the counterfactual where the model *knows* it is UPI, which is not the situation.
+
+The real situation is a fixed parent total with a variable actual cost underneath it, so the assertion is now written as `parentTotal − academyAmount − actualGatewayFee`, showing realised net = ₹104 when the gateway charges nothing. The failure was the test doing its job on the person writing it.
+
+`pricing.test.ts` now carries the reasoning next to the numbers, and says explicitly: if the split is ever made instrument-aware and reconciled against `gatewayFeeActualPaise`, a per-party public breakdown becomes defensible and this test should be **replaced rather than deleted**.
+
+### Flagged for the owner, NOT resolved here — needs professional advice
+
+1. **Convenience fee on UPI.** RBI/NPCI mandate zero MDR on UPI and RuPay debit, and NPCI has pushed back on merchants surcharging UPI. Whether a convenience fee may be levied on a UPI transaction at all is a live regulatory question, and it is being charged to parents.
+2. **GST on GWD's own fee.** If GWD is registered, the platform fee is a taxable supply — so "we keep 1%" is gross, not net. Any figure presented as what GWD keeps should say which.
+3. **Disclosing a processor's commercial terms.** Payment aggregator agreements commonly restrict publishing negotiated rates. Avoided for now by not naming a rate.
+4. **Publishing the 1% margin at all** is a commercial choice, not a correctness one — it sets a visible ceiling that is awkward to raise later.

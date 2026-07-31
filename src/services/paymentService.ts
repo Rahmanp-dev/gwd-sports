@@ -35,6 +35,22 @@ export interface FeePaymentRecord {
    */
   settlementStrategy?: string;
   receiptNumber?: string;
+  /**
+   * Flattened by /api/payments/admin/all so the ledger never has to guess
+   * which of `studentId`/`student` is populated on a given row.
+   *
+   * Every field is nullable on purpose: a payment made through a passport link
+   * has no account behind it, so "who paid" genuinely has no answer for some
+   * rows and the UI must say so rather than print a placeholder.
+   */
+  student?: {
+    id: string | null;
+    name: string | null;
+    email: string | null;
+    phone: string | null;
+    passportId: string | null;
+  };
+  academy?: { id: string; name: string } | null;
   createdAt: string;
   updatedAt: string;
 }

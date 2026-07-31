@@ -117,15 +117,93 @@ describe('the public projection is a whitelist', () => {
         'age',
         'attendance',
         'currentAcademy',
+        'highestLevel',
         'isActive',
         'memberSince',
         'passportId',
         'photoUrl',
         'progress',
+        'records',
         'sports',
         'studentName',
       ].sort()
     );
+  });
+
+  it('publishes sporting records but never the coach who entered them', () => {
+    const view = toPublicPassport({
+      passport: fullPassport({
+        records: [
+          {
+            _id: 'rec1',
+            kind: 'tournament',
+            title: 'U-14 District Championship',
+            level: 'district',
+            startedOn: ist(12, 12, 3),
+            academyName: 'MasterGrade Cricket',
+            academyId: 'a2',
+            recordedBy: 'mongoid-coach-rajesh',
+            summary: 'Reached the semi-final.',
+          },
+          {
+            _id: 'rec2',
+            kind: 'camp',
+            title: 'Summer Skills Camp',
+            startedOn: ist(1, 12, 5),
+            academyName: 'MasterGrade Cricket',
+            recordedBy: 'mongoid-coach-rajesh',
+          },
+        ],
+      }),
+      profile: fullProfile(),
+      academyName: 'MasterGrade Cricket',
+      now: NOW,
+    });
+
+    expect(view.records).toHaveLength(2);
+    expect(view.records[0].title).toBe('Summer Skills Camp'); // newest first
+
+    const serialised = JSON.stringify(view).toLowerCase();
+    expect(serialised).not.toContain('mongoid-coach-rajesh');
+    expect(serialised).not.toContain('recordedby');
+    // The summary IS published — a coach writes it knowing that.
+    expect(serialised).toContain('reached the semi-final');
+  });
+
+  it('derives the highest level reached, and invents one when there is none', () => {
+    const withLevels = toPublicPassport({
+      passport: fullPassport({
+        records: [
+          { _id: 'r1', kind: 'tournament', title: 'A', level: 'district', startedOn: ist(1) },
+          { _id: 'r2', kind: 'tournament', title: 'B', level: 'state', startedOn: ist(2) },
+        ],
+      }),
+      profile: null,
+      academyName: 'MasterGrade Cricket',
+      now: NOW,
+    });
+    expect(withLevels.highestLevel).toEqual({ key: 'state', label: 'State' });
+
+    const withoutLevels = toPublicPassport({
+      passport: fullPassport({
+        records: [{ _id: 'r1', kind: 'camp', title: 'A', startedOn: ist(1) }],
+      }),
+      profile: null,
+      academyName: 'MasterGrade Cricket',
+      now: NOW,
+    });
+    expect(withoutLevels.highestLevel).toBeNull();
+  });
+
+  it('returns an empty record list for a passport that has none', () => {
+    const view = toPublicPassport({
+      passport: fullPassport(),
+      profile: null,
+      academyName: null,
+      now: NOW,
+    });
+    expect(view.records).toEqual([]);
+    expect(view.highestLevel).toBeNull();
   });
 
   it('shows an age, never a date of birth', () => {

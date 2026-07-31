@@ -11,6 +11,7 @@ import {
   Search,
   ShieldCheck,
   TrendingUp,
+  Trophy,
 } from "lucide-react";
 
 /**
@@ -54,7 +55,62 @@ interface PublicPassport {
     academyName: string | null;
   }[];
   progress: { categoryKey: string; label: string; percentage: number | null }[];
+  /** Curated sporting history — see lib/passport/records.ts. */
+  records: {
+    id: string;
+    kind: string;
+    kindLabel: string;
+    icon: string;
+    title: string;
+    organisation: string | null;
+    sport: string | null;
+    level: string | null;
+    levelLabel: string | null;
+    result: string | null;
+    startedOn: string;
+    endedOn: string | null;
+    location: string | null;
+    summary: string | null;
+    academyName: string | null;
+    upcoming: boolean;
+  }[];
+  highestLevel: { key: string; label: string } | null;
   isActive: boolean;
+}
+
+type PassportRecord = PublicPassport["records"][number];
+
+/**
+ * Result strings a coach types are free text, so they cannot be enumerated.
+ * These three shapes cover what actually gets written and give the winning
+ * ones visual weight — a parent scanning the page should find the gold first.
+ */
+function resultTone(result: string | null): string {
+  if (!result) return "bg-slate-100 text-slate-600 ring-slate-200";
+  const r = result.toLowerCase();
+  if (/(winner|champion|1st|first|gold|selected|qualified)/.test(r)) {
+    return "bg-amber-50 text-amber-700 ring-amber-200";
+  }
+  if (/(runner|2nd|second|silver|semi|final)/.test(r)) {
+    return "bg-slate-100 text-slate-700 ring-slate-300";
+  }
+  return "bg-sky-50 text-sky-700 ring-sky-200";
+}
+
+/** "12 Apr 2026" or "12–14 Apr 2026" — a range reads as one event, not two. */
+function dateRange(startedOn: string, endedOn: string | null): string {
+  if (!endedOn || endedOn === startedOn) return prettyDate(startedOn);
+  const a = new Date(`${startedOn}T00:00:00Z`);
+  const b = new Date(`${endedOn}T00:00:00Z`);
+  if (Number.isNaN(a.getTime()) || Number.isNaN(b.getTime())) return prettyDate(startedOn);
+  if (a.getUTCFullYear() === b.getUTCFullYear() && a.getUTCMonth() === b.getUTCMonth()) {
+    return `${a.getUTCDate()}–${prettyDate(endedOn)}`;
+  }
+  return `${shortDate(startedOn)} – ${prettyDate(endedOn)}`;
+}
+
+function yearOf(iso: string): string {
+  return iso.slice(0, 4);
 }
 
 function prettyDate(iso: string | null): string {
@@ -108,6 +164,156 @@ function Stat({
       <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
         {label}
       </p>
+    </div>
+  );
+}
+
+/**
+ * One entry in the sporting record.
+ *
+ * Laid out as a timeline rather than a list of cards because the question a
+ * parent is asking — "what has my child actually done?" — is chronological, and
+ * because a spine of connected dots reads as a career even when there are only
+ * three of them. A grid of three cards reads as a thin page.
+ */
+function RecordEntry({ record, last }: { record: PassportRecord; last: boolean }) {
+  /**
+   * When the academy ran the event itself, `organisation` and `academyName` are
+   * the same string and the row printed it twice — once as the organiser and
+   * again as provenance ("MasterGrade Sports Academy, Kukatpally · MasterGrade
+   * Sports Academy"). Provenance only earns its place when it says something
+   * the reader does not already know.
+   */
+  const showProvenance =
+    !!record.academyName &&
+    record.academyName.toLowerCase() !== (record.organisation ?? "").toLowerCase();
+
+  return (
+    <li className="relative flex gap-3.5 pb-5 last:pb-0">
+      {/* The spine. Stops at the last dot so the line never dangles. */}
+      {!last && (
+        <span
+          aria-hidden
+          className="absolute left-[19px] top-11 bottom-0 w-px bg-gradient-to-b from-slate-200 to-slate-100"
+        />
+      )}
+
+      <span
+        className={`relative z-10 flex h-10 w-10 flex-none items-center justify-center rounded-full text-lg ring-1 ${
+          record.upcoming
+            ? "bg-white text-slate-400 ring-slate-200 ring-dashed"
+            : "bg-gradient-to-br from-slate-50 to-white text-slate-900 ring-slate-200 shadow-sm"
+        }`}
+      >
+        {record.icon}
+      </span>
+
+      <div className="min-w-0 flex-1 pt-0.5">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <h3 className="text-sm font-bold leading-snug text-slate-900">
+            {record.title}
+          </h3>
+          {record.upcoming && (
+            <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-indigo-600 ring-1 ring-indigo-200">
+              Upcoming
+            </span>
+          )}
+        </div>
+
+        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+          <span className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-600">
+            {record.kindLabel}
+          </span>
+          {record.levelLabel && (
+            <span className="rounded-md bg-violet-50 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700 ring-1 ring-violet-200">
+              {record.levelLabel}
+            </span>
+          )}
+          {record.result && (
+            <span
+              className={`rounded-md px-1.5 py-0.5 text-[10px] font-bold ring-1 ${resultTone(
+                record.result,
+              )}`}
+            >
+              {record.result}
+            </span>
+          )}
+        </div>
+
+        {record.organisation && (
+          <p className="mt-1.5 text-xs font-medium text-slate-600">
+            {record.organisation}
+          </p>
+        )}
+
+        {record.summary && (
+          <p className="mt-1 text-xs leading-relaxed text-slate-500">
+            {record.summary}
+          </p>
+        )}
+
+        <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 text-[10px] text-slate-400">
+          <span>{dateRange(record.startedOn, record.endedOn)}</span>
+          {record.location && (
+            <>
+              <span aria-hidden>·</span>
+              <span>{record.location}</span>
+            </>
+          )}
+          {showProvenance && (
+            <>
+              <span aria-hidden>·</span>
+              {/* Provenance. A Passport outlives any one academy, so a record
+                  says who recorded it — the academy, never the individual. */}
+              <span>{record.academyName}</span>
+            </>
+          )}
+        </p>
+      </div>
+    </li>
+  );
+}
+
+/** Groups the record into years so a long history stays scannable. */
+function SportingRecord({ records }: { records: PassportRecord[] }) {
+  const years: { year: string; rows: PassportRecord[] }[] = [];
+  for (const record of records) {
+    const year = yearOf(record.startedOn);
+    const bucket = years.find((y) => y.year === year);
+    if (bucket) bucket.rows.push(record);
+    else years.push({ year, rows: [record] });
+  }
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-5">
+      <div className="flex items-baseline justify-between">
+        <h2 className="text-sm font-bold text-slate-900">Sporting record</h2>
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+          {records.length} {records.length === 1 ? "entry" : "entries"}
+        </span>
+      </div>
+
+      <div className="mt-4 space-y-5">
+        {years.map((bucket) => (
+          <div key={bucket.year}>
+            <div className="mb-2.5 flex items-center gap-2.5">
+              <span className="text-[11px] font-extrabold tracking-wider text-slate-900">
+                {bucket.year}
+              </span>
+              <span className="h-px flex-1 bg-slate-100" />
+            </div>
+            <ul>
+              {bucket.rows.map((record, i) => (
+                <RecordEntry
+                  key={record.id}
+                  record={record}
+                  last={i === bucket.rows.length - 1}
+                />
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -178,7 +384,7 @@ export function PassportPage({ passportId }: { passportId: string }) {
           decoding="async"
           src="/gwdlogo.png"
           alt="GWD Sports"
-          className="mx-auto mb-5 h-10 w-auto opacity-95"
+          className="mx-auto mb-5 h-35 w-auto opacity-95"
         />
         <div className="mx-auto flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-white/20 bg-slate-700">
           {data.photoUrl ? (
@@ -208,12 +414,23 @@ export function PassportPage({ passportId }: { passportId: string }) {
             </>
           )}
         </div>
-        {data.currentAcademy && (
-          <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white">
-            <MapPin className="h-3 w-3" />
-            {data.currentAcademy.name}
-          </p>
-        )}
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5">
+          {data.currentAcademy && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white">
+              <MapPin className="h-3 w-3" />
+              {data.currentAcademy.name}
+            </span>
+          )}
+          {/* The single strongest level anywhere in the record. Rendered only
+              when a coach actually entered one — the API returns null rather
+              than defaulting, so this badge can never overstate a child. */}
+          {data.highestLevel && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-400/20 to-amber-300/10 px-3 py-1 text-xs font-bold text-amber-200 ring-1 ring-amber-300/30">
+              <Trophy className="h-3 w-3" />
+              {data.highestLevel.label} level
+            </span>
+          )}
+        </div>
         <p className="mt-3 font-mono text-[11px] tracking-widest text-slate-500">
           {data.passportId}
         </p>
@@ -241,6 +458,13 @@ export function PassportPage({ passportId }: { passportId: string }) {
             tone="text-orange-500"
           />
         </div>
+
+        {/* The sporting record. Placed directly under the stats — above even
+            achievements — because it answers the question the page exists to
+            answer: what has this child actually done? Badges are the system's
+            view of a student; this is the coach's, and it is the part a parent
+            forwards. */}
+        {data.records.length > 0 && <SportingRecord records={data.records} />}
 
         {/* Achievements — the reason gwd_achievement_v1 links here. Placed
             above attendance because a parent arriving from that message is

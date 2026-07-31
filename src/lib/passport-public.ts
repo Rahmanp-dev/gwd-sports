@@ -1,6 +1,13 @@
 import type { IAttendance } from '@/lib/models/Student';
 import { sessionDateKey } from '@/lib/attendance/session';
 import { averageByCategory } from '@/lib/performance/taxonomy';
+import {
+  toPublicRecords,
+  highestLevel,
+  RECORD_LEVEL_LABELS,
+  type PublicPassportRecord,
+  type PassportRecordLevel,
+} from '@/lib/passport/records';
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -19,7 +26,9 @@ import { averageByCategory } from '@/lib/performance/taxonomy';
  *
  * SAFE, and the point of the page:
  *   student name, photo, sports, current academy, attendance record,
- *   achievements, academy history
+ *   achievements, academy history, and the curated sporting record —
+ *   tournaments, leagues, camps, trials and certifications a coach entered
+ *   knowing they publish (see lib/passport/records.ts)
  *
  * DELIBERATELY WITHHELD, whatever the caller asks for:
  *   parent phone and name   — contact details, and the QR check-in identity key
@@ -133,6 +142,17 @@ export interface PublicPassport {
    * who knows raw scores go public stops recording honest ones.
    */
   progress: { categoryKey: string; label: string; percentage: number | null }[];
+  /**
+   * The curated sporting history. Unlike `progress`, these ARE published in
+   * full — a coach writes them knowing they appear here, and the form says so.
+   */
+  records: PublicPassportRecord[];
+  /**
+   * The strongest competitive level anywhere in `records`, for the header
+   * badge. Null when nothing is levelled — never defaulted, because inventing
+   * a credential is the one thing this codebase refuses to do anywhere.
+   */
+  highestLevel: { key: PassportRecordLevel; label: string } | null;
   isActive: boolean;
 }
 
@@ -164,6 +184,9 @@ export function toPublicPassport(input: {
   const { passport, profile, academyName } = input;
   const now = input.now ?? new Date();
 
+  const records = toPublicRecords(passport.records, now);
+  const topLevel = highestLevel(records);
+
   const stints = (passport.academyHistory ?? [])
     .filter((stint: any) => stint?.academyName && stint?.joinedAt)
     .sort(
@@ -194,6 +217,8 @@ export function toPublicPassport(input: {
       label: average.label,
       percentage: average.percentage,
     })),
+    records,
+    highestLevel: topLevel ? { key: topLevel, label: RECORD_LEVEL_LABELS[topLevel] } : null,
     isActive: passport.isActive !== false,
   };
 }

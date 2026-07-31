@@ -22,7 +22,6 @@ import {
   Wallet,
   Receipt,
   Users,
-  Building2,
   Minus,
   Calendar,
 } from "lucide-react";
@@ -35,7 +34,13 @@ import {
 } from "./RecordCashPaymentDialog";
 
 function fmt(val: number): string {
-  if (val === undefined || val === null || typeof val !== 'number' || isNaN(val)) return "₹0";
+  if (
+    val === undefined ||
+    val === null ||
+    typeof val !== "number" ||
+    isNaN(val)
+  )
+    return "₹0";
   if (val >= 10000000) return `₹${(val / 10000000).toFixed(2)}Cr`;
   if (val >= 100000) return `₹${(val / 100000).toFixed(2)}L`;
   if (val >= 1000) return `₹${(val / 1000).toFixed(1)}K`;
@@ -62,152 +67,12 @@ function GrowthBadge({ value }: { value: number }) {
   );
 }
 
-// ─── SVG Bar Chart ───
-function RevenueBarChart({
-  data,
-  height = 200,
-}: {
-  data: { label: string; revenue: number; count: number }[];
-  height?: number;
-}) {
-  const maxVal = Math.max(...data.map((d) => d.revenue), 1);
-  const barW = Math.floor(800 / data.length) - 8;
-  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
-
-  return (
-    <div className="relative">
-      <svg
-        viewBox={`0 0 800 ${height + 30}`}
-        className="w-full"
-        style={{ minHeight: height + 30 }}
-      >
-        {/* Grid lines */}
-        {[0, 0.25, 0.5, 0.75, 1].map((pct) => (
-          <g key={pct}>
-            <line
-              x1="0"
-              y1={height - pct * height}
-              x2="800"
-              y2={height - pct * height}
-              stroke="#f3f4f6"
-              strokeWidth="1"
-            />
-            <text
-              x="0"
-              y={height - pct * height - 4}
-              fontSize="9"
-              fill="#9ca3af"
-              fontFamily="system-ui"
-            >
-              {fmt(maxVal * pct)}
-            </text>
-          </g>
-        ))}
-
-        {data.map((d, i) => {
-          const barH = (d.revenue / maxVal) * (height - 20);
-          const x = i * (barW + 8) + 20;
-          const y = height - barH;
-          const isHovered = hoveredIdx === i;
-
-          return (
-            <g
-              key={i}
-              onMouseEnter={() => setHoveredIdx(i)}
-              onMouseLeave={() => setHoveredIdx(null)}
-              className="cursor-pointer"
-            >
-              {/* Bar gradient */}
-              <defs>
-                <linearGradient
-                  id={`bar-grad-${i}`}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop
-                    offset="0%"
-                    stopColor={isHovered ? "#dc2626" : "#ef4444"}
-                  />
-                  <stop
-                    offset="100%"
-                    stopColor={isHovered ? "#b91c1c" : "#dc2626"}
-                  />
-                </linearGradient>
-              </defs>
-              <rect
-                x={x}
-                y={y}
-                width={barW}
-                height={barH}
-                rx="4"
-                fill={`url(#bar-grad-${i})`}
-                opacity={isHovered ? 1 : 0.85}
-                className="transition-all duration-200"
-              />
-              {/* Label */}
-              <text
-                x={x + barW / 2}
-                y={height + 16}
-                textAnchor="middle"
-                fontSize="10"
-                fill="#6b7280"
-                fontFamily="system-ui"
-                fontWeight={isHovered ? "700" : "400"}
-              >
-                {d.label}
-              </text>
-              {/* Tooltip */}
-              {isHovered && (
-                <g>
-                  <rect
-                    x={x - 10}
-                    y={y - 40}
-                    width={barW + 20}
-                    height="32"
-                    rx="6"
-                    fill="#1f2937"
-                    opacity="0.95"
-                  />
-                  <text
-                    x={x + barW / 2}
-                    y={y - 24}
-                    textAnchor="middle"
-                    fontSize="10"
-                    fill="#fff"
-                    fontFamily="system-ui"
-                    fontWeight="700"
-                  >
-                    {fmt(d.revenue)}
-                  </text>
-                  <text
-                    x={x + barW / 2}
-                    y={y - 13}
-                    textAnchor="middle"
-                    fontSize="8"
-                    fill="#9ca3af"
-                    fontFamily="system-ui"
-                  >
-                    {d.count} txns
-                  </text>
-                </g>
-              )}
-            </g>
-          );
-        })}
-      </svg>
-    </div>
-  );
-}
-
 // ─── Sparkline for daily data ───
-function DailySparkline({
-  data,
-}: {
-  data: any[];
-}) {
-  const safeData = data.map(d => ({ date: d.date, revenue: d.revenue ?? d.amount ?? 0 }));
+function DailySparkline({ data }: { data: any[] }) {
+  const safeData = data.map((d) => ({
+    date: d.date,
+    revenue: d.revenue ?? d.amount ?? 0,
+  }));
   if (safeData.length === 0) return null;
   const maxVal = Math.max(...safeData.map((d) => d.revenue), 1);
   const w = 700;
@@ -404,7 +269,18 @@ function KPICard({
 }
 
 // ═══════════ MAIN COMPONENT ═══════════
-export function FinanceDashboard() {
+export interface FinanceDashboardProps {
+  /**
+   * The transaction ledger, injected by the parent and rendered high up —
+   * directly beneath the defaulters list. Passed in rather than imported so
+   * this file keeps owning layout while FeesManagement keeps owning the
+   * ledger's data, filters and pagination. Optional: the dashboard is still
+   * a complete screen without it.
+   */
+  ledgerSlot?: React.ReactNode;
+}
+
+export function FinanceDashboard({ ledgerSlot }: FinanceDashboardProps = {}) {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -472,12 +348,9 @@ export function FinanceDashboard() {
   const statusBreakdown = data?.statusBreakdown || {
     success: { count: 0, total: 0 },
     pending: { count: 0, total: 0 },
-    failed: { count: 0, total: 0 }
+    failed: { count: 0, total: 0 },
   };
-  const monthlyTrend = data?.monthlyTrend || [];
   const dailyTrend = data?.dailyTrend || [];
-  const academyRevenue = data?.academyRevenue || [];
-  const topPayers = data?.topPayers || [];
   const defaulters = data?.defaulters || [];
 
   return (
@@ -570,226 +443,25 @@ export function FinanceDashboard() {
         />
       </div>
 
-      {/* Revenue Trend + Status Breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* 12-Month Revenue Chart */}
-        <Card className="lg:col-span-2 border-0 shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="pb-2">
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-6 rounded-full bg-red-500" />
-              <CardTitle className="text-base font-bold">
-                Monthly Revenue — Last 12 Months
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <RevenueBarChart 
-              data={monthlyTrend.map((m: any) => ({ 
-                label: m.month, 
-                revenue: m.collected || 0, 
-                count: m.count || 0 
-              }))} 
-              height={180} 
-            />
-          </CardContent>
-        </Card>
+      {/*
+        ══════════════════════════════════════════════════════════════════
+        ACT ON IT, THEN CHECK IT
+        ══════════════════════════════════════════════════════════════════
 
-        {/* Payment Status Donut */}
-        <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="pb-2">
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-6 rounded-full bg-emerald-500" />
-              <CardTitle className="text-base font-bold">
-                Payment Status
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="flex items-center justify-center pt-2">
-            <StatusDonut
-              success={statusBreakdown.success.count}
-              pending={statusBreakdown.pending.count}
-              failed={statusBreakdown.failed.count}
-            />
-          </CardContent>
-          <div className="px-6 pb-4 grid grid-cols-3 gap-2">
-            <div className="text-center p-2 rounded-lg bg-green-50 border border-green-100">
-              <p className="text-sm font-extrabold text-green-700">
-                {fmt(statusBreakdown.success.total)}
-              </p>
-              <p className="text-[9px] text-green-500 uppercase font-semibold">
-                Collected
-              </p>
-            </div>
-            <div className="text-center p-2 rounded-lg bg-amber-50 border border-amber-100">
-              <p className="text-sm font-extrabold text-amber-700">
-                {fmt(statusBreakdown.pending.total)}
-              </p>
-              <p className="text-[9px] text-amber-500 uppercase font-semibold">
-                Pending
-              </p>
-            </div>
-            <div className="text-center p-2 rounded-lg bg-red-50 border border-red-100">
-              <p className="text-sm font-extrabold text-red-700">
-                {fmt(statusBreakdown.failed.total)}
-              </p>
-              <p className="text-[9px] text-red-500 uppercase font-semibold">
-                Failed
-              </p>
-            </div>
-          </div>
-        </Card>
-      </div>
+        Owner-directed reorder. What sat here before — Monthly Revenue,
+        Revenue by Academy, Top Paying Students — was reporting: true, but
+        nothing an owner does anything about on a Tuesday morning, and it
+        pushed the two screens they open this tab FOR (who owes money, and
+        did that payment land) below the fold.
 
-      {/* Daily Revenue Sparkline */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-2">
-          <div className="flex items-center gap-2">
-            <div className="w-1 h-6 rounded-full bg-rose-500" />
-            <CardTitle className="text-base font-bold">
-              Daily Revenue — Last 30 Days
-            </CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <DailySparkline data={dailyTrend} />
-        </CardContent>
-      </Card>
-
-      {/* Academy Revenue + Top Payers + Defaulters */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Academy Revenue */}
-        <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="pb-2">
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-6 rounded-full bg-violet-500" />
-              <CardTitle className="text-base font-bold">
-                Revenue by Academy
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-2.5">
-            {academyRevenue.length === 0 ? (
-              <p className="text-sm text-slate-400 text-center py-6">
-                No academy revenue data
-              </p>
-            ) : (
-              academyRevenue.map((a: any, i: number) => {
-                const maxR = academyRevenue[0]?.revenue || 1;
-                const pct = Math.round((a.revenue / maxR) * 100);
-                const colors = [
-                  "#ef4444",
-                  "#3b82f6",
-                  "#f59e0b",
-                  "#10b981",
-                  "#8b5cf6",
-                ];
-                return (
-                  <div key={i} className="space-y-1">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-1.5">
-                        <Building2 className="w-3 h-3 text-slate-400" />
-                        <span className="text-sm font-medium text-slate-700 truncate max-w-[140px]">
-                          {a.name}
-                        </span>
-                      </div>
-                      <span className="text-xs font-bold text-slate-800">
-                        {fmt(a.revenue)}
-                      </span>
-                    </div>
-                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-700"
-                        style={{
-                          width: `${pct}%`,
-                          background: colors[i % colors.length],
-                        }}
-                      />
-                    </div>
-                    <p className="text-[9px] text-slate-400 text-right">
-                      {a.count} payments
-                    </p>
-                  </div>
-                );
-              })
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Top Payers */}
-        <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="pb-2">
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-6 rounded-full bg-blue-500" />
-              <CardTitle className="text-base font-bold">
-                Top Paying Students
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
-            {topPayers.length === 0 ? (
-              <p className="text-sm text-slate-400 text-center py-6">
-                No payment data
-              </p>
-            ) : (
-              topPayers.map((p: any, i: number) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 hover:bg-white hover:shadow-sm transition-all"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div
-                      className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${
-                        i === 0
-                          ? "bg-yellow-100 text-yellow-700"
-                          : i === 1
-                            ? "bg-slate-100 text-slate-600"
-                            : i === 2
-                              ? "bg-orange-100 text-orange-600"
-                              : "bg-white text-slate-500 border"
-                      }`}
-                    >
-                      #{i + 1}
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-slate-800 truncate max-w-[120px]">
-                        {p.name}
-                      </p>
-                      <p className="text-[9px] text-slate-400">
-                        {p.txnCount} payments
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-green-700">
-                      {fmt(p.totalPaid)}
-                    </p>
-                    <div className="flex gap-1 mt-0.5 justify-end">
-                      {p.phone && (
-                        <a
-                          href={`tel:${p.phone}`}
-                          className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center hover:bg-green-100 transition-colors"
-                        >
-                          <Phone className="w-3.5 h-3.5 text-green-600" />
-                        </a>
-                      )}
-                      {p.email && (
-                        <a
-                          href={`mailto:${p.email}`}
-                          className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center hover:bg-blue-100 transition-colors"
-                        >
-                          <Mail className="w-3.5 h-3.5 text-blue-600" />
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
-
+        So: money owed first, status beside it, and the ledger immediately
+        under both — close enough to the defaulters list that "call this
+        parent" and "confirm what they paid" are one glance apart. Daily
+        revenue stays, at the bottom, where a trend belongs.
+      */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* Defaulters / Overdue */}
-        <Card className="border-0 shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-red-400">
+        <Card className="border-0 shadow-sm transition-shadow hover:shadow-md border-l-4 border-l-red-400 lg:col-span-2">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -882,7 +554,76 @@ export function FinanceDashboard() {
             )}
           </CardContent>
         </Card>
+
+        {/* Payment Status Donut */}
+        <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="pb-2">
+            <div className="flex items-center gap-2">
+              <div className="w-1 h-6 rounded-full bg-emerald-500" />
+              <CardTitle className="text-base font-bold">
+                Payment Status
+              </CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="flex items-center justify-center pt-2">
+            <StatusDonut
+              success={statusBreakdown.success.count}
+              pending={statusBreakdown.pending.count}
+              failed={statusBreakdown.failed.count}
+            />
+          </CardContent>
+          <div className="px-6 pb-4 grid grid-cols-3 gap-2">
+            <div className="text-center p-2 rounded-lg bg-green-50 border border-green-100">
+              <p className="text-sm font-extrabold text-green-700">
+                {fmt(statusBreakdown.success.total)}
+              </p>
+              <p className="text-[9px] text-green-500 uppercase font-semibold">
+                Collected
+              </p>
+            </div>
+            <div className="text-center p-2 rounded-lg bg-amber-50 border border-amber-100">
+              <p className="text-sm font-extrabold text-amber-700">
+                {fmt(statusBreakdown.pending.total)}
+              </p>
+              <p className="text-[9px] text-amber-500 uppercase font-semibold">
+                Pending
+              </p>
+            </div>
+            <div className="text-center p-2 rounded-lg bg-red-50 border border-red-100">
+              <p className="text-sm font-extrabold text-red-700">
+                {fmt(statusBreakdown.failed.total)}
+              </p>
+              <p className="text-[9px] text-red-500 uppercase font-semibold">
+                Failed
+              </p>
+            </div>
+          </div>
+        </Card>
       </div>
+
+      {/*
+        The ledger, rendered by the parent. It lives here rather than after
+        the dashboard because the question it answers — "did that payment
+        actually land?" — is the same question the defaulters list above
+        provokes, and scrolling past three charts to get to it was the
+        whole complaint.
+      */}
+      {ledgerSlot}
+
+      {/* Daily Revenue Sparkline */}
+      <Card className="border-0 shadow-sm">
+        <CardHeader className="pb-2">
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-6 rounded-full bg-rose-500" />
+            <CardTitle className="text-base font-bold">
+              Daily Revenue — Last 30 Days
+            </CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <DailySparkline data={dailyTrend} />
+        </CardContent>
+      </Card>
     </div>
   );
 }

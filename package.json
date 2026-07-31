@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "test:money": "vitest run src/lib/payments",
     "whatsapp:doctor": "node scripts/whatsapp-doctor.mjs",
-    "whatsapp:templates": "node scripts/create-whatsapp-templates.mjs"
+    "whatsapp:templates": "node scripts/create-whatsapp-templates.mjs",
+    "passport:seed": "node scripts/seed-passport-records.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

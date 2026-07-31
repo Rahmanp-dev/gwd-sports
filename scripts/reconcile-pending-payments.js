@@ -16,7 +16,7 @@
  *   node scripts/reconcile-pending-payments.js            # report only
  *   node scripts/reconcile-pending-payments.js --apply    # settle
  *
- * Requires MONGODB_URI, RAZORPAY_KEY_ID (or NEXT_PUBLIC_RAZORPAY_KEY_ID) and
+ * Requires DB_URI, RAZORPAY_KEY_ID (or NEXT_PUBLIC_RAZORPAY_KEY_ID) and
  * RAZORPAY_KEY_SECRET.
  */
 const mongoose = require('mongoose');
@@ -28,12 +28,14 @@ const LOOKBACK_DAYS = 30;
 async function main() {
   const apply = process.argv.includes('--apply');
 
-  const uri = process.env.MONGODB_URI;
+  // DB_URI is what src/lib/db.ts and .env.local actually use; MONGODB_URI
+  // is kept as a fallback for anyone with it already exported.
+  const uri = process.env.DB_URI || process.env.MONGODB_URI;
   const keyId = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
   if (!uri || !keyId || !keySecret) {
-    console.error('Need MONGODB_URI, RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.');
+    console.error('Need DB_URI, RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.');
     process.exit(1);
   }
 

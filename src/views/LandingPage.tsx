@@ -8,6 +8,7 @@ import AcademyGrid from '@/components/ecosystem/AcademyGrid';
 
 import AcademyDetailSidebar from '@/components/ecosystem/AcademyDetailSidebar';
 import HowItWorks from '@/components/ecosystem/HowItWorks';
+import WhatItCosts from '@/components/ecosystem/WhatItCosts';
 import PlatformFooter from '@/components/ecosystem/PlatformFooter';
 
 const EcosystemMap = dynamic(() => import('@/components/ecosystem/EcosystemMap'), {
@@ -80,6 +81,14 @@ export default function LandingPage() {
             Below discovery on purpose: you see the academies first, then learn
             what you are looking at. */}
         <HowItWorks />
+
+        {/* The commercial answer, the commitments, the roadmap, and what a
+            student gets. Placed after HowItWorks because that section earns the
+            interest and this one converts it: an owner who has just understood
+            the loop immediately wants to know what it costs and what happens to
+            their data. Ordered academy-first — the academy signs up, the
+            student benefits. */}
+        <WhatItCosts />
 
         <PlatformFooter />
       </div>

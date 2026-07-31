@@ -64,6 +64,85 @@ describe('the pricing model currently in force', () => {
     expect(split.academyAmountPaise).toBe(BASE_FEE_PAISE);
   });
 
+  /**
+   * The public homepage now prints this split in full — parent total, academy
+   * share, Razorpay's cut and GWD's — under a heading that asks "where's the
+   * catch?". A page that answers that question with stale numbers is worse
+   * than one that never asked it, and nothing else would catch the drift:
+   * the copy is hand-written in a .tsx and cannot import from here without
+   * pulling JSX into this suite.
+   *
+   * KEEP IN SYNC: components/ecosystem/WhatItCosts.tsx and the partner booklet
+   * (docs/GWD-Academy-Booklet.html, "The question everyone asks first").
+   */
+  it('matches the figures printed on the public homepage', () => {
+    const split = computeFeeSplit(BASE_FEE_PAISE, configuredSplitConfig());
+
+    expect(formatInr(split.parentTotalPaise)).toBe('₹3,104.00');       // "Parent pays"
+    expect(formatInr(split.academyAmountPaise)).toBe('₹3,000.00');     // "Your academy"
+    expect(formatInr(split.convenienceFeePaise)).toBe('₹104.00');      // "Added on top"
+
+    // The only rate the public copy names, because it is the only one we set.
+    expect(DEFAULT_MARGIN_RATE_BPS / 100).toBe(1);
+  });
+
+  /**
+   * ══════════════════════════════════════════════════════════════════════════
+   * WHY THE PUBLIC COPY STOPS AT THE ₹104 AND DOES NOT SPLIT IT
+   * ══════════════════════════════════════════════════════════════════════════
+   *
+   * `gatewayFeePaise` is a MODELLED figure — a flat 236 bps applied to the
+   * captured total with no branching by payment instrument. It exists to gross
+   * the parent's total up so the academy and GWD are both left whole. It is an
+   * assumption, not an observation.
+   *
+   * What Razorpay ACTUALLY charged arrives later, per payment, and is stored
+   * separately as `gatewayFeeActualPaise` (settle.ts reads it off the webhook).
+   * The two exist as different fields because they are different quantities.
+   *
+   * They diverge hardest on the commonest case: UPI carries zero MDR in India,
+   * so the real gateway charge on a UPI payment is at or near nil while this
+   * model still assumes 2.36%. Publishing "Razorpay takes ₹73.25 / GWD keeps
+   * ₹30.75" therefore attributes an amount to a named third party that they do
+   * not charge on that transaction, and understates GWD's own share severalfold.
+   *
+   * This test exists to keep that reasoning attached to the numbers. If the
+   * split is ever made instrument-aware and reconciled against
+   * `gatewayFeeActualPaise`, a per-party public breakdown becomes defensible
+   * and this test should be replaced rather than deleted.
+   * ══════════════════════════════════════════════════════════════════════════
+   */
+  it('models the gateway cut rather than observing it, so it stays internal', () => {
+    const split = computeFeeSplit(BASE_FEE_PAISE, configuredSplitConfig());
+
+    // The estimate is internally consistent — the two modelled parts account
+    // for the whole add-on with nothing unexplained.
+    expect(split.gatewayFeePaise + split.gwdNetPaise).toBe(split.convenienceFeePaise);
+
+    // ...and it is an ESTIMATE: one flat rate, applied whatever the parent
+    // paid with. Nothing here consults the payment instrument.
+    expect(DEFAULT_GATEWAY_RATE_BPS).toBe(236); // 200 × 1.18, no GST input credit claimed
+
+    /**
+     * The parent is charged the SAME grossed-up total however they choose to
+     * pay, because the model cannot see the instrument. What varies is the
+     * gateway's real charge underneath that fixed total — and therefore what
+     * GWD actually realises.
+     *
+     * On UPI (zero MDR) the gateway takes ~nothing, so GWD realises the whole
+     * add-on rather than the modelled ₹30.75. That is why the public copy
+     * cannot name a per-party figure: the printed one would be wrong in GWD's
+     * own favour on the commonest payment method.
+     */
+    const parentTotal = split.parentTotalPaise;
+    const realisedIfGatewayCharged = (actualFeePaise: number) =>
+      parentTotal - split.academyAmountPaise - actualFeePaise;
+
+    expect(realisedIfGatewayCharged(split.gatewayFeePaise)).toBe(split.gwdNetPaise);
+    expect(realisedIfGatewayCharged(0)).toBe(split.convenienceFeePaise); // the UPI case
+    expect(realisedIfGatewayCharged(0)).toBeGreaterThan(split.gwdNetPaise * 3);
+  });
+
   it('is a cost-plus model, not a flat percentage', () => {
     // The distinction that makes the three documents irreconcilable. Under a
     // flat 2.5% the add-on scales linearly with the fee; here it does not,
