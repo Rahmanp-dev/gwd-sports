@@ -65,17 +65,19 @@ describe('the pricing model currently in force', () => {
   });
 
   /**
-   * The public homepage now prints this split in full — parent total, academy
-   * share, Razorpay's cut and GWD's — under a heading that asks "where's the
-   * catch?". A page that answers that question with stale numbers is worse
-   * than one that never asked it, and nothing else would catch the drift:
-   * the copy is hand-written in a .tsx and cannot import from here without
-   * pulling JSX into this suite.
+   * The partner booklet prints this worked example. The copy is hand-written
+   * HTML and cannot import from here, so nothing else would catch it drifting
+   * if the rates move — and a stale figure in a document handed to a partner
+   * is worse than no figure at all.
    *
-   * KEEP IN SYNC: components/ecosystem/WhatItCosts.tsx and the partner booklet
-   * (docs/GWD-Academy-Booklet.html, "The question everyone asks first").
+   * The public homepage deliberately does NOT print any of this: it states
+   * that the platform is free and stops there. See the header of
+   * components/ecosystem/WhatItCosts.tsx for why.
+   *
+   * KEEP IN SYNC: docs/GWD-Academy-Booklet.html, "The question everyone asks
+   * first" (page 06).
    */
-  it('matches the figures printed on the public homepage', () => {
+  it('matches the worked example printed in the partner booklet', () => {
     const split = computeFeeSplit(BASE_FEE_PAISE, configuredSplitConfig());
 
     expect(formatInr(split.parentTotalPaise)).toBe('₹3,104.00');       // "Parent pays"

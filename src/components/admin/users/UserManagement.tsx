@@ -114,10 +114,28 @@ export const UserManagement: React.FC = () => {
     setIsLoading(true);
     try {
       if (selectedUser) {
-        // Update existing user
-        await userService.updateUser(selectedUser._id, data as UserUpdateData);
+        const res: any = await userService.updateUser(
+          selectedUser._id,
+          data as UserUpdateData,
+        );
+
+        /**
+         * Changing a phone number does not only touch the account — it moves
+         * the enrolment record and every Sports Passport that number is the
+         * parent on, because attendance confirmations, fee reminders and the
+         * passport's unique identity key all read their own copy of it. The
+         * API reports what it moved; showing that is the difference between
+         * an admin trusting the change went through everywhere and quietly
+         * wondering whether they now have to fix the passport by hand.
+         */
+        const propagated: string[] = res?.data?.propagated ?? [];
+        const alsoSynced = propagated.filter((p) => p !== "account");
+
         toast.success("User updated successfully", {
-          description: "The user information has been updated.",
+          description:
+            alsoSynced.length > 0
+              ? `Also synced across ${alsoSynced.join(" and ")}.`
+              : "The user information has been updated.",
           style: {
             background: "#f0fdf4",
             borderColor: "#bbf7d0",
@@ -125,6 +143,16 @@ export const UserManagement: React.FC = () => {
           },
           className: "border-l-4 border-l-green-500",
         });
+
+        // Fields the server refused for this role — silently dropping them is
+        // how "I changed it and it didn't save" reports start.
+        const ignored: string[] = res?.data?.ignoredFields ?? [];
+        if (ignored.length > 0) {
+          toast.warning(`Not changed: ${ignored.join(", ")}`, {
+            description:
+              "Your role cannot edit those fields. Everything else was saved.",
+          });
+        }
       } else {
         // Create new user
         await userService.createUser(data);

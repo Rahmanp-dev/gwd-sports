@@ -4526,3 +4526,51 @@ Details worth keeping:
 - **The admin and super-admin UIs were not touched.** The API is now correct and synced, but neither dashboard has an edit form wired to the new validation, so the field-level errors and the "synced across N passports" message have nowhere to display yet. That is the remaining half of "updated across all admin and superadmins".
 - No self-service email/phone change for a user on their own profile — this is the admin path only.
 - The video work is verified by unit tests, typecheck and build, not by eye in a browser.
+
+---
+
+## Session — 2026-07-31 (cont. 6) · Finishing the identity cascade, and pulling the fee split off the homepage
+
+**State:** `tsc --noEmit` clean, `vitest run` 587/587, cold `rm -rf .next && npm run build` clean. Not committed.
+
+### 1. Owner decision: the fee breakdown comes off the landing page
+
+Removed the whole "Where the money actually comes from" card, and reframed the section away from *"If it's free, where's the catch?"* to **"Free for your academy. Actually free."**
+
+The reasoning is sound and worth recording: a marketing headline that raises the idea of a catch invites the reader to go looking for one, and then hands them a number to be suspicious about. The commercial detail belongs in the partner booklet and in a conversation, where it comes with context. The homepage keeps ₹0 / ₹0 / 100%, which is true, positive and needs no defending.
+
+The booklet **retains** the full split — that is a document handed over during a real conversation, which is the right place for it. `pricing.test.ts` now pins the booklet's worked example only, and its comment records that the homepage deliberately prints none of it.
+
+Verified in the browser: no "catch" anywhere in the section, zero occurrences of ₹3,104 / ₹73.25 / ₹30.75 / "convenience" / "gateway" / "Razorpay", and the ₹0 / 100% tiles intact.
+
+### 2. Two real bugs found in my own cascade while wiring the UI
+
+**`StudentProfile.parentPhone` is the NATIONAL form, not E.164.** `lib/import/commit.ts` writes `parentPhone: phone.national` and `parentPhoneE164: phone.e164` — two columns, two formats, on purpose. The cascade was writing E.164 into both. Not fatal, but it would have drifted from every row the importer has ever created. `NormalisedIdentity` now carries `phoneNational` alongside `phoneE164`.
+
+🔴 **A rename did not actually rename anything.** The first version rebuilt `identityKey` from `passport.studentName` — the OLD name — so a name change produced an identical key, wrote nothing, and left the passport carrying the old name with a stale key. That is exactly the failure `identityKeyAffected` was added to catch, and it silently did not work.
+
+Fixed by resolving the student's OWN passport via `StudentProfile.userId → passportId`, because a Passport has no `userId` and the only other link is the parent's phone, which siblings share. Now: a **name** change touches that one passport with the new name; a **phone** change touches every passport on the old number so siblings move together.
+
+**Also closed:** clearing a phone. `Passport.parentPhone` is `required` and is the QR check-in and messaging key, and `identityKey` is built from it — blanking it would either fail validation mid-cascade or leave the key pointing at a number the record no longer holds. It is now refused up front with a message naming how many passports depend on it. Allowed freely for a trainer with no passports.
+
+**Regression avoided:** `sports` was missing from the allowlist, so the existing admin form's trainer-sports editing would have silently stopped saving. Added — it grants no access, it only labels what someone coaches.
+
+### 3. UI wiring
+
+`UserManagement` now surfaces what the API reports: a success toast naming what else synced ("Also synced across 2 enrolment record(s) and 3 Sports Passport(s)"), and a warning for refused fields.
+
+The refusal warning only fires for fields whose value actually **differs** from what is stored. The edit form posts every field it renders, including `role`, which an academy admin cannot write — warning on that would fire on every single save and train people to ignore the warning entirely.
+
+### 4. Verification
+
+- Live: `/api/passport/<id>` and `/api/passport/<id>/pay` both 200 for a repaired and a pre-existing passport, after all Passport model changes.
+- Live: discover filters still correct (`sport=badminton` → 1).
+- Live: `PUT /api/admin/users/<id>` with no token → **401**, including with a `role` escalation payload.
+
+One test failed once in a command where `npm run build` and `vitest` were chained together, then passed on three consecutive isolated runs. Concluded environmental (the build writing `.next` while vitest imported), not a defect — but the failing test name was not captured, so this is recorded rather than proven.
+
+### Not done / honest gaps
+
+- **The super-admin dashboard's user editing was not wired.** `UserManagement` (the academy admin path) is done; `SuperAdminDashboard` has its own user list and was not touched, so it will not show the sync or refusal messages.
+- No self-service email/phone change on a user's own profile — admin path only.
+- The video aspect work and the canvas play fix are covered by unit tests, typecheck and build, but were not clicked through in a browser.

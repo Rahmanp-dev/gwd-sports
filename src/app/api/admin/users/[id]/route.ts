@@ -81,6 +81,24 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const body = await req.json().catch(() => ({}));
     const { updates, rejected } = pickWritable(body, auth.user.role);
 
+    /**
+     * The edit form posts every field it renders, including ones this actor
+     * cannot write — an academy admin's form still echoes `role` back
+     * unchanged. Warning about those would fire on every single save and train
+     * people to ignore the warning.
+     *
+     * So only report a refused field when its value actually DIFFERS from what
+     * is stored. That is the case where the admin genuinely tried to change
+     * something and it did not happen, which is the only case worth telling
+     * them about.
+     */
+    const attempted = rejected.filter((key) => {
+      const incoming = (body as Record<string, unknown>)[key];
+      const stored = (target as unknown as Record<string, unknown>)[key];
+      if (incoming === undefined) return false;
+      return String(incoming ?? '') !== String(stored ?? '');
+    });
+
     if (Object.keys(updates).length === 0) {
       return NextResponse.json(
         {
@@ -141,7 +159,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         result.propagated.length > 1
           ? `Updated, and synced across ${result.propagated.slice(1).join(' and ')}.`
           : 'Updated.',
-      data: { user: result.user, propagated: result.propagated, ignoredFields: rejected },
+      data: { user: result.user, propagated: result.propagated, ignoredFields: attempted },
     });
   } catch (error: any) {
     console.error('[API_ADMIN_USERS_PUT]', error?.message || error);

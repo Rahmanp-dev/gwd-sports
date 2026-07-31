@@ -63,50 +63,99 @@ export async function applyIdentityChange(
     }
   }
 
-  /**
-   * Every passport this person is the parent on. Keyed by phone, because that
-   * is the only link — a Passport has no userId. A parent with three children
-   * at the academy has three passports and all of them must move together, or
-   * the siblings end up split across two numbers.
-   */
   const oldPhone = String(user.phone ?? '').trim();
-  const passports =
-    diff.identityKeyAffected && oldPhone
-      ? await Passport.find({ parentPhone: oldPhone })
-      : [];
-
   const newPhone = next.phone !== undefined ? next.phone : oldPhone;
 
-  // Rebuilt keys, checked for collision before a single write.
-  const rebuilt: { doc: any; key: string }[] = [];
-  if (diff.identityKeyAffected && newPhone) {
-    for (const passport of passports) {
-      const key = buildIdentityKey(newPhone, passport.studentName);
-      if (key === passport.identityKey) continue;
+  /**
+   * THIS user's own enrolment, and therefore their own passport.
+   *
+   * Needed because a Passport has no `userId` — the only link to a person is
+   * the parent's phone, which is shared by siblings. A NAME change must land
+   * on this one passport and no other; a PHONE change must land on all of
+   * them. Conflating the two is how a rename would either do nothing or
+   * rename a sibling.
+   */
+  const ownProfile = await StudentProfile.findOne({ userId: user._id })
+    .select('passportId')
+    .lean<any>();
 
-      const clash = await Passport.findOne({
-        identityKey: key,
-        _id: { $ne: passport._id },
-      })
-        .select('passportId')
-        .lean<any>();
+  /**
+   * Every passport reachable from this change. A phone change moves the whole
+   * family — a parent with three children has three passports linked only by
+   * that number, and moving one would split the siblings across two numbers.
+   * A name-only change touches just this student's.
+   */
+  const passports = diff.phoneChanged && oldPhone
+    ? await Passport.find({ parentPhone: oldPhone })
+    : ownProfile?.passportId && diff.nameChanged
+      ? await Passport.find({ passportId: ownProfile.passportId })
+      : [];
 
-      if (clash) {
-        // Two passports for one child, usually because the new number already
-        // belongs to another record for the same student. Merging them is a
-        // judgement call, not something to do silently inside an edit.
-        return {
-          ok: false,
-          status: 409,
-          field: 'phone',
-          message:
-            `That number is already linked to ${passport.studentName}'s record ` +
-            `under passport ${clash.passportId}. Merge those first — changing ` +
-            `it here would create a duplicate.`,
-        };
-      }
-      rebuilt.push({ doc: passport, key });
+  /**
+   * Clearing the number is allowed for a trainer, who may genuinely have none
+   * on file, but not for someone whose Passport depends on it.
+   *
+   * `Passport.parentPhone` is `required` and is the lookup key for QR check-in
+   * and every parent message; `identityKey` is built from it and is uniquely
+   * indexed. Blanking it would either fail schema validation mid-cascade or
+   * leave the key pointing at a number the record no longer carries. Refusing
+   * up front is the only outcome that leaves the data coherent.
+   */
+  if (diff.phoneChanged && !newPhone && passports.length > 0) {
+    return {
+      ok: false,
+      status: 400,
+      field: 'phone',
+      message:
+        `That number is the contact for ${passports.length} Sports Passport(s) ` +
+        `and is how check-in and parent messages find them. Replace it with a ` +
+        `new number rather than clearing it.`,
+    };
+  }
+
+  /**
+   * Rebuilt keys, all checked for collision BEFORE a single write.
+   *
+   * The name used per passport matters: only the student whose account this is
+   * gets the new name. An earlier version rebuilt every key from
+   * `passport.studentName`, which meant a rename produced an identical key and
+   * silently did nothing — the passport kept the old name and the key stayed
+   * stale, which is the precise failure `identityKeyAffected` exists to catch.
+   */
+  const rebuilt: { id: string; key: string; studentName?: string }[] = [];
+
+  for (const passport of passports) {
+    const isOwn =
+      !!ownProfile?.passportId && passport.passportId === ownProfile.passportId;
+    const studentName =
+      isOwn && diff.nameChanged && next.name ? next.name : passport.studentName;
+
+    // newPhone is guaranteed non-empty here: the guard above returns early if
+    // it was cleared while passports still depend on it.
+    const key = buildIdentityKey(newPhone, studentName);
+    if (key === passport.identityKey && studentName === passport.studentName) continue;
+
+    const clash = await Passport.findOne({
+      identityKey: key,
+      _id: { $ne: passport._id },
+    })
+      .select('passportId')
+      .lean<any>();
+
+    if (clash) {
+      // Two passports for one child. Merging them is a judgement call, not
+      // something to do silently inside an edit.
+      return {
+        ok: false,
+        status: 409,
+        field: diff.phoneChanged ? 'phone' : 'name',
+        message:
+          `That would collide with an existing record for ${studentName} ` +
+          `(passport ${clash.passportId}). Merge those first — applying it ` +
+          `here would create a duplicate.`,
+      };
     }
+    rebuilt.push({ id: String(passport._id), key, studentName });
   }
 
   // ── Writes ───────────────────────────────────────────────────────────────
@@ -116,6 +165,7 @@ export async function applyIdentityChange(
   if (next.email !== undefined) user.email = next.email;
   if (next.phone !== undefined) user.phone = next.phone;
   if (next.isActive !== undefined) user.isActive = next.isActive;
+  if (next.sports !== undefined) user.sports = next.sports;
   if (next.role !== undefined) user.role = next.role;
   if (next.academyId !== undefined) {
     user.academyId = next.academyId ? new mongoose.Types.ObjectId(next.academyId) : null;
@@ -125,29 +175,53 @@ export async function applyIdentityChange(
 
   if (diff.phoneChanged) {
     /**
-     * The enrolment records. Matched on userId AND on the old parent phone,
-     * because both shapes exist: a student's own profile carries their userId,
-     * while a parent's number can also appear on a sibling's profile that this
-     * user does not own. Only the first is safe to rewrite from here — the
-     * second belongs to a different child and a different account.
+     * The enrolment record. Scoped to `userId` only — a parent's number also
+     * appears on a sibling's profile, but that row belongs to a different
+     * child and a different account, and the sibling's passport is handled
+     * separately below. Rewriting it from here would edit someone else's
+     * enrolment as a side effect of this user's edit.
+     *
+     * The two columns are different formats on purpose: `parentPhoneE164` is
+     * functional, `parentPhone` is the displayed national form, matching what
+     * lib/import/commit.ts writes.
      */
     const profiles = await StudentProfile.updateMany(
       { userId: user._id },
-      { $set: { parentPhone: newPhone, parentPhoneE164: newPhone || null } }
+      {
+        $set: {
+          parentPhone: next.phoneNational ?? newPhone,
+          parentPhoneE164: newPhone || null,
+        },
+      }
     );
     if (profiles.modifiedCount > 0) {
       propagated.push(`${profiles.modifiedCount} enrolment record(s)`);
     }
   }
 
-  if (rebuilt.length > 0 || (diff.phoneChanged && passports.length > 0)) {
-    for (const passport of passports) {
-      if (diff.phoneChanged) passport.parentPhone = newPhone;
-      const match = rebuilt.find((r) => String(r.doc._id) === String(passport._id));
-      if (match) passport.identityKey = match.key;
-      await passport.save();
+  let touchedPassports = 0;
+  for (const passport of passports) {
+    const match = rebuilt.find((r) => r.id === String(passport._id));
+    let dirty = false;
+
+    if (diff.phoneChanged && passport.parentPhone !== newPhone) {
+      passport.parentPhone = newPhone;
+      dirty = true;
     }
-    propagated.push(`${passports.length} Sports Passport(s)`);
+    if (match) {
+      passport.identityKey = match.key;
+      if (match.studentName && match.studentName !== passport.studentName) {
+        passport.studentName = match.studentName;
+      }
+      dirty = true;
+    }
+    if (dirty) {
+      await passport.save();
+      touchedPassports++;
+    }
+  }
+  if (touchedPassports > 0) {
+    propagated.push(`${touchedPassports} Sports Passport(s)`);
   }
 
   return { ok: true, user, propagated };

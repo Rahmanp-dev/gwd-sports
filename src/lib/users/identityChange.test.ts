@@ -78,6 +78,18 @@ describe('normaliseIdentity', () => {
     }
   });
 
+  it('carries the national form separately from E.164', () => {
+    // StudentProfile stores BOTH: parentPhoneE164 is functional, parentPhone is
+    // the displayed national form that lib/import/commit.ts writes. Collapsing
+    // them would drift from every row the importer has created.
+    const r = normaliseIdentity({ phone: '+919876543210' });
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.value.phoneE164).toBe('+919876543210');
+    expect(r.value.phoneNational).toBeTruthy();
+    expect(r.value.phoneNational).not.toBe(r.value.phoneE164);
+  });
+
   it('rejects a number it cannot confidently interpret', () => {
     for (const bad of ['12345', '1234567890', 'abcdefghij']) {
       expect(normaliseIdentity({ phone: bad }).ok, bad).toBe(false);

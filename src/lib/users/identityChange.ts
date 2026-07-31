@@ -44,8 +44,15 @@ import { normalizePhone } from '@/lib/phone';
  * ════════════════════════════════════════════════════════════════════════════
  */
 
-/** Fields an academy admin may write on a user in their own academy. */
-export const ADMIN_WRITABLE = ['name', 'email', 'phone', 'isActive'] as const;
+/**
+ * Fields an academy admin may write on a user in their own academy.
+ *
+ * `sports` is here because the existing admin form edits it for trainers —
+ * leaving it out would have silently stopped that saving, trading one bug for
+ * another. It is safe: it grants no access, it only labels what someone
+ * coaches.
+ */
+export const ADMIN_WRITABLE = ['name', 'email', 'phone', 'sports', 'isActive'] as const;
 
 /**
  * Additionally writable by a platform admin. `role` and `academyId` are here
@@ -93,7 +100,18 @@ export interface NormalisedIdentity {
   phone?: string;
   /** E.164, derived from `phone`. What messaging and the passport key use. */
   phoneE164?: string;
+  /**
+   * The national form, e.g. "98765 43210".
+   *
+   * Carried separately because the two phone columns on StudentProfile are NOT
+   * the same format: `parentPhoneE164` is functional and E.164, `parentPhone`
+   * is what the import path writes as `phone.national` and is displayed.
+   * Writing E.164 into both would work but would drift from every row the
+   * importer has ever created.
+   */
+  phoneNational?: string;
   isActive?: boolean;
+  sports?: string[];
   role?: string;
   academyId?: string | null;
 }
@@ -147,12 +165,29 @@ export function normaliseIdentity(updates: Record<string, unknown>): NormaliseRe
       } else {
         value.phone = parsed.e164;
         value.phoneE164 = parsed.e164;
+        value.phoneNational = parsed.national;
       }
     }
   }
 
   if ('isActive' in updates) {
     value.isActive = Boolean(updates.isActive);
+  }
+
+  if ('sports' in updates) {
+    const raw = updates.sports;
+    if (!Array.isArray(raw)) {
+      errors.push({ field: 'sports', reason: 'Sports must be a list.' });
+    } else {
+      // Deduped and lowercased to match how every other writer stores them.
+      value.sports = [
+        ...new Set(
+          raw
+            .map((s) => String(s ?? '').trim().toLowerCase())
+            .filter(Boolean)
+        ),
+      ];
+    }
   }
 
   if ('role' in updates) {
