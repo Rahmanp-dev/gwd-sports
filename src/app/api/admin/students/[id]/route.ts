@@ -1,20 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 import { connectToDatabase } from '@/lib/db';
 import { adminMiddleware } from '@/lib/middleware/auth';
 import StudentProfile from '@/lib/models/Student';
 
+/**
+ * Read one student profile.
+ *
+ * The PUT below has careful tenant isolation. This GET had none — any academy
+ * admin could read ANY student on the platform by id, and the populate makes
+ * that a substantial disclosure rather than a trivial one: the response carries
+ * the family's `parentPhone`, the student's full `attendance` and
+ * `feePayments` history, and the populated `userId` with their email and phone.
+ * A competitor's roster and their families' contact details, one request at a
+ * time.
+ *
+ * Scoped identically to the PUT. A student at another academy now reads as
+ * "not found", indistinguishable from one that does not exist, so the endpoint
+ * cannot be used to probe which ids are real.
+ */
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const auth = await adminMiddleware(req);
     if (auth?.error) return NextResponse.json({ success: false, message: auth.error }, { status: auth.status });
     await connectToDatabase();
-    
-    const student = await StudentProfile.findById(id).populate('userId academyId trainers');
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ success: false, message: 'Invalid student id' }, { status: 400 });
+    }
+
+    const filter: Record<string, unknown> = { _id: id };
+    if (auth.user.role !== 'gwd_super_admin') {
+      if (!auth.academyId) {
+        return NextResponse.json(
+          { success: false, message: 'No academy assigned to your account' },
+          { status: 403 },
+        );
+      }
+      filter.academyId = auth.academyId;
+    }
+
+    const student = await StudentProfile.findOne(filter).populate('userId academyId trainers');
     if (!student) return NextResponse.json({ success: false, message: 'Not found' }, { status: 404 });
     return NextResponse.json({ success: true, data: { student } });
-  } catch (error) {
-    return NextResponse.json({ success: false, message: 'Error' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[admin/students GET]', error?.message || error);
+    return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
   }
 }
 

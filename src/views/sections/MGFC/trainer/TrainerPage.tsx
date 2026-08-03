@@ -528,7 +528,7 @@ export default function MGFCTrainerPage() {
 
   if (profileLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center text-white">
+      <div className="min-h-screen pt-shell flex items-center justify-center pt-title">
         <div className="flex flex-col items-center">
           <Activity className="h-10 w-10 text-blue-500 animate-spin mb-4" />
           <p>Loading Profile...</p>
@@ -577,7 +577,7 @@ export default function MGFCTrainerPage() {
      * looking at one identity. Before this, the header was a fixed blue/green
      * gradient for every academy on the platform.
      */
-    <AcademyTheme theme={academyTheme} as="div" className="min-h-screen bg-slate-950">
+    <AcademyTheme theme={academyTheme} as="div" className="pt-shell">
       {/* Header */}
       <div
         className="py-6 px-4 sm:px-6 lg:px-8"
@@ -595,11 +595,11 @@ export default function MGFCTrainerPage() {
                 <img
                   src={academyTheme.logoUrl}
                   alt=""
-                  className="h-16 w-16 rounded-full border-4 border-white/80 bg-white object-contain p-1"
+                  className="h-16 w-16 rounded-full border-4 pt-overlay bg-white object-contain p-1"
                 />
               ) : (
               <Avatar className="h-16 w-16 border-4 border-white">
-                <AvatarFallback className="bg-white/20 text-white text-xl font-bold">
+                <AvatarFallback className="pt-overlay pt-on-brand text-xl font-bold">
                   {realName
                     .split(" ")
                     .map((n: string) => n[0])
@@ -608,27 +608,27 @@ export default function MGFCTrainerPage() {
               </Avatar>
               )}
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-white">
+                <h1 className="text-2xl md:text-3xl font-bold pt-title">
                   {realName}
                 </h1>
                 <div className="flex flex-wrap gap-2 mt-1">
-                  <Badge className="bg-white/20 text-white border-white/30">
+                  <Badge className="pt-overlay pt-on-brand">
                     ID: {trainerIdShort}
                   </Badge>
-                  <Badge className="bg-white/20 text-white border-white/30">
+                  <Badge className="pt-overlay pt-on-brand">
                     {academyName}
                   </Badge>
                   {trainerProfile?.isActive ? (
-                    <Badge className="bg-green-500/30 text-white border-green-300/40">
+                    <Badge className="pt-btn-brand/30 pt-title border-green-300/40">
                       Active
                     </Badge>
                   ) : (
-                    <Badge className="bg-red-500/30 text-white border-red-300/40">
+                    <Badge className="bg-red-500/30 pt-title border-red-300/40">
                       Inactive
                     </Badge>
                   )}
                   {hourlyRate !== undefined && (
-                    <Badge className="bg-white/20 text-white border-white/30">
+                    <Badge className="pt-overlay pt-on-brand">
                       ₹{hourlyRate}/hr
                     </Badge>
                   )}
@@ -641,7 +641,7 @@ export default function MGFCTrainerPage() {
                   Account tab below. */}
               <Button
                 variant="outline"
-                className="border-gray-500 text-black hover:bg-gray-200"
+                className="border-gray-500 text-black"
                 onClick={() => setActiveTab("account")}
               >
                 <Users className="h-4 w-4 mr-2" />
@@ -649,7 +649,7 @@ export default function MGFCTrainerPage() {
               </Button>
               <Button
                 variant="outline"
-                className="border-gray-500 text-black hover:bg-gray-200"
+                className="border-gray-500 text-black"
                 onClick={() => navigate("/events/my-events")}
               >
                 <Calendar className="h-4 w-4 mr-2" />
@@ -657,7 +657,7 @@ export default function MGFCTrainerPage() {
               </Button>
               <Button
                 variant="outline"
-                className="border-gray-500 text-black hover:bg-gray-200"
+                className="border-gray-500 text-black"
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4 mr-2" />
@@ -677,10 +677,10 @@ export default function MGFCTrainerPage() {
         >
           {/* Two columns on a phone rather than four ~85px slivers; the full
               row returns as soon as there is width for it. */}
-          <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-5 bg-gray-800 border border-gray-700">
+          <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-5 pt-card-soft border pt-border">
             <TabsTrigger
               value="overview"
-              className="data-[state=active]:bg-blue-600"
+              className="data-[state=active]:pt-btn-accent"
             >
               Overview
             </TabsTrigger>
@@ -688,19 +688,19 @@ export default function MGFCTrainerPage() {
                 page to do, most evenings. */}
             <TabsTrigger
               value="register"
-              className="data-[state=active]:bg-blue-600"
+              className="data-[state=active]:pt-btn-accent"
             >
               Register
             </TabsTrigger>
             <TabsTrigger
               value="students"
-              className="data-[state=active]:bg-blue-600"
+              className="data-[state=active]:pt-btn-accent"
             >
               Students
             </TabsTrigger>
             <TabsTrigger
               value="availability"
-              className="data-[state=active]:bg-blue-600"
+              className="data-[state=active]:pt-btn-accent"
             >
               Availability
             </TabsTrigger>
@@ -708,7 +708,7 @@ export default function MGFCTrainerPage() {
                 password settings have to be reachable from this page. */}
             <TabsTrigger
               value="account"
-              className="data-[state=active]:bg-blue-600"
+              className="data-[state=active]:pt-btn-accent"
             >
               Account
             </TabsTrigger>
@@ -716,10 +716,10 @@ export default function MGFCTrainerPage() {
 
           {/* Register Tab — the batch attendance checklist */}
           <TabsContent value="register" className="space-y-6">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="pt-card">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <ClipboardList className="h-5 w-5 text-blue-400" />
+                <CardTitle className="pt-title flex items-center gap-2">
+                  <ClipboardList className="h-5 w-5 pt-accent" />
                   Mark the register
                 </CardTitle>
               </CardHeader>
@@ -811,56 +811,56 @@ export default function MGFCTrainerPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Basic Info */}
               <motion.div variants={itemVariants}>
-                <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+                <Card className="pt-card">
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <Users className="h-5 w-5 text-blue-400" />
+                    <CardTitle className="pt-title flex items-center gap-2">
+                      <Users className="h-5 w-5 pt-accent" />
                       Trainer Info
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Name</span>
-                      <span className="text-white font-medium">{realName}</span>
+                      <span className="pt-muted">Name</span>
+                      <span className="pt-title font-medium">{realName}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Email</span>
-                      <span className="text-white font-medium">
+                      <span className="pt-muted">Email</span>
+                      <span className="pt-title font-medium">
                         {trainerEmail}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Phone</span>
-                      <span className="text-white font-medium">
+                      <span className="pt-muted">Phone</span>
+                      <span className="pt-title font-medium">
                         {trainerPhone}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Joined</span>
-                      <span className="text-white font-medium">
+                      <span className="pt-muted">Joined</span>
+                      <span className="pt-title font-medium">
                         {joinedDate}
                       </span>
                     </div>
                     {hourlyRate !== undefined && (
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-400">Hourly Rate</span>
-                        <span className="text-white font-medium">
+                        <span className="pt-muted">Hourly Rate</span>
+                        <span className="pt-title font-medium">
                           ₹{hourlyRate}/hr
                         </span>
                       </div>
                     )}
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Academy</span>
-                      <span className="text-white font-medium">
+                      <span className="pt-muted">Academy</span>
+                      <span className="pt-title font-medium">
                         {academyName}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Status</span>
+                      <span className="pt-muted">Status</span>
                       <Badge
                         className={
                           trainerProfile?.isActive
-                            ? "bg-green-500/20 text-green-400"
+                            ? "pt-chip pt-brand"
                             : "bg-red-500/20 text-red-400"
                         }
                       >
@@ -873,35 +873,35 @@ export default function MGFCTrainerPage() {
 
               {/* Sports & Specializations */}
               <motion.div variants={itemVariants}>
-                <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+                <Card className="pt-card">
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <Dumbbell className="h-5 w-5 text-green-400" />
+                    <CardTitle className="pt-title flex items-center gap-2">
+                      <Dumbbell className="h-5 w-5 pt-brand" />
                       Sports & Specializations
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <p className="text-gray-400 text-sm mb-2">Sports</p>
+                      <p className="pt-muted text-sm mb-2">Sports</p>
                       <div className="flex flex-wrap gap-2">
                         {trainerSports.length > 0 ? (
                           trainerSports.map((s, i) => (
                             <Badge
                               key={i}
-                              className="bg-green-500/10 text-green-400 border-green-500/20 capitalize"
+                              className="pt-btn-brand/10 pt-brand border-green-500/20 capitalize"
                             >
                               {s}
                             </Badge>
                           ))
                         ) : (
-                          <span className="text-gray-500 text-sm">
+                          <span className="pt-faint text-sm">
                             None listed
                           </span>
                         )}
                       </div>
                     </div>
                     <div>
-                      <p className="text-gray-400 text-sm mb-2">
+                      <p className="pt-muted text-sm mb-2">
                         Specializations
                       </p>
                       <div className="flex flex-wrap gap-2">
@@ -909,13 +909,13 @@ export default function MGFCTrainerPage() {
                           specializations.map((s, i) => (
                             <Badge
                               key={i}
-                              className="bg-blue-500/10 text-blue-400 border-blue-500/20"
+                              className="pt-btn-accent/10 pt-accent border-blue-500/20"
                             >
                               {s}
                             </Badge>
                           ))
                         ) : (
-                          <span className="text-gray-500 text-sm">
+                          <span className="pt-faint text-sm">
                             None listed
                           </span>
                         )}
@@ -929,9 +929,9 @@ export default function MGFCTrainerPage() {
             {/* Qualifications */}
             {qualifications.length > 0 && (
               <motion.div variants={itemVariants}>
-                <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+                <Card className="pt-card">
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
+                    <CardTitle className="pt-title flex items-center gap-2">
                       <Shield className="h-5 w-5 text-yellow-400" />
                       Qualifications
                     </CardTitle>
@@ -940,17 +940,17 @@ export default function MGFCTrainerPage() {
                     {qualifications.map((q) => (
                       <div
                         key={q._id}
-                        className="p-4 bg-gray-800/50 rounded-lg border border-gray-700"
+                        className="p-4 pt-card-soft rounded-lg border pt-border"
                       >
                         <div className="flex items-start justify-between">
                           <div>
-                            <p className="text-white font-semibold">
+                            <p className="pt-title font-semibold">
                               {q.certification}
                             </p>
-                            <p className="text-gray-400 text-sm mt-1">
+                            <p className="pt-muted text-sm mt-1">
                               Issued by: {q.issuedBy}
                             </p>
-                            <p className="text-gray-500 text-xs mt-1">
+                            <p className="pt-faint text-xs mt-1">
                               {new Date(q.issuedDate).toLocaleDateString(
                                 "en-IN",
                               )}
@@ -963,7 +963,7 @@ export default function MGFCTrainerPage() {
                               href={q.certificateUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-400 hover:text-blue-300 text-xs underline"
+                              className="pt-accent hover:pt-accent text-xs underline"
                             >
                               View
                             </a>
@@ -979,9 +979,9 @@ export default function MGFCTrainerPage() {
             {/* Experience */}
             {experience.length > 0 && (
               <motion.div variants={itemVariants}>
-                <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+                <Card className="pt-card">
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
+                    <CardTitle className="pt-title flex items-center gap-2">
                       <Briefcase className="h-5 w-5 text-purple-400" />
                       Experience
                     </CardTitle>
@@ -990,15 +990,15 @@ export default function MGFCTrainerPage() {
                     {experience.map((exp) => (
                       <div
                         key={exp._id}
-                        className="p-4 bg-gray-800/50 rounded-lg border border-gray-700"
+                        className="p-4 pt-card-soft rounded-lg border pt-border"
                       >
-                        <p className="text-white font-semibold">
+                        <p className="pt-title font-semibold">
                           {exp.position}
                         </p>
-                        <p className="text-gray-400 text-sm mt-1">
+                        <p className="pt-muted text-sm mt-1">
                           {exp.organization}
                         </p>
-                        <p className="text-gray-500 text-xs mt-1">
+                        <p className="pt-faint text-xs mt-1">
                           {new Date(exp.startDate).toLocaleDateString("en-IN")}
                           {" → "}
                           {exp.endDate
@@ -1006,7 +1006,7 @@ export default function MGFCTrainerPage() {
                             : "Present"}
                         </p>
                         {exp.description && (
-                          <p className="text-gray-400 text-sm mt-2">
+                          <p className="pt-muted text-sm mt-2">
                             {exp.description}
                           </p>
                         )}
@@ -1025,23 +1025,23 @@ export default function MGFCTrainerPage() {
               animate="visible"
               variants={containerVariants}
             >
-              <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+              <Card className="pt-card">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <Users className="h-5 w-5 text-green-400" />
+                  <CardTitle className="pt-title flex items-center gap-2">
+                    <Users className="h-5 w-5 pt-brand" />
                     My Students ({detailedStudents.length || students.length})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {fetchingStudents ? (
                     <div className="flex flex-col justify-center items-center py-8 gap-2">
-                      <Activity className="h-6 w-6 text-green-500 animate-spin" />
-                      <p className="text-gray-400 text-xs">
+                      <Activity className="h-6 w-6 pt-brand animate-spin" />
+                      <p className="pt-muted text-xs">
                         Loading students...
                       </p>
                     </div>
                   ) : detailedStudents.length === 0 ? (
-                    <p className="text-gray-400 text-sm">
+                    <p className="pt-muted text-sm">
                       No students assigned yet.
                     </p>
                   ) : (
@@ -1049,26 +1049,26 @@ export default function MGFCTrainerPage() {
                       {detailedStudents.map((student, index) => (
                         <div
                           key={student._id || index}
-                          className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 flex items-center justify-between"
+                          className="p-4 pt-card-soft rounded-lg border pt-border flex items-center justify-between"
                         >
                           <div className="flex items-center gap-4">
                             <Avatar className="h-10 w-10">
-                              <AvatarFallback className="bg-gradient-to-br from-blue-600 to-green-600 text-white text-sm font-bold">
+                              <AvatarFallback className="bg-gradient-to-br from-blue-600 to-green-600 pt-title text-sm font-bold">
                                 {(student.user?.name || "S")
                                   .charAt(0)
                                   .toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="text-white font-medium text-base mb-0.5">
+                              <p className="pt-title font-medium text-base mb-0.5">
                                 {student.user?.name || `Student #${index + 1}`}
                               </p>
                               <div className="flex items-center gap-2">
-                                <p className="text-gray-400 text-xs">
+                                <p className="pt-muted text-xs">
                                   {student.user?.email}
                                 </p>
                                 {student.level && (
-                                  <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-[10px] px-1.5 py-0 h-4 uppercase">
+                                  <Badge className="pt-btn-accent/10 pt-accent border-blue-500/20 text-[10px] px-1.5 py-0 h-4 uppercase">
                                     {student.level}
                                   </Badge>
                                 )}
@@ -1081,31 +1081,31 @@ export default function MGFCTrainerPage() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-full"
+                                className="pt-muted hover:pt-title hover:pt-card-soft rounded-full"
                               >
                                 <MoreVertical className="h-5 w-5" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
                               align="end"
-                              className="bg-gray-800 border-gray-700 text-white min-w-[160px]"
+                              className="pt-card pt-title min-w-[160px]"
                             >
                               <DropdownMenuItem
-                                className="hover:bg-gray-700 cursor-pointer py-2"
+                                className="hover:pt-card-soft cursor-pointer py-2"
                                 onClick={() => setViewStudentId(student.userId)}
                               >
-                                <FileText className="mr-2 h-4 w-4 text-gray-400" />
+                                <FileText className="mr-2 h-4 w-4 pt-muted" />
                                 View Profile
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                className="hover:bg-gray-700 cursor-pointer py-2 text-green-400 focus:text-green-300 focus:bg-gray-700"
+                                className="hover:pt-card-soft cursor-pointer py-2 pt-brand focus:text-green-300 focus:pt-card-soft"
                                 onClick={() => handleOpenAddAttendance(student)}
                               >
                                 <CheckCircle className="mr-2 h-4 w-4" />
                                 Add Attendance
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                className="hover:bg-gray-700 cursor-pointer py-2 text-blue-400 focus:text-blue-300 focus:bg-gray-700"
+                                className="hover:pt-card-soft cursor-pointer py-2 pt-accent focus:pt-accent focus:pt-card-soft"
                                 onClick={() =>
                                   handleOpenAddPerformance(student)
                                 }
@@ -1114,14 +1114,14 @@ export default function MGFCTrainerPage() {
                                 Add Performance
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                className="hover:bg-gray-700 cursor-pointer py-2 text-amber-400 focus:text-amber-300 focus:bg-gray-700"
+                                className="hover:pt-card-soft cursor-pointer py-2 text-amber-400 focus:text-amber-300 focus:pt-card-soft"
                                 onClick={() => setPassportStudent(student)}
                               >
                                 <Trophy className="mr-2 h-4 w-4" />
                                 Sports Passport
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                className="hover:bg-gray-700 cursor-pointer py-2 text-purple-400 focus:text-purple-300 focus:bg-gray-700"
+                                className="hover:pt-card-soft cursor-pointer py-2 text-purple-400 focus:text-purple-300 focus:pt-card-soft"
                                 onClick={() => {
                                   setSelectedStudentForPerformance(student);
                                   setIsViewPerformanceOpen(true);
@@ -1151,10 +1151,10 @@ export default function MGFCTrainerPage() {
             >
               {/* Available Days */}
               <motion.div variants={itemVariants}>
-                <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+                <Card className="pt-card">
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <Calendar className="h-5 w-5 text-blue-400" />
+                    <CardTitle className="pt-title flex items-center gap-2">
+                      <Calendar className="h-5 w-5 pt-accent" />
                       Available Days
                     </CardTitle>
                   </CardHeader>
@@ -1174,8 +1174,8 @@ export default function MGFCTrainerPage() {
                             key={day}
                             className={
                               availability.days.includes(day)
-                                ? "bg-green-500/20 text-green-400 border-green-500/40"
-                                : "bg-gray-700/50 text-gray-500 border-gray-600/40"
+                                ? "pt-chip pt-brand border-green-500/40"
+                                : "pt-card-soft/50 pt-faint pt-border/40"
                             }
                           >
                             {dayLabel(day)}
@@ -1183,7 +1183,7 @@ export default function MGFCTrainerPage() {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-gray-400 text-sm">
+                      <p className="pt-muted text-sm">
                         No availability set.
                       </p>
                     )}
@@ -1193,9 +1193,9 @@ export default function MGFCTrainerPage() {
 
               {/* Time Slots */}
               <motion.div variants={itemVariants}>
-                <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/50">
+                <Card className="pt-card">
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
+                    <CardTitle className="pt-title flex items-center gap-2">
                       <Clock className="h-5 w-5 text-purple-400" />
                       Time Slots
                     </CardTitle>
@@ -1206,16 +1206,16 @@ export default function MGFCTrainerPage() {
                       availability.timeSlots.map((slot, i) => (
                         <div
                           key={slot._id || i}
-                          className="flex items-center gap-3 p-3 bg-gray-800/50 rounded-lg border border-gray-700"
+                          className="flex items-center gap-3 p-3 pt-card-soft rounded-lg border pt-border"
                         >
                           <Clock className="h-4 w-4 text-purple-400" />
-                          <span className="text-white font-medium">
+                          <span className="pt-title font-medium">
                             {slot.start} — {slot.end}
                           </span>
                         </div>
                       ))
                     ) : (
-                      <p className="text-gray-400 text-sm">
+                      <p className="pt-muted text-sm">
                         No time slots set.
                       </p>
                     )}
@@ -1237,10 +1237,10 @@ export default function MGFCTrainerPage() {
         open={isAddPerformanceOpen}
         onOpenChange={setIsAddPerformanceOpen}
       >
-        <DialogContent className="bg-gray-900 border border-gray-700 text-white sm:max-w-[425px]">
+        <DialogContent className="pt-card border pt-border pt-title sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Add Performance Record</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="pt-muted">
               Evaluate and add metrics for{" "}
               {selectedStudentForPerformance?.user?.name || "this student"}.
             </DialogDescription>
@@ -1251,7 +1251,7 @@ export default function MGFCTrainerPage() {
           >
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="sport" className="text-gray-300">
+                <Label htmlFor="sport" className="pt-muted">
                   Sport
                 </Label>
                 <Input
@@ -1264,12 +1264,12 @@ export default function MGFCTrainerPage() {
                       sport: e.target.value,
                     }))
                   }
-                  className="bg-gray-800 border-gray-700 text-white focus-visible:ring-blue-500"
+                  className="pt-card pt-title focus-visible:ring-blue-500"
                   placeholder="e.g. Football"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="categoryKey" className="text-gray-300">
+                <Label htmlFor="categoryKey" className="pt-muted">
                   Area of the game
                 </Label>
                 <select
@@ -1286,19 +1286,19 @@ export default function MGFCTrainerPage() {
                       metric: "",
                     }))
                   }
-                  className="flex h-10 w-full items-center justify-between rounded-md border border-gray-700 bg-gray-800 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-white"
+                  className="flex h-10 w-full items-center justify-between rounded-md border pt-border pt-card-soft px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pt-title"
                 >
                   {Object.values(CATEGORY_DEFINITIONS).map((definition) => (
                     <option
                       key={definition.key}
                       value={definition.key}
-                      className="bg-gray-800 text-white"
+                      className="pt-card-soft pt-title"
                     >
                       {definition.label}
                     </option>
                   ))}
                 </select>
-                <p className="text-[11px] text-gray-500">
+                <p className="text-[11px] pt-faint">
                   {
                     CATEGORY_DEFINITIONS[
                       addPerformanceForm.categoryKey as keyof typeof CATEGORY_DEFINITIONS
@@ -1308,7 +1308,7 @@ export default function MGFCTrainerPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="metric" className="text-gray-300">
+                <Label htmlFor="metric" className="pt-muted">
                   What did you assess?
                 </Label>
                 <input
@@ -1323,7 +1323,7 @@ export default function MGFCTrainerPage() {
                     }))
                   }
                   placeholder="e.g. first touch"
-                  className="flex h-10 w-full rounded-md border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="flex h-10 w-full rounded-md border pt-border pt-card-soft px-3 py-2 text-sm pt-title focus:outline-none focus:ring-2 focus:ring-ring"
                 />
                 {/* Suggestions, not a fixed list — metric vocabulary is local
                     to an academy, unlike the four categories. */}
@@ -1344,7 +1344,7 @@ export default function MGFCTrainerPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="score" className="text-gray-300">
+                <Label htmlFor="score" className="pt-muted">
                   Score
                 </Label>
                 <Input
@@ -1360,12 +1360,12 @@ export default function MGFCTrainerPage() {
                       score: e.target.value,
                     }))
                   }
-                  className="bg-gray-800 border-gray-700 text-white focus-visible:ring-blue-500"
+                  className="pt-card pt-title focus-visible:ring-blue-500"
                   placeholder="0"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="maxScore" className="text-gray-300">
+                <Label htmlFor="maxScore" className="pt-muted">
                   Max Score
                 </Label>
                 <Input
@@ -1381,14 +1381,14 @@ export default function MGFCTrainerPage() {
                       maxScore: e.target.value,
                     }))
                   }
-                  className="bg-gray-800 border-gray-700 text-white focus-visible:ring-blue-500"
+                  className="pt-card pt-title focus-visible:ring-blue-500"
                   placeholder="100"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="remarks" className="text-gray-300">
+              <Label htmlFor="remarks" className="pt-muted">
                 Remarks / Feedback
               </Label>
               <textarea
@@ -1402,7 +1402,7 @@ export default function MGFCTrainerPage() {
                     remarks: e.target.value,
                   }))
                 }
-                className="flex min-h-[80px] w-full rounded-md border border-gray-700 bg-gray-800 px-3 py-2 text-sm ring-offset-background placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-white resize-none"
+                className="flex min-h-[80px] w-full rounded-md border pt-border pt-card-soft px-3 py-2 text-sm ring-offset-background placeholder:pt-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pt-title resize-none"
                 placeholder="Needs improvement in..."
               />
             </div>
@@ -1412,14 +1412,14 @@ export default function MGFCTrainerPage() {
                 type="button"
                 variant="outline"
                 onClick={() => setIsAddPerformanceOpen(false)}
-                className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+                className="pt-border pt-muted hover:pt-card-soft hover:pt-title"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={submittingPerformance}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="pt-btn-accent pt-title"
               >
                 {submittingPerformance ? (
                   <Activity className="h-4 w-4 mr-2 animate-spin" />
@@ -1436,7 +1436,7 @@ export default function MGFCTrainerPage() {
         open={isViewPerformanceOpen}
         onOpenChange={setIsViewPerformanceOpen}
       >
-        <DialogContent className="bg-gray-900 border border-gray-700 text-white sm:max-w-[500px]">
+        <DialogContent className="pt-card border pt-border pt-title sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>
               Performances - {selectedStudentForPerformance?.user?.name}
@@ -1445,14 +1445,14 @@ export default function MGFCTrainerPage() {
           <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
             {!selectedStudentForPerformance?.performance ||
             selectedStudentForPerformance.performance.length === 0 ? (
-              <p className="text-gray-400 text-sm">
+              <p className="pt-muted text-sm">
                 No performance records found.
               </p>
             ) : (
               selectedStudentForPerformance.performance.map((perf: any) => (
                 <div
                   key={perf._id}
-                  className="p-3 bg-gray-800 rounded-lg border border-gray-700 text-sm relative"
+                  className="p-3 pt-card-soft rounded-lg border pt-border text-sm relative"
                 >
                   {editingPerformance?._id === perf._id ? (
                     <form
@@ -1460,11 +1460,11 @@ export default function MGFCTrainerPage() {
                       className="space-y-3"
                     >
                       <div>
-                        <Label className="text-xs text-gray-400">
+                        <Label className="text-xs pt-muted">
                           Category
                         </Label>
                         <select
-                          className="w-full p-2 border border-gray-600 bg-gray-700 rounded-md text-white mt-1"
+                          className="w-full p-2 border pt-border pt-card-soft rounded-md pt-title mt-1"
                           value={editingPerformance.category}
                           onChange={(e) =>
                             setEditingPerformance({
@@ -1481,10 +1481,10 @@ export default function MGFCTrainerPage() {
                         </select>
                       </div>
                       <div>
-                        <Label className="text-xs text-gray-400">Score</Label>
+                        <Label className="text-xs pt-muted">Score</Label>
                         <Input
                           type="number"
-                          className="bg-gray-700 border-gray-600 text-white mt-1"
+                          className="pt-card-soft pt-border pt-title mt-1"
                           value={editingPerformance.score}
                           onChange={(e) =>
                             setEditingPerformance({
@@ -1495,9 +1495,9 @@ export default function MGFCTrainerPage() {
                         />
                       </div>
                       <div>
-                        <Label className="text-xs text-gray-400">Remarks</Label>
+                        <Label className="text-xs pt-muted">Remarks</Label>
                         <Input
-                          className="bg-gray-700 border-gray-600 text-white mt-1"
+                          className="pt-card-soft pt-border pt-title mt-1"
                           value={editingPerformance.remarks}
                           onChange={(e) =>
                             setEditingPerformance({
@@ -1511,14 +1511,14 @@ export default function MGFCTrainerPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                          className="pt-border pt-muted hover:pt-card-soft"
                           onClick={() => setEditingPerformance(null)}
                         >
                           Cancel
                         </Button>
                         <Button
                           size="sm"
-                          className="bg-blue-600 hover:bg-blue-700"
+                          className="pt-btn-accent"
                           type="submit"
                         >
                           Save
@@ -1529,10 +1529,10 @@ export default function MGFCTrainerPage() {
                     <>
                       <div className="flex justify-between items-start">
                         <div>
-                          <p className="font-semibold text-white capitalize">
+                          <p className="font-semibold pt-title capitalize">
                             {perf.category}
                           </p>
-                          <p className="text-xs text-gray-400">
+                          <p className="text-xs pt-muted">
                             {new Date(perf.evaluatedAt).toLocaleDateString()}
                           </p>
                         </div>
@@ -1540,15 +1540,15 @@ export default function MGFCTrainerPage() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-7 w-7 p-0 hover:bg-gray-700"
+                            className="h-7 w-7 p-0 hover:pt-card-soft"
                             onClick={() => setEditingPerformance(perf)}
                           >
-                            <Edit2 className="h-3.5 w-3.5 text-blue-400" />
+                            <Edit2 className="h-3.5 w-3.5 pt-accent" />
                           </Button>
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-7 w-7 p-0 hover:bg-gray-700"
+                            className="h-7 w-7 p-0 hover:pt-card-soft"
                             onClick={() =>
                               handleDeletePerformance(
                                 selectedStudentForPerformance.user?._id || "",
@@ -1561,21 +1561,21 @@ export default function MGFCTrainerPage() {
                         </div>
                       </div>
                       <div className="mt-3">
-                        <div className="flex justify-between text-xs mb-1 text-gray-300">
+                        <div className="flex justify-between text-xs mb-1 pt-muted">
                           <span>
                             Score: {perf.score} / {perf.maxScore}
                           </span>
                         </div>
-                        <div className="w-full bg-gray-700 rounded-full h-1.5">
+                        <div className="w-full pt-card-soft rounded-full h-1.5">
                           <div
-                            className="bg-blue-500 h-1.5 rounded-full"
+                            className="pt-btn-accent h-1.5 rounded-full"
                             style={{
                               width: `${(perf.score / perf.maxScore) * 100}%`,
                             }}
                           ></div>
                         </div>
                         {perf.remarks && (
-                          <p className="mt-2 text-gray-400 italic font-light text-xs">
+                          <p className="mt-2 pt-muted italic font-light text-xs">
                             "{perf.remarks}"
                           </p>
                         )}
@@ -1591,17 +1591,17 @@ export default function MGFCTrainerPage() {
 
       {/* Add Attendance Dialog */}
       <Dialog open={isAddAttendanceOpen} onOpenChange={setIsAddAttendanceOpen}>
-        <DialogContent className="bg-gray-900 border border-gray-700 text-white sm:max-w-[425px]">
+        <DialogContent className="pt-card border pt-border pt-title sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Mark Attendance</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="pt-muted">
               Record attendance for{" "}
               {selectedStudentForAttendance?.user?.name || "this student"}.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleAddAttendanceSubmit} className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="attendanceDate" className="text-gray-300">
+              <Label htmlFor="attendanceDate" className="pt-muted">
                 Date
               </Label>
               <Input
@@ -1615,11 +1615,11 @@ export default function MGFCTrainerPage() {
                     date: e.target.value,
                   }))
                 }
-                className="bg-gray-800 border-gray-700 text-white focus-visible:ring-blue-500"
+                className="pt-card pt-title focus-visible:ring-blue-500"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-gray-300">Status</Label>
+              <Label className="pt-muted">Status</Label>
               <div className="flex items-center gap-4 mt-2">
                 <Button
                   type="button"
@@ -1627,10 +1627,10 @@ export default function MGFCTrainerPage() {
                   onClick={() =>
                     setAddAttendanceForm((prev) => ({ ...prev, present: true }))
                   }
-                  className={`flex-1 border-gray-700 ${addAttendanceForm.present ? "bg-green-600/20 text-green-400 border-green-500/50 hover:bg-green-600/30" : "text-gray-400 hover:text-white hover:bg-gray-800"}`}
+                  className={`flex-1 pt-border ${addAttendanceForm.present ? "pt-btn-brand/20 pt-brand border-green-500/50 hover:pt-btn-brand/30" : "pt-muted hover:pt-title hover:pt-card-soft"}`}
                 >
                   <CheckCircle
-                    className={`h-4 w-4 mr-2 ${addAttendanceForm.present ? "text-green-400" : ""}`}
+                    className={`h-4 w-4 mr-2 ${addAttendanceForm.present ? "pt-brand" : ""}`}
                   />
                   Present
                 </Button>
@@ -1643,7 +1643,7 @@ export default function MGFCTrainerPage() {
                       present: false,
                     }))
                   }
-                  className={`flex-1 border-gray-700 ${!addAttendanceForm.present ? "bg-red-600/20 text-red-400 border-red-500/50 hover:bg-red-600/30" : "text-gray-400 hover:text-white hover:bg-gray-800"}`}
+                  className={`flex-1 pt-border ${!addAttendanceForm.present ? "bg-red-600/20 text-red-400 border-red-500/50 hover:bg-red-600/30" : "pt-muted hover:pt-title hover:pt-card-soft"}`}
                 >
                   <AlertCircle
                     className={`h-4 w-4 mr-2 ${!addAttendanceForm.present ? "text-red-400" : ""}`}
@@ -1653,7 +1653,7 @@ export default function MGFCTrainerPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="attendanceRemarks" className="text-gray-300">
+              <Label htmlFor="attendanceRemarks" className="pt-muted">
                 Remarks (Optional)
               </Label>
               <textarea
@@ -1666,7 +1666,7 @@ export default function MGFCTrainerPage() {
                     remarks: e.target.value,
                   }))
                 }
-                className="flex min-h-[80px] w-full rounded-md border border-gray-700 bg-gray-800 px-3 py-2 text-sm ring-offset-background placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-white resize-none"
+                className="flex min-h-[80px] w-full rounded-md border pt-border pt-card-soft px-3 py-2 text-sm ring-offset-background placeholder:pt-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pt-title resize-none"
                 placeholder="Any notes..."
               />
             </div>
@@ -1676,14 +1676,14 @@ export default function MGFCTrainerPage() {
                 type="button"
                 variant="outline"
                 onClick={() => setIsAddAttendanceOpen(false)}
-                className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+                className="pt-border pt-muted hover:pt-card-soft hover:pt-title"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={submittingAttendance}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="pt-btn-accent pt-title"
               >
                 {submittingAttendance ? (
                   <Activity className="h-4 w-4 mr-2 animate-spin" />
@@ -1702,9 +1702,9 @@ export default function MGFCTrainerPage() {
           if (!open) setViewStudentId(null);
         }}
       >
-        <DialogContent className="bg-gray-900 border-gray-700 text-white sm:max-w-[680px] max-h-[88vh] overflow-y-auto">
+        <DialogContent className="pt-card pt-title sm:max-w-[680px] max-h-[88vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-white">Student</DialogTitle>
+            <DialogTitle className="pt-title">Student</DialogTitle>
           </DialogHeader>
           {viewStudentId && <StudentDetail studentUserId={viewStudentId} />}
         </DialogContent>

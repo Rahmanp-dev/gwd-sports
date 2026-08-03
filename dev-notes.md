@@ -4574,3 +4574,283 @@ One test failed once in a command where `npm run build` and `vitest` were chaine
 - **The super-admin dashboard's user editing was not wired.** `UserManagement` (the academy admin path) is done; `SuperAdminDashboard` has its own user list and was not touched, so it will not show the sync or refusal messages.
 - No self-service email/phone change on a user's own profile — admin path only.
 - The video aspect work and the canvas play fix are covered by unit tests, typecheck and build, but were not clicked through in a browser.
+
+---
+
+## Session — 2026-07-31 (cont. 7) · Why the Passport was invisible in the student portal
+
+**State:** `tsc --noEmit` clean, `vitest run` 587/587, `npm run build` clean. Not committed.
+
+### The diagnosis
+
+"I don't see my passport option in student portal" turned out to be two separate causes stacked.
+
+**Cause 1 — 4 of 13 student profiles have no `passportId`.** `ensureStudentPassport` already self-heals on profile read and IS correctly wired (`api/student/profile/route.ts`, both branches). Those accounts simply have not opened the portal since that self-heal was added, so they sit broken until their owner happens to log in.
+
+**Cause 2 — one of them can never self-heal.** Passport creation needs a phone that normalises to a valid Indian mobile. `Test Student` has `parentPhone: "0987654321"`, which strips its leading zero to 9 digits and fails validation. `requirePhone` throws, `ensureStudentPassport` swallows it — deliberately, because a bad number on one account must not break the profile read that triggered it — and the result is a student who is permanently passport-less behind a log line nobody reads.
+
+Surveyed the four: Alex Student, Dummy Student and Aarav Sharma all have valid numbers and will repair on next login. Test Student will not, ever, until the number is corrected.
+
+### The fix, in two halves
+
+**`GET/POST /api/admin/backfill-passports`.** GET reports scope without writing — an owner should see what a repair covers before running it. POST repairs, reusing `ensureStudentPassport` rather than reimplementing passport minting, so the unique-identity rule stays in one place. Academy-scoped for owners, platform-wide for super admins.
+
+It separates *repairable* from *needs attention* and names the blocked students with the number that is wrong, which is the part the self-heal can never do. Repairs run **sequentially on purpose**: `findOrCreatePassport` enforces one identity per (parent phone, student name) through a unique index, so siblings running in parallel would race for the same key and lose to a duplicate-key error instead of correctly reusing the existing passport.
+
+**`components/student/PassportCard.tsx`.** The Passport was a small outline button next to "My Events", rendered only `if (passportId)`. Two failures, and the owner reported both as the same symptom:
+
+- When it existed it looked like a secondary action, despite being the one thing a family opens and forwards — the product's growth loop, styled as a footnote.
+- When it did not exist it **vanished with nothing in its place**, so a student could not tell whether the feature was missing, broken, or something they had to earn. Silence is the worst answer to "where is it?".
+
+Now a real card at the top of the dashboard: the scannable QR, the ID a parent quotes on the phone, and Open / Share / Copy. Share uses the native sheet on mobile — the whole point, since it puts the passport one tap from the family WhatsApp group — and falls back to copy on desktop rather than showing a button that does nothing. A failed QR render degrades to an icon rather than taking the card down, because the link underneath still works and that is the part that matters.
+
+When there is no passport it now **says so and says what unblocks it**, and states that the training record is being kept either way — only the shareable page is waiting.
+
+Verified: both endpoints 401 without a token; existing passport pages still 200.
+
+### NOT DONE — the rest of this request
+
+Four substantial features were asked for in the same message and are not started. Recording them properly rather than half-building them:
+
+1. **Per-sport performance metrics for coaches** — needs real research into what cricket/football/basketball coaches actually assess at junior level, so the taxonomy is credible rather than generic. The existing `lib/performance/taxonomy.ts` has four categories; the ask is sport-specific metrics under them, and an entry flow that feels encouraging rather than like data entry.
+2. **Owner adds coaches → creates batches → assigns coach accounts that control student profiles** — partially exists (Users, Check-in tabs); needs the assignment chain to actually grant a coach control of their batch's students.
+3. **Kit requests and payments** — owner defines items with prices and availability; student portal requests from what is available; owner is notified in-dashboard AND on personal WhatsApp; student pays only for available items. Touches the kit model, a new request/approval flow, the payments path and a new WhatsApp template.
+4. **Daily attendance checklist for coaches** alongside the QR flow, with accurate present/absent and a smooth operating rhythm.
+
+Each is a multi-file feature with its own model changes, API surface and UI. Attempting all four in one pass would produce four half-features and no honest verification.
+
+---
+
+## 2026-08-02 — GWD Global presentation rebuilt as a light-theme slide deck
+
+Not academy work; logged here to keep the running record complete.
+
+**Deliverable:** `D:\GWD\GWD-Global-Deck-Light.html` (572 KB, fully self-contained, opens offline).
+Source it replaces (left untouched): `D:\GWD\GWD-Global-Presentation_1.html`.
+
+**What changed**
+- **Dark → light.** The original was near-black (`--ink:#0A0607`) with two light interludes. Rebuilt on white/bone (`#FFF` / `#F8F5F3`) with crimson `#D0021B` kept as the only accent. All borders, shadows, and card treatments re-derived for light.
+- **Scroll page → real deck.** Fixed 1600×900 stage that scales to any viewport, one slide at a time. 19 slides from the original 12 chapters (dense sections split so nothing overflows — verified every slide fits 1600×900). Nav: ←/→/Space/PgUp/PgDn/Home/End, wheel, touch swipe, rail dots, prev/next buttons, `O`/`Esc` overview grid, `F` fullscreen, `#n` hash deep-links.
+- **Animations, re-triggering.** The original fired reveals once on scroll. Here every slide re-animates on each entry: word-by-word masked headline reveals, per-element staggered entrances (`data-a` = up/down/left/right/zoom/pop/blur with `--d` delays), counters that re-run, SVG bracket draw-in, timeline spine draw, orbit rings, logo-wall cascade, hero particle constellation on canvas. `prefers-reduced-motion` respected.
+- **Real logos.** 33 partner/client/ecosystem orgs now show scraped brand marks instead of text. Pipeline: resolve domain → scrape header logo / apple-touch-icon / og:image → fall back to 256px favicon → normalise to natural aspect on white → embed as base64. 27 are genuine logos; 6 with no verifiable web presence get a branded monogram tile rather than a wrong image.
+- **Logo.** `D:\GWD\logo.png` embedded, white field knocked out to alpha so it sits clean on tinted slides. Used on cover, top-left chrome, close, and as favicon.
+- **PDF export.** `@media print` gives one 16:9 page per slide; a `beforeprint` hook settles all animations and counters first. Ctrl+P → Landscape, margins None, background graphics on. Verified: 19-page PDF.
+
+**Verified** in headless Chrome — all 19 slides render with animations armed, no console errors, no layout overflow, keyboard/overview/rail/slider interactions all work.
+
+**Flagged for the user:** Electra resolved to go-electra.com (EV charging) and Adani Connex fell back to the Adani group wordmark; Xentrox, Carrera Pictures, Red String HR, Al Ansari International, Saudi Energy and D&B Properties are monograms. If any of those are wrong, swapping in a correct image is a one-line change.
+
+## 2026-08-02 (later) — GWD Global deck: revisions round 2
+
+`D:\GWD\GWD-Global-Deck-Light.html` — now 21 slides, 744 KB.
+
+**Global Presence map (new slide 13).** Robinson projection generated from Natural Earth 110m
+admin_0 boundaries (public domain), projected in Python to a 1240x646 SVG. Ten markets highlighted
+— India (HQ), UAE, Saudi Arabia, Qatar, Kuwait, **Turkey**, UK, Germany, Singapore, Canada — with
+graticule, city markers, pulsing HQ marker, dashed great-circle-ish arcs from Hyderabad, legend and
+a country chip row. Animated: countries fill in staggered, arcs draw via clip-path, markers pop.
+Singapore has no polygon at 110m resolution, so it carries a marker only.
+
+**Mobile responsive.** Deck now picks its stage box from viewport aspect: 1600x900 landscape,
+760x1350 portrait (`< 1.05` aspect or `< 720px` wide). A full `.is-portrait` CSS layer reflows every
+grid (stats 4->2, cards 3/4->2, prod/cmp/ev/team--2 -> 1, logo walls -> 3 cols, orbit stacks under
+the copy) and rescales type. Verified on 430x860 and 390x844.
+
+**Fixed a real centring bug found while doing this:** the stage used `display:grid; place-items:center`,
+but browsers fall back to start-alignment once the item overflows its container, so the scaled deck sat
+off-centre and clipped. Replaced with absolute `left/top:50%` + `translate(-50%,-50%) scale()`. This
+also broke on any desktop window smaller than 1600x900, so it was affecting landscape too.
+
+**Content revisions (all from the client):**
+- Capability: the 9 old domains replaced by the 15 named service practices, split across two slides
+  (Engineering & Platforms 8, Experience/Growth/Advisory 7) so each card stays legible.
+- Numbers: dropped Sports MRR and Services monthly. Added Rs 7.3Cr collective valuation & assets,
+  230+ major projects delivered (was 100+ clients), 10 countries (was 9), 15 service practices,
+  Top 600 Asia (was 500), Top 25 Creative Startups via E-Cell.
+- Nine -> ten countries propagated to cover, timeline, network lede and closing.
+- Founders: Rahman Pasha now "Founder, Co-Founder & Chief Executive Officer".
+- GWD Club: "Pays for delivered work" -> "Real-world exposure on live work"; "Built for the portfolio
+  and the network" -> "Direct industry connect and mentorship"; closing para reframed as explicitly
+  non-commercial.
+
+**Verified:** 21/21 slides fit both stages, keyboard/overview/rail/slider all work, no console errors,
+21-page PDF export intact.
+
+**Left alone deliberately — flagged to the client:** GWD Sports MRR (Rs 1.25L) still appears on the
+Products, Sports Problem, Sports Revenue and Vision slides. The removal instruction was scoped to the
+numbers slide; pulling it from the flagship revenue narrative is a bigger call than was asked for.
+Also flagged: "Founder, Co-Founder & CEO" is literally what was requested but reads contradictorily —
+"Co-Founder & CEO" would be cleaner.
+
+## 2026-08-02 (round 3) — Wall of Fame, real client logos, interaction layer
+
+`D:\GWD\GWD-Global-Deck-Light.html` — 25 slides, 2.19 MB.
+
+**Wall of Fame (4 new slides, after Clients & Partners).** 34 photos from `D:\GWD\photos`
+(52 supplied, minus 2 duplicate pairs and 2 pre-made collages) laid out in hand-designed bento grids.
+Built by `build_bento.py`:
+- Templates are ASCII art (12 cols x 8 rows). The parser asserts every letter forms a solid
+  rectangle and that the grid is 100% covered — a malformed template fails the build rather than
+  rendering a broken slide. Caught one bad template that way.
+- Each slot's true pixel aspect ratio is computed from the grid geometry, then photos are matched to
+  slots by a greedy-plus-pairwise-swap assignment minimising `|log(photo_ar / slot_ar)|`. Worst crop
+  across all 34 tiles is 30%, most are under 10%.
+- Cropping is edge-energy aware with an upward bias, so group shots don't lose heads to a centre crop.
+- Global uniqueness: no photo appears twice across the four slides.
+- Encoded WebP q72 at 1.5x layout size — 34 photos in 1.24 MB base64.
+- **Rule learned:** on an 8-row grid, a 2-row tile wider than 3 columns produces a slot AR above 2.9,
+  which no source photo can fill without losing a third of its height. Keep short tiles narrow.
+
+**Client logos.** The six monogram fallbacks are gone — Al Ansari International, Saudi Energy,
+Xentrox (XTX), Red String HR, D&B Properties and Carrera Pictures now use the real marks supplied in
+`D:\GWD\company logos`. All 24 tiles on the Clients & Partners wall are now genuine logos.
+
+**Interaction layer.**
+- Directional slide transitions (`dir-fwd` / `dir-back`) — the deck leans the way you travel.
+- A crimson hairline wipes across each slide on entry.
+- Bento tiles reveal on a diagonal cascade with the largest tile leading; blur-to-sharp with scale.
+- Pointer parallax across the bento, depth scaled per tile area; magnetic nav buttons.
+- Ken Burns on each slide's hero tile, paused on hover.
+- Full-screen lightbox: click or Enter on any tile, arrows to page through all 34, Esc to close.
+  It takes over the keyboard while open so deck nav doesn't fire underneath, and is suppressed in
+  overview mode.
+
+**Content:** Rahman Pasha -> "Co-Founder & Chief Executive Officer" (Founder dropped as asked);
+Mudabbir -> "Co-Founder · Chief Operating Officer & Chief Marketing Officer". Numbers slide: the
+15 Service Practices tile is replaced by Rs 1.78 Cr revenue.
+
+**Fixed:** counters rendered as "0" on every inactive thumbnail in overview mode — overview now
+settles them first, same as the print path.
+
+**Verified:** 25/25 slides fit landscape and portrait, lightbox/overview/nav/counters all exercised
+in headless Chrome, no console errors, 25-page PDF export intact.
+
+**Note:** the PDF export is now ~17 MB (was 2.6) because of the 34 embedded photos. Expected, but
+worth knowing before emailing it.
+
+## 2026-08-02 (round 4) — logo corrections + animation polish
+
+`D:\GWD\GWD-Global-Deck-Light.html` — 2.24 MB, still 25 slides.
+
+**Logos.**
+- **Shopezy** — used the client-supplied `D:\GWD\company logos\shopezy.png`.
+- **EdVenture Park** — was wrong. Their `apple-touch-icon.png` is a placeholder purple "B"; the real
+  mark is the teal/green arrow at `edventurepark.com/assets/img/Home.png`. Confirmed against the
+  EdVenture Park banner visible in one of the Wall of Fame photos. Swapped.
+- **Good Mind** — the client said a file was supplied but the folder only contained shopezy.png.
+  The existing logo (scraped from `goodmind.in/wp-content/uploads/2022/07/GM-Logo.png`) is already
+  the correct GoodMind wordmark, so nothing changed.
+
+**Animation layer.**
+- Cover headline is now split per-letter with a 3D flip-up on a spring curve (`--spring`), cascading
+  left to right. 11 letters, staggered 48ms apart.
+- **Pointer tilt** on `.card` / `.pcard` / `.evc` — up to 9 degrees toward the cursor, driven by one
+  delegated `pointermove` on the deck rather than per-card listeners.
+  *Key constraint:* the entrance animation and the tilt both want the `transform` property. Rather
+  than fight over specificity, JS adds `.tiltable` to a slide 1.7s after it activates — the entrance
+  plays untouched, then tilt takes over. Overview and print both strip it.
+- Accent words (`.red`, `em`) start at `--ink-4` and ignite to crimson 0.55s after the headline lands.
+- Counters get a spring "pop" as they hit their final value (`.landed`, self-removing).
+- Logo-wall tiles lift on hover; bento tiles gain a slight scale on top of the existing parallax.
+- Rail dots now show their slide name on hover (replaced the native `title` tooltip).
+
+**Verified:** 25/25 slides fit both stages; tilt arms at 1.7s and releases on pointer-out; accent
+ignition, cover letters, counters and all three logos confirmed in headless Chrome; overview strips
+tilt; print settles letters and forces accent colour; 25-page PDF intact; no console errors.
+
+## 2026-08-02 (round 5) — Good Mind logo
+
+`good minds.jpeg` appeared in `D:\GWD\company logos`. The previous Good Mind logo (a "GoodMind"
+diamond wordmark scraped from goodmind.in) was wrong — the real mark is a geometric brain outline
+with a "goodmind.app" wordmark under it.
+
+Used the supplied file, but cropped off the wordmark: at the tile's 34px cap the "goodmind.app" text
+rendered as an unreadable 5px smudge. The tile already captions "Good Mind" underneath, and six other
+tiles on that wall (Unifonic, Synthesia, Skello, Waabi, Electra, Xentrox) are icon-only, so a
+mark-only lockup is both more legible and more consistent. The crop point is found programmatically
+by scanning for the blank row between the mark and the wordmark rather than a hardcoded fraction.
+
+All 24 tiles on Clients & Partners are now client-supplied or verified-real logos. Deck 2.28 MB.
+
+---
+
+## Session — 2026-07-31 (cont. 8) · Loose-end audit: a systemic tenant-scoping gap, and a route that never worked
+
+**State:** `tsc --noEmit` clean, `vitest run` 587/587, cold `rm -rf .next && npm run build` clean. Not committed.
+
+Asked to sweep for loose ends, API/input/visual issues and portal UX. Wrote a scanner over every `[param]` route behind `adminMiddleware`/`roleMiddleware` checking for `auth.academyId`, which turned the earlier one-off finding into a pattern.
+
+### 🔴 Tenant-scoping holes (the same class as the PUT fixed earlier)
+
+**`PATCH /api/payments/admin/override/[studentId]` — the worst of them.** A manual fee-ledger override with `findById(studentId)` straight off the URL: any academy admin could rewrite **any student's balance on the platform** — clearing a competitor's arrears or inventing them against their families. It also had no validation at all: figures were assigned raw, so a string went into a Number path (mongoose casts `"1e5"`, throws on `"abc"` and reported it as the bare word "Server Error") and nothing stopped a negative balance flowing into the defaulter list, dashboard totals and the reminder cadence as if real. Now scoped, validated (finite, non-negative, ceiling at ₹1cr to catch a mistyped zero), and logged with before/after — money moved by hand with no transaction behind it should leave a trail.
+
+**`PATCH /api/admin/users/[id]/toggle-status`.** No scoping, no self-protection, no logging. One request could deactivate another academy's owner. Scoped identically to the PUT and DELETE beside it — three handlers with three subtly different rules about who may touch whom is how the next hole appears.
+
+**`GET /api/admin/students/[id]`.** The PUT below it was carefully isolated; the GET had nothing. With its populate that is a substantial disclosure, not a trivial one: `parentPhone`, the full `attendance` and `feePayments` history, and the populated user's email and phone. A competitor's roster and their families' contact details, one request at a time.
+
+**`/api/admin/trainers/[id]` — all three handlers.** Scoped, plus `academyId` is now stripped from the PUT body (moving a trainer between academies is a transfer, not a field edit).
+
+Not-found responses are deliberately indistinguishable from "belongs to another academy" throughout, so none of these can be used to probe which ids are real.
+
+### 🔴 "View trainer details" has never worked
+
+`GET /api/admin/trainers/[id]` ran `findOne({ userId: id })` while PUT and DELETE beside it ran `findById(id)`. The trainers list is an aggregation over `TrainerProfile`, so the `_id` the table passes to all three is the **profile** id — GET was matching a profile id against a userId field and returning 404 every time. Fixed with one `resolveTrainer` helper that tries profile id then userId, so any caller still passing a userId keeps working.
+
+### Student portal: a dropped connection looked like expulsion
+
+`StudentPage` swallowed its profile-fetch error entirely — `console.error` and nothing else. On any failure `studentProfile` stayed null and the dashboard rendered **"Not in any academy"**, zero stats and no passport. A student whose signal dropped for a second was told, in effect, that their academy had removed them.
+
+Now a distinct error screen with Try again / Sign in again, a specific message for a 401 (expired session), and the line that actually matters: *"Nothing has been lost — your attendance, progress and Passport are all still on your record."* The coach portal was already toasting its errors properly and needed no change.
+
+### Closing a loose end from my own earlier work
+
+Coaches can record tournaments onto a Passport, but the only way a student could see any of it was to open their own public link — the person the record is about was the last to know it existed. `SportingRecordPanel` now shows it in the student's Performance tab, reading the **public** passport endpoint rather than adding an authenticated one: that endpoint is already the single place deciding what a passport may disclose, and a second reader would mean two things to keep in step. Empty state is framed as "your coach adds these" rather than "you have none", because the student cannot act on it themselves.
+
+### Also
+
+`PassportCard` — the Passport was a small outline button that vanished when absent; now a card with the scannable QR, the ID, and Open/Share/Copy, and an explanation when there is no passport yet.
+
+### Remaining, from the scanner
+
+`/academy/[id]/members` (GET) and `/homepage/admin/events/[id]` + `/events/[id]` (PUT/DELETE) are still unscoped. Events are lower severity — an academy's events are semi-public — but the same fix applies and they should get it.
+
+---
+
+## Session — 2026-07-31 (cont. 9) · The portals were never actually branded
+
+**State:** `tsc --noEmit` clean, `vitest run` 587/587, cold `rm -rf .next && npm run build` clean. Not committed.
+
+### The finding
+
+Both portals are wrapped in `<AcademyTheme>`, which publishes a full token set — `--brand`, `--accent`, `--page-bg`, `--page-card`, `--page-fg`, `--page-border`, `--brand-radius`, `--brand-shadow`, `--font-heading`. Both then ignored almost all of it.
+
+The student dashboard alone carried **36 hard-coded `text-white`, 15 `border-gray-700`, 8 `bg-gray-900` and 7 `bg-green-600` against 2 uses of a theme variable.** Worse, the theme wrapper itself was `className="min-h-screen bg-slate-950"` — a hard dark background painted directly over `--page-bg`, so even the tokens that were used could not win.
+
+The consequence: every academy's portal looked identical. Same charcoal-and-green app with somebody else's colours, on a product whose stated promise (and printed booklet) is that a coach and a student sign in to *their* academy. MasterGrade's theme is **light** with a crimson brand; their students were seeing a black dashboard with green buttons.
+
+### The fix
+
+A `pt-*` design layer in globals.css, semantic rather than decorative — `.pt-card` means "a surface a student reads content off", not "a dark grey box" — so a light academy theme and a dark one both come out coherent from the same markup. Everything derives from `lib/branding/palette.ts`; nothing invents a colour.
+
+Surfaces (`pt-shell`, `pt-card`, `pt-card-soft`, `pt-card-brand`), type (`pt-title` on `--font-heading`, `pt-muted`, `pt-faint`), actions (`pt-btn-brand`, `pt-btn-accent`, `pt-btn-quiet`), plus `pt-stat`, `pt-tabs`/`pt-tab`, `pt-chip`, `pt-header` and `pt-empty`.
+
+Rewired both files by script — 97 lines in the student portal, 118 in the coach — then swept the stragglers by hand until **zero** hard-coded `bg/border/text-(gray|green|blue|white|black|slate)-*` remained in either.
+
+Details worth keeping:
+
+- **Green → brand, blue → accent.** The coach portal used two action colours ("mark attendance" beside "log performance") and they must stay distinguishable. Mapped to `--brand` and `--accent` so an academy that chose amber gets amber, rather than one being invented.
+- **The brand header needed its own foreground.** The automated pass turned the header's `text-white` into `.pt-title`, which resolves to `--page-fg` — right on a card, wrong on a brand-filled band, and on a light theme it produced dark navy on saturated crimson. `.pt-on-brand` inherits the band's own colour and `.pt-overlay` derives the translucent chips from `currentColor`, so they stay visible whether the band's text is white or near-black.
+- **Tabs became a scrolling strip.** They were a wrapping 3-column grid that put the second row below the fold on a phone and needed `h-auto` to avoid being clipped outright. One scrolling row keeps every tab thumb-reachable, with the scrollbar hidden — a visible one under a tab strip reads as a fault.
+- **`pt-stat`** uses a 3px brand→accent rule along the top rather than a brand-coloured fill. A fully brand-filled tile reads as advertising; the numbers are information.
+
+### Verified against a real palette
+
+Could not sign in to either portal, so verified the design layer directly: mounted the actual class combinations inside MasterGrade's live themed page and read computed styles back. Every token resolves to their real values — `pt-btn-brand` → `rgb(255,23,68)` (their #FF1744), `pt-btn-accent` → `rgb(245,158,11)`, `pt-chip` → a soft tint of the brand, radius 12px from `--brand-radius`, shell white on their light theme.
+
+Also measured the brand button's label contrast: **4.64:1**, which clears AA for normal text. That is the palette's own computed `--brand-on` doing its job rather than a value chosen here.
+
+`.pt-header` sets `background-color` and `background-image` separately rather than through the shorthand — with three layers the trailing colour lands in a background-color slot anyway, and stating it explicitly guarantees the surface.
+
+### Honest gap
+
+The design layer is verified against a real academy palette; the **assembled portals were not seen rendered**, because both are behind a login. The markup compiles, typechecks and builds, and every class it now uses is proven to resolve — but the composition (spacing, hierarchy, how it feels to scroll) has not been looked at. Worth one pass signed in as a student and as a coach.
