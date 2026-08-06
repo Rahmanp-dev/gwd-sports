@@ -37,6 +37,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error: any) {
+    console.error('[api/trainer/academy-settings]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
   }
 }

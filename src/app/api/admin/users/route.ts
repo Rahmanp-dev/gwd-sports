@@ -54,6 +54,7 @@ export async function GET(req: NextRequest) {
       }
     });
   } catch (error: any) {
+    console.error('[api/admin/users]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }
@@ -89,6 +90,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, data: { user } }, { status: 201 });
   } catch (error: any) {
+    console.error('[api/admin/users]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

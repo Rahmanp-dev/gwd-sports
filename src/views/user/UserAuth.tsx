@@ -4,7 +4,12 @@ import { useNavigate, Link, useLocation } from "@/lib/router-shim";
 import { getRoleHomePath } from "@/components/auth/RoleProtectedRoute";
 import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { loginUser, registerUser, clearError, logout } from "@/store/slices/authSlice";
+import {
+  loginUser,
+  registerUser,
+  clearError,
+  logout,
+} from "@/store/slices/authSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -71,10 +76,14 @@ export default function UserAuth() {
 
   // Redirect if already authenticated
   useEffect(() => {
-    if (typeof window !== "undefined" && window.location.search.includes("clearsession=true")) {
+    if (
+      typeof window !== "undefined" &&
+      window.location.search.includes("clearsession=true")
+    ) {
       dispatch(logout());
       localStorage.clear();
-      document.cookie = "gwd_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie =
+        "gwd_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       window.history.replaceState({}, document.title, window.location.pathname);
       return;
     }
@@ -168,12 +177,38 @@ export default function UserAuth() {
         }),
       ).unwrap();
 
+      /**
+       * This used to be an inline ternary that recognised admins and sent
+       * EVERYONE else — students and trainers alike — to /user/profile. For a
+       * student that page immediately bounces back to their dashboard, so
+       * signing in flashed through two redirects to arrive somewhere it could
+       * have gone directly; for a trainer it simply landed on the wrong page.
+       *
+       * `getRoleHomePath` already held the correct mapping for all five roles
+       * and was already imported into this file — it just was not called.
+       */
       const role = res?.user?.role;
-      const target = (role === "admin" || role === "gwd_super_admin")
-        ? "/admin/dashboard" 
-        : "/user/profile";
-      
-      navigate(target, { replace: true });
+
+      /**
+       * Honour a deep link first. RoleProtectedRoute stashes the path a user
+       * was trying to reach before being bounced to sign-in, so somebody
+       * opening a passport link cold ends up at the passport rather than at a
+       * dashboard with no idea what they clicked.
+       *
+       * Only same-origin relative paths, and never back to the auth page
+       * itself — an absolute URL here would be an open redirect, and /user/auth
+       * would be a loop.
+       */
+      const requested = (location.state as { from?: string } | null)?.from;
+      const safeFrom =
+        typeof requested === "string" &&
+        requested.startsWith("/") &&
+        !requested.startsWith("//") &&
+        !requested.startsWith("/user/auth")
+          ? requested
+          : null;
+
+      navigate(safeFrom ?? getRoleHomePath(role), { replace: true });
     } catch (error: any) {
       console.error("Login failed:", error);
     }
@@ -238,7 +273,6 @@ export default function UserAuth() {
         className="w-full max-w-5xl relative z-10"
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
-          
           {/* Left Side - Branding */}
           <div className="hidden lg:flex flex-col justify-center h-full p-12 bg-slate-50 border-r border-slate-100">
             <div>
@@ -251,10 +285,7 @@ export default function UserAuth() {
                 className="mb-6 h-14 w-auto"
               />
               <h1 className="text-4xl font-bold text-slate-900 mb-4 font-display tracking-tight">
-                Welcome to{" "}
-                <span className="text-blue-600">
-                  {BRAND_NAME}
-                </span>
+                Welcome to <span className="text-blue-600">{BRAND_NAME}</span>
               </h1>
               <p className="text-lg text-slate-500 font-medium">
                 Join our community of athletes and achieve your sports dreams.
@@ -271,7 +302,8 @@ export default function UserAuth() {
                     World-Class Training
                   </h3>
                   <p className="text-slate-500 text-sm leading-relaxed">
-                    Access professional coaching and state-of-the-art facilities.
+                    Access professional coaching and state-of-the-art
+                    facilities.
                   </p>
                 </div>
               </div>
@@ -285,7 +317,8 @@ export default function UserAuth() {
                     Join a Community
                   </h3>
                   <p className="text-slate-500 text-sm leading-relaxed">
-                    Connect with like-minded athletes and build lasting friendships.
+                    Connect with like-minded athletes and build lasting
+                    friendships.
                   </p>
                 </div>
               </div>
@@ -299,7 +332,8 @@ export default function UserAuth() {
                     Achieve Your Goals
                   </h3>
                   <p className="text-slate-500 text-sm leading-relaxed">
-                    Track your progress and reach new milestones in your journey.
+                    Track your progress and reach new milestones in your
+                    journey.
                   </p>
                 </div>
               </div>
@@ -354,9 +388,14 @@ export default function UserAuth() {
 
               {/* Display Error */}
               {error && (
-                <Alert variant="destructive" className="mb-6 bg-red-50 border-red-200 text-red-600 rounded-xl">
+                <Alert
+                  variant="destructive"
+                  className="mb-6 bg-red-50 border-red-200 text-red-600 rounded-xl"
+                >
                   <AlertCircle className="h-4 w-4" />
-                  <AlertDescription className="font-medium">{error}</AlertDescription>
+                  <AlertDescription className="font-medium">
+                    {error}
+                  </AlertDescription>
                 </Alert>
               )}
 
@@ -364,7 +403,10 @@ export default function UserAuth() {
               <TabsContent value="login" className="focus-visible:outline-none">
                 <form onSubmit={handleLogin} className="space-y-5">
                   <div className="space-y-1.5">
-                    <Label htmlFor="login-email" className="text-slate-700 font-semibold">
+                    <Label
+                      htmlFor="login-email"
+                      className="text-slate-700 font-semibold"
+                    >
                       Email
                     </Label>
                     <div className="relative">
@@ -381,7 +423,9 @@ export default function UserAuth() {
                           })
                         }
                         className={`pl-10 h-12 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
-                          validationErrors.email ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""
+                          validationErrors.email
+                            ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                            : ""
                         }`}
                       />
                     </div>
@@ -393,7 +437,10 @@ export default function UserAuth() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="login-password" className="text-slate-700 font-semibold">
+                    <Label
+                      htmlFor="login-password"
+                      className="text-slate-700 font-semibold"
+                    >
                       Password
                     </Label>
                     <div className="relative">
@@ -410,14 +457,14 @@ export default function UserAuth() {
                           })
                         }
                         className={`pl-10 pr-10 h-12 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
-                          validationErrors.password ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""
+                          validationErrors.password
+                            ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                            : ""
                         }`}
                       />
                       <button
                         type="button"
-                        onClick={() =>
-                          setShowLoginPassword(!showLoginPassword)
-                        }
+                        onClick={() => setShowLoginPassword(!showLoginPassword)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                       >
                         {showLoginPassword ? (
@@ -455,10 +502,16 @@ export default function UserAuth() {
               </TabsContent>
 
               {/* Register Tab */}
-              <TabsContent value="register" className="focus-visible:outline-none">
+              <TabsContent
+                value="register"
+                className="focus-visible:outline-none"
+              >
                 <form onSubmit={handleRegister} className="space-y-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor="register-name" className="text-slate-700 font-semibold">
+                    <Label
+                      htmlFor="register-name"
+                      className="text-slate-700 font-semibold"
+                    >
                       Full Name
                     </Label>
                     <div className="relative">
@@ -475,7 +528,9 @@ export default function UserAuth() {
                           })
                         }
                         className={`pl-10 h-11 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
-                          validationErrors.name ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""
+                          validationErrors.name
+                            ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                            : ""
                         }`}
                       />
                     </div>
@@ -487,7 +542,10 @@ export default function UserAuth() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="register-email" className="text-slate-700 font-semibold">
+                    <Label
+                      htmlFor="register-email"
+                      className="text-slate-700 font-semibold"
+                    >
                       Email
                     </Label>
                     <div className="relative">
@@ -504,7 +562,9 @@ export default function UserAuth() {
                           })
                         }
                         className={`pl-10 h-11 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
-                          validationErrors.email ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""
+                          validationErrors.email
+                            ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                            : ""
                         }`}
                       />
                     </div>
@@ -516,7 +576,10 @@ export default function UserAuth() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="register-phone" className="text-slate-700 font-semibold">
+                    <Label
+                      htmlFor="register-phone"
+                      className="text-slate-700 font-semibold"
+                    >
                       Phone Number
                     </Label>
                     <div className="relative">
@@ -533,7 +596,9 @@ export default function UserAuth() {
                           })
                         }
                         className={`pl-10 h-11 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
-                          validationErrors.phone ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""
+                          validationErrors.phone
+                            ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                            : ""
                         }`}
                       />
                     </div>
@@ -545,7 +610,10 @@ export default function UserAuth() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="register-password" className="text-slate-700 font-semibold">
+                    <Label
+                      htmlFor="register-password"
+                      className="text-slate-700 font-semibold"
+                    >
                       Password
                     </Label>
                     <div className="relative">
@@ -562,7 +630,9 @@ export default function UserAuth() {
                           })
                         }
                         className={`pl-10 pr-10 h-11 bg-white border-slate-200 text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 rounded-xl transition-all ${
-                          validationErrors.password ? "border-red-500 focus:border-red-500 focus:ring-red-100" : ""
+                          validationErrors.password
+                            ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                            : ""
                         }`}
                       />
                       <button

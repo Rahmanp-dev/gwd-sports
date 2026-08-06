@@ -42,6 +42,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, data: { performance } });
   } catch (error: any) {
+    console.error('[api/student/performance]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

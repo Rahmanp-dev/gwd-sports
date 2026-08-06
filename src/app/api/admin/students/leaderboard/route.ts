@@ -25,6 +25,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, data: { leaderboard } });
   } catch (error: any) {
+    console.error('[api/admin/students/leaderboard]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

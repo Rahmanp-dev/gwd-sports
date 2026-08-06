@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, data: eventCards });
   } catch (error: any) {
+    console.error('[api/homepage/admin/events]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Failed to fetch landing page events' }, { status: 500 });
   }
 }
@@ -53,6 +54,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'Event card added to landing page', data: populatedCard }, { status: 201 });
   } catch (error: any) {
+    console.error('[api/homepage/admin/events]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Failed to add event card' }, { status: 500 });
   }
 }

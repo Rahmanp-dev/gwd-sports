@@ -22,6 +22,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     if (!user) return NextResponse.json({ success: false, message: 'Not found' }, { status: 404 });
     return NextResponse.json({ success: true, data: { user } });
   } catch (error) {
+    console.error('[api/admin/users/[id]]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Error' }, { status: 500 });
   }
 }

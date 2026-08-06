@@ -5,6 +5,7 @@ import { StudentDetails } from "./StudentDetails";
 import { StudentStats } from "./StudentStats";
 import { StudentForm } from "./StudentForm";
 import { KitStatusForm } from "./KitStatusForm";
+import { CoachToolsDialog } from "./CoachToolsDialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -173,6 +174,9 @@ export const StudentManagement: React.FC = () => {
   };
 
   // Handle view student details
+  /** The student whose coach toolkit is open, if any. */
+  const [coachToolsFor, setCoachToolsFor] = useState<any | null>(null);
+
   const handleViewStudent = async (studentId: string) => {
     try {
       const response = await studentAdminService.getStudentById(studentId);
@@ -233,6 +237,7 @@ export const StudentManagement: React.FC = () => {
       <StudentTable
         students={students}
         isLoading={isLoading}
+        onCoachTools={setCoachToolsFor}
         onViewStudent={handleViewStudent}
         onEditStudent={handleEditStudent}
         onEditKitStatus={handleEditKitStatus}
@@ -332,6 +337,22 @@ export const StudentManagement: React.FC = () => {
           )}
         </DialogContent>
       </Dialog>
+      <CoachToolsDialog
+        open={!!coachToolsFor}
+        onOpenChange={(o) => {
+          if (!o) setCoachToolsFor(null);
+        }}
+        student={
+          coachToolsFor
+            ? {
+                userId: coachToolsFor.userId,
+                name: coachToolsFor.user?.name ?? "Student",
+                sports: coachToolsFor.sports,
+              }
+            : null
+        }
+        onDone={fetchStudents}
+      />
     </div>
   );
 };

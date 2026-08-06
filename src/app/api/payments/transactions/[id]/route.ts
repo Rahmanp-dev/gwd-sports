@@ -15,6 +15,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     return NextResponse.json({ success: true, data: payment });
   } catch (error: any) {
+    console.error('[api/payments/transactions/[id]]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Server Error' }, { status: 500 });
   }
 }

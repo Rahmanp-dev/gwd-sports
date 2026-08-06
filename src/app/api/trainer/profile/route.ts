@@ -32,6 +32,7 @@ export async function GET(req: NextRequest) {
       .populate('students', 'name email phone');
     return NextResponse.json({ success: true, data: { trainer } });
   } catch (error) {
+    console.error('[api/trainer/profile]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }

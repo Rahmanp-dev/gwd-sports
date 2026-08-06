@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'Kit requested successfully' });
   } catch (error: any) {
+    console.error('[api/student/request-kit]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

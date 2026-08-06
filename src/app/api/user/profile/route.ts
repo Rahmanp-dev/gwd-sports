@@ -8,6 +8,7 @@ export async function GET(req: NextRequest) {
     if (auth?.error) return NextResponse.json({ success: false, message: auth.error }, { status: auth.status });
     return NextResponse.json({ success: true, data: { user: auth.user } });
   } catch (error: any) {
+    console.error('[api/user/profile]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }
@@ -26,6 +27,7 @@ export async function PUT(req: NextRequest) {
     await auth.user.save();
     return NextResponse.json({ success: true, message: 'Profile updated successfully', data: { user: auth.user } });
   } catch (error: any) {
+    console.error('[api/user/profile]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

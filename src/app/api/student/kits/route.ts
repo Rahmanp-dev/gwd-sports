@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, data: { kits: studentProfile.kits } });
   } catch (error: any) {
+    console.error('[api/student/kits]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

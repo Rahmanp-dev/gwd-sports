@@ -44,6 +44,7 @@ export async function POST(req: NextRequest) {
       data: { urls: fileUrls }
     });
   } catch (error: any) {
+    console.error('[api/admin/settings/upload-hero]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Server error during file upload' }, { status: 500 });
   }
 }

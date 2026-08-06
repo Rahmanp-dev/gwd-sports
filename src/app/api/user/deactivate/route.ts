@@ -11,6 +11,7 @@ export async function PUT(req: NextRequest) {
     await auth.user.save();
     return NextResponse.json({ success: true, message: 'Account deactivated successfully' });
   } catch (error: any) {
+    console.error('[api/user/deactivate]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

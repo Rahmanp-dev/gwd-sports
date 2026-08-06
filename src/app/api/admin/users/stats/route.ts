@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, data: { totalUsers, roleDistribution: roleStats, activeDistribution: activeStats } });
   } catch (error: any) {
+    console.error('[api/admin/users/stats]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

@@ -79,6 +79,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'User has no other profile', data: { user: { _id: user._id, name: user.name } } });
   } catch (error: any) {
+    console.error('[api/user/check-email]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

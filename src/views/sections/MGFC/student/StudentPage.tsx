@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PassportCard } from "@/components/student/PassportCard";
 import { SportingRecordPanel } from "@/components/student/SportingRecordPanel";
+import { FeeReminderBar } from "@/components/student/FeeReminderBar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { API_BASE_URL } from "@/utils/constants";
@@ -457,6 +458,18 @@ export default function MGFCStudentPage() {
             {/* The Passport leads the dashboard. It is the one thing a
                 family opens and forwards, and it used to be a small
                 outline button that vanished entirely when absent. */}
+            {/* Above even the Passport: for the week around a due date this
+                is the most time-sensitive thing on the screen. Hides itself
+                the rest of the month. */}
+            <FeeReminderBar
+              outstandingFees={studentProfile?.outstandingFees}
+              feeDueDayOfMonth={
+                studentProfile?.feeDueDayOfMonth ??
+                studentProfile?.academyId?.fees?.dueDayOfMonth
+              }
+              onPay={() => handleTabChange("fees")}
+            />
+
             <PassportCard passportId={passportId} studentName={realName} />
 
             <motion.div

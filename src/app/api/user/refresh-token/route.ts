@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'Token refreshed successfully', data: tokens });
   } catch (error: any) {
+    console.error('[api/user/refresh-token]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Invalid refresh token' }, { status: 401 });
   }
 }

@@ -38,6 +38,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     return NextResponse.json({ success: true, message: 'Kit status updated successfully', data: { kit } });
   } catch (error: any) {
+    console.error('[api/admin/students/[id]/kits/[kitId]]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
   }
 }

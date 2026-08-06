@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
       });
     return NextResponse.json({ success: true, data: events });
   } catch (error) {
+    console.error('[api/homepage/events]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }

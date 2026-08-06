@@ -1216,3 +1216,42 @@ body {
   background: color-mix(in srgb, currentColor 18%, transparent);
   border-color: color-mix(in srgb, currentColor 32%, transparent);
 }
+
+/* ── Notices ──────────────────────────────────────────────────────────────
+   The fee bar, and anything else that must read as a warning rather than as
+   brand colour. Deliberately NOT theme tokens: an academy whose brand is red
+   would make every notice look like an alarm, and one whose brand is green
+   would make an overdue fee look like a success message.
+
+   But the tone still has to survive both page schemes. A first version used
+   `text-red-200` on a `bg-red-500/10` tint, which is legible on a dark
+   surface and effectively invisible on a white one — the same light/dark
+   assumption that made the portals unbranded in the first place.
+   `--page-scheme` is published by AcademyTheme, so the text weight flips with
+   the academy's own palette. */
+.pt-notice {
+  --notice: 220 38 38;
+  background: rgb(var(--notice) / 0.10);
+  box-shadow: inset 0 0 0 1px rgb(var(--notice) / 0.28);
+  color: rgb(var(--notice));
+}
+.pt-notice-warn   { --notice: 217 119 6; }   /* amber-600  */
+.pt-notice-danger { --notice: 220 38 38; }   /* red-600    */
+
+/* On a dark page the 600-weight hue goes muddy; lift it. */
+[data-page-scheme='dark'] .pt-notice-warn   { --notice: 252 211 77; }
+[data-page-scheme='dark'] .pt-notice-danger { --notice: 252 165 165; }
+
+.pt-notice-quiet {
+  background: var(--page-alt, rgb(255 255 255 / 0.04));
+  box-shadow: inset 0 0 0 1px var(--page-border, rgb(255 255 255 / 0.10));
+  color: var(--page-muted, #94a3b8);
+}
+
+/* The action inside a notice. Solid, so it reads as the thing to press. */
+.pt-notice-btn {
+  background: rgb(var(--notice));
+  color: #fff;
+  border-radius: 0.5rem;
+}
+[data-page-scheme='dark'] .pt-notice-btn { color: #0f172a; }

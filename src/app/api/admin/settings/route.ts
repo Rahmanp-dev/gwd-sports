@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
     }
     return NextResponse.json({ success: true, data: settings });
   } catch (error: any) {
+    console.error('[api/admin/settings]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
   }
 }
@@ -56,6 +57,7 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ success: true, data: settings });
   } catch (error: any) {
+    console.error('[api/admin/settings]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
   }
 }

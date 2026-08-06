@@ -167,6 +167,7 @@ export async function POST(req: NextRequest) {
           { status: 201 }
         );
       } catch (txError: any) {
+        console.error('[api/admin/academies]', txError instanceof Error ? txError.message : txError);
         await session.abortTransaction();
         throw txError;
       } finally {

@@ -29,6 +29,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     
     return NextResponse.json({ success: true, message: 'Successfully joined the event', data: { event: { _id: event._id, name: event.name, participantCount: event.participants.length } } });
   } catch (error: any) {
+    console.error('[api/events/[id]/join]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

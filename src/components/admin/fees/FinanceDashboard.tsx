@@ -278,9 +278,26 @@ export interface FinanceDashboardProps {
    * a complete screen without it.
    */
   ledgerSlot?: React.ReactNode;
+  /**
+   * Narrows every figure to one academy. Super admin only — the API ignores it
+   * for an owner, who is always pinned to their own academy, so this can never
+   * become a way to read another academy's books by editing a prop.
+   *
+   * Present so the platform-wide ledger and a per-academy finance tab are the
+   * SAME component reading the SAME endpoint. Two implementations of
+   * "collection rate" that drift apart is how a finance screen stops being
+   * trusted.
+   */
+  academyId?: string | null;
+  /** Shown instead of the default heading when scoped. */
+  title?: string;
 }
 
-export function FinanceDashboard({ ledgerSlot }: FinanceDashboardProps = {}) {
+export function FinanceDashboard({
+  ledgerSlot,
+  academyId,
+  title,
+}: FinanceDashboardProps = {}) {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -292,9 +309,10 @@ export function FinanceDashboard({ ledgerSlot }: FinanceDashboardProps = {}) {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.get(`${API}/admin/finance-analytics`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        `${API}/admin/finance-analytics${academyId ? `?academyId=${encodeURIComponent(academyId)}` : ""}`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
       if (res.data?.success) setData(res.data.data);
       else setError("Failed to load finance analytics");
     } catch (e: any) {
@@ -306,7 +324,9 @@ export function FinanceDashboard({ ledgerSlot }: FinanceDashboardProps = {}) {
 
   useEffect(() => {
     if (token) fetchAnalytics();
-  }, [token]);
+    // Refetches when the platform admin switches academy.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, academyId]);
 
   if (loading) {
     return (
@@ -365,7 +385,7 @@ export function FinanceDashboard({ ledgerSlot }: FinanceDashboardProps = {}) {
         <div>
           <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
             <BarChart3 className="w-6 h-6 text-red-500" />
-            Financial Command Center
+            {title ?? "Financial Command Center"}
           </h2>
           <p className="text-sm text-slate-500 mt-0.5">
             Deep insights into every rupee — collected, pending, and overdue.

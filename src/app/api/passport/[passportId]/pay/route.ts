@@ -107,6 +107,7 @@ export async function GET(
         period: (profile.feePeriod as any) ?? 'monthly',
       });
     } catch (err) {
+      console.error('[api/passport/[passportId]/pay]', err instanceof Error ? err.message : err);
       if (err instanceof NoFeeConfiguredError) {
         return NextResponse.json({
           success: true,

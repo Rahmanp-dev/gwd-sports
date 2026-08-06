@@ -99,6 +99,7 @@ export async function POST(
         { status: 201 }
       );
     } catch (txError: any) {
+      console.error('[api/admin/academies/[id]/onboard]', txError instanceof Error ? txError.message : txError);
       await session.abortTransaction();
       throw txError;
     } finally {

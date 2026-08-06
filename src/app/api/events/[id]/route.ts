@@ -10,6 +10,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const event = await Event.findById(id);
     return NextResponse.json({ success: true, data: { event } });
   } catch (error) {
+    console.error('[api/events/[id]]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }
@@ -24,6 +25,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const event = await Event.findByIdAndUpdate(id, data, { new: true });
     return NextResponse.json({ success: true, data: { event } });
   } catch (error) {
+    console.error('[api/events/[id]]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }
@@ -37,6 +39,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     await Event.findByIdAndDelete(id);
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error('[api/events/[id]]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }

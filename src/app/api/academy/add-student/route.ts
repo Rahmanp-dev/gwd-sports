@@ -60,6 +60,7 @@ export async function POST(req: NextRequest) {
       data: { student: user, academy: { _id: academy._id, name: academy.name } }
     });
   } catch (error: any) {
+    console.error('[api/academy/add-student]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

@@ -85,6 +85,7 @@ export async function GET(req: NextRequest) {
         totalFormatted: formatInr(split.parentTotalPaise),
       };
     } catch (err) {
+      console.error('[api/payments/outstanding]', err instanceof Error ? err.message : err);
       if (err instanceof NoFeeConfiguredError) {
         feeConfigured = false;
         feeConfigMessage = err.message;

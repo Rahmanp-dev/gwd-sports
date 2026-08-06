@@ -35,8 +35,33 @@ export async function GET(req: NextRequest) {
     const academyObjectId = auth.academyId
       ? new mongoose.Types.ObjectId(auth.academyId.toString())
       : null;
-    const tenantFilter: any =
-      !isSuperAdmin && academyObjectId ? { academyId: academyObjectId } : {};
+    /**
+     * PER-ACADEMY VIEW FOR A PLATFORM ADMIN.
+     *
+     * An owner is always pinned to their own academy — `?academyId=` is
+     * ignored for them, so this can never become a way to read another
+     * academy's revenue by editing a URL.
+     *
+     * A super admin may narrow to one academy, which is what turns the single
+     * platform-wide ledger into a per-academy finance tab. Reusing this route
+     * rather than writing a second one means the KPIs, defaulter list, status
+     * breakdown and daily trend are computed by the same code in both views —
+     * two implementations of "collection rate" that drift apart is exactly how
+     * a finance screen stops being trusted.
+     */
+    const requestedAcademy = new URL(req.url).searchParams.get("academyId");
+    const scopedAcademyId =
+      isSuperAdmin &&
+      requestedAcademy &&
+      mongoose.Types.ObjectId.isValid(requestedAcademy)
+        ? new mongoose.Types.ObjectId(requestedAcademy)
+        : null;
+
+    const tenantFilter: any = scopedAcademyId
+      ? { academyId: scopedAcademyId }
+      : !isSuperAdmin && academyObjectId
+        ? { academyId: academyObjectId }
+        : {};
 
     // 1. All Payments Aggregation
     const payments = await FeePayment.find(tenantFilter).lean();
@@ -76,7 +101,11 @@ export async function GET(req: NextRequest) {
      * ════════════════════════════════════════════════════════════════════════
      */
     const amountFor = (p: any): number => {
-      if (isSuperAdmin) return p.amount || 0;
+      // Gross GMV is the right figure for the PLATFORM view. Narrowed to a
+      // single academy, the question being asked is "what does this academy
+      // earn", so the academy's own share is what must be reported — the same
+      // number its owner sees on their own dashboard.
+      if (isSuperAdmin && !scopedAcademyId) return p.amount || 0;
       if (typeof p.academyAmountPaise === "number")
         return p.academyAmountPaise / 100;
       return p.baseAmount ?? p.amount ?? 0;

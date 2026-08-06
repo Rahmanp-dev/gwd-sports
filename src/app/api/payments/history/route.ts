@@ -26,6 +26,7 @@ export async function GET(req: NextRequest) {
       data: { payments, pagination: { total, page, pages: Math.ceil(total / limitNum) } }
     });
   } catch (error: any) {
+    console.error('[api/payments/history]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Server Error' }, { status: 500 });
   }
 }

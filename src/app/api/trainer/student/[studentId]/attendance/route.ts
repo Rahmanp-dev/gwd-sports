@@ -60,6 +60,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ stud
       }
     });
   } catch (error: any) {
+    console.error('[api/trainer/student/[studentId]/attendance]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

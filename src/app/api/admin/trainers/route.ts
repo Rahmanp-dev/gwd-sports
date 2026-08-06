@@ -103,6 +103,7 @@ export async function GET(req: NextRequest) {
       }
     });
   } catch (error: any) {
+    console.error('[api/admin/trainers]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }
@@ -123,6 +124,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'Trainer created successfully', data: { trainer } });
   } catch (error: any) {
+    console.error('[api/admin/trainers]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

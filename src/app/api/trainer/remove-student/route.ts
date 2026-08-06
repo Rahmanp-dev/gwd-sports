@@ -49,6 +49,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'Student removed successfully' });
   } catch (error: any) {
+    console.error('[api/trainer/remove-student]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

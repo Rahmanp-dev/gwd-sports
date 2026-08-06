@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
     }
     return NextResponse.json({ success: true, data: settings });
   } catch (error: any) {
+    console.error('[api/homepage/settings]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
   }
 }

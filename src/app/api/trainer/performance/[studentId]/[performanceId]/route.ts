@@ -42,6 +42,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ stud
 
     return NextResponse.json({ success: true, message: 'Performance record updated successfully' });
   } catch (error: any) {
+    console.error('[api/trainer/performance/[studentId]/[performanceId]]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }
@@ -72,6 +73,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ s
 
     return NextResponse.json({ success: true, message: 'Performance record deleted successfully' });
   } catch (error: any) {
+    console.error('[api/trainer/performance/[studentId]/[performanceId]]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

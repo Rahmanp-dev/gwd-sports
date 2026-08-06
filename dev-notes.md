@@ -4854,3 +4854,310 @@ Also measured the brand button's label contrast: **4.64:1**, which clears AA for
 ### Honest gap
 
 The design layer is verified against a real academy palette; the **assembled portals were not seen rendered**, because both are behind a login. The markup compiles, typechecks and builds, and every class it now uses is proven to resolve — but the composition (spacing, hierarchy, how it feels to scroll) has not been looked at. Worth one pass signed in as a student and as a coach.
+
+## 2026-08-05 — Orientation deck (separate short version)
+
+New file `D:\GWD\GWD-Orientation-Deck.html` — 8 slides, 1.05 MB. The full pitch deck
+(`GWD-Global-Deck-Light.html`, 25 slides) is untouched; confirmed by timestamp.
+
+Built by `build_orient.py`, which splices new slides into the pitch deck's proven shell rather
+than forking the CSS/JS. It reads `deck_template.html`, keeps everything up to the deck div and
+everything from the chrome onward, and drops the new slide set in between — so stage scaling,
+entrance choreography, tilt, lightbox, portrait mode and print export all come across for free and
+stay in sync. Every splice point is asserted, so a template change that moves a marker fails the
+build loudly instead of producing a broken deck.
+
+**Structure**
+1. Poster — everything in one frame: GWD identity, 650+ / 230+ / 10 countries / 18+ team,
+   Rs 1.78 Cr revenue, Rs 7.3 Cr collective valuation, all three products (Sports live at Rs 1.25L MRR,
+   Next Bridge, Torqio), and the Sports ARR outlook (85L / 1.25Cr / 2.8Cr) with animated bars.
+2-7. Photo slides from `D:\GWD\photos\Selected`, every photo captioned with its given title.
+8. Team — two founders + ten leads + closing line, one slide.
+
+**Photo layout — `build_orient_photos.py`.** The 20 photos span ar 0.45 to 1.78, so cropping them
+into a fixed grid would have butchered them. Instead: a justified (equal-height-row) gallery.
+Photos are packed into rows and each row is scaled to fill the width exactly, so **nothing is
+cropped at all**. The row split is chosen by maximising total photo area across every contiguous
+partition into 1-3 rows — a first attempt scored on "closest to container height" and collapsed
+everything to one row, leaving half the canvas empty and the photos small.
+Pairing matters too: two 1.78 photos side by side can only be 395px tall, but a 1.78 next to a 0.56
+fills 600px. The office slides were re-paired accordingly.
+
+**Portrait.** Galleries reflow to two CSS masonry columns with bucketed aspect ratios
+(4/3 / 1/1 / 3/4). A 2-column *grid* was tried first and left visible holes wherever row heights
+differed; `columns` packs without them.
+
+**VJIT crest** top-left on every slide — it lives in the single fixed chrome bar, so it is present
+on all 8 by construction, not repeated per slide. Also used as the favicon.
+
+**Verified:** 8/8 slides fit landscape (1600x900) and portrait (760x1350); 20 photos and 20 captions
+all render; poster letters, counters and ARR bars animate; lightbox pages all 20 photos; overview
+(re-tuned to 4 columns for a short deck) and print both settle correctly; 8-page PDF; no console errors.
+
+## 2026-08-05 (round 2) — orientation deck restructured to 7 slides
+
+`D:\GWD\GWD-Orientation-Deck.html` — now 7 slides, 1.37 MB. Pitch deck still untouched.
+
+**Structure:** Poster → Global Presence (map) → Who we build with → Who we build for →
+Wall 01 → Wall 02 → Team.
+
+**Restored from the pitch deck.** The three network slides are now *lifted* out of
+`deck_template.html` by `data-name` at build time rather than re-authored, so the map, the
+institution wall and all 24 client logos stay identical to the pitch deck and can never drift.
+The world map SVG and the client-logo data URIs are resolved into the orientation copy too.
+
+**Photos: 20 across 2 slides.** The justify engine needed two more constraints before it produced
+anything usable at ten photos per slide:
+1. *Balance* — maximising photo area alone put 2 giant photos on row one and 8 postage stamps on
+   row two (a few huge tiles beat many small ones on total pixels). Now the shortest row must be
+   at least 60% of the tallest.
+2. *Full width* — a balanced layout can still fill the height while leaving wide empty margins,
+   because scaling a too-tall stack down shrinks it horizontally as well. Rows only span the full
+   canvas when nothing needed scaling, so unscaled layouts are now preferred outright.
+   An earlier "fill at least 88% of the height" rule optimised the wrong axis and was dropped.
+Result: both walls span the full 1416px with balanced rows and still zero cropping.
+
+**Captions** are now the display face at 14px bold white on a stronger scrim, up from 9.5px mono,
+with the size stepping down for narrow tiles (`--cf`, 14 / 11.5 / 9.5px) so a long title can't
+swallow a slim photo. The scrim turns crimson on hover.
+
+**Logos.** The college crest moved to the top-right at 42px; the GWD mark in the chrome is 31px and
+the poster mark is now 104px (was 70). The poster mark was being crossed by the particle canvas and
+a corner bracket — the bracket is gone and the identity block sits on a soft radial white plate, so
+the mark and wordmark are always clean. Added a crimson rule that draws in under the wordmark.
+
+**Portrait.** Ten photos per wall needed three masonry columns (two overflowed by ~500px).
+
+**Verified:** 7/7 slides fit landscape and portrait; 20 photos and captions render; poster letters,
+counters and ARR bars animate; lightbox pages all 20; overview and print settle; 7-page PDF; no errors.
+
+## 2026-08-05 (round 3) — VJIT crest removed, visibility pass
+
+`D:\GWD\GWD-Orientation-Deck.html` — 7 slides, 1.40 MB. Pitch deck untouched.
+
+- **VJIT crest removed** from the chrome entirely; the top bar is now GWD mark + "Get Work Done"
+  on the left and the slide name on the right. The favicon is the GWD mark. No `vjitlogo` reference
+  survives in the built file (grep-verified).
+- **Ecosystem wall:** the VJIT tile is now the GWD mark captioned "GWD Club" in crimson, with a faint
+  crimson wash so it reads as ours rather than a third party. Done as a post-lift substitution in
+  `build_orient.py`, so the **pitch deck still lists VJIT** as the partner institution it is.
+- **Visibility pass across the whole deck.** Secondary inks darkened (`--ink-3` #6E6265 -> #544A4C,
+  `--ink-4` #9C9194 -> #77696C, border alpha .11 -> .15) and every "name" set enlarged:
+  partner/client names 11.5 -> 15px, team leads 14.5 -> 18px, founder names 24 -> 29px and their
+  roles 9.5 -> 11.5px, map country chips 13.5 -> 15.5px, photo-slide headings 44 -> 48px,
+  section ledes 18 -> 19px, plus larger labels on every poster tile. Partner tiles grew to 104px
+  min-height with 38px logos to carry the bigger type. Portrait sizes bumped to match.
+
+**Verified:** 7/7 slides fit landscape and portrait, 20 photos and captions render, lightbox pages
+all 20, overview and print settle, 7-page PDF, no console errors.
+
+**Left as-is:** the team slide's footer line still reads "GWD Club at VJIT" — that is text, not the
+logo, and the deck is being presented at VJIT. Easy to drop if the client wants it gone too.
+
+## 2026-08-05 (round 4) — second visibility pass
+
+`D:\GWD\GWD-Orientation-Deck.html` — 7 slides, 1.40 MB.
+
+**Found and fixed a real bug from round 3:** the visibility overrides had been appended at the *top*
+of `orient_extra.css`, above the component blocks that declare the same selectors. Equal specificity
+means source order decides, so most of the poster bumps (`.pst b`, `.pmn b`, `.po__line`, `.pbadge`,
+`.ppr__n` …) were being silently clobbered and never actually rendered. The override block now sits
+after the component blocks and before the portrait section — portrait rules are more specific so they
+still win, and print stays `!important`. Verified by reading computed `font-size` off the live page
+rather than trusting the stylesheet.
+
+**Second increase on top of that**, everything measured in the browser:
+poster stat numbers 44 -> 48px, money figures 46 -> 50px, product names 28 -> 30px, ARR figures
+27 -> 29px, descriptor line 16.5 -> 18px; partner/client names 15 -> 17px (tiles 112px tall, logos
+41px); map chips 15.5 -> 17px and the map lede 16 -> 18.5px; founder names 29 -> 32px and roles
+11.5 -> 12.5px; team leads 18 -> 20px; photo headings 48 -> 52px, subheads 16.5 -> 18px; photo
+captions 14/11.5/9.5 -> 16.5/13.5/11px. Inks darkened again (`--ink-3` #544A4C -> #443A3C,
+`--ink-4` #77696C -> #63575A, borders .15 -> .19 alpha).
+
+The bigger type overflowed the poster, map and team slides, so the space came back out of **padding
+and gaps, never type** — poster grid gap 15 -> 11px, tile padding 18 -> 14px, map width 1160 ->
+1090px, team card padding 20 -> 16px. Gallery canvas 630 -> 612px to absorb the taller headings.
+
+**Verified:** 7/7 fit landscape and portrait, 20 captions render, lightbox pages all 20, overview and
+print settle, 7-page PDF, no console errors.
+
+---
+
+## Session — 2026-07-31 (cont. 10) · Login redirect, the fee bar, and coach powers for owners
+
+**State:** `tsc --noEmit` clean, `vitest run` 608/608 (21 new), cold `rm -rf .next && npm run build` clean. Not committed.
+
+Five items requested; three done, two not started (recorded at the bottom).
+
+### 1. 🔴 Login sent students and trainers to the wrong page
+
+`UserAuth.handleLogin` had an inline ternary that recognised admins and sent **everyone else** — students and trainers alike — to `/user/profile`. For a student that page immediately bounces back to their dashboard, so signing in flashed through two redirects to arrive where it could have gone directly; a trainer just landed on the wrong page.
+
+`getRoleHomePath` already held the correct mapping for all five roles **and was already imported into that file**. It simply was not called. Now it is.
+
+Also added deep-link return: `RoleProtectedRoute` already stashes the path a user was bounced from, so somebody opening a passport link cold now lands on the passport rather than a dashboard with no idea what they clicked. Restricted to same-origin relative paths and never back to `/user/auth` — an absolute URL there would be an open redirect and the auth page would be a loop.
+
+### 2. The fee bar
+
+`lib/payments/feeStatus.ts` — pure, client-safe, 21 tests. It mirrors the *date* rule in `lib/messaging/reminders.ts` (which imports mongoose and can never reach a browser bundle) so the bar and the WhatsApp message agree about which cycle is current. If they disagreed, a parent would get "due today" while the portal said "in three days", and neither would be believed again.
+
+Appears 7 days out — two ahead of the T-5 WhatsApp, so the portal warns before the phone buzzes. Never invents an amount: no fee configured or nothing outstanding means no bar, because an empty red bar on a child's dashboard caused by a blank field is worse than none.
+
+**It de-escalates.** `insistent` goes false past T+3, where the messaging cadence stops chasing. The balance is still stated, quietly. A permanently flashing red banner on a fourteen-year-old's screen is both unkind and, after a week, invisible. It also says outright that *nothing on their record changes* — the platform's rule is that a child is never restricted for a billing problem, and a red bar about money is exactly where a student would fear otherwise.
+
+**A test of mine was wrong and the code was right.** I asserted the bar hides once past a due date; the 20-day cycle rule means an unpaid fee from the 5th is still the current cycle on the 20th, so it correctly keeps showing. Had I "fixed" the code to match the test, a real debt would have silently vanished from the portal. Corrected the test and added the case explicitly.
+
+**And a bug in my own component**, caught before finishing: the first version used `text-red-200` on a `bg-red-500/10` tint — legible on a dark surface, effectively invisible on a white one. The same light/dark assumption that made the portals unbranded in the first place. Now `.pt-notice*` classes that flip weight on `--page-scheme`. The hues stay fixed rather than themed on purpose: an academy whose brand is red would make every notice look like an alarm, and one whose brand is green would make an overdue fee read as a success.
+
+### 3. Owners can now do what a coach does
+
+`CoachToolsDialog` on the admin Students tab — mark attendance, log an evaluation, manage passport records, for any student.
+
+**No server work was needed.** `/api/trainer/mark-attendance` and `/api/trainer/add-performance` have always accepted `['trainer', 'admin']` and scope their writes by `auth.academyId`, so an owner acting here was already correctly confined to their own students. The gap was purely that no screen ever called them as an owner — which meant on a small academy, where the owner IS the coach most evenings, they were the one role that could see a problem and not fix it.
+
+One dialog, three jobs, because that is how the moment goes: you open a student to mark them present, notice they had a good session, and log it while you are there. Three separate screens is how the second and third stop happening. Attendance uses two large present/absent targets rather than a switch — this gets used on a phone at the side of a pitch and a mis-tap writes the wrong thing to a child's record. Both note fields state where the text ends up, because "remarks" means different things on the two forms and only the category average ever reaches the public Passport.
+
+Reuses `PassportRecordsDialog` rather than a second copy, so one place still enforces who may edit another academy's records.
+
+### NOT DONE
+
+4. **Super-admin editing of academy names, owner names and profiles, cascading everywhere.** The cascade machinery now exists (`lib/users/identityChange.ts` + `applyIdentityChange.ts` handle a user's name/email/phone and rebuild the passport identity key). An **academy** rename is the harder half: `academyName` is denormalised into `Passport.academyHistory[]`, `Passport.records[].academyName` and `Achievement.academyName` precisely so history survives the academy being deleted — so a rename has to decide, per collection, whether to rewrite history or leave it. That is a design decision, not a mechanical one.
+5. **Per-academy finance tabs alongside the master ledger.** `getAcademyInsights()` and `lib/admin/engagementOverview.ts` already do the per-academy aggregation; this is mostly a surface on top of them.
+
+---
+
+## Session — 2026-07-31 (cont. 11) · Academy rename cascade, per-academy books
+
+**State:** `tsc --noEmit` clean, `vitest run` 616/616 (8 new), cold `rm -rf .next && npm run build` clean. Not committed.
+
+### 1. Academy rename now cascades
+
+`academyName` is denormalised into three places — `Passport.academyHistory[]`, `Passport.records[]` and `Achievement` — so a child's history survives the academy being **deleted**.
+
+The open question was whether those copies are a *snapshot* of the name at the time, or a *cache* of the current one. **They are a cache**, and the reasoning matters more than the code: the denormalisation exists to survive deletion, not to record naming history, and every one of those rows also carries `academyId`, so the entity is never ambiguous. Left stale, one student would see two different names for the same academy on the same page — their current stint under the new name, a tournament from March under the old — with nothing to explain it. That is a bug, not a feature.
+
+`lib/academy/renameCascade.ts` matches on **`academyId`, never on the name string**, so it is idempotent, safe when two academies share a name, and cannot be fooled by a row that was already stale. Uses `arrayFilters` rather than loading and saving each passport — one write per collection instead of one round trip per student, and no race with a coach editing the same document mid-rename.
+
+Wired into `PUT /api/academy/[id]`, detecting the rename *before* the write since afterwards there is nothing to compare against. **The cascade failure is not swallowed**: unlike a metric, a half-applied rename is visible to users, so it returns 500 with an instruction to re-save rather than reporting success.
+
+8 tests, aimed at the two mistakes that would be silent — matching on name instead of id, and omitting `arrayFilters` (which makes the update rewrite *every* subdocument, including stints at other academies). Neither would fail a typecheck; both would corrupt a customer's history.
+
+`previewAcademyRename()` exists but is not yet surfaced — an owner should see "this also updates 47 passports" before clicking.
+
+### 2. Per-academy books for the platform admin
+
+Rather than a second finance screen, `/api/admin/finance-analytics` now accepts `?academyId=` **for super admins only** — an owner stays pinned to their own academy, so this can never become a way to read another academy's revenue by editing a URL.
+
+`FinanceDashboard` takes `academyId` and `title`, so the platform-wide ledger and a per-academy tab are the **same component reading the same endpoint**. Two implementations of "collection rate" that drift apart is precisely how a finance screen stops being trusted — and a platform admin comparing their figure against an owner's is the moment it would surface.
+
+One subtlety: `amountFor()` gave super admins gross GMV, which is right for the platform view and **wrong** scoped to one academy — there the question is "what does this academy earn", so it now reports the academy's own share, the same number its owner sees.
+
+Nothing loads until an academy is picked; a full financial aggregation per tenant on page load is not something to do for every academy at once.
+
+### 🔴 Verification gap — could not run anything live
+
+**The MongoDB Atlas cluster became unreachable from this machine partway through the session** (IP not whitelisted). Confirmed independently of the app: a direct `mongoose.connect` fails the same way. Every route now 500s at `connectToDatabase` inside `authMiddleware` — including routes untouched today — so this is infrastructure, not a regression.
+
+What that means for this entry, stated plainly:
+
+- **Verified:** typecheck, 616 unit tests, a cold production build, and the query *shape* of the rename cascade (via mocked models).
+- **NOT verified:** a single real request. The rename cascade has never run against actual data, and the per-academy finance figures have never been rendered. The earlier sessions' live checks (passport, pay, discover, order creation) were done while the DB was still reachable and remain valid for that code; nothing from today has had the same treatment.
+
+Before this goes near production, the rename must be exercised once on a real academy and the resulting passports inspected — `previewAcademyRename` was written partly to make that easy. Whitelist the IP in Atlas and it is a five-minute check.
+
+## 2026-08-06 — ecosystem tile: GWD Club VJIT (both marks)
+
+`D:\GWD\GWD-Orientation-Deck.html` — still 7 slides, 1.44 MB.
+
+The ecosystem-wall tile now shows **both marks side by side** — GWD logo, a small "×", VJIT crest —
+captioned "GWD Club VJIT" in crimson, instead of the GWD-only tile from the previous round. VJIT's
+logo is embedded again (it had been dropped when the crest left the chrome bar) purely for this one
+tile; it does not reappear anywhere else in the deck.
+
+Still an orientation-deck-only substitution done post-lift in `build_orient.py` — the pitch deck is
+untouched and keeps listing VJIT plainly as the partner institution it is.
+
+Verified: tile renders correctly in both landscape and portrait, all previous checks still pass
+(20 photos/captions, poster counters, ARR bars, lightbox, overview, 7-page PDF), no console errors.
+
+---
+
+## Session — 2026-07-31 (cont. 12) · Final sweep: error logging everywhere, last scoping gap
+
+**State:** `tsc --noEmit` clean, `vitest run` 616/616, cold `rm -rf .next && npm run build` clean. Not committed.
+
+### 🔴 52 API routes swallowed their errors
+
+A scan of all 115 route files found 52 with a `catch` that returned 500 and logged nothing. In production a genuine fault and a malformed id are then indistinguishable — there is no trace anywhere, and the first sign of trouble is a customer describing a blank screen.
+
+Fixed programmatically: **73 log lines across 59 files**, each tagged with the route's own path. The script was conservative by construction — only `src/app/api/**/route.ts`, only `catch (x) {` blocks that have a binding to log, skipping any catch that already logged, and touching nothing else. Dry-run first, then typecheck, 616 tests and a cold build after.
+
+**Every API route in the codebase now logs its own failures. Verified: 0 remaining.**
+
+### 🔴 `/api/academy/[id]/members` — the last unscoped route
+
+The tenant-scoping scan from an earlier session flagged this and I had left it. Any academy admin could list **any** academy's roster by id, and the populate makes that names, emails and phone numbers for every student and coach a competitor has. Now scoped identically to `api/admin/students/[id]`, with a 404 for another academy so it cannot be used to probe which ids exist.
+
+Remaining from that scan: `/events/[id]` and `/homepage/admin/events/[id]`. Left deliberately — an academy's events are semi-public (they publish to the Discovery Map), so the exposure is materially different from a roster or a fee ledger. Worth scoping for consistency, not urgent.
+
+### Owner-admin work — verified end to end (static)
+
+Chain checked rather than assumed:
+
+- **Frontend:** `StudentTable` declares `onCoachTools`, renders the menu item, `StudentManagement` passes it and renders `<CoachToolsDialog>`. All four links present.
+- **Backend:** `/api/trainer/mark-attendance` and `/api/trainer/add-performance` both accept `['trainer','admin']` **and** both reference `auth.academyId` for scoping. `/api/trainer/passport-records` likewise.
+
+So an owner can now mark attendance, log evaluations and manage passport records for any student **in their own academy**, and cannot reach another's.
+
+Also confirmed already present, from the earlier request: owner can add coaches (`academy/add-trainer`, `admin/users`), create batches (`academy/batches`), and assign students to coaches (`academy/add-student`, `trainer/add-student`). `trainer/students` scopes its roster by `profile.academyId`.
+
+### STILL NOT BUILT — the kit request flow
+
+Confirmed absent: no kit request/approval API, no request model, no owner notification path. The full ask was — owner defines items with prices and availability; student requests from what is available; owner is notified in-dashboard **and** on their personal WhatsApp; student pays only for available items. That is a model change, a request/approval lifecycle, a payments path and a new WhatsApp template. Not started, and not something to half-build.
+
+### 🔴 Verification gap persists
+
+The MongoDB Atlas cluster is **still unreachable from this machine** (IP not whitelisted; confirmed again with a direct `mongoose.connect`). Everything in the last three entries is verified by typecheck, 616 unit tests and a cold production build — and **not by a single live request**.
+
+Specifically unexercised against real data: the academy rename cascade, the per-academy finance scoping, the owner's coach toolkit, and the fee bar. The logging sweep and the members scoping are low-risk (additive and a filter respectively), but the rename cascade writes to three collections and has never run.
+
+Whitelist the IP and the first three are a ten-minute check.
+
+---
+
+## Session — 2026-07-31 (cont. 13) · The verification gap is closed
+
+**State:** `tsc --noEmit` clean, `vitest run` 616/616, cold `rm -rf .next && npm run build` clean. 74 files changed, still uncommitted.
+
+The Atlas cluster became reachable again, so everything the previous three entries could only assert statically has now been exercised against real data.
+
+### The rename cascade — run for real, then reversed
+
+This was the one that mattered: it writes to three collections and had never executed. Mocked tests prove the query *shape*, but `arrayFilters` is a **server-side** feature — a malformed identifier is rejected at execution time and no amount of mocking would catch it.
+
+Wrote a temporary integration test that imports the real `cascadeAcademyRename` and drives it against the live database, then deleted it. Both cases passed:
+
+- **Round trip.** Renamed MasterGrade → probe name: every stint and every sporting-record copy moved. Renamed back: state identical to before, asserted field by field rather than by count.
+- **Blast radius.** Snapshotted every *other* academy's denormalised names, ran the cascade, compared — byte-identical. The `arrayFilters` scoping does what it claims; a rename cannot touch another academy's rows.
+
+Afterwards, verified the database directly: academy name restored, **0 leftover probe records**, and every denormalised copy across all passports matches the academy's current name. Nothing was left behind.
+
+### Live endpoint sweep
+
+Public surfaces, all 200: `/api/passport/GWD-C8A6GN`, its `/pay`, and `/api/academy/discover` unfiltered, by sport, and by search.
+
+**All eight endpoints hardened this session return 401 without a token** — finance-analytics with `?academyId=`, academy members, backfill-passports, admin students, admin trainers, academy PUT, the payment override, and user toggle-status.
+
+Payloads checked for correctness, not just status:
+
+- **Discover:** 6 total unfiltered; `?sport=badminton` → 1 (MasterGrade only); `?search=a(b` → 0 with no crash, so the regex escaping holds. The filters genuinely filter, which is the defect this replaced.
+- **Passport:** 6 sporting records, `highestLevel: State`, and **zero leaks** — no `recordedBy`, `identityKey`, parent phone, medical data or fee balance.
+- **Pay:** ₹3,104 = ₹3,000 academy + ₹104 convenience, matching the figures the booklet prints and `pricing.test.ts` pins.
+
+### What is now verified vs. still not
+
+**Verified live:** the rename cascade (including its reversal and isolation), every hardened endpoint's auth, the discovery filters, the passport whitelist, and the fee split.
+
+**Still only static:** the per-academy finance *figures*, the owner's coach toolkit, and the fee bar — all three sit behind an authenticated session and I do not sign in. Their code paths are covered by typecheck, 616 unit tests and a cold build, and the endpoints they call are the same ones proven above; what is unproven is the rendered result.
+
+That is a materially smaller gap than the previous entry described, and the riskiest item in it — the cascade — is no longer part of it.

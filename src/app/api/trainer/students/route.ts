@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
       try {
         return new mongoose.Types.ObjectId(id._id ? id._id.toString() : id.toString());
       } catch (e) {
+        console.error('[api/trainer/students]', e instanceof Error ? e.message : e);
         return null;
       }
     }).filter(Boolean);
@@ -161,6 +162,7 @@ export async function GET(req: NextRequest) {
       }
     });
   } catch (error: any) {
+    console.error('[api/trainer/students]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

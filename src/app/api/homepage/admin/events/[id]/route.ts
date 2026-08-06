@@ -53,6 +53,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     return NextResponse.json({ success: true, message: 'Event card updated successfully', data: updatedCard });
   } catch (error: any) {
+    console.error('[api/homepage/admin/events/[id]]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Failed to update event card' }, { status: 500 });
   }
 }
@@ -76,6 +77,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     return NextResponse.json({ success: true, message: 'Event card deleted successfully' });
   } catch (error: any) {
+    console.error('[api/homepage/admin/events/[id]]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Failed to delete event card' }, { status: 500 });
   }
 }

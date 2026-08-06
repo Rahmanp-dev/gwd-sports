@@ -190,6 +190,7 @@ export async function POST(req: NextRequest) {
       });
       return NextResponse.json({ success: true, data: { batchId: String(batch._id) } });
     } catch (err: any) {
+      console.error('[api/academy/batches]', err instanceof Error ? err.message : err);
       // The unique index on (academyId, name, sport). Reported as a conflict
       // rather than a server error, because the admin can act on it.
       if (err?.code === 11000) {
@@ -296,6 +297,7 @@ export async function PATCH(req: NextRequest) {
     try {
       await batch.save();
     } catch (err: any) {
+      console.error('[api/academy/batches]', err instanceof Error ? err.message : err);
       if (err?.code === 11000) {
         return NextResponse.json(
           { success: false, message: `A ${batch.sport} batch called "${batch.name}" already exists.` },

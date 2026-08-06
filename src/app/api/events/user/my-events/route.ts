@@ -30,6 +30,7 @@ export async function GET(req: NextRequest) {
       data: { events, pagination: { currentPage: page, totalPages: Math.ceil(total / limitNum), totalEvents: total, hasNextPage: page < Math.ceil(total / limitNum), hasPrevPage: page > 1 } }
     });
   } catch (error: any) {
+    console.error('[api/events/user/my-events]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

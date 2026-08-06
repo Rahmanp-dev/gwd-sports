@@ -32,6 +32,7 @@ export async function GET(req: NextRequest) {
       data: { students, pagination: { total, page, pages: Math.ceil(total / limitNum) } }
     });
   } catch (error: any) {
+    console.error('[api/payments/admin/defaulters]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Server Error' }, { status: 500 });
   }
 }

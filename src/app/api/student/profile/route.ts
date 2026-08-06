@@ -43,6 +43,7 @@ export async function GET(req: NextRequest) {
       .populate('trainers', 'name phone email sports');
     return NextResponse.json({ success: true, data: { studentProfile: populated } });
   } catch (error) {
+    console.error('[api/student/profile]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }
@@ -71,6 +72,7 @@ export async function POST(req: NextRequest) {
       { status: 201 },
     );
   } catch (error) {
+    console.error('[api/student/profile]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }

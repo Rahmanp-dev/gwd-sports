@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
       data: { totalEvents, upcomingEvents, ongoingEvents, eventsByStatus: stats, eventsBySport: sportStats }
     });
   } catch (error: any) {
+    console.error('[api/events/admin/stats]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

@@ -30,6 +30,7 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'Cards reordered successfully', data: updatedCards });
   } catch (error: any) {
+    console.error('[api/homepage/admin/events/bulk/reorder]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Failed to reorder cards' }, { status: 500 });
   }
 }

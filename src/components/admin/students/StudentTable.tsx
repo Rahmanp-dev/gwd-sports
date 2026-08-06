@@ -31,6 +31,7 @@ import {
   ChevronDown,
   ChevronsUpDown,
   Package,
+  ClipboardCheck,
 } from "lucide-react";
 import { SPORTS_LIST } from "@/utils/constants";
 
@@ -40,6 +41,8 @@ interface StudentTableProps {
   onViewStudent: (studentId: string) => void;
   onEditStudent: (studentId: string) => void;
   onEditKitStatus: (student: Student, kit: any) => void;
+  /** Opens the coach toolkit — attendance, evaluations, passport records. */
+  onCoachTools: (student: Student) => void;
   onFilterChange: (filters: StudentFilters) => void;
   currentFilters: StudentFilters;
   pagination: {
@@ -57,6 +60,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   onViewStudent,
   onEditStudent,
   onEditKitStatus,
+  onCoachTools,
   onFilterChange,
   currentFilters,
   pagination,
@@ -397,6 +401,12 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                         >
                           <Edit className="mr-2 h-4 w-4" />
                           Edit Student
+                        </DropdownMenuItem>
+                        {/* The owner is the coach most evenings on a small
+                            academy. Everything a coach can do, one tap in. */}
+                        <DropdownMenuItem onClick={() => onCoachTools(student)}>
+                          <ClipboardCheck className="mr-2 h-4 w-4" />
+                          Attendance &amp; performance
                         </DropdownMenuItem>
                         {student.kits && student.kits.length > 0 && (
                           <>

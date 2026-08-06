@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
     const events = await Event.find(filter).sort({ startDate: 1 });
     return NextResponse.json({ success: true, data: { events } });
   } catch (error) {
+    console.error('[api/events]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }
@@ -38,6 +39,7 @@ export async function POST(req: NextRequest) {
     await event.save();
     return NextResponse.json({ success: true, data: { event } }, { status: 201 });
   } catch (error) {
+    console.error('[api/events]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }

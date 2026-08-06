@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
       data: { url: fileUrl }
     });
   } catch (error: any) {
+    console.error('[api/admin/settings/upload-logo]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Server error during file upload' }, { status: 500 });
   }
 }

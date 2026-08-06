@@ -19,6 +19,7 @@ export async function PUT(req: NextRequest) {
     await user.save();
     return NextResponse.json({ success: true, message: 'Password changed successfully' });
   } catch (error: any) {
+    console.error('[api/user/change-password]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

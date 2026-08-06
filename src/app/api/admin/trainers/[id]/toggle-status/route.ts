@@ -42,6 +42,7 @@ export async function PATCH(
       data: { trainer },
     });
   } catch (error: any) {
+    console.error('[api/admin/trainers/[id]/toggle-status]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

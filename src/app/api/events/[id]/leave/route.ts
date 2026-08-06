@@ -27,6 +27,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     return NextResponse.json({ success: true, message: 'Successfully left the event' });
   } catch (error: any) {
+    console.error('[api/events/[id]/leave]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

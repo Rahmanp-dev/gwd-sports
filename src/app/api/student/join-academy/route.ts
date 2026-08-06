@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
       data: { academy: { _id: academy._id, name: academy.name } }
     });
   } catch (error: any) {
+    console.error('[api/student/join-academy]', error instanceof Error ? error.message : error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }
