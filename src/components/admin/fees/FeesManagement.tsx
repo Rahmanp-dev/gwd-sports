@@ -336,8 +336,32 @@ export const FeesManagement: React.FC = () => {
                     {/* ── HOW MUCH, WHAT HAPPENED, WHEN ────────────────── */}
                     <div className="flex shrink-0 items-center justify-between gap-4 lg:justify-end">
                       <div className="lg:min-w-[7rem] lg:text-right">
+                        {/*
+                          THE ACADEMY'S SHARE, not the parent's total.
+
+                          This rendered `fee.amount` — what the PARENT was
+                          charged, coaching fee plus convenience fee. The KPI
+                          cards directly above it are computed from
+                          `academyAmountPaise`, the academy's own share. So one
+                          screen showed two different bases: an owner adding up
+                          these rows got a figure that did not match the
+                          "Lifetime revenue" tile a few centimetres higher, with
+                          nothing on the page to explain the gap.
+
+                          A ledger an owner cannot reconcile against its own
+                          summary is worse than no ledger. Both now state the
+                          same thing: what reaches the academy.
+
+                          Falls back to `amount` for rows written before the
+                          split existed, and for offline payments where the two
+                          are equal by definition — no gateway, no margin.
+                        */}
                         <div className="text-base font-extrabold tabular-nums text-slate-900">
-                          ₹{fee.amount.toFixed(2)}
+                          ₹
+                          {(typeof fee.academyAmountPaise === "number"
+                            ? fee.academyAmountPaise / 100
+                            : (fee.baseAmount ?? fee.amount)
+                          ).toFixed(2)}
                         </div>
                         <div className="text-[11px] text-slate-400">
                           {when.toLocaleDateString("en-IN", {

@@ -167,6 +167,37 @@ export const AcademyCanvasEditor: React.FC<AcademyCanvasEditorProps> = ({
 
   const activePanels = selected ? SECTION_PANELS[selected] : undefined;
 
+  /**
+   * Selecting a section also brings it into view.
+   *
+   * On a phone the controls open as a sheet over the lower ~60% of the screen,
+   * so tapping Edit on the footer would put the thing being edited directly
+   * behind the panel editing it. Scrolling the band up to just under the
+   * toolbar keeps cause and effect in the same glance — which is the entire
+   * argument for this canvas over the old side-by-side form.
+   *
+   * Guarded on the same breakpoint as the sheet: on desktop the sidebar sits
+   * beside the canvas and nothing is covered, so moving the page would be an
+   * unrequested jump.
+   */
+  const selectSection = (key: string | null) => {
+    setSelected(key);
+    if (!key || key === "__brand") return;
+    if (typeof window === "undefined") return;
+    // 80rem, not 1280px: that is literally what Tailwind's `xl:` compiles to
+    // (`@media (width >= 80rem)`), and writing the same unit means this guard
+    // and the sheet's own breakpoint cannot drift apart.
+    if (window.matchMedia("(min-width: 80rem)").matches) return;
+
+    // After paint, so the sheet has taken its height before we measure.
+    requestAnimationFrame(() => {
+      const el = document.querySelector(`[data-canvas-section="${key}"]`);
+      if (!el) return;
+      const top = el.getBoundingClientRect().top + window.scrollY - 88;
+      window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    });
+  };
+
   return (
     <div className="relative">
       {/* ── Toolbar ─────────────────────────────────────────────────────── */}
@@ -251,7 +282,7 @@ export const AcademyCanvasEditor: React.FC<AcademyCanvasEditorProps> = ({
                 sectionKey="hero"
                 title="Hero"
                 selected={selected === "hero"}
-                onSelect={() => setSelected(selected === "hero" ? null : "hero")}
+                onSelect={() => selectSection(selected === "hero" ? null : "hero")}
                 canToggle={false}
                 canMove={false}
               >
@@ -303,7 +334,7 @@ export const AcademyCanvasEditor: React.FC<AcademyCanvasEditorProps> = ({
                       accented={Boolean(
                         value.accentSection && value.accentSection === key,
                       )}
-                      onSelect={() => setSelected(selected === key ? null : key)}
+                      onSelect={() => selectSection(selected === key ? null : key)}
                       onToggle={() => setSectionVisible(key, !switchedOn)}
                       onMoveUp={index > 0 ? () => move(key, -1) : undefined}
                       onMoveDown={
@@ -322,7 +353,7 @@ export const AcademyCanvasEditor: React.FC<AcademyCanvasEditorProps> = ({
                 title="Footer"
                 selected={selected === "footer"}
                 onSelect={() =>
-                  setSelected(selected === "footer" ? null : "footer")
+                  selectSection(selected === "footer" ? null : "footer")
                 }
                 canToggle={false}
                 canMove={false}
@@ -333,11 +364,38 @@ export const AcademyCanvasEditor: React.FC<AcademyCanvasEditorProps> = ({
           </div>
         </div>
 
-        {/* ── Contextual controls ──────────────────────────────────────── */}
-        <div className="xl:sticky xl:top-20 xl:max-h-[calc(100vh-6rem)] xl:overflow-y-auto">
+        {/*
+          ── Contextual controls ─────────────────────────────────────────
+          On a wide screen this is a sticky sidebar beside the canvas.
+
+          ON A PHONE IT IS A BOTTOM SHEET, and that is not cosmetic. Stacked
+          in the normal flow, the controls landed BELOW an entire rendered
+          homepage: the owner tapped a section, got scrolled nowhere, hunted
+          for the controls, changed a colour, and then had to scroll back up
+          to see what it did. Editing something you cannot see is guessing.
+
+          As a sheet the canvas stays on screen above it, so a colour change
+          is visible in the same glance that makes it — the same reason the
+          desktop panel is sticky.
+        */}
+        <div
+          className={
+            selected
+              ? "fixed inset-x-0 bottom-0 z-40 max-h-[62svh] overflow-y-auto overscroll-contain rounded-t-2xl border-t border-slate-200 bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_40px_-12px_rgba(15,23,42,0.35)] xl:sticky xl:top-20 xl:z-auto xl:max-h-[calc(100vh-6rem)] xl:rounded-none xl:border-0 xl:pb-0 xl:shadow-none"
+              : "xl:sticky xl:top-20 xl:max-h-[calc(100vh-6rem)] xl:overflow-y-auto"
+          }
+        >
           {selected ? (
-            <div className="rounded-xl border border-slate-200 bg-white p-3">
-              <div className="mb-3 flex items-center justify-between">
+            <div className="rounded-xl border-slate-200 bg-white p-3 xl:border">
+              {/* The grabber. Purely conventional, but it is what tells a
+                  thumb this panel is a sheet and not the page. */}
+              <div
+                aria-hidden
+                className="mx-auto mb-2 h-1 w-10 rounded-full bg-slate-200 xl:hidden"
+              />
+              {/* Sticky within the sheet: scrolled halfway down a long panel,
+                  the way out must still be on screen. */}
+              <div className="sticky top-0 z-10 -mx-3 mb-3 flex items-center justify-between border-b border-slate-100 bg-white px-3 pb-2 xl:static xl:mx-0 xl:border-0 xl:px-0 xl:pb-0">
                 <p className="text-sm font-semibold text-slate-900">
                   {selected === "__brand"
                     ? "Brand & colours"
@@ -347,7 +405,7 @@ export const AcademyCanvasEditor: React.FC<AcademyCanvasEditorProps> = ({
                   type="button"
                   onClick={() => setSelected(null)}
                   aria-label="Close editor"
-                  className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                  className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700 xl:p-1"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -386,7 +444,7 @@ export const AcademyCanvasEditor: React.FC<AcademyCanvasEditorProps> = ({
                       const match = Object.entries(SECTION_PANELS).find(([, panels]) =>
                         panels.includes(key as BrandingPanel),
                       );
-                      setSelected(match ? match[0] : "__brand");
+                      selectSection(match ? match[0] : "__brand");
                     }}
                     className="rounded-full border border-slate-200 px-2.5 py-1 text-[11px] font-medium text-slate-600 transition-colors hover:border-slate-400 hover:text-slate-900"
                   >
@@ -519,8 +577,20 @@ function CanvasSection({
         tabs through a row of buttons they cannot see.
       */}
       <div
-        className={`absolute right-3 top-3 z-10 flex items-center gap-1 rounded-lg border border-slate-200 bg-white/95 p-1 shadow-md backdrop-blur transition-opacity focus-within:opacity-100 ${
-          selected ? "opacity-100" : "opacity-0 group-hover/canvas:opacity-100"
+        /*
+          ON TOUCH THERE IS NO HOVER.
+
+          These controls were `opacity-0 group-hover:opacity-100`, which on a
+          phone means the Edit button never appears at all — the entire canvas
+          editor was unreachable on mobile, which is where an academy owner
+          most often is. The hover-to-reveal behaviour is kept for pointer
+          devices (where it keeps the canvas clean) and simply switched off
+          below xl, where the controls are always visible.
+        */
+        className={`absolute right-2 top-2 z-10 flex items-center gap-0.5 rounded-lg border border-slate-200 bg-white/95 p-1 shadow-md backdrop-blur transition-opacity focus-within:opacity-100 xl:right-3 xl:top-3 xl:gap-1 ${
+          selected
+            ? "opacity-100"
+            : "opacity-100 xl:opacity-0 xl:group-hover/canvas:opacity-100"
         }`}
       >
         <span className="px-1.5 text-[11px] font-semibold text-slate-500">
@@ -534,7 +604,7 @@ function CanvasSection({
               disabled={disabled || !onMoveUp}
               onClick={onMoveUp}
               aria-label={`Move ${title} up`}
-              className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-800 disabled:opacity-30"
+              className="rounded p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-800 disabled:opacity-30 xl:p-1"
             >
               <ChevronUp className="h-3.5 w-3.5" />
             </button>
@@ -543,7 +613,7 @@ function CanvasSection({
               disabled={disabled || !onMoveDown}
               onClick={onMoveDown}
               aria-label={`Move ${title} down`}
-              className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-800 disabled:opacity-30"
+              className="rounded p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-800 disabled:opacity-30 xl:p-1"
             >
               <ChevronDown className="h-3.5 w-3.5" />
             </button>
@@ -556,7 +626,7 @@ function CanvasSection({
             disabled={disabled}
             onClick={onToggle}
             aria-label={hidden ? `Show ${title}` : `Hide ${title}`}
-            className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-800"
+            className="rounded p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-800 xl:p-1"
           >
             {hidden ? (
               <EyeOff className="h-3.5 w-3.5" />
@@ -569,7 +639,7 @@ function CanvasSection({
         <button
           type="button"
           onClick={onSelect}
-          className={`flex items-center gap-1 rounded px-2 py-1 text-[11px] font-semibold transition-colors ${
+          className={`flex items-center gap-1 rounded px-2.5 py-2 text-[11px] font-semibold transition-colors xl:py-1 ${
             selected
               ? "bg-blue-600 text-white"
               : "bg-slate-900 text-white hover:bg-slate-700"

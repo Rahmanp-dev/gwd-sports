@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { CommunicationCenter } from "@/components/admin/messaging/CommunicationCenter";
 import AcademyInsightsPanel from "@/components/admin/academies/AcademyInsightsPanel";
+import { SettlementPanel } from "@/components/admin/academies/SettlementPanel";
 import { FinanceDashboard } from "@/components/admin/fees/FinanceDashboard";
 import EcosystemProfileEditor, {
   ecosystemProfileFromAcademy,
@@ -65,6 +66,8 @@ export default function SuperAdminDashboard() {
    * The master ledger is still the default view; this narrows it.
    */
   const [financeAcademyId, setFinanceAcademyId] = useState<string | null>(null);
+  /** The academy whose settlement (Route account) is being configured. */
+  const [settlementFor, setSettlementFor] = useState<any | null>(null);
   const [financeData, setFinanceData] = useState<any>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
@@ -980,6 +983,69 @@ export default function SuperAdminDashboard() {
         )}
 
         {/* TAB 3: GLOBAL DIRECTORY */}
+        {activeTab === "revenue" && (
+          <div className="mt-6 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+            {/*
+              WHERE EACH ACADEMY'S MONEY GOES.
+
+              Both settlement paths were already implemented and correct, but
+              `rzp_account` could only be set by writing to the database — so
+              whether an academy was paid automatically or GWD was quietly
+              accruing a debt to them came down to whether someone remembered a
+              manual step, with nothing on any screen showing which.
+            */}
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-base font-semibold text-slate-900">
+                  Settlement accounts
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Link a Razorpay Route account so an academy is paid
+                  automatically instead of by hand.
+                </p>
+              </div>
+              <select
+                value={settlementFor?._id ?? ""}
+                onChange={(e) =>
+                  setSettlementFor(
+                    academies.find((a: any) => a._id === e.target.value) ??
+                      null,
+                  )
+                }
+                className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700"
+              >
+                <option value="">Select an academy…</option>
+                {academies.map((a: any) => (
+                  <option key={a._id} value={a._id}>
+                    {a.name}
+                    {a.rzp_account ? "  ✓ linked" : "  — manual payout"}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {settlementFor ? (
+              <SettlementPanel
+                key={settlementFor._id}
+                academy={settlementFor}
+                onSaved={fetchAcademies}
+              />
+            ) : (
+              <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center">
+                <p className="text-sm font-medium text-slate-600">
+                  Pick an academy to configure settlement
+                </p>
+                <p className="mx-auto mt-1 max-w-md text-xs leading-relaxed text-slate-400">
+                  Academies marked <strong>manual payout</strong> in the list
+                  above are collecting into the GWD account — their share is
+                  owed and has to be transferred by hand until a Route account
+                  is linked.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
         {activeTab === "revenue" && (
           <div className="mt-6 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs">
             {/*

@@ -22,7 +22,19 @@ export interface FeePaymentRecord {
   orderId: string;
   studentId?: string | any;
   paymentId?: string;
+  /**
+   * What the PARENT was charged — coaching fee plus the convenience fee.
+   * Not what the academy banks. Use `academyAmountPaise` for that.
+   */
   amount: number;
+  /** The academy's share, in paise. What actually settles to their account. */
+  academyAmountPaise?: number;
+  /**
+   * The coaching fee before the convenience fee was added. Present on rows
+   * written before `academyAmountPaise` existed, and equal to `amount` for
+   * offline payments — no gateway, no margin.
+   */
+  baseAmount?: number;
   currency: string;
   status: "pending" | "success" | "failed";
   receipt?: string;

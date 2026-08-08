@@ -12,7 +12,9 @@
     "test:money": "vitest run src/lib/payments",
     "whatsapp:doctor": "node scripts/whatsapp-doctor.mjs",
     "whatsapp:templates": "node scripts/create-whatsapp-templates.mjs",
-    "passport:seed": "node scripts/seed-passport-records.js"
+    "passport:seed": "node scripts/seed-passport-records.js",
+    "cron:local": "node scripts/local-cron.js",
+    "cron:once": "node scripts/local-cron.js --once"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

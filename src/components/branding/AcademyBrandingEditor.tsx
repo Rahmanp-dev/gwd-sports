@@ -69,6 +69,7 @@ import {
   HIGHLIGHT_ICON_KEYS,
 } from "@/components/landing/WhyChooseUs";
 import { STAT_ICON_KEYS } from "@/components/landing/StatsSection";
+import { LooksPicker } from "./LooksPicker";
 import {
   VIDEO_LAYOUTS,
   VIDEO_ASPECTS,
@@ -823,6 +824,46 @@ export const AcademyBrandingEditor: React.FC<AcademyBrandingEditorProps> = ({
             <p className="text-[11px] text-slate-400">
               Appears under your academy name on your homepage.
             </p>
+          </CardContent>
+        </Card>
+
+        {/*
+          LOOKS sit ABOVE the individual controls, not instead of them.
+
+          Five independent pickers — colour, accent, font, feel, background —
+          ask a cricket coach to be an art director. The predictable result is
+          the default palette on nine academies out of ten. A Look is one click
+          for a complete, contrast-checked identity; everything below stays
+          exactly as editable as it was.
+        */}
+        <Card data-panel="brand" className="mb-4 break-inside-avoid border-0 shadow-sm">
+          <CardContent className="space-y-4 p-5">
+            <SectionLabel icon={<Sparkles className="h-3 w-3" />}>
+              Start here
+            </SectionLabel>
+            <LooksPicker
+              disabled={disabled}
+              logoUrl={value.logoUrl}
+              current={{
+                primaryColor: value.primaryColor,
+                accentColor: value.accentColor,
+                fontPreset: value.fontPreset,
+                style: value.style,
+                background: value.backgroundStyle,
+              }}
+              onApply={(look) =>
+                patch({
+                  primaryColor: look.primaryColor,
+                  accentColor: look.accentColor,
+                  fontPreset: look.fontPreset as any,
+                  style: look.style as any,
+                  backgroundStyle: look.background as any,
+                })
+              }
+              onApplyColours={(c) =>
+                patch({ primaryColor: c.primaryColor, accentColor: c.accentColor })
+              }
+            />
           </CardContent>
         </Card>
 

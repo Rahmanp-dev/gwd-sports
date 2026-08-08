@@ -5161,3 +5161,290 @@ Payloads checked for correctness, not just status:
 **Still only static:** the per-academy finance *figures*, the owner's coach toolkit, and the fee bar — all three sit behind an authenticated session and I do not sign in. Their code paths are covered by typecheck, 616 unit tests and a cold build, and the endpoints they call are the same ones proven above; what is unproven is the rendered result.
 
 That is a materially smaller gap than the previous entry described, and the riskiest item in it — the cascade — is no longer part of it.
+
+---
+
+## Session — 2026-07-31 (cont. 14) · 🔴 The owner's ledger and its own KPIs used different money
+
+**State:** `tsc --noEmit` clean, `vitest run` 616/616, `npm run build` clean. Not committed.
+
+Surfaced while scripting the trailer, of all places — the owner pushed back on a
+frame showing "parent pays ₹3,104 / your academy ₹3,000", correctly pointing out
+that anyone can subtract and ask what the difference is. Checking whether a real
+ledger screenshot would expose the same thing found a genuine defect.
+
+### The defect
+
+On the **same Fees & payments screen**:
+
+- The KPI cards and every figure in `FinanceDashboard` come from
+  `/admin/finance-analytics`, whose `amountFor()` returns **`academyAmountPaise`**
+  for an academy admin — their own share.
+- The **Transaction Ledger** directly beneath rendered `fee.amount` — what the
+  **parent** was charged, coaching fee *plus* convenience fee.
+
+Two bases, one screen, no explanation. An owner adding up the ledger rows gets a
+number larger than the "Lifetime revenue" tile a few centimetres above it, with
+nothing on the page accounting for the gap. **A ledger you cannot reconcile
+against its own summary is worse than no ledger** — it makes an owner doubt both
+figures, and the natural conclusion is that the platform is skimming.
+
+### Fixed
+
+The ledger now renders `academyAmountPaise / 100`, falling back to `baseAmount`
+then `amount` for rows written before the split existed and for offline payments
+where the two are equal by definition (no gateway, no margin). Both halves of
+the screen now state the same thing: **what reaches the academy.**
+
+`FeePaymentRecord` gained `academyAmountPaise` and `baseAmount`, with doc
+comments naming which is which — the field names alone do not make it obvious
+that `amount` is the parent's total, and that ambiguity is what caused this.
+
+A pleasant side effect: every money figure on the owner's Fees screen is now
+something they bank, so **there is nothing left on that screen to subtract**.
+The trailer can film it without exposing a delta.
+
+### Trailer script corrected too
+
+`docs/trailer-01-owner.md` had a beat rendering the split as an on-screen
+graphic, and a timeline chip reading "Payment received ₹3,104". Both removed.
+Added a **THE MONEY RULE** section stating the constraint plainly: no figure that
+lets a viewer do subtraction may appear, never a parent total beside an academy
+figure, and if a beat needs a number use **100%** — the claim, not the
+arithmetic. The rejected draft is kept in that section as a worked counter-example,
+because the failure mode is subtle: it never states the fee, it just lets you
+derive it.
+
+---
+
+## Session — 2026-08-08 · Real deployment: Route settlement UI, local scheduler, go-live runbook
+
+**State:** `tsc --noEmit` clean, `vitest run` 616/616, cold build clean. Not committed.
+
+First real fee-paying academies are being onboarded, so this pass was about the
+things that lose money or trust if wrong.
+
+### Razorpay Route — the plumbing was right, the control was missing
+
+Investigated first because it is the only irreversible thing here. Findings:
+
+`lib/payments/settlement.ts` implements both strategies correctly.
+`routeAutoSplit` builds a real `transfers[]` array and `createOrder` spreads it
+into `razorpay.orders.create()` — so Route genuinely works. `resolveSettlementStrategy`
+picks it whenever `academy.rzp_account` is set.
+
+The reason MasterGrade's live test order earlier reported
+`collect_and_manual_payout` was simply that it has **no `rzp_account`**. Not a
+bug — the fallback behaving as designed.
+
+🔴 **But `rzp_account` could only be set by writing to the database.** So the
+difference between "the academy is paid automatically at capture" and "GWD is
+quietly accruing a debt to them that a human has to discharge" came down to
+whether someone remembered a manual step — with **nothing on any screen showing
+which state an academy was in**. For a platform onboarding real academies that
+is the single most dangerous gap in it.
+
+Built `components/admin/academies/SettlementPanel.tsx`, wired into Super admin →
+Revenue. It validates the `acc_…` shape (a bank account number pasted there is
+rejected with an explanation), and shows the **live consequence before saving** —
+Automatic / Manual payout required / Route selected but no account linked —
+computed with the same precedence the server uses. The academy dropdown marks
+every tenant `✓ linked` or `— manual payout`, so accruing liabilities are
+visible at a glance rather than discoverable only by reading the database.
+
+`rzp_account` stays out of `OWNER_WRITABLE`, so only a platform admin reaches it.
+
+### Scheduler for a self-hosted deployment
+
+`POST /api/jobs/tick` already does dispatch → reminders → digest → send, bearer-authed,
+every stage self-guarding. It just had nothing calling it outside Vercel's daily cron.
+
+`scripts/local-cron.js` (+ `npm run cron:local` / `cron:once`) polls it on an
+interval. Skips a tick if the previous one is still running, distinguishes 401
+from unreachable, and reports what each stage did. Safe to run alongside the
+Vercel cron — the stages claim work atomically, so a second scheduler finds
+nothing to claim rather than double-sending.
+
+**Verified live:** unauthenticated tick → 401; authenticated tick → 200 through
+all four stages.
+
+Worth stating plainly in the runbook: Vercel's daily cron is enough for the fee
+sweep but **not** for outbound messages — a parent paying at 9am should get a
+receipt at 9am, not at 3am tomorrow.
+
+### `docs/GO-LIVE-REAL-ACADEMIES.md`
+
+Runbook ordered by what breaks worst. Covers the Route setup per academy, how to
+verify with one real payment (inspect `notes.settlementStrategy` and the Transfer
+in the Razorpay dashboard), live keys and the webhook, the scheduler, importing
+real students, the owner/platform permission split, a pre-launch checklist, and
+an explicit known-gaps section.
+
+Two things in it worth repeating here:
+
+- **Orders keep the strategy they were built with.** Linking a Route account
+  does not re-route payments already created. That is deliberate — a payment
+  must settle the way it was described when the parent authorised it — but it
+  means the account must be linked *before* the first real payment, not after.
+- **The Atlas IP whitelist silently broke mid-development** and every route
+  returned 500. It is on the checklist because the failure mode looks like a
+  code fault and is not.
+
+### Not done from this request
+
+- **Theme engine / branding depth and mobile polish** — not touched this pass.
+- **Super-admin UI for "structures"** beyond names and settlement — the rename
+  cascade and settlement are done; anything broader is unspecified and I would
+  want to know which structures specifically.
+- **Kit requests** — still not started.
+
+---
+
+## 2026-08-08 — Theme engine: Looks, logo colour extraction, and the mobile canvas
+
+Picks up the item the last entry listed as *not done*: "Theme engine / branding
+depth and mobile polish."
+
+### The problem with the branding editor as it stood
+
+It exposed primary colour, accent colour, font preset, brand "feel" and
+background style as five independent pickers. Every one of them is a real
+control and none of them should go away — but five independent aesthetic
+decisions is asking a cricket coach to be an art director. The predictable
+outcome is the default palette on nine academies out of ten, and on the tenth, a
+combination nobody would have chosen deliberately.
+
+### `src/lib/branding/looks.ts` — one decision instead of five
+
+Eight curated identities, each applying colours, type, feel and background
+together. They are built around real archetypes of Indian grassroots sport
+rather than a colour-theory exercise: the established club with a crest
+(*Heritage*), the new football academy that wants to look European (*Matchday*),
+the neighbourhood academy on a school ground (*Clubhouse*), the elite programme
+selling seriousness (*Academy Pro*), the place full of eight-year-olds
+(*Sunrise*), and so on.
+
+`matchLook()` returns null the moment an owner hand-edits any field. That is
+deliberate: showing a Look as "selected" when its colours have since been
+changed is a small lie that makes the whole panel untrustworthy.
+
+**A test caught a real error.** Three Looks specified `background: 'tint'`,
+which is not a member of `BackgroundStyle` (the union is
+`light | soft | gradient | dark | slate | vivid | midnight`). TypeScript did not
+catch it because the array is typed by inference at the property level; the test
+asserting `isBackgroundStyle(look.background)` did. Corrected to `'soft'`.
+
+The load-bearing test is that **every shipped Look clears WCAG AA** on its own
+primary. A Look whose primary its own text cannot sit on is worse than no Look
+at all, because the owner will trust it and never check. 12/12 passing.
+
+### `src/lib/branding/logoPalette.ts` — read the colours off their own crest
+
+An academy already has an identity: it is on their crest and their jerseys.
+Asking them to translate it into two hex codes is asking the wrong question of
+the wrong person, and they have *already uploaded the logo*.
+
+The pure half decides which colours are the brand; the canvas sampling lives in
+the component, because a canvas needs a browser. What the algorithm has to
+survive, and why each rule exists:
+
+- **Transparent padding.** Most logos are a small mark in a large empty PNG.
+  Naive averaging returns grey every time, so there is an alpha floor.
+- **The crest is mostly white and black.** A gold-on-white crest averages to
+  beige, so there is a saturation floor: white, grey and black are structure,
+  not identity.
+- **Anti-aliasing invents colours** that exist nowhere in the design, so pixels
+  are quantised into 32-wide buckets to collapse edge blends onto the real
+  colour.
+- **The most common colour is not the most important one.** A thin gold rule on
+  a huge navy field *is* the accent. So the accent is chosen for **distance from
+  the primary, not frequency** — ranking by frequency returns another navy and
+  the site looks monochrome.
+- **A suggestion that fails contrast is worse than none**, because the owner
+  accepts it without checking. Anything unreadable is darkened until it passes,
+  and if it cannot, it is not offered at all (`empty: true`).
+
+**Root cause of a bug my own test found:** `MIN_LUMA` was `0.04`, which silently
+excluded `#0F172A` — club navy, one of the commonest crest colours in sport
+(luma about 0.0098). A navy-and-gold crest therefore suggested **gold as its
+primary**. Lowered to `0.004`; true black is already excluded by the saturation
+filter, so the dark floor only needs to catch black itself.
+
+**One test of mine was simply wrong.** I had asserted `ensureReadable(yellow)`
+darkens bright yellow. It does not need to: `readableOn` puts *black* on yellow
+and the contrast is about 19:1. Rewritten to assert the invariant that actually
+matters — "it never returns a colour that fails" — rather than an implementation
+detail I had assumed. 15/15 passing.
+
+### `src/components/branding/LooksPicker.tsx`
+
+The UI half. Cards show a real swatch of the actual identity rather than a
+label, because an owner picks by recognising their club, not by reading. It
+writes nothing directly — it calls `onApply` with a patch, so undo, dirty state
+and saving stay owned by the editor that already handles them.
+
+The logo button handles the tainted-canvas case explicitly: a cross-origin logo
+without CORS headers makes `getImageData` throw, and the honest message is
+"couldn't read that logo", not a silent no-op.
+
+### Mobile — one of these was a genuine bug, not polish
+
+**The canvas editor was unusable on a phone.** Each section's controls were
+`opacity-0 group-hover:opacity-100`. *On touch there is no hover*, so the Edit
+button never appeared and no section could be opened at all. Hover-to-reveal is
+kept for pointer devices, where it keeps the canvas clean, and switched off
+below `xl`.
+
+**The controls panel was below an entire rendered homepage.** Stacked in normal
+flow, an owner tapped a section, got scrolled nowhere, hunted down the page for
+the controls, changed a colour, and had to scroll back up to see what it did.
+Editing something you cannot see is guessing. It is now a bottom sheet under
+`xl`: max 62svh, own scroll with `overscroll-contain`, sticky header so the way
+out stays reachable, and `env(safe-area-inset-bottom)` so the iPhone home
+indicator does not sit on the last control.
+
+Selecting a section now also scrolls it up under the toolbar, or tapping Edit on
+the footer would put the thing being edited directly behind the panel editing
+it. Guarded to below `xl` only — on desktop the sidebar sits beside the canvas,
+nothing is covered, and moving the page would be an unrequested jump.
+
+Touch targets on the section toolbar went from `p-1` (about 24px) to `p-2`,
+still `p-1` on desktop.
+
+**A regression I introduced and caught:** I first wrote the sheet wrapper with
+`xl:static`, which would have dropped the *desktop* sticky sidebar that has
+always been there. Corrected to `xl:sticky xl:top-20`.
+
+### Verification
+
+Because the branding editor sits behind admin auth, I mounted it at a temporary
+route to check it renders, then removed the route. Confirmed by server-rendered
+HTML: all 8 Looks present with their real hex swatches, the logo button, and the
+explanatory copy.
+
+Confirmed against the compiled Tailwind output rather than by eye, since
+arbitrary values fail silently if unsupported: `max-h-[62svh]`,
+`pb-[env(safe-area-inset-bottom)]`, `overscroll-contain`, the arbitrary shadow
+and every `xl:` variant all emit. Also checked the cascade directly — `.fixed`
+is emitted at byte 16865 and the `xl:sticky` rule at 324896, so the `xl` rule
+genuinely wins inside `@media (width >= 80rem)` and the sheet does become a
+sidebar.
+
+That media query is also why the JS guard reads `(min-width: 80rem)` and not
+`1280px`: it is literally what `xl:` compiles to, so the two cannot drift.
+
+**Not verified interactively.** The in-app browser pane was not compositing
+frames, so React's rAF-driven hydration never completed — every rect measured
+zero and clicks did nothing. Computed styles and server-rendered HTML resolve
+without layout and are what the checks above rely on. The interaction itself
+(tap Edit, sheet opens, canvas scrolls) has not been exercised in a real
+browser.
+
+`npx tsc --noEmit` clean, `npx vitest run` 643/643 across 36 files, cold
+`rm -rf .next && npm run build` clean.
+
+### Still open
+
+- **Kit requests** — still not started.
+- Per-sport performance metrics — deferred pending real coach input.
+- Trailers 02 and 03 — sketched only.
